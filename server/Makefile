@@ -6,7 +6,7 @@ ENV_DEV_FILE := .env.dev
 
 # go
 GO           := go run
-GO_GO_SRC_DIR   := ./src
+GO_SRC_DIR   := ./src
 
 # docker
 DOCKER_COMPOSE_DIR         := ./docker
@@ -17,12 +17,14 @@ DOCKER_COMPOSE_DEV_SERVER  := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.server.ym
 DOCKER_EXEC                := docker exec -it
 SERVER_CONTAINER_NAME      := google-cloud-challenge-2022-server
 DB_CONTAINER_NAME          := google-cloud-challenge-2022-db
-
 # volume
 DATA_DIR := ./db/data
 
+#ent
+ENT_DIR := $(GO_SRC_DIR)/infrastructure/ent
+
 # rm
-RM:=rm -rf
+RM := rm -rf
 
 .PHONY: up
 up: ## docker環境を立ち上げる
@@ -35,7 +37,7 @@ up: ## docker環境を立ち上げる
 .PHONY: down
 down: ## dockerイメージを削除し、docker環境を閉じる
 	docker-compose \
-	-f $(DOCKER_COMPOSE_BASE) \
+	-f $(DOCKER_COMPOSE_DEV) \
 	-f $(DOCKER_COMPOSE_DEV_SERVER) \
 	-f $(DOCKER_COMPOSE_DEV_DB) \
 	down \
@@ -69,6 +71,18 @@ server-lint: ## src配下のコードを整形する
 .PHONY: test
 test: ## テストを実行する
 	cd src/ && go test -v ./...
+
+.PHONY: log
+log: ## docker compose環境のログを確認する
+	docker-compose \
+	-f $(DOCKER_COMPOSE_DEV) \
+	-f $(DOCKER_COMPOSE_DEV_SERVER) \
+	-f $(DOCKER_COMPOSE_DEV_DB) \
+	logs -f
+
+#ent
+ent-generate: ## entのファイルを自動生成する
+	cd $(ENT_DIR) && go generate .
 
 .PHONY: help
 help: ## コマンドの一覧を標示する

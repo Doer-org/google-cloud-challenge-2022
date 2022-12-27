@@ -3,13 +3,15 @@ version: "3"
 services:
   server:
     container_name: google-cloud-challenge-2022-server
-    networks:
-      - gc-server
+    # networks:
+    #   - gc-server
+    depends_on:
+      - db
   db:
     container_name: google-cloud-challenge-2022-db
-    networks:
-      - gc-server
+    # networks:
+    #   - gc-server
 
-networks:
-  gc-server:
-    driver: bridge
+# networks:
+#   gc-server:
+#     driver: bridge

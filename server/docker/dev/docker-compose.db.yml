@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  db:
+    build:
+      context: ../../db
+      dockerfile: Dockerfile.dev
+    ports:
+      - 5432:5432
+    volumes:
+      - ../../db/init:/docker-entrypoint-initdb.d
+      - ../../db/data:/var/lib/postgresql/data
+    env_file:
+      - ../../.env.dev
+    restart: always

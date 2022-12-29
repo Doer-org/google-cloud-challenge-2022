@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  server:
+    build:
+      context: ../../src
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8080:8080
+    volumes:
+      - ../../src:/go/src/github.com/Doer-org/google-cloud-challenge-2022/server/src
+    env_file:
+      - ../../.env.dev
+    restart: always
+    tty: true

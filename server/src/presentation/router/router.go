@@ -2,30 +2,27 @@ package router
 
 import (
 	"fmt"
+	"net/http"
 
-	"github.com/jphacks/F_2205/server/src/config"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/utils/helper"
 
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
 )
 
-type Router struct {
-	Engine *gin.Engine
-}
+func InitRouter(c *ent.Client) {
+	r := chi.NewRouter()
 
-// NewRouterは新しいRouterを初期化し構造体のポインタを返します
-func NewRouter() *Router {
-	e := gin.Default()
-	r := &Router{
-		Engine: e,
-	}
+	setMiddleware(r)
+	initHealthRouer(r)
+	initUserRouter(r,c)
 
-	// middlewareの設定
-	r.setMiddleware()
+	r.Get("/",func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok!"))
+	})
 
-	return r
-}
-
-// Serveはhttpサーバーを起動します
-func (r *Router) Serve() {
-	r.Engine.Run(fmt.Sprintf(":%s", config.Port()))
+	http.ListenAndServe(
+		fmt.Sprintf(":%s",helper.GetEnvOrDefault("PORT","8080")),
+		r,
+	)
 }

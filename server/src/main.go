@@ -7,7 +7,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/presentation/router"
 
 	_ "github.com/lib/pq"
 )
@@ -30,19 +31,5 @@ func main() {
         log.Fatalf("failed creating schema resources: %v", err)
     }
 
-	_,err = client.User.
-		Create().
-		SetName("hogehoge").
-		SetAge(12).
-		SetAuthenticated(false).
-		SetGmail("hoge").
-		SetIconImg("hoge").
-		Save(context.Background())
-
-	if err != nil {
-		log.Fatalf("user hogehoge %v",err)
-	}
-
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	router.InitRouter(client)
 }

@@ -1,5 +1,5 @@
 ## Build
-FROM golang:1.19 AS build
+FROM golang:1.19 AS dev
 
 WORKDIR /go/src/github.com/Doer-org/google-cloud-challenge-2022/server/src
 
@@ -10,17 +10,9 @@ RUN go mod download
 
 COPY . .
 
+RUN go install github.com/cosmtrek/air@v1.29.0
+
+# air -c [tomlファイル名] // 設定ファイルを指定してair実行(WORKDIRに.air.tomlを配置しておくこと)
+CMD ["air", "-c", ".air.toml"]
+
 RUN go build -o /server
-
-## Deploy
-FROM gcr.io/distroless/base-debian10
-
-WORKDIR /
-
-COPY --from=build /server /server
-
-EXPOSE 8080
-
-USER nonroot:nonroot
-
-ENTRYPOINT ["/server"]

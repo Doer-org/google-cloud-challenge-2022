@@ -11,3 +11,11 @@ services:
     environment:
       SWAGGER_JSON: /openapi.json
   
+  swagger-api:
+    image: stoplight/prism:3
+    container_name: "swagger-api"
+    ports:
+      - "8003:4010"
+    command: mock -h 0.0.0.0 /openapi.json
+    volumes:
+      - ../openapi.json:/openapi.json

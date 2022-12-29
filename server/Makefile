@@ -32,7 +32,7 @@ up: ## docker環境を立ち上げる
 	-f $(DOCKER_COMPOSE_DEV) \
 	-f $(DOCKER_COMPOSE_DEV_SERVER) \
 	-f $(DOCKER_COMPOSE_DEV_DB) \
-	up
+	up -d
 
 .PHONY: down
 down: ## dockerイメージを削除し、docker環境を閉じる

@@ -38,3 +38,4 @@ export module UserApi {
     export const updateById = apiClient.path("/users/{id}").method("patch").create()
     export const getUsersEvents = apiClient.path("/users/{id}/events").method("get").create() 
 } 
+ 

@@ -56,9 +56,7 @@ export default () => {
             errorHandler,
             okHandler
         ),
-        (task) => {
-            task().then(() => {})
-        }
+        (task) => task().then(() => {})
     )
 
     const closeEvent = (
@@ -70,9 +68,7 @@ export default () => {
             errorHandler,
             okHandler
         ),
-        (task) => {
-            task().then(() => {})
-        }
+        (task) => task().then(() => {})
     )
     
 

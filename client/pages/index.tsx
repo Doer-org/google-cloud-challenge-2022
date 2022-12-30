@@ -4,10 +4,13 @@ import { Inter } from '@next/font/google'
 import styles from '../styles/Home.module.css'
 import useUserApi from '../core/hooks/useUserApi'
 
+import useHostApi from '../core/hooks/useEventHost'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   const {test} = useUserApi() 
+  const {createNewEvent} = useHostApi()
   return (
     <>
       <Head>
@@ -19,7 +22,16 @@ export default function Home() {
       <main className={styles.main}>
        <button onClick={() => { 
         console.log("clicked!")
-        test()//.then(console.log)
+        // test()//.then(console.log)
+        createNewEvent(console.log, console.log)(
+          { user_id : "abc" },
+          {
+            event_name:" string;",
+            max_member: 1,
+            detail: "string;",
+            location:" string;"
+          } 
+        )
       }} >
         click here to call mock API!!
 

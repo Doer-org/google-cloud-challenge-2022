@@ -51,9 +51,7 @@ export default () => {
             errorHandler,
             okHandler
         ),
-        (task) => {
-            task().then(() => {})
-        }
+        (task) => task().then(() => {})
     )
 
     return { 

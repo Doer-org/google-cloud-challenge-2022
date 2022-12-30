@@ -4,6 +4,7 @@ import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
 import { EventApi }from '../uitls/mockApi'  
 import { Event, Host, Participant } from '../types/event'
+import ts from 'typescript'
 
 const tryGetEventInfo = (event_id: number) => { 
     const getEventInfo = flow (
@@ -49,7 +50,10 @@ export default () => {
         TE.match(
             errorHandler,
             okHandler
-        )
+        ),
+        (task) => {
+            task().then(() => {})
+        }
     )
 
     return { 

@@ -55,7 +55,10 @@ export default () => {
         TE.match(
             errorHandler,
             okHandler
-        )
+        ),
+        (task) => {
+            task().then(() => {})
+        }
     )
 
     const closeEvent = (
@@ -66,7 +69,10 @@ export default () => {
         TE.match(
             errorHandler,
             okHandler
-        )
+        ),
+        (task) => {
+            task().then(() => {})
+        }
     )
     
 

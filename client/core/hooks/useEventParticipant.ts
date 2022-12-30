@@ -38,7 +38,10 @@ export default () => {
         TE.match(
             errorHandler,
             okHandler
-        )
+        ),
+        (task) => {
+            task().then(() => {})
+        }
     )
     return { 
         joinEvent

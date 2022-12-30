@@ -17,7 +17,7 @@ const tryGetEventInfo = (event_id: number) => {
     ) 
     return pipe ( 
         getEventInfo({id : event_id}), 
-        TE.map((event_info) => pipe (
+        TE.chain((event_info) => pipe (
             getEventHost({id : event_info.id}),
             TE.map((members) => {
                 const e : Event =  {
@@ -35,8 +35,7 @@ const tryGetEventInfo = (event_id: number) => {
                 } 
                 return e 
             })
-        )),
-        TE.flatten
+        )) 
     )
 }
 

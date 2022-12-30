@@ -42,9 +42,7 @@ export default function Home() {
                 <h1>参加済みです</h1>
                 <button onClick={() => setHasJoined(false)} > キャンセル </button>
               
-              </> 
-          
-           
+              </>  
         }
       </main>
     </>

@@ -9,20 +9,14 @@ let relativePathFromExe  =
         )  
         |> fun x -> regex.Replace(x, "/")
 
-let initTargets () = 
-    // *** Define Targets ***s
+let initTargets () =  
     Target.create "Default" (fun _ -> 
         printfn "OpenApi型定義を生成"   
         let args = 
             let proto = relativePathFromExe <| Path.combine __SOURCE_DIRECTORY__ @"./../../openapi/openapi.json"  
             let auto  = relativePathFromExe <| Path.combine __SOURCE_DIRECTORY__ @"./../core/openapi/openapi.ts"  
             $@"openapi-typescript {proto} " + $@"--output {auto} " 
-        //https://fake.build/reference/fake-javascript-npm.html#install
-        //Npm.run(args) (fun o ->
-        //    { o with
-        //        WorkingDirectory = "."
-        //    }) 
-        // 雑
+        // https://fake.build/reference/fake-javascript-npm.html#install 
         // https://github.com/fsprojects/FAKE/blob/master/src/app/Fake.JavaScript.Npm/Npm.fs#L28-28 
         ProcessUtils.tryFindFileOnPath "npx"
         |> function 
@@ -37,9 +31,7 @@ let main args =
     |> Array.toList
     |> Context.FakeExecutionContext.Create false "build.fsx"
     |> Context.RuntimeContext.Fake
-    |> Context.setExecutionContext
-
-    initTargets () 
-    // *** Start Build ***
+    |> Context.setExecutionContext 
+    initTargets ()  
     Target.runOrDefault "Default"
     0

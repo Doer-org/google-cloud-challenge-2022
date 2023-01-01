@@ -7,5 +7,5 @@ import (
 )
 
 type IImageRepository interface {
-	CreateImg(ctx context.Context, i *entity.Image) (*entity.Image, error)
+	Create(ctx context.Context, i *entity.Image) (*entity.Image, error)
 }

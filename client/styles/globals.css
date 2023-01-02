@@ -4,4 +4,5 @@
 @tailwind utilities;
 body {
   font-family: 'Zen Maru Gothic', sans-serif;
+  color: white;
 }

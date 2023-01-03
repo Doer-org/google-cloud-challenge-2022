@@ -2,10 +2,9 @@ import Head from 'next/head'
 import styles from '../../../styles/Home.module.css'  
 import { useState } from 'react'
 import Link from 'next/link' 
-import useHostApi from '../../../core/hooks/useEventHost' 
+import {createNewEvent} from '../../../core/api/event/create' 
 
-export default function Home() { 
-  const { createNewEvent } = useHostApi()
+export default function Home() {  
   const [createdEventId, setCreatedEventId] = useState(0)
   const createEvent =
     createNewEvent(
@@ -14,7 +13,7 @@ export default function Home() {
         setCreated(true) 
         setCreatedEventId(v.created_event.event_id)
       }, 
-      console.log
+      (e) => console.log(e)
     ) 
 
   const [created, setCreated] = useState(false)

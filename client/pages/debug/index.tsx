@@ -1,6 +1,6 @@
 import Head from 'next/head'
-import useUserApi from '../../core/hooks/useUserApi' 
-import useHostApi from '../../core/hooks/useEventHost' 
+import useUserApi from '../../core/api/user/tmp' 
+import useHostApi from '../../core/api/event/EventHostAPI' 
 export default function Tmp() {
   const { createNewEvent } = useHostApi()
   return (

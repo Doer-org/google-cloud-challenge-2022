@@ -1,8 +1,7 @@
-import Head from 'next/head';
 import { useState } from 'react';
 import Link from 'next/link';
-import useHostApi from '../../core/hooks/useEventHost';
-import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
+import useHostApi from '../../../core/hooks/useEventHost';
+import { BasicTemplate } from '../../../components/templates/shared/BasicTemplate';
 
 export default function New() {
   const { createNewEvent } = useHostApi();

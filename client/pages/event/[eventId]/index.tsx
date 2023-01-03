@@ -2,8 +2,8 @@ import Head from 'next/head';
 import { Inter } from '@next/font/google';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { MyHead } from '../../components/templates/shared/MyHead';
-import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
+import { MyHead } from '../../../components/templates/shared/MyHead';
+import { BasicTemplate } from '../../../components/templates/shared/BasicTemplate';
 
 const inter = Inter({ subsets: ['latin'] });
 

@@ -4,11 +4,12 @@ package ogent
 
 import (
 	"github.com/go-faster/jx"
+	"github.com/google/uuid"
 )
 
 type CreateEStateReq struct {
-	Name  string `json:"name"`
-	Event int    `json:"event"`
+	Name  string    `json:"name"`
+	Event uuid.UUID `json:"event"`
 }
 
 // GetName returns the value of Name.
@@ -17,7 +18,7 @@ func (s *CreateEStateReq) GetName() string {
 }
 
 // GetEvent returns the value of Event.
-func (s *CreateEStateReq) GetEvent() int {
+func (s *CreateEStateReq) GetEvent() uuid.UUID {
 	return s.Event
 }
 
@@ -27,13 +28,13 @@ func (s *CreateEStateReq) SetName(val string) {
 }
 
 // SetEvent sets the value of Event.
-func (s *CreateEStateReq) SetEvent(val int) {
+func (s *CreateEStateReq) SetEvent(val uuid.UUID) {
 	s.Event = val
 }
 
 type CreateETypeReq struct {
-	Name  string `json:"name"`
-	Event int    `json:"event"`
+	Name  string    `json:"name"`
+	Event uuid.UUID `json:"event"`
 }
 
 // GetName returns the value of Name.
@@ -42,7 +43,7 @@ func (s *CreateETypeReq) GetName() string {
 }
 
 // GetEvent returns the value of Event.
-func (s *CreateETypeReq) GetEvent() int {
+func (s *CreateETypeReq) GetEvent() uuid.UUID {
 	return s.Event
 }
 
@@ -52,17 +53,53 @@ func (s *CreateETypeReq) SetName(val string) {
 }
 
 // SetEvent sets the value of Event.
-func (s *CreateETypeReq) SetEvent(val int) {
+func (s *CreateETypeReq) SetEvent(val uuid.UUID) {
 	s.Event = val
 }
 
+type CreateEcommentReq struct {
+	Body  string  `json:"body"`
+	Event OptUUID `json:"event"`
+	User  OptUUID `json:"user"`
+}
+
+// GetBody returns the value of Body.
+func (s *CreateEcommentReq) GetBody() string {
+	return s.Body
+}
+
+// GetEvent returns the value of Event.
+func (s *CreateEcommentReq) GetEvent() OptUUID {
+	return s.Event
+}
+
+// GetUser returns the value of User.
+func (s *CreateEcommentReq) GetUser() OptUUID {
+	return s.User
+}
+
+// SetBody sets the value of Body.
+func (s *CreateEcommentReq) SetBody(val string) {
+	s.Body = val
+}
+
+// SetEvent sets the value of Event.
+func (s *CreateEcommentReq) SetEvent(val OptUUID) {
+	s.Event = val
+}
+
+// SetUser sets the value of User.
+func (s *CreateEcommentReq) SetUser(val OptUUID) {
+	s.User = val
+}
+
 type CreateEventReq struct {
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
-	State    OptInt `json:"state"`
-	Type     OptInt `json:"type"`
-	Users    []int  `json:"users"`
+	Name     string      `json:"name"`
+	Detail   OptString   `json:"detail"`
+	Location OptString   `json:"location"`
+	State    OptUUID     `json:"state"`
+	Type     OptUUID     `json:"type"`
+	Users    []uuid.UUID `json:"users"`
 }
 
 // GetName returns the value of Name.
@@ -71,27 +108,27 @@ func (s *CreateEventReq) GetName() string {
 }
 
 // GetDetail returns the value of Detail.
-func (s *CreateEventReq) GetDetail() string {
+func (s *CreateEventReq) GetDetail() OptString {
 	return s.Detail
 }
 
 // GetLocation returns the value of Location.
-func (s *CreateEventReq) GetLocation() string {
+func (s *CreateEventReq) GetLocation() OptString {
 	return s.Location
 }
 
 // GetState returns the value of State.
-func (s *CreateEventReq) GetState() OptInt {
+func (s *CreateEventReq) GetState() OptUUID {
 	return s.State
 }
 
 // GetType returns the value of Type.
-func (s *CreateEventReq) GetType() OptInt {
+func (s *CreateEventReq) GetType() OptUUID {
 	return s.Type
 }
 
 // GetUsers returns the value of Users.
-func (s *CreateEventReq) GetUsers() []int {
+func (s *CreateEventReq) GetUsers() []uuid.UUID {
 	return s.Users
 }
 
@@ -101,41 +138,41 @@ func (s *CreateEventReq) SetName(val string) {
 }
 
 // SetDetail sets the value of Detail.
-func (s *CreateEventReq) SetDetail(val string) {
+func (s *CreateEventReq) SetDetail(val OptString) {
 	s.Detail = val
 }
 
 // SetLocation sets the value of Location.
-func (s *CreateEventReq) SetLocation(val string) {
+func (s *CreateEventReq) SetLocation(val OptString) {
 	s.Location = val
 }
 
 // SetState sets the value of State.
-func (s *CreateEventReq) SetState(val OptInt) {
+func (s *CreateEventReq) SetState(val OptUUID) {
 	s.State = val
 }
 
 // SetType sets the value of Type.
-func (s *CreateEventReq) SetType(val OptInt) {
+func (s *CreateEventReq) SetType(val OptUUID) {
 	s.Type = val
 }
 
 // SetUsers sets the value of Users.
-func (s *CreateEventReq) SetUsers(val []int) {
+func (s *CreateEventReq) SetUsers(val []uuid.UUID) {
 	s.Users = val
 }
 
 type CreateUserReq struct {
-	Age           int    `json:"age"`
-	Name          string `json:"name"`
-	Authenticated bool   `json:"authenticated"`
-	Gmail         string `json:"gmail"`
-	IconImg       string `json:"icon_img"`
-	Events        []int  `json:"events"`
+	Age           OptInt      `json:"age"`
+	Name          string      `json:"name"`
+	Authenticated bool        `json:"authenticated"`
+	Mail          OptString   `json:"mail"`
+	Icon          string      `json:"icon"`
+	Events        []uuid.UUID `json:"events"`
 }
 
 // GetAge returns the value of Age.
-func (s *CreateUserReq) GetAge() int {
+func (s *CreateUserReq) GetAge() OptInt {
 	return s.Age
 }
 
@@ -149,23 +186,23 @@ func (s *CreateUserReq) GetAuthenticated() bool {
 	return s.Authenticated
 }
 
-// GetGmail returns the value of Gmail.
-func (s *CreateUserReq) GetGmail() string {
-	return s.Gmail
+// GetMail returns the value of Mail.
+func (s *CreateUserReq) GetMail() OptString {
+	return s.Mail
 }
 
-// GetIconImg returns the value of IconImg.
-func (s *CreateUserReq) GetIconImg() string {
-	return s.IconImg
+// GetIcon returns the value of Icon.
+func (s *CreateUserReq) GetIcon() string {
+	return s.Icon
 }
 
 // GetEvents returns the value of Events.
-func (s *CreateUserReq) GetEvents() []int {
+func (s *CreateUserReq) GetEvents() []uuid.UUID {
 	return s.Events
 }
 
 // SetAge sets the value of Age.
-func (s *CreateUserReq) SetAge(val int) {
+func (s *CreateUserReq) SetAge(val OptInt) {
 	s.Age = val
 }
 
@@ -179,18 +216,18 @@ func (s *CreateUserReq) SetAuthenticated(val bool) {
 	s.Authenticated = val
 }
 
-// SetGmail sets the value of Gmail.
-func (s *CreateUserReq) SetGmail(val string) {
-	s.Gmail = val
+// SetMail sets the value of Mail.
+func (s *CreateUserReq) SetMail(val OptString) {
+	s.Mail = val
 }
 
-// SetIconImg sets the value of IconImg.
-func (s *CreateUserReq) SetIconImg(val string) {
-	s.IconImg = val
+// SetIcon sets the value of Icon.
+func (s *CreateUserReq) SetIcon(val string) {
+	s.Icon = val
 }
 
 // SetEvents sets the value of Events.
-func (s *CreateUserReq) SetEvents(val []int) {
+func (s *CreateUserReq) SetEvents(val []uuid.UUID) {
 	s.Events = val
 }
 
@@ -204,6 +241,11 @@ type DeleteETypeNoContent struct{}
 
 func (*DeleteETypeNoContent) deleteETypeRes() {}
 
+// DeleteEcommentNoContent is response for DeleteEcomment operation.
+type DeleteEcommentNoContent struct{}
+
+func (*DeleteEcommentNoContent) deleteEcommentRes() {}
+
 // DeleteEventNoContent is response for DeleteEvent operation.
 type DeleteEventNoContent struct{}
 
@@ -216,12 +258,12 @@ func (*DeleteUserNoContent) deleteUserRes() {}
 
 // Ref: #/components/schemas/EStateCreate
 type EStateCreate struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *EStateCreate) GetID() int {
+func (s *EStateCreate) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -231,7 +273,7 @@ func (s *EStateCreate) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *EStateCreate) SetID(val int) {
+func (s *EStateCreate) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -244,14 +286,14 @@ func (*EStateCreate) createEStateRes() {}
 
 // Ref: #/components/schemas/EState_EventRead
 type EStateEventRead struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Detail   OptString `json:"detail"`
+	Location OptString `json:"location"`
 }
 
 // GetID returns the value of ID.
-func (s *EStateEventRead) GetID() int {
+func (s *EStateEventRead) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -261,17 +303,17 @@ func (s *EStateEventRead) GetName() string {
 }
 
 // GetDetail returns the value of Detail.
-func (s *EStateEventRead) GetDetail() string {
+func (s *EStateEventRead) GetDetail() OptString {
 	return s.Detail
 }
 
 // GetLocation returns the value of Location.
-func (s *EStateEventRead) GetLocation() string {
+func (s *EStateEventRead) GetLocation() OptString {
 	return s.Location
 }
 
 // SetID sets the value of ID.
-func (s *EStateEventRead) SetID(val int) {
+func (s *EStateEventRead) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -281,12 +323,12 @@ func (s *EStateEventRead) SetName(val string) {
 }
 
 // SetDetail sets the value of Detail.
-func (s *EStateEventRead) SetDetail(val string) {
+func (s *EStateEventRead) SetDetail(val OptString) {
 	s.Detail = val
 }
 
 // SetLocation sets the value of Location.
-func (s *EStateEventRead) SetLocation(val string) {
+func (s *EStateEventRead) SetLocation(val OptString) {
 	s.Location = val
 }
 
@@ -294,12 +336,12 @@ func (*EStateEventRead) readEStateEventRes() {}
 
 // Ref: #/components/schemas/EStateList
 type EStateList struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *EStateList) GetID() int {
+func (s *EStateList) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -309,7 +351,7 @@ func (s *EStateList) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *EStateList) SetID(val int) {
+func (s *EStateList) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -320,12 +362,12 @@ func (s *EStateList) SetName(val string) {
 
 // Ref: #/components/schemas/EStateRead
 type EStateRead struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *EStateRead) GetID() int {
+func (s *EStateRead) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -335,7 +377,7 @@ func (s *EStateRead) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *EStateRead) SetID(val int) {
+func (s *EStateRead) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -348,12 +390,12 @@ func (*EStateRead) readEStateRes() {}
 
 // Ref: #/components/schemas/EStateUpdate
 type EStateUpdate struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *EStateUpdate) GetID() int {
+func (s *EStateUpdate) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -363,7 +405,7 @@ func (s *EStateUpdate) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *EStateUpdate) SetID(val int) {
+func (s *EStateUpdate) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -376,12 +418,12 @@ func (*EStateUpdate) updateEStateRes() {}
 
 // Ref: #/components/schemas/ETypeCreate
 type ETypeCreate struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *ETypeCreate) GetID() int {
+func (s *ETypeCreate) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -391,7 +433,7 @@ func (s *ETypeCreate) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *ETypeCreate) SetID(val int) {
+func (s *ETypeCreate) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -404,14 +446,14 @@ func (*ETypeCreate) createETypeRes() {}
 
 // Ref: #/components/schemas/EType_EventRead
 type ETypeEventRead struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Detail   OptString `json:"detail"`
+	Location OptString `json:"location"`
 }
 
 // GetID returns the value of ID.
-func (s *ETypeEventRead) GetID() int {
+func (s *ETypeEventRead) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -421,17 +463,17 @@ func (s *ETypeEventRead) GetName() string {
 }
 
 // GetDetail returns the value of Detail.
-func (s *ETypeEventRead) GetDetail() string {
+func (s *ETypeEventRead) GetDetail() OptString {
 	return s.Detail
 }
 
 // GetLocation returns the value of Location.
-func (s *ETypeEventRead) GetLocation() string {
+func (s *ETypeEventRead) GetLocation() OptString {
 	return s.Location
 }
 
 // SetID sets the value of ID.
-func (s *ETypeEventRead) SetID(val int) {
+func (s *ETypeEventRead) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -441,12 +483,12 @@ func (s *ETypeEventRead) SetName(val string) {
 }
 
 // SetDetail sets the value of Detail.
-func (s *ETypeEventRead) SetDetail(val string) {
+func (s *ETypeEventRead) SetDetail(val OptString) {
 	s.Detail = val
 }
 
 // SetLocation sets the value of Location.
-func (s *ETypeEventRead) SetLocation(val string) {
+func (s *ETypeEventRead) SetLocation(val OptString) {
 	s.Location = val
 }
 
@@ -454,12 +496,12 @@ func (*ETypeEventRead) readETypeEventRes() {}
 
 // Ref: #/components/schemas/ETypeList
 type ETypeList struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *ETypeList) GetID() int {
+func (s *ETypeList) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -469,7 +511,7 @@ func (s *ETypeList) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *ETypeList) SetID(val int) {
+func (s *ETypeList) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -480,12 +522,12 @@ func (s *ETypeList) SetName(val string) {
 
 // Ref: #/components/schemas/ETypeRead
 type ETypeRead struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *ETypeRead) GetID() int {
+func (s *ETypeRead) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -495,7 +537,7 @@ func (s *ETypeRead) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *ETypeRead) SetID(val int) {
+func (s *ETypeRead) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -508,12 +550,12 @@ func (*ETypeRead) readETypeRes() {}
 
 // Ref: #/components/schemas/ETypeUpdate
 type ETypeUpdate struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *ETypeUpdate) GetID() int {
+func (s *ETypeUpdate) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -523,7 +565,7 @@ func (s *ETypeUpdate) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *ETypeUpdate) SetID(val int) {
+func (s *ETypeUpdate) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -534,16 +576,248 @@ func (s *ETypeUpdate) SetName(val string) {
 
 func (*ETypeUpdate) updateETypeRes() {}
 
-// Ref: #/components/schemas/EventCreate
-type EventCreate struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
+// Ref: #/components/schemas/EcommentCreate
+type EcommentCreate struct {
+	ID   uuid.UUID `json:"id"`
+	Body string    `json:"body"`
 }
 
 // GetID returns the value of ID.
-func (s *EventCreate) GetID() int {
+func (s *EcommentCreate) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetBody returns the value of Body.
+func (s *EcommentCreate) GetBody() string {
+	return s.Body
+}
+
+// SetID sets the value of ID.
+func (s *EcommentCreate) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetBody sets the value of Body.
+func (s *EcommentCreate) SetBody(val string) {
+	s.Body = val
+}
+
+func (*EcommentCreate) createEcommentRes() {}
+
+// Ref: #/components/schemas/Ecomment_EventRead
+type EcommentEventRead struct {
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Detail   OptString `json:"detail"`
+	Location OptString `json:"location"`
+}
+
+// GetID returns the value of ID.
+func (s *EcommentEventRead) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetName returns the value of Name.
+func (s *EcommentEventRead) GetName() string {
+	return s.Name
+}
+
+// GetDetail returns the value of Detail.
+func (s *EcommentEventRead) GetDetail() OptString {
+	return s.Detail
+}
+
+// GetLocation returns the value of Location.
+func (s *EcommentEventRead) GetLocation() OptString {
+	return s.Location
+}
+
+// SetID sets the value of ID.
+func (s *EcommentEventRead) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetName sets the value of Name.
+func (s *EcommentEventRead) SetName(val string) {
+	s.Name = val
+}
+
+// SetDetail sets the value of Detail.
+func (s *EcommentEventRead) SetDetail(val OptString) {
+	s.Detail = val
+}
+
+// SetLocation sets the value of Location.
+func (s *EcommentEventRead) SetLocation(val OptString) {
+	s.Location = val
+}
+
+func (*EcommentEventRead) readEcommentEventRes() {}
+
+// Ref: #/components/schemas/EcommentList
+type EcommentList struct {
+	ID   uuid.UUID `json:"id"`
+	Body string    `json:"body"`
+}
+
+// GetID returns the value of ID.
+func (s *EcommentList) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetBody returns the value of Body.
+func (s *EcommentList) GetBody() string {
+	return s.Body
+}
+
+// SetID sets the value of ID.
+func (s *EcommentList) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetBody sets the value of Body.
+func (s *EcommentList) SetBody(val string) {
+	s.Body = val
+}
+
+// Ref: #/components/schemas/EcommentRead
+type EcommentRead struct {
+	ID   uuid.UUID `json:"id"`
+	Body string    `json:"body"`
+}
+
+// GetID returns the value of ID.
+func (s *EcommentRead) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetBody returns the value of Body.
+func (s *EcommentRead) GetBody() string {
+	return s.Body
+}
+
+// SetID sets the value of ID.
+func (s *EcommentRead) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetBody sets the value of Body.
+func (s *EcommentRead) SetBody(val string) {
+	s.Body = val
+}
+
+func (*EcommentRead) readEcommentRes() {}
+
+// Ref: #/components/schemas/EcommentUpdate
+type EcommentUpdate struct {
+	ID   uuid.UUID `json:"id"`
+	Body string    `json:"body"`
+}
+
+// GetID returns the value of ID.
+func (s *EcommentUpdate) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetBody returns the value of Body.
+func (s *EcommentUpdate) GetBody() string {
+	return s.Body
+}
+
+// SetID sets the value of ID.
+func (s *EcommentUpdate) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetBody sets the value of Body.
+func (s *EcommentUpdate) SetBody(val string) {
+	s.Body = val
+}
+
+func (*EcommentUpdate) updateEcommentRes() {}
+
+// Ref: #/components/schemas/Ecomment_UserRead
+type EcommentUserRead struct {
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
+}
+
+// GetID returns the value of ID.
+func (s *EcommentUserRead) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetAge returns the value of Age.
+func (s *EcommentUserRead) GetAge() OptInt {
+	return s.Age
+}
+
+// GetName returns the value of Name.
+func (s *EcommentUserRead) GetName() string {
+	return s.Name
+}
+
+// GetAuthenticated returns the value of Authenticated.
+func (s *EcommentUserRead) GetAuthenticated() bool {
+	return s.Authenticated
+}
+
+// GetMail returns the value of Mail.
+func (s *EcommentUserRead) GetMail() OptString {
+	return s.Mail
+}
+
+// GetIcon returns the value of Icon.
+func (s *EcommentUserRead) GetIcon() string {
+	return s.Icon
+}
+
+// SetID sets the value of ID.
+func (s *EcommentUserRead) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetAge sets the value of Age.
+func (s *EcommentUserRead) SetAge(val OptInt) {
+	s.Age = val
+}
+
+// SetName sets the value of Name.
+func (s *EcommentUserRead) SetName(val string) {
+	s.Name = val
+}
+
+// SetAuthenticated sets the value of Authenticated.
+func (s *EcommentUserRead) SetAuthenticated(val bool) {
+	s.Authenticated = val
+}
+
+// SetMail sets the value of Mail.
+func (s *EcommentUserRead) SetMail(val OptString) {
+	s.Mail = val
+}
+
+// SetIcon sets the value of Icon.
+func (s *EcommentUserRead) SetIcon(val string) {
+	s.Icon = val
+}
+
+func (*EcommentUserRead) readEcommentUserRes() {}
+
+// Ref: #/components/schemas/EventCreate
+type EventCreate struct {
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Detail   OptString `json:"detail"`
+	Location OptString `json:"location"`
+}
+
+// GetID returns the value of ID.
+func (s *EventCreate) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -553,17 +827,17 @@ func (s *EventCreate) GetName() string {
 }
 
 // GetDetail returns the value of Detail.
-func (s *EventCreate) GetDetail() string {
+func (s *EventCreate) GetDetail() OptString {
 	return s.Detail
 }
 
 // GetLocation returns the value of Location.
-func (s *EventCreate) GetLocation() string {
+func (s *EventCreate) GetLocation() OptString {
 	return s.Location
 }
 
 // SetID sets the value of ID.
-func (s *EventCreate) SetID(val int) {
+func (s *EventCreate) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -573,12 +847,12 @@ func (s *EventCreate) SetName(val string) {
 }
 
 // SetDetail sets the value of Detail.
-func (s *EventCreate) SetDetail(val string) {
+func (s *EventCreate) SetDetail(val OptString) {
 	s.Detail = val
 }
 
 // SetLocation sets the value of Location.
-func (s *EventCreate) SetLocation(val string) {
+func (s *EventCreate) SetLocation(val OptString) {
 	s.Location = val
 }
 
@@ -586,14 +860,14 @@ func (*EventCreate) createEventRes() {}
 
 // Ref: #/components/schemas/EventList
 type EventList struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Detail   OptString `json:"detail"`
+	Location OptString `json:"location"`
 }
 
 // GetID returns the value of ID.
-func (s *EventList) GetID() int {
+func (s *EventList) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -603,17 +877,17 @@ func (s *EventList) GetName() string {
 }
 
 // GetDetail returns the value of Detail.
-func (s *EventList) GetDetail() string {
+func (s *EventList) GetDetail() OptString {
 	return s.Detail
 }
 
 // GetLocation returns the value of Location.
-func (s *EventList) GetLocation() string {
+func (s *EventList) GetLocation() OptString {
 	return s.Location
 }
 
 // SetID sets the value of ID.
-func (s *EventList) SetID(val int) {
+func (s *EventList) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -623,25 +897,25 @@ func (s *EventList) SetName(val string) {
 }
 
 // SetDetail sets the value of Detail.
-func (s *EventList) SetDetail(val string) {
+func (s *EventList) SetDetail(val OptString) {
 	s.Detail = val
 }
 
 // SetLocation sets the value of Location.
-func (s *EventList) SetLocation(val string) {
+func (s *EventList) SetLocation(val OptString) {
 	s.Location = val
 }
 
 // Ref: #/components/schemas/EventRead
 type EventRead struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Detail   OptString `json:"detail"`
+	Location OptString `json:"location"`
 }
 
 // GetID returns the value of ID.
-func (s *EventRead) GetID() int {
+func (s *EventRead) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -651,17 +925,17 @@ func (s *EventRead) GetName() string {
 }
 
 // GetDetail returns the value of Detail.
-func (s *EventRead) GetDetail() string {
+func (s *EventRead) GetDetail() OptString {
 	return s.Detail
 }
 
 // GetLocation returns the value of Location.
-func (s *EventRead) GetLocation() string {
+func (s *EventRead) GetLocation() OptString {
 	return s.Location
 }
 
 // SetID sets the value of ID.
-func (s *EventRead) SetID(val int) {
+func (s *EventRead) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -671,12 +945,12 @@ func (s *EventRead) SetName(val string) {
 }
 
 // SetDetail sets the value of Detail.
-func (s *EventRead) SetDetail(val string) {
+func (s *EventRead) SetDetail(val OptString) {
 	s.Detail = val
 }
 
 // SetLocation sets the value of Location.
-func (s *EventRead) SetLocation(val string) {
+func (s *EventRead) SetLocation(val OptString) {
 	s.Location = val
 }
 
@@ -684,12 +958,12 @@ func (*EventRead) readEventRes() {}
 
 // Ref: #/components/schemas/Event_StateRead
 type EventStateRead struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *EventStateRead) GetID() int {
+func (s *EventStateRead) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -699,7 +973,7 @@ func (s *EventStateRead) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *EventStateRead) SetID(val int) {
+func (s *EventStateRead) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -712,12 +986,12 @@ func (*EventStateRead) readEventStateRes() {}
 
 // Ref: #/components/schemas/Event_TypeRead
 type EventTypeRead struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // GetID returns the value of ID.
-func (s *EventTypeRead) GetID() int {
+func (s *EventTypeRead) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -727,7 +1001,7 @@ func (s *EventTypeRead) GetName() string {
 }
 
 // SetID sets the value of ID.
-func (s *EventTypeRead) SetID(val int) {
+func (s *EventTypeRead) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -740,14 +1014,14 @@ func (*EventTypeRead) readEventTypeRes() {}
 
 // Ref: #/components/schemas/EventUpdate
 type EventUpdate struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Detail   OptString `json:"detail"`
+	Location OptString `json:"location"`
 }
 
 // GetID returns the value of ID.
-func (s *EventUpdate) GetID() int {
+func (s *EventUpdate) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -757,17 +1031,17 @@ func (s *EventUpdate) GetName() string {
 }
 
 // GetDetail returns the value of Detail.
-func (s *EventUpdate) GetDetail() string {
+func (s *EventUpdate) GetDetail() OptString {
 	return s.Detail
 }
 
 // GetLocation returns the value of Location.
-func (s *EventUpdate) GetLocation() string {
+func (s *EventUpdate) GetLocation() OptString {
 	return s.Location
 }
 
 // SetID sets the value of ID.
-func (s *EventUpdate) SetID(val int) {
+func (s *EventUpdate) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -777,12 +1051,12 @@ func (s *EventUpdate) SetName(val string) {
 }
 
 // SetDetail sets the value of Detail.
-func (s *EventUpdate) SetDetail(val string) {
+func (s *EventUpdate) SetDetail(val OptString) {
 	s.Detail = val
 }
 
 // SetLocation sets the value of Location.
-func (s *EventUpdate) SetLocation(val string) {
+func (s *EventUpdate) SetLocation(val OptString) {
 	s.Location = val
 }
 
@@ -790,21 +1064,21 @@ func (*EventUpdate) updateEventRes() {}
 
 // Ref: #/components/schemas/Event_UsersList
 type EventUsersList struct {
-	ID            int    `json:"id"`
-	Age           int    `json:"age"`
-	Name          string `json:"name"`
-	Authenticated bool   `json:"authenticated"`
-	Gmail         string `json:"gmail"`
-	IconImg       string `json:"icon_img"`
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
 }
 
 // GetID returns the value of ID.
-func (s *EventUsersList) GetID() int {
+func (s *EventUsersList) GetID() uuid.UUID {
 	return s.ID
 }
 
 // GetAge returns the value of Age.
-func (s *EventUsersList) GetAge() int {
+func (s *EventUsersList) GetAge() OptInt {
 	return s.Age
 }
 
@@ -818,23 +1092,23 @@ func (s *EventUsersList) GetAuthenticated() bool {
 	return s.Authenticated
 }
 
-// GetGmail returns the value of Gmail.
-func (s *EventUsersList) GetGmail() string {
-	return s.Gmail
+// GetMail returns the value of Mail.
+func (s *EventUsersList) GetMail() OptString {
+	return s.Mail
 }
 
-// GetIconImg returns the value of IconImg.
-func (s *EventUsersList) GetIconImg() string {
-	return s.IconImg
+// GetIcon returns the value of Icon.
+func (s *EventUsersList) GetIcon() string {
+	return s.Icon
 }
 
 // SetID sets the value of ID.
-func (s *EventUsersList) SetID(val int) {
+func (s *EventUsersList) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
 // SetAge sets the value of Age.
-func (s *EventUsersList) SetAge(val int) {
+func (s *EventUsersList) SetAge(val OptInt) {
 	s.Age = val
 }
 
@@ -848,14 +1122,14 @@ func (s *EventUsersList) SetAuthenticated(val bool) {
 	s.Authenticated = val
 }
 
-// SetGmail sets the value of Gmail.
-func (s *EventUsersList) SetGmail(val string) {
-	s.Gmail = val
+// SetMail sets the value of Mail.
+func (s *EventUsersList) SetMail(val OptString) {
+	s.Mail = val
 }
 
-// SetIconImg sets the value of IconImg.
-func (s *EventUsersList) SetIconImg(val string) {
-	s.IconImg = val
+// SetIcon sets the value of Icon.
+func (s *EventUsersList) SetIcon(val string) {
+	s.Icon = val
 }
 
 type ListEStateOKApplicationJSON []EStateList
@@ -865,6 +1139,10 @@ func (ListEStateOKApplicationJSON) listEStateRes() {}
 type ListETypeOKApplicationJSON []ETypeList
 
 func (ListETypeOKApplicationJSON) listETypeRes() {}
+
+type ListEcommentOKApplicationJSON []EcommentList
+
+func (ListEcommentOKApplicationJSON) listEcommentRes() {}
 
 type ListEventOKApplicationJSON []EventList
 
@@ -1020,6 +1298,52 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
+// NewOptUUID returns new OptUUID with value set to v.
+func NewOptUUID(v uuid.UUID) OptUUID {
+	return OptUUID{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptUUID is optional uuid.UUID.
+type OptUUID struct {
+	Value uuid.UUID
+	Set   bool
+}
+
+// IsSet returns true if OptUUID was set.
+func (o OptUUID) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptUUID) Reset() {
+	var v uuid.UUID
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptUUID) SetTo(v uuid.UUID) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptUUID) Get() (v uuid.UUID, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptUUID) Or(d uuid.UUID) uuid.UUID {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 type R400 struct {
 	Code   int    `json:"code"`
 	Status string `json:"status"`
@@ -1056,32 +1380,39 @@ func (s *R400) SetErrors(val jx.Raw) {
 	s.Errors = val
 }
 
-func (*R400) createEStateRes()    {}
-func (*R400) createETypeRes()     {}
-func (*R400) createEventRes()     {}
-func (*R400) createUserRes()      {}
-func (*R400) deleteEStateRes()    {}
-func (*R400) deleteETypeRes()     {}
-func (*R400) deleteEventRes()     {}
-func (*R400) deleteUserRes()      {}
-func (*R400) listEStateRes()      {}
-func (*R400) listETypeRes()       {}
-func (*R400) listEventRes()       {}
-func (*R400) listEventUsersRes()  {}
-func (*R400) listUserEventsRes()  {}
-func (*R400) listUserRes()        {}
-func (*R400) readEStateEventRes() {}
-func (*R400) readEStateRes()      {}
-func (*R400) readETypeEventRes()  {}
-func (*R400) readETypeRes()       {}
-func (*R400) readEventRes()       {}
-func (*R400) readEventStateRes()  {}
-func (*R400) readEventTypeRes()   {}
-func (*R400) readUserRes()        {}
-func (*R400) updateEStateRes()    {}
-func (*R400) updateETypeRes()     {}
-func (*R400) updateEventRes()     {}
-func (*R400) updateUserRes()      {}
+func (*R400) createEStateRes()      {}
+func (*R400) createETypeRes()       {}
+func (*R400) createEcommentRes()    {}
+func (*R400) createEventRes()       {}
+func (*R400) createUserRes()        {}
+func (*R400) deleteEStateRes()      {}
+func (*R400) deleteETypeRes()       {}
+func (*R400) deleteEcommentRes()    {}
+func (*R400) deleteEventRes()       {}
+func (*R400) deleteUserRes()        {}
+func (*R400) listEStateRes()        {}
+func (*R400) listETypeRes()         {}
+func (*R400) listEcommentRes()      {}
+func (*R400) listEventRes()         {}
+func (*R400) listEventUsersRes()    {}
+func (*R400) listUserEventsRes()    {}
+func (*R400) listUserRes()          {}
+func (*R400) readEStateEventRes()   {}
+func (*R400) readEStateRes()        {}
+func (*R400) readETypeEventRes()    {}
+func (*R400) readETypeRes()         {}
+func (*R400) readEcommentEventRes() {}
+func (*R400) readEcommentRes()      {}
+func (*R400) readEcommentUserRes()  {}
+func (*R400) readEventRes()         {}
+func (*R400) readEventStateRes()    {}
+func (*R400) readEventTypeRes()     {}
+func (*R400) readUserRes()          {}
+func (*R400) updateEStateRes()      {}
+func (*R400) updateETypeRes()       {}
+func (*R400) updateEcommentRes()    {}
+func (*R400) updateEventRes()       {}
+func (*R400) updateUserRes()        {}
 
 type R404 struct {
 	Code   int    `json:"code"`
@@ -1119,28 +1450,34 @@ func (s *R404) SetErrors(val jx.Raw) {
 	s.Errors = val
 }
 
-func (*R404) deleteEStateRes()    {}
-func (*R404) deleteETypeRes()     {}
-func (*R404) deleteEventRes()     {}
-func (*R404) deleteUserRes()      {}
-func (*R404) listEStateRes()      {}
-func (*R404) listETypeRes()       {}
-func (*R404) listEventRes()       {}
-func (*R404) listEventUsersRes()  {}
-func (*R404) listUserEventsRes()  {}
-func (*R404) listUserRes()        {}
-func (*R404) readEStateEventRes() {}
-func (*R404) readEStateRes()      {}
-func (*R404) readETypeEventRes()  {}
-func (*R404) readETypeRes()       {}
-func (*R404) readEventRes()       {}
-func (*R404) readEventStateRes()  {}
-func (*R404) readEventTypeRes()   {}
-func (*R404) readUserRes()        {}
-func (*R404) updateEStateRes()    {}
-func (*R404) updateETypeRes()     {}
-func (*R404) updateEventRes()     {}
-func (*R404) updateUserRes()      {}
+func (*R404) deleteEStateRes()      {}
+func (*R404) deleteETypeRes()       {}
+func (*R404) deleteEcommentRes()    {}
+func (*R404) deleteEventRes()       {}
+func (*R404) deleteUserRes()        {}
+func (*R404) listEStateRes()        {}
+func (*R404) listETypeRes()         {}
+func (*R404) listEcommentRes()      {}
+func (*R404) listEventRes()         {}
+func (*R404) listEventUsersRes()    {}
+func (*R404) listUserEventsRes()    {}
+func (*R404) listUserRes()          {}
+func (*R404) readEStateEventRes()   {}
+func (*R404) readEStateRes()        {}
+func (*R404) readETypeEventRes()    {}
+func (*R404) readETypeRes()         {}
+func (*R404) readEcommentEventRes() {}
+func (*R404) readEcommentRes()      {}
+func (*R404) readEcommentUserRes()  {}
+func (*R404) readEventRes()         {}
+func (*R404) readEventStateRes()    {}
+func (*R404) readEventTypeRes()     {}
+func (*R404) readUserRes()          {}
+func (*R404) updateEStateRes()      {}
+func (*R404) updateETypeRes()       {}
+func (*R404) updateEcommentRes()    {}
+func (*R404) updateEventRes()       {}
+func (*R404) updateUserRes()        {}
 
 type R409 struct {
 	Code   int    `json:"code"`
@@ -1178,32 +1515,39 @@ func (s *R409) SetErrors(val jx.Raw) {
 	s.Errors = val
 }
 
-func (*R409) createEStateRes()    {}
-func (*R409) createETypeRes()     {}
-func (*R409) createEventRes()     {}
-func (*R409) createUserRes()      {}
-func (*R409) deleteEStateRes()    {}
-func (*R409) deleteETypeRes()     {}
-func (*R409) deleteEventRes()     {}
-func (*R409) deleteUserRes()      {}
-func (*R409) listEStateRes()      {}
-func (*R409) listETypeRes()       {}
-func (*R409) listEventRes()       {}
-func (*R409) listEventUsersRes()  {}
-func (*R409) listUserEventsRes()  {}
-func (*R409) listUserRes()        {}
-func (*R409) readEStateEventRes() {}
-func (*R409) readEStateRes()      {}
-func (*R409) readETypeEventRes()  {}
-func (*R409) readETypeRes()       {}
-func (*R409) readEventRes()       {}
-func (*R409) readEventStateRes()  {}
-func (*R409) readEventTypeRes()   {}
-func (*R409) readUserRes()        {}
-func (*R409) updateEStateRes()    {}
-func (*R409) updateETypeRes()     {}
-func (*R409) updateEventRes()     {}
-func (*R409) updateUserRes()      {}
+func (*R409) createEStateRes()      {}
+func (*R409) createETypeRes()       {}
+func (*R409) createEcommentRes()    {}
+func (*R409) createEventRes()       {}
+func (*R409) createUserRes()        {}
+func (*R409) deleteEStateRes()      {}
+func (*R409) deleteETypeRes()       {}
+func (*R409) deleteEcommentRes()    {}
+func (*R409) deleteEventRes()       {}
+func (*R409) deleteUserRes()        {}
+func (*R409) listEStateRes()        {}
+func (*R409) listETypeRes()         {}
+func (*R409) listEcommentRes()      {}
+func (*R409) listEventRes()         {}
+func (*R409) listEventUsersRes()    {}
+func (*R409) listUserEventsRes()    {}
+func (*R409) listUserRes()          {}
+func (*R409) readEStateEventRes()   {}
+func (*R409) readEStateRes()        {}
+func (*R409) readETypeEventRes()    {}
+func (*R409) readETypeRes()         {}
+func (*R409) readEcommentEventRes() {}
+func (*R409) readEcommentRes()      {}
+func (*R409) readEcommentUserRes()  {}
+func (*R409) readEventRes()         {}
+func (*R409) readEventStateRes()    {}
+func (*R409) readEventTypeRes()     {}
+func (*R409) readUserRes()          {}
+func (*R409) updateEStateRes()      {}
+func (*R409) updateETypeRes()       {}
+func (*R409) updateEcommentRes()    {}
+func (*R409) updateEventRes()       {}
+func (*R409) updateUserRes()        {}
 
 type R500 struct {
 	Code   int    `json:"code"`
@@ -1241,36 +1585,43 @@ func (s *R500) SetErrors(val jx.Raw) {
 	s.Errors = val
 }
 
-func (*R500) createEStateRes()    {}
-func (*R500) createETypeRes()     {}
-func (*R500) createEventRes()     {}
-func (*R500) createUserRes()      {}
-func (*R500) deleteEStateRes()    {}
-func (*R500) deleteETypeRes()     {}
-func (*R500) deleteEventRes()     {}
-func (*R500) deleteUserRes()      {}
-func (*R500) listEStateRes()      {}
-func (*R500) listETypeRes()       {}
-func (*R500) listEventRes()       {}
-func (*R500) listEventUsersRes()  {}
-func (*R500) listUserEventsRes()  {}
-func (*R500) listUserRes()        {}
-func (*R500) readEStateEventRes() {}
-func (*R500) readEStateRes()      {}
-func (*R500) readETypeEventRes()  {}
-func (*R500) readETypeRes()       {}
-func (*R500) readEventRes()       {}
-func (*R500) readEventStateRes()  {}
-func (*R500) readEventTypeRes()   {}
-func (*R500) readUserRes()        {}
-func (*R500) updateEStateRes()    {}
-func (*R500) updateETypeRes()     {}
-func (*R500) updateEventRes()     {}
-func (*R500) updateUserRes()      {}
+func (*R500) createEStateRes()      {}
+func (*R500) createETypeRes()       {}
+func (*R500) createEcommentRes()    {}
+func (*R500) createEventRes()       {}
+func (*R500) createUserRes()        {}
+func (*R500) deleteEStateRes()      {}
+func (*R500) deleteETypeRes()       {}
+func (*R500) deleteEcommentRes()    {}
+func (*R500) deleteEventRes()       {}
+func (*R500) deleteUserRes()        {}
+func (*R500) listEStateRes()        {}
+func (*R500) listETypeRes()         {}
+func (*R500) listEcommentRes()      {}
+func (*R500) listEventRes()         {}
+func (*R500) listEventUsersRes()    {}
+func (*R500) listUserEventsRes()    {}
+func (*R500) listUserRes()          {}
+func (*R500) readEStateEventRes()   {}
+func (*R500) readEStateRes()        {}
+func (*R500) readETypeEventRes()    {}
+func (*R500) readETypeRes()         {}
+func (*R500) readEcommentEventRes() {}
+func (*R500) readEcommentRes()      {}
+func (*R500) readEcommentUserRes()  {}
+func (*R500) readEventRes()         {}
+func (*R500) readEventStateRes()    {}
+func (*R500) readEventTypeRes()     {}
+func (*R500) readUserRes()          {}
+func (*R500) updateEStateRes()      {}
+func (*R500) updateETypeRes()       {}
+func (*R500) updateEcommentRes()    {}
+func (*R500) updateEventRes()       {}
+func (*R500) updateUserRes()        {}
 
 type UpdateEStateReq struct {
 	Name  OptString `json:"name"`
-	Event OptInt    `json:"event"`
+	Event OptUUID   `json:"event"`
 }
 
 // GetName returns the value of Name.
@@ -1279,7 +1630,7 @@ func (s *UpdateEStateReq) GetName() OptString {
 }
 
 // GetEvent returns the value of Event.
-func (s *UpdateEStateReq) GetEvent() OptInt {
+func (s *UpdateEStateReq) GetEvent() OptUUID {
 	return s.Event
 }
 
@@ -1289,13 +1640,13 @@ func (s *UpdateEStateReq) SetName(val OptString) {
 }
 
 // SetEvent sets the value of Event.
-func (s *UpdateEStateReq) SetEvent(val OptInt) {
+func (s *UpdateEStateReq) SetEvent(val OptUUID) {
 	s.Event = val
 }
 
 type UpdateETypeReq struct {
 	Name  OptString `json:"name"`
-	Event OptInt    `json:"event"`
+	Event OptUUID   `json:"event"`
 }
 
 // GetName returns the value of Name.
@@ -1304,7 +1655,7 @@ func (s *UpdateETypeReq) GetName() OptString {
 }
 
 // GetEvent returns the value of Event.
-func (s *UpdateETypeReq) GetEvent() OptInt {
+func (s *UpdateETypeReq) GetEvent() OptUUID {
 	return s.Event
 }
 
@@ -1314,17 +1665,53 @@ func (s *UpdateETypeReq) SetName(val OptString) {
 }
 
 // SetEvent sets the value of Event.
-func (s *UpdateETypeReq) SetEvent(val OptInt) {
+func (s *UpdateETypeReq) SetEvent(val OptUUID) {
 	s.Event = val
 }
 
+type UpdateEcommentReq struct {
+	Body  OptString `json:"body"`
+	Event OptUUID   `json:"event"`
+	User  OptUUID   `json:"user"`
+}
+
+// GetBody returns the value of Body.
+func (s *UpdateEcommentReq) GetBody() OptString {
+	return s.Body
+}
+
+// GetEvent returns the value of Event.
+func (s *UpdateEcommentReq) GetEvent() OptUUID {
+	return s.Event
+}
+
+// GetUser returns the value of User.
+func (s *UpdateEcommentReq) GetUser() OptUUID {
+	return s.User
+}
+
+// SetBody sets the value of Body.
+func (s *UpdateEcommentReq) SetBody(val OptString) {
+	s.Body = val
+}
+
+// SetEvent sets the value of Event.
+func (s *UpdateEcommentReq) SetEvent(val OptUUID) {
+	s.Event = val
+}
+
+// SetUser sets the value of User.
+func (s *UpdateEcommentReq) SetUser(val OptUUID) {
+	s.User = val
+}
+
 type UpdateEventReq struct {
-	Name     OptString `json:"name"`
-	Detail   OptString `json:"detail"`
-	Location OptString `json:"location"`
-	State    OptInt    `json:"state"`
-	Type     OptInt    `json:"type"`
-	Users    []int     `json:"users"`
+	Name     OptString   `json:"name"`
+	Detail   OptString   `json:"detail"`
+	Location OptString   `json:"location"`
+	State    OptUUID     `json:"state"`
+	Type     OptUUID     `json:"type"`
+	Users    []uuid.UUID `json:"users"`
 }
 
 // GetName returns the value of Name.
@@ -1343,17 +1730,17 @@ func (s *UpdateEventReq) GetLocation() OptString {
 }
 
 // GetState returns the value of State.
-func (s *UpdateEventReq) GetState() OptInt {
+func (s *UpdateEventReq) GetState() OptUUID {
 	return s.State
 }
 
 // GetType returns the value of Type.
-func (s *UpdateEventReq) GetType() OptInt {
+func (s *UpdateEventReq) GetType() OptUUID {
 	return s.Type
 }
 
 // GetUsers returns the value of Users.
-func (s *UpdateEventReq) GetUsers() []int {
+func (s *UpdateEventReq) GetUsers() []uuid.UUID {
 	return s.Users
 }
 
@@ -1373,27 +1760,27 @@ func (s *UpdateEventReq) SetLocation(val OptString) {
 }
 
 // SetState sets the value of State.
-func (s *UpdateEventReq) SetState(val OptInt) {
+func (s *UpdateEventReq) SetState(val OptUUID) {
 	s.State = val
 }
 
 // SetType sets the value of Type.
-func (s *UpdateEventReq) SetType(val OptInt) {
+func (s *UpdateEventReq) SetType(val OptUUID) {
 	s.Type = val
 }
 
 // SetUsers sets the value of Users.
-func (s *UpdateEventReq) SetUsers(val []int) {
+func (s *UpdateEventReq) SetUsers(val []uuid.UUID) {
 	s.Users = val
 }
 
 type UpdateUserReq struct {
-	Age           OptInt    `json:"age"`
-	Name          OptString `json:"name"`
-	Authenticated OptBool   `json:"authenticated"`
-	Gmail         OptString `json:"gmail"`
-	IconImg       OptString `json:"icon_img"`
-	Events        []int     `json:"events"`
+	Age           OptInt      `json:"age"`
+	Name          OptString   `json:"name"`
+	Authenticated OptBool     `json:"authenticated"`
+	Mail          OptString   `json:"mail"`
+	Icon          OptString   `json:"icon"`
+	Events        []uuid.UUID `json:"events"`
 }
 
 // GetAge returns the value of Age.
@@ -1411,18 +1798,18 @@ func (s *UpdateUserReq) GetAuthenticated() OptBool {
 	return s.Authenticated
 }
 
-// GetGmail returns the value of Gmail.
-func (s *UpdateUserReq) GetGmail() OptString {
-	return s.Gmail
+// GetMail returns the value of Mail.
+func (s *UpdateUserReq) GetMail() OptString {
+	return s.Mail
 }
 
-// GetIconImg returns the value of IconImg.
-func (s *UpdateUserReq) GetIconImg() OptString {
-	return s.IconImg
+// GetIcon returns the value of Icon.
+func (s *UpdateUserReq) GetIcon() OptString {
+	return s.Icon
 }
 
 // GetEvents returns the value of Events.
-func (s *UpdateUserReq) GetEvents() []int {
+func (s *UpdateUserReq) GetEvents() []uuid.UUID {
 	return s.Events
 }
 
@@ -1441,38 +1828,38 @@ func (s *UpdateUserReq) SetAuthenticated(val OptBool) {
 	s.Authenticated = val
 }
 
-// SetGmail sets the value of Gmail.
-func (s *UpdateUserReq) SetGmail(val OptString) {
-	s.Gmail = val
+// SetMail sets the value of Mail.
+func (s *UpdateUserReq) SetMail(val OptString) {
+	s.Mail = val
 }
 
-// SetIconImg sets the value of IconImg.
-func (s *UpdateUserReq) SetIconImg(val OptString) {
-	s.IconImg = val
+// SetIcon sets the value of Icon.
+func (s *UpdateUserReq) SetIcon(val OptString) {
+	s.Icon = val
 }
 
 // SetEvents sets the value of Events.
-func (s *UpdateUserReq) SetEvents(val []int) {
+func (s *UpdateUserReq) SetEvents(val []uuid.UUID) {
 	s.Events = val
 }
 
 // Ref: #/components/schemas/UserCreate
 type UserCreate struct {
-	ID            int    `json:"id"`
-	Age           int    `json:"age"`
-	Name          string `json:"name"`
-	Authenticated bool   `json:"authenticated"`
-	Gmail         string `json:"gmail"`
-	IconImg       string `json:"icon_img"`
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
 }
 
 // GetID returns the value of ID.
-func (s *UserCreate) GetID() int {
+func (s *UserCreate) GetID() uuid.UUID {
 	return s.ID
 }
 
 // GetAge returns the value of Age.
-func (s *UserCreate) GetAge() int {
+func (s *UserCreate) GetAge() OptInt {
 	return s.Age
 }
 
@@ -1486,23 +1873,23 @@ func (s *UserCreate) GetAuthenticated() bool {
 	return s.Authenticated
 }
 
-// GetGmail returns the value of Gmail.
-func (s *UserCreate) GetGmail() string {
-	return s.Gmail
+// GetMail returns the value of Mail.
+func (s *UserCreate) GetMail() OptString {
+	return s.Mail
 }
 
-// GetIconImg returns the value of IconImg.
-func (s *UserCreate) GetIconImg() string {
-	return s.IconImg
+// GetIcon returns the value of Icon.
+func (s *UserCreate) GetIcon() string {
+	return s.Icon
 }
 
 // SetID sets the value of ID.
-func (s *UserCreate) SetID(val int) {
+func (s *UserCreate) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
 // SetAge sets the value of Age.
-func (s *UserCreate) SetAge(val int) {
+func (s *UserCreate) SetAge(val OptInt) {
 	s.Age = val
 }
 
@@ -1516,28 +1903,28 @@ func (s *UserCreate) SetAuthenticated(val bool) {
 	s.Authenticated = val
 }
 
-// SetGmail sets the value of Gmail.
-func (s *UserCreate) SetGmail(val string) {
-	s.Gmail = val
+// SetMail sets the value of Mail.
+func (s *UserCreate) SetMail(val OptString) {
+	s.Mail = val
 }
 
-// SetIconImg sets the value of IconImg.
-func (s *UserCreate) SetIconImg(val string) {
-	s.IconImg = val
+// SetIcon sets the value of Icon.
+func (s *UserCreate) SetIcon(val string) {
+	s.Icon = val
 }
 
 func (*UserCreate) createUserRes() {}
 
 // Ref: #/components/schemas/User_EventsList
 type UserEventsList struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Detail   OptString `json:"detail"`
+	Location OptString `json:"location"`
 }
 
 // GetID returns the value of ID.
-func (s *UserEventsList) GetID() int {
+func (s *UserEventsList) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -1547,17 +1934,17 @@ func (s *UserEventsList) GetName() string {
 }
 
 // GetDetail returns the value of Detail.
-func (s *UserEventsList) GetDetail() string {
+func (s *UserEventsList) GetDetail() OptString {
 	return s.Detail
 }
 
 // GetLocation returns the value of Location.
-func (s *UserEventsList) GetLocation() string {
+func (s *UserEventsList) GetLocation() OptString {
 	return s.Location
 }
 
 // SetID sets the value of ID.
-func (s *UserEventsList) SetID(val int) {
+func (s *UserEventsList) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -1567,32 +1954,32 @@ func (s *UserEventsList) SetName(val string) {
 }
 
 // SetDetail sets the value of Detail.
-func (s *UserEventsList) SetDetail(val string) {
+func (s *UserEventsList) SetDetail(val OptString) {
 	s.Detail = val
 }
 
 // SetLocation sets the value of Location.
-func (s *UserEventsList) SetLocation(val string) {
+func (s *UserEventsList) SetLocation(val OptString) {
 	s.Location = val
 }
 
 // Ref: #/components/schemas/UserList
 type UserList struct {
-	ID            int    `json:"id"`
-	Age           int    `json:"age"`
-	Name          string `json:"name"`
-	Authenticated bool   `json:"authenticated"`
-	Gmail         string `json:"gmail"`
-	IconImg       string `json:"icon_img"`
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
 }
 
 // GetID returns the value of ID.
-func (s *UserList) GetID() int {
+func (s *UserList) GetID() uuid.UUID {
 	return s.ID
 }
 
 // GetAge returns the value of Age.
-func (s *UserList) GetAge() int {
+func (s *UserList) GetAge() OptInt {
 	return s.Age
 }
 
@@ -1606,23 +1993,23 @@ func (s *UserList) GetAuthenticated() bool {
 	return s.Authenticated
 }
 
-// GetGmail returns the value of Gmail.
-func (s *UserList) GetGmail() string {
-	return s.Gmail
+// GetMail returns the value of Mail.
+func (s *UserList) GetMail() OptString {
+	return s.Mail
 }
 
-// GetIconImg returns the value of IconImg.
-func (s *UserList) GetIconImg() string {
-	return s.IconImg
+// GetIcon returns the value of Icon.
+func (s *UserList) GetIcon() string {
+	return s.Icon
 }
 
 // SetID sets the value of ID.
-func (s *UserList) SetID(val int) {
+func (s *UserList) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
 // SetAge sets the value of Age.
-func (s *UserList) SetAge(val int) {
+func (s *UserList) SetAge(val OptInt) {
 	s.Age = val
 }
 
@@ -1636,33 +2023,33 @@ func (s *UserList) SetAuthenticated(val bool) {
 	s.Authenticated = val
 }
 
-// SetGmail sets the value of Gmail.
-func (s *UserList) SetGmail(val string) {
-	s.Gmail = val
+// SetMail sets the value of Mail.
+func (s *UserList) SetMail(val OptString) {
+	s.Mail = val
 }
 
-// SetIconImg sets the value of IconImg.
-func (s *UserList) SetIconImg(val string) {
-	s.IconImg = val
+// SetIcon sets the value of Icon.
+func (s *UserList) SetIcon(val string) {
+	s.Icon = val
 }
 
 // Ref: #/components/schemas/UserRead
 type UserRead struct {
-	ID            int    `json:"id"`
-	Age           int    `json:"age"`
-	Name          string `json:"name"`
-	Authenticated bool   `json:"authenticated"`
-	Gmail         string `json:"gmail"`
-	IconImg       string `json:"icon_img"`
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
 }
 
 // GetID returns the value of ID.
-func (s *UserRead) GetID() int {
+func (s *UserRead) GetID() uuid.UUID {
 	return s.ID
 }
 
 // GetAge returns the value of Age.
-func (s *UserRead) GetAge() int {
+func (s *UserRead) GetAge() OptInt {
 	return s.Age
 }
 
@@ -1676,23 +2063,23 @@ func (s *UserRead) GetAuthenticated() bool {
 	return s.Authenticated
 }
 
-// GetGmail returns the value of Gmail.
-func (s *UserRead) GetGmail() string {
-	return s.Gmail
+// GetMail returns the value of Mail.
+func (s *UserRead) GetMail() OptString {
+	return s.Mail
 }
 
-// GetIconImg returns the value of IconImg.
-func (s *UserRead) GetIconImg() string {
-	return s.IconImg
+// GetIcon returns the value of Icon.
+func (s *UserRead) GetIcon() string {
+	return s.Icon
 }
 
 // SetID sets the value of ID.
-func (s *UserRead) SetID(val int) {
+func (s *UserRead) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
 // SetAge sets the value of Age.
-func (s *UserRead) SetAge(val int) {
+func (s *UserRead) SetAge(val OptInt) {
 	s.Age = val
 }
 
@@ -1706,35 +2093,35 @@ func (s *UserRead) SetAuthenticated(val bool) {
 	s.Authenticated = val
 }
 
-// SetGmail sets the value of Gmail.
-func (s *UserRead) SetGmail(val string) {
-	s.Gmail = val
+// SetMail sets the value of Mail.
+func (s *UserRead) SetMail(val OptString) {
+	s.Mail = val
 }
 
-// SetIconImg sets the value of IconImg.
-func (s *UserRead) SetIconImg(val string) {
-	s.IconImg = val
+// SetIcon sets the value of Icon.
+func (s *UserRead) SetIcon(val string) {
+	s.Icon = val
 }
 
 func (*UserRead) readUserRes() {}
 
 // Ref: #/components/schemas/UserUpdate
 type UserUpdate struct {
-	ID            int    `json:"id"`
-	Age           int    `json:"age"`
-	Name          string `json:"name"`
-	Authenticated bool   `json:"authenticated"`
-	Gmail         string `json:"gmail"`
-	IconImg       string `json:"icon_img"`
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
 }
 
 // GetID returns the value of ID.
-func (s *UserUpdate) GetID() int {
+func (s *UserUpdate) GetID() uuid.UUID {
 	return s.ID
 }
 
 // GetAge returns the value of Age.
-func (s *UserUpdate) GetAge() int {
+func (s *UserUpdate) GetAge() OptInt {
 	return s.Age
 }
 
@@ -1748,23 +2135,23 @@ func (s *UserUpdate) GetAuthenticated() bool {
 	return s.Authenticated
 }
 
-// GetGmail returns the value of Gmail.
-func (s *UserUpdate) GetGmail() string {
-	return s.Gmail
+// GetMail returns the value of Mail.
+func (s *UserUpdate) GetMail() OptString {
+	return s.Mail
 }
 
-// GetIconImg returns the value of IconImg.
-func (s *UserUpdate) GetIconImg() string {
-	return s.IconImg
+// GetIcon returns the value of Icon.
+func (s *UserUpdate) GetIcon() string {
+	return s.Icon
 }
 
 // SetID sets the value of ID.
-func (s *UserUpdate) SetID(val int) {
+func (s *UserUpdate) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
 // SetAge sets the value of Age.
-func (s *UserUpdate) SetAge(val int) {
+func (s *UserUpdate) SetAge(val OptInt) {
 	s.Age = val
 }
 
@@ -1778,14 +2165,14 @@ func (s *UserUpdate) SetAuthenticated(val bool) {
 	s.Authenticated = val
 }
 
-// SetGmail sets the value of Gmail.
-func (s *UserUpdate) SetGmail(val string) {
-	s.Gmail = val
+// SetMail sets the value of Mail.
+func (s *UserUpdate) SetMail(val OptString) {
+	s.Mail = val
 }
 
-// SetIconImg sets the value of IconImg.
-func (s *UserUpdate) SetIconImg(val string) {
-	s.IconImg = val
+// SetIcon sets the value of Icon.
+func (s *UserUpdate) SetIcon(val string) {
+	s.Icon = val
 }
 
 func (*UserUpdate) updateUserRes() {}

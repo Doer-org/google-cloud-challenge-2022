@@ -31,6 +31,15 @@ func (UnimplementedHandler) CreateEType(ctx context.Context, req *CreateETypeReq
 	return r, ht.ErrNotImplemented
 }
 
+// CreateEcomment implements createEcomment operation.
+//
+// Creates a new Ecomment and persists it to storage.
+//
+// POST /ecomments
+func (UnimplementedHandler) CreateEcomment(ctx context.Context, req *CreateEcommentReq) (r CreateEcommentRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // CreateEvent implements createEvent operation.
 //
 // Creates a new Event and persists it to storage.
@@ -67,6 +76,15 @@ func (UnimplementedHandler) DeleteEType(ctx context.Context, params DeleteETypeP
 	return r, ht.ErrNotImplemented
 }
 
+// DeleteEcomment implements deleteEcomment operation.
+//
+// Deletes the Ecomment with the requested ID.
+//
+// DELETE /ecomments/{id}
+func (UnimplementedHandler) DeleteEcomment(ctx context.Context, params DeleteEcommentParams) (r DeleteEcommentRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // DeleteEvent implements deleteEvent operation.
 //
 // Deletes the Event with the requested ID.
@@ -100,6 +118,15 @@ func (UnimplementedHandler) ListEState(ctx context.Context, params ListEStatePar
 //
 // GET /e-types
 func (UnimplementedHandler) ListEType(ctx context.Context, params ListETypeParams) (r ListETypeRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ListEcomment implements listEcomment operation.
+//
+// List Ecomments.
+//
+// GET /ecomments
+func (UnimplementedHandler) ListEcomment(ctx context.Context, params ListEcommentParams) (r ListEcommentRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -175,6 +202,33 @@ func (UnimplementedHandler) ReadETypeEvent(ctx context.Context, params ReadEType
 	return r, ht.ErrNotImplemented
 }
 
+// ReadEcomment implements readEcomment operation.
+//
+// Finds the Ecomment with the requested ID and returns it.
+//
+// GET /ecomments/{id}
+func (UnimplementedHandler) ReadEcomment(ctx context.Context, params ReadEcommentParams) (r ReadEcommentRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ReadEcommentEvent implements readEcommentEvent operation.
+//
+// Find the attached Event of the Ecomment with the given ID.
+//
+// GET /ecomments/{id}/event
+func (UnimplementedHandler) ReadEcommentEvent(ctx context.Context, params ReadEcommentEventParams) (r ReadEcommentEventRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ReadEcommentUser implements readEcommentUser operation.
+//
+// Find the attached User of the Ecomment with the given ID.
+//
+// GET /ecomments/{id}/user
+func (UnimplementedHandler) ReadEcommentUser(ctx context.Context, params ReadEcommentUserParams) (r ReadEcommentUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ReadEvent implements readEvent operation.
 //
 // Finds the Event with the requested ID and returns it.
@@ -226,6 +280,15 @@ func (UnimplementedHandler) UpdateEState(ctx context.Context, req *UpdateEStateR
 //
 // PATCH /e-types/{id}
 func (UnimplementedHandler) UpdateEType(ctx context.Context, req *UpdateETypeReq, params UpdateETypeParams) (r UpdateETypeRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// UpdateEcomment implements updateEcomment operation.
+//
+// Updates a Ecomment and persists changes to storage.
+//
+// PATCH /ecomments/{id}
+func (UnimplementedHandler) UpdateEcomment(ctx context.Context, req *UpdateEcommentReq, params UpdateEcommentParams) (r UpdateEcommentRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

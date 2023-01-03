@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
+	"github.com/google/uuid"
 )
 
 // ETypeCreate is the builder for creating a EType entity.
@@ -26,8 +27,22 @@ func (ec *ETypeCreate) SetName(s string) *ETypeCreate {
 	return ec
 }
 
+// SetID sets the "id" field.
+func (ec *ETypeCreate) SetID(u uuid.UUID) *ETypeCreate {
+	ec.mutation.SetID(u)
+	return ec
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ec *ETypeCreate) SetNillableID(u *uuid.UUID) *ETypeCreate {
+	if u != nil {
+		ec.SetID(*u)
+	}
+	return ec
+}
+
 // SetEventID sets the "event" edge to the Event entity by ID.
-func (ec *ETypeCreate) SetEventID(id int) *ETypeCreate {
+func (ec *ETypeCreate) SetEventID(id uuid.UUID) *ETypeCreate {
 	ec.mutation.SetEventID(id)
 	return ec
 }
@@ -48,6 +63,7 @@ func (ec *ETypeCreate) Save(ctx context.Context) (*EType, error) {
 		err  error
 		node *EType
 	)
+	ec.defaults()
 	if len(ec.hooks) == 0 {
 		if err = ec.check(); err != nil {
 			return nil, err
@@ -111,6 +127,14 @@ func (ec *ETypeCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ec *ETypeCreate) defaults() {
+	if _, ok := ec.mutation.ID(); !ok {
+		v := etype.DefaultID()
+		ec.mutation.SetID(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ec *ETypeCreate) check() error {
 	if _, ok := ec.mutation.Name(); !ok {
@@ -135,8 +159,13 @@ func (ec *ETypeCreate) sqlSave(ctx context.Context) (*EType, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	return _node, nil
 }
 
@@ -146,11 +175,15 @@ func (ec *ETypeCreate) createSpec() (*EType, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: etype.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: etype.FieldID,
 			},
 		}
 	)
+	if id, ok := ec.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
 	if value, ok := ec.mutation.Name(); ok {
 		_spec.SetField(etype.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -164,7 +197,7 @@ func (ec *ETypeCreate) createSpec() (*EType, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -192,6 +225,7 @@ func (ecb *ETypeCreateBulk) Save(ctx context.Context) ([]*EType, error) {
 	for i := range ecb.builders {
 		func(i int, root context.Context) {
 			builder := ecb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ETypeMutation)
 				if !ok {
@@ -218,10 +252,6 @@ func (ecb *ETypeCreateBulk) Save(ctx context.Context) ([]*EType, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

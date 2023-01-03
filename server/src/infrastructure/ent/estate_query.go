@@ -13,6 +13,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // EStateQuery is the builder for querying EState entities.
@@ -108,8 +109,8 @@ func (eq *EStateQuery) FirstX(ctx context.Context) *EState {
 
 // FirstID returns the first EState ID from the query.
 // Returns a *NotFoundError when no EState ID was found.
-func (eq *EStateQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *EStateQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = eq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -121,7 +122,7 @@ func (eq *EStateQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (eq *EStateQuery) FirstIDX(ctx context.Context) int {
+func (eq *EStateQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := eq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -159,8 +160,8 @@ func (eq *EStateQuery) OnlyX(ctx context.Context) *EState {
 // OnlyID is like Only, but returns the only EState ID in the query.
 // Returns a *NotSingularError when more than one EState ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (eq *EStateQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *EStateQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = eq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -176,7 +177,7 @@ func (eq *EStateQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (eq *EStateQuery) OnlyIDX(ctx context.Context) int {
+func (eq *EStateQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := eq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -202,8 +203,8 @@ func (eq *EStateQuery) AllX(ctx context.Context) []*EState {
 }
 
 // IDs executes the query and returns a list of EState IDs.
-func (eq *EStateQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (eq *EStateQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := eq.Select(estate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -211,7 +212,7 @@ func (eq *EStateQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (eq *EStateQuery) IDsX(ctx context.Context) []int {
+func (eq *EStateQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := eq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -396,8 +397,8 @@ func (eq *EStateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EStat
 }
 
 func (eq *EStateQuery) loadEvent(ctx context.Context, query *EventQuery, nodes []*EState, init func(*EState), assign func(*EState, *Event)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*EState)
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*EState)
 	for i := range nodes {
 		if nodes[i].event_state == nil {
 			continue
@@ -451,7 +452,7 @@ func (eq *EStateQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   estate.Table,
 			Columns: estate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: estate.FieldID,
 			},
 		},

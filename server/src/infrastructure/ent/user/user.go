@@ -2,6 +2,10 @@
 
 package user
 
+import (
+	"github.com/google/uuid"
+)
+
 const (
 	// Label holds the string label denoting the user type in the database.
 	Label = "user"
@@ -13,10 +17,10 @@ const (
 	FieldName = "name"
 	// FieldAuthenticated holds the string denoting the authenticated field in the database.
 	FieldAuthenticated = "authenticated"
-	// FieldGmail holds the string denoting the gmail field in the database.
-	FieldGmail = "gmail"
-	// FieldIconImg holds the string denoting the icon_img field in the database.
-	FieldIconImg = "icon_img"
+	// FieldMail holds the string denoting the mail field in the database.
+	FieldMail = "mail"
+	// FieldIcon holds the string denoting the icon field in the database.
+	FieldIcon = "icon"
 	// EdgeEvents holds the string denoting the events edge name in mutations.
 	EdgeEvents = "events"
 	// Table holds the table name of the user in the database.
@@ -34,8 +38,8 @@ var Columns = []string{
 	FieldAge,
 	FieldName,
 	FieldAuthenticated,
-	FieldGmail,
-	FieldIconImg,
+	FieldMail,
+	FieldIcon,
 }
 
 var (
@@ -57,14 +61,14 @@ func ValidColumn(column string) bool {
 var (
 	// AgeValidator is a validator for the "age" field. It is called by the builders before save.
 	AgeValidator func(int) error
-	// DefaultName holds the default value on creation for the "name" field.
-	DefaultName string
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// DefaultAuthenticated holds the default value on creation for the "authenticated" field.
 	DefaultAuthenticated bool
-	// GmailValidator is a validator for the "gmail" field. It is called by the builders before save.
-	GmailValidator func(string) error
-	// IconImgValidator is a validator for the "icon_img" field. It is called by the builders before save.
-	IconImgValidator func(string) error
+	// MailValidator is a validator for the "mail" field. It is called by the builders before save.
+	MailValidator func(string) error
+	// IconValidator is a validator for the "icon" field. It is called by the builders before save.
+	IconValidator func(string) error
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )

@@ -9,19 +9,20 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
+	"github.com/google/uuid"
 )
 
 // EState is the model entity for the EState schema.
 type EState struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EStateQuery when eager-loading is set.
 	Edges       EStateEdges `json:"edges"`
-	event_state *int
+	event_state *uuid.UUID
 }
 
 // EStateEdges holds the relations/edges for other nodes in the graph.
@@ -51,12 +52,12 @@ func (*EState) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case estate.FieldID:
-			values[i] = new(sql.NullInt64)
 		case estate.FieldName:
 			values[i] = new(sql.NullString)
+		case estate.FieldID:
+			values[i] = new(uuid.UUID)
 		case estate.ForeignKeys[0]: // event_state
-			values[i] = new(sql.NullInt64)
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type EState", columns[i])
 		}
@@ -73,11 +74,11 @@ func (e *EState) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case estate.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				e.ID = *value
 			}
-			e.ID = int(value.Int64)
 		case estate.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -85,11 +86,11 @@ func (e *EState) assignValues(columns []string, values []any) error {
 				e.Name = value.String
 			}
 		case estate.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field event_state", value)
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field event_state", values[i])
 			} else if value.Valid {
-				e.event_state = new(int)
-				*e.event_state = int(value.Int64)
+				e.event_state = new(uuid.UUID)
+				*e.event_state = *value.S.(*uuid.UUID)
 			}
 		}
 	}

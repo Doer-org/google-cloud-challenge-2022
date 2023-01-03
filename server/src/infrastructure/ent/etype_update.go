@@ -13,6 +13,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // ETypeUpdate is the builder for updating EType entities.
@@ -35,7 +36,7 @@ func (eu *ETypeUpdate) SetName(s string) *ETypeUpdate {
 }
 
 // SetEventID sets the "event" edge to the Event entity by ID.
-func (eu *ETypeUpdate) SetEventID(id int) *ETypeUpdate {
+func (eu *ETypeUpdate) SetEventID(id uuid.UUID) *ETypeUpdate {
 	eu.mutation.SetEventID(id)
 	return eu
 }
@@ -135,7 +136,7 @@ func (eu *ETypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   etype.Table,
 			Columns: etype.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: etype.FieldID,
 			},
 		},
@@ -159,7 +160,7 @@ func (eu *ETypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -175,7 +176,7 @@ func (eu *ETypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -211,7 +212,7 @@ func (euo *ETypeUpdateOne) SetName(s string) *ETypeUpdateOne {
 }
 
 // SetEventID sets the "event" edge to the Event entity by ID.
-func (euo *ETypeUpdateOne) SetEventID(id int) *ETypeUpdateOne {
+func (euo *ETypeUpdateOne) SetEventID(id uuid.UUID) *ETypeUpdateOne {
 	euo.mutation.SetEventID(id)
 	return euo
 }
@@ -324,7 +325,7 @@ func (euo *ETypeUpdateOne) sqlSave(ctx context.Context) (_node *EType, err error
 			Table:   etype.Table,
 			Columns: etype.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: etype.FieldID,
 			},
 		},
@@ -365,7 +366,7 @@ func (euo *ETypeUpdateOne) sqlSave(ctx context.Context) (_node *EType, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -381,7 +382,7 @@ func (euo *ETypeUpdateOne) sqlSave(ctx context.Context) (_node *EType, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},

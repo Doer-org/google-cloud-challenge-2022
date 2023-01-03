@@ -18,6 +18,12 @@ func (s ListETypeOKApplicationJSON) Validate() error {
 	}
 	return nil
 }
+func (s ListEcommentOKApplicationJSON) Validate() error {
+	if s == nil {
+		return errors.New("nil is invalid value")
+	}
+	return nil
+}
 func (s ListEventOKApplicationJSON) Validate() error {
 	if s == nil {
 		return errors.New("nil is invalid value")

@@ -3,11 +3,13 @@
 package ent
 
 import (
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/schema"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
+	"github.com/google/uuid"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -17,21 +19,37 @@ func init() {
 	estateFields := schema.EState{}.Fields()
 	_ = estateFields
 	// estateDescName is the schema descriptor for name field.
-	estateDescName := estateFields[0].Descriptor()
+	estateDescName := estateFields[1].Descriptor()
 	// estate.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	estate.NameValidator = estateDescName.Validators[0].(func(string) error)
+	// estateDescID is the schema descriptor for id field.
+	estateDescID := estateFields[0].Descriptor()
+	// estate.DefaultID holds the default value on creation for the id field.
+	estate.DefaultID = estateDescID.Default.(func() uuid.UUID)
 	etypeFields := schema.EType{}.Fields()
 	_ = etypeFields
 	// etypeDescName is the schema descriptor for name field.
-	etypeDescName := etypeFields[0].Descriptor()
+	etypeDescName := etypeFields[1].Descriptor()
 	// etype.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	etype.NameValidator = etypeDescName.Validators[0].(func(string) error)
+	// etypeDescID is the schema descriptor for id field.
+	etypeDescID := etypeFields[0].Descriptor()
+	// etype.DefaultID holds the default value on creation for the id field.
+	etype.DefaultID = etypeDescID.Default.(func() uuid.UUID)
+	ecommentFields := schema.Ecomment{}.Fields()
+	_ = ecommentFields
+	// ecommentDescBody is the schema descriptor for body field.
+	ecommentDescBody := ecommentFields[1].Descriptor()
+	// ecomment.BodyValidator is a validator for the "body" field. It is called by the builders before save.
+	ecomment.BodyValidator = ecommentDescBody.Validators[0].(func(string) error)
+	// ecommentDescID is the schema descriptor for id field.
+	ecommentDescID := ecommentFields[0].Descriptor()
+	// ecomment.DefaultID holds the default value on creation for the id field.
+	ecomment.DefaultID = ecommentDescID.Default.(func() uuid.UUID)
 	eventFields := schema.Event{}.Fields()
 	_ = eventFields
 	// eventDescName is the schema descriptor for name field.
-	eventDescName := eventFields[0].Descriptor()
-	// event.DefaultName holds the default value on creation for the name field.
-	event.DefaultName = eventDescName.Default.(string)
+	eventDescName := eventFields[1].Descriptor()
 	// event.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	event.NameValidator = func() func(string) error {
 		validators := eventDescName.Validators
@@ -49,17 +67,21 @@ func init() {
 		}
 	}()
 	// eventDescDetail is the schema descriptor for detail field.
-	eventDescDetail := eventFields[1].Descriptor()
+	eventDescDetail := eventFields[2].Descriptor()
 	// event.DetailValidator is a validator for the "detail" field. It is called by the builders before save.
 	event.DetailValidator = eventDescDetail.Validators[0].(func(string) error)
 	// eventDescLocation is the schema descriptor for location field.
-	eventDescLocation := eventFields[2].Descriptor()
+	eventDescLocation := eventFields[3].Descriptor()
 	// event.LocationValidator is a validator for the "location" field. It is called by the builders before save.
 	event.LocationValidator = eventDescLocation.Validators[0].(func(string) error)
+	// eventDescID is the schema descriptor for id field.
+	eventDescID := eventFields[0].Descriptor()
+	// event.DefaultID holds the default value on creation for the id field.
+	event.DefaultID = eventDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescAge is the schema descriptor for age field.
-	userDescAge := userFields[0].Descriptor()
+	userDescAge := userFields[1].Descriptor()
 	// user.AgeValidator is a validator for the "age" field. It is called by the builders before save.
 	user.AgeValidator = func() func(int) error {
 		validators := userDescAge.Validators
@@ -77,21 +99,51 @@ func init() {
 		}
 	}()
 	// userDescName is the schema descriptor for name field.
-	userDescName := userFields[1].Descriptor()
-	// user.DefaultName holds the default value on creation for the name field.
-	user.DefaultName = userDescName.Default.(string)
+	userDescName := userFields[2].Descriptor()
 	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	user.NameValidator = userDescName.Validators[0].(func(string) error)
+	user.NameValidator = func() func(string) error {
+		validators := userDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// userDescAuthenticated is the schema descriptor for authenticated field.
-	userDescAuthenticated := userFields[2].Descriptor()
+	userDescAuthenticated := userFields[3].Descriptor()
 	// user.DefaultAuthenticated holds the default value on creation for the authenticated field.
 	user.DefaultAuthenticated = userDescAuthenticated.Default.(bool)
-	// userDescGmail is the schema descriptor for gmail field.
-	userDescGmail := userFields[3].Descriptor()
-	// user.GmailValidator is a validator for the "gmail" field. It is called by the builders before save.
-	user.GmailValidator = userDescGmail.Validators[0].(func(string) error)
-	// userDescIconImg is the schema descriptor for icon_img field.
-	userDescIconImg := userFields[4].Descriptor()
-	// user.IconImgValidator is a validator for the "icon_img" field. It is called by the builders before save.
-	user.IconImgValidator = userDescIconImg.Validators[0].(func(string) error)
+	// userDescMail is the schema descriptor for mail field.
+	userDescMail := userFields[4].Descriptor()
+	// user.MailValidator is a validator for the "mail" field. It is called by the builders before save.
+	user.MailValidator = userDescMail.Validators[0].(func(string) error)
+	// userDescIcon is the schema descriptor for icon field.
+	userDescIcon := userFields[5].Descriptor()
+	// user.IconValidator is a validator for the "icon" field. It is called by the builders before save.
+	user.IconValidator = func() func(string) error {
+		validators := userDescIcon.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(icon string) error {
+			for _, fn := range fns {
+				if err := fn(icon); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescID is the schema descriptor for id field.
+	userDescID := userFields[0].Descriptor()
+	// user.DefaultID holds the default value on creation for the id field.
+	user.DefaultID = userDescID.Default.(func() uuid.UUID)
 }

@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
@@ -419,13 +420,246 @@ func (h *OgentHandler) ReadETypeEvent(ctx context.Context, params ReadETypeEvent
 	return NewETypeEventRead(e), nil
 }
 
+// CreateEcomment handles POST /ecomments requests.
+func (h *OgentHandler) CreateEcomment(ctx context.Context, req CreateEcommentReq) (CreateEcommentRes, error) {
+	b := h.client.Ecomment.Create()
+	// Add all fields.
+	b.SetBody(req.Body)
+	// Add all edges.
+	if v, ok := req.Event.Get(); ok {
+		b.SetEventID(v)
+	}
+	if v, ok := req.User.Get(); ok {
+		b.SetUserID(v)
+	}
+	// Persist to storage.
+	e, err := b.Save(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	// Reload the entity to attach all eager-loaded edges.
+	q := h.client.Ecomment.Query().Where(ecomment.ID(e.ID))
+	e, err = q.Only(ctx)
+	if err != nil {
+		// This should never happen.
+		return nil, err
+	}
+	return NewEcommentCreate(e), nil
+}
+
+// ReadEcomment handles GET /ecomments/{id} requests.
+func (h *OgentHandler) ReadEcomment(ctx context.Context, params ReadEcommentParams) (ReadEcommentRes, error) {
+	q := h.client.Ecomment.Query().Where(ecomment.IDEQ(params.ID))
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewEcommentRead(e), nil
+}
+
+// UpdateEcomment handles PATCH /ecomments/{id} requests.
+func (h *OgentHandler) UpdateEcomment(ctx context.Context, req UpdateEcommentReq, params UpdateEcommentParams) (UpdateEcommentRes, error) {
+	b := h.client.Ecomment.UpdateOneID(params.ID)
+	// Add all fields.
+	if v, ok := req.Body.Get(); ok {
+		b.SetBody(v)
+	}
+	// Add all edges.
+	if v, ok := req.Event.Get(); ok {
+		b.SetEventID(v)
+	}
+	if v, ok := req.User.Get(); ok {
+		b.SetUserID(v)
+	}
+	// Persist to storage.
+	e, err := b.Save(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	// Reload the entity to attach all eager-loaded edges.
+	q := h.client.Ecomment.Query().Where(ecomment.ID(e.ID))
+	e, err = q.Only(ctx)
+	if err != nil {
+		// This should never happen.
+		return nil, err
+	}
+	return NewEcommentUpdate(e), nil
+}
+
+// DeleteEcomment handles DELETE /ecomments/{id} requests.
+func (h *OgentHandler) DeleteEcomment(ctx context.Context, params DeleteEcommentParams) (DeleteEcommentRes, error) {
+	err := h.client.Ecomment.DeleteOneID(params.ID).Exec(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return new(DeleteEcommentNoContent), nil
+
+}
+
+// ListEcomment handles GET /ecomments requests.
+func (h *OgentHandler) ListEcomment(ctx context.Context, params ListEcommentParams) (ListEcommentRes, error) {
+	q := h.client.Ecomment.Query()
+	page := 1
+	if v, ok := params.Page.Get(); ok {
+		page = v
+	}
+	itemsPerPage := 30
+	if v, ok := params.ItemsPerPage.Get(); ok {
+		itemsPerPage = v
+	}
+	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+
+	es, err := q.All(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	r := NewEcommentLists(es)
+	return (*ListEcommentOKApplicationJSON)(&r), nil
+}
+
+// ReadEcommentEvent handles GET /ecomments/{id}/event requests.
+func (h *OgentHandler) ReadEcommentEvent(ctx context.Context, params ReadEcommentEventParams) (ReadEcommentEventRes, error) {
+	q := h.client.Ecomment.Query().Where(ecomment.IDEQ(params.ID)).QueryEvent()
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewEcommentEventRead(e), nil
+}
+
+// ReadEcommentUser handles GET /ecomments/{id}/user requests.
+func (h *OgentHandler) ReadEcommentUser(ctx context.Context, params ReadEcommentUserParams) (ReadEcommentUserRes, error) {
+	q := h.client.Ecomment.Query().Where(ecomment.IDEQ(params.ID)).QueryUser()
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewEcommentUserRead(e), nil
+}
+
 // CreateEvent handles POST /events requests.
 func (h *OgentHandler) CreateEvent(ctx context.Context, req CreateEventReq) (CreateEventRes, error) {
 	b := h.client.Event.Create()
 	// Add all fields.
 	b.SetName(req.Name)
-	b.SetDetail(req.Detail)
-	b.SetLocation(req.Location)
+	if v, ok := req.Detail.Get(); ok {
+		b.SetDetail(v)
+	}
+	if v, ok := req.Location.Get(); ok {
+		b.SetLocation(v)
+	}
 	// Add all edges.
 	if v, ok := req.State.Get(); ok {
 		b.SetStateID(v)
@@ -698,11 +932,15 @@ func (h *OgentHandler) ListEventUsers(ctx context.Context, params ListEventUsers
 func (h *OgentHandler) CreateUser(ctx context.Context, req CreateUserReq) (CreateUserRes, error) {
 	b := h.client.User.Create()
 	// Add all fields.
-	b.SetAge(req.Age)
+	if v, ok := req.Age.Get(); ok {
+		b.SetAge(v)
+	}
 	b.SetName(req.Name)
 	b.SetAuthenticated(req.Authenticated)
-	b.SetGmail(req.Gmail)
-	b.SetIconImg(req.IconImg)
+	if v, ok := req.Mail.Get(); ok {
+		b.SetMail(v)
+	}
+	b.SetIcon(req.Icon)
 	// Add all edges.
 	b.AddEventIDs(req.Events...)
 	// Persist to storage.
@@ -775,11 +1013,11 @@ func (h *OgentHandler) UpdateUser(ctx context.Context, req UpdateUserReq, params
 	if v, ok := req.Authenticated.Get(); ok {
 		b.SetAuthenticated(v)
 	}
-	if v, ok := req.Gmail.Get(); ok {
-		b.SetGmail(v)
+	if v, ok := req.Mail.Get(); ok {
+		b.SetMail(v)
 	}
-	if v, ok := req.IconImg.Get(); ok {
-		b.SetIconImg(v)
+	if v, ok := req.Icon.Get(); ok {
+		b.SetIcon(v)
 	}
 	// Add all edges.
 	b.ClearEvents().AddEventIDs(req.Events...)

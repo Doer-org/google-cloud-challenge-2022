@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
+	"github.com/google/uuid"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -26,17 +27,17 @@ func (uc *UserCreate) SetAge(i int) *UserCreate {
 	return uc
 }
 
-// SetName sets the "name" field.
-func (uc *UserCreate) SetName(s string) *UserCreate {
-	uc.mutation.SetName(s)
+// SetNillableAge sets the "age" field if the given value is not nil.
+func (uc *UserCreate) SetNillableAge(i *int) *UserCreate {
+	if i != nil {
+		uc.SetAge(*i)
+	}
 	return uc
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (uc *UserCreate) SetNillableName(s *string) *UserCreate {
-	if s != nil {
-		uc.SetName(*s)
-	}
+// SetName sets the "name" field.
+func (uc *UserCreate) SetName(s string) *UserCreate {
+	uc.mutation.SetName(s)
 	return uc
 }
 
@@ -54,27 +55,49 @@ func (uc *UserCreate) SetNillableAuthenticated(b *bool) *UserCreate {
 	return uc
 }
 
-// SetGmail sets the "gmail" field.
-func (uc *UserCreate) SetGmail(s string) *UserCreate {
-	uc.mutation.SetGmail(s)
+// SetMail sets the "mail" field.
+func (uc *UserCreate) SetMail(s string) *UserCreate {
+	uc.mutation.SetMail(s)
 	return uc
 }
 
-// SetIconImg sets the "icon_img" field.
-func (uc *UserCreate) SetIconImg(s string) *UserCreate {
-	uc.mutation.SetIconImg(s)
+// SetNillableMail sets the "mail" field if the given value is not nil.
+func (uc *UserCreate) SetNillableMail(s *string) *UserCreate {
+	if s != nil {
+		uc.SetMail(*s)
+	}
+	return uc
+}
+
+// SetIcon sets the "icon" field.
+func (uc *UserCreate) SetIcon(s string) *UserCreate {
+	uc.mutation.SetIcon(s)
+	return uc
+}
+
+// SetID sets the "id" field.
+func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
+	uc.mutation.SetID(u)
+	return uc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
+	if u != nil {
+		uc.SetID(*u)
+	}
 	return uc
 }
 
 // AddEventIDs adds the "events" edge to the Event entity by IDs.
-func (uc *UserCreate) AddEventIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddEventIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddEventIDs(ids...)
 	return uc
 }
 
 // AddEvents adds the "events" edges to the Event entity.
 func (uc *UserCreate) AddEvents(e ...*Event) *UserCreate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -158,21 +181,18 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (uc *UserCreate) defaults() {
-	if _, ok := uc.mutation.Name(); !ok {
-		v := user.DefaultName
-		uc.mutation.SetName(v)
-	}
 	if _, ok := uc.mutation.Authenticated(); !ok {
 		v := user.DefaultAuthenticated
 		uc.mutation.SetAuthenticated(v)
+	}
+	if _, ok := uc.mutation.ID(); !ok {
+		v := user.DefaultID()
+		uc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
-	if _, ok := uc.mutation.Age(); !ok {
-		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "User.age"`)}
-	}
 	if v, ok := uc.mutation.Age(); ok {
 		if err := user.AgeValidator(v); err != nil {
 			return &ValidationError{Name: "age", err: fmt.Errorf(`ent: validator failed for field "User.age": %w`, err)}
@@ -189,20 +209,17 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Authenticated(); !ok {
 		return &ValidationError{Name: "authenticated", err: errors.New(`ent: missing required field "User.authenticated"`)}
 	}
-	if _, ok := uc.mutation.Gmail(); !ok {
-		return &ValidationError{Name: "gmail", err: errors.New(`ent: missing required field "User.gmail"`)}
-	}
-	if v, ok := uc.mutation.Gmail(); ok {
-		if err := user.GmailValidator(v); err != nil {
-			return &ValidationError{Name: "gmail", err: fmt.Errorf(`ent: validator failed for field "User.gmail": %w`, err)}
+	if v, ok := uc.mutation.Mail(); ok {
+		if err := user.MailValidator(v); err != nil {
+			return &ValidationError{Name: "mail", err: fmt.Errorf(`ent: validator failed for field "User.mail": %w`, err)}
 		}
 	}
-	if _, ok := uc.mutation.IconImg(); !ok {
-		return &ValidationError{Name: "icon_img", err: errors.New(`ent: missing required field "User.icon_img"`)}
+	if _, ok := uc.mutation.Icon(); !ok {
+		return &ValidationError{Name: "icon", err: errors.New(`ent: missing required field "User.icon"`)}
 	}
-	if v, ok := uc.mutation.IconImg(); ok {
-		if err := user.IconImgValidator(v); err != nil {
-			return &ValidationError{Name: "icon_img", err: fmt.Errorf(`ent: validator failed for field "User.icon_img": %w`, err)}
+	if v, ok := uc.mutation.Icon(); ok {
+		if err := user.IconValidator(v); err != nil {
+			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "User.icon": %w`, err)}
 		}
 	}
 	return nil
@@ -216,8 +233,13 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	return _node, nil
 }
 
@@ -227,11 +249,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: user.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		}
 	)
+	if id, ok := uc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
 	if value, ok := uc.mutation.Age(); ok {
 		_spec.SetField(user.FieldAge, field.TypeInt, value)
 		_node.Age = value
@@ -244,13 +270,13 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldAuthenticated, field.TypeBool, value)
 		_node.Authenticated = value
 	}
-	if value, ok := uc.mutation.Gmail(); ok {
-		_spec.SetField(user.FieldGmail, field.TypeString, value)
-		_node.Gmail = value
+	if value, ok := uc.mutation.Mail(); ok {
+		_spec.SetField(user.FieldMail, field.TypeString, value)
+		_node.Mail = value
 	}
-	if value, ok := uc.mutation.IconImg(); ok {
-		_spec.SetField(user.FieldIconImg, field.TypeString, value)
-		_node.IconImg = value
+	if value, ok := uc.mutation.Icon(); ok {
+		_spec.SetField(user.FieldIcon, field.TypeString, value)
+		_node.Icon = value
 	}
 	if nodes := uc.mutation.EventsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -261,7 +287,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -315,10 +341,6 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

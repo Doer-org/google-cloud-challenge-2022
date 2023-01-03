@@ -6,31 +6,32 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.User {
+func ID(id uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.User {
+func IDEQ(id uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.User {
+func IDNEQ(id uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.User {
+func IDIn(ids ...uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		v := make([]any, len(ids))
 		for i := range v {
@@ -41,7 +42,7 @@ func IDIn(ids ...int) predicate.User {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.User {
+func IDNotIn(ids ...uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		v := make([]any, len(ids))
 		for i := range v {
@@ -52,28 +53,28 @@ func IDNotIn(ids ...int) predicate.User {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.User {
+func IDGT(id uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.User {
+func IDGTE(id uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.User {
+func IDLT(id uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.User {
+func IDLTE(id uuid.UUID) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
 	})
@@ -100,17 +101,17 @@ func Authenticated(v bool) predicate.User {
 	})
 }
 
-// Gmail applies equality check predicate on the "gmail" field. It's identical to GmailEQ.
-func Gmail(v string) predicate.User {
+// Mail applies equality check predicate on the "mail" field. It's identical to MailEQ.
+func Mail(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldGmail), v))
+		s.Where(sql.EQ(s.C(FieldMail), v))
 	})
 }
 
-// IconImg applies equality check predicate on the "icon_img" field. It's identical to IconImgEQ.
-func IconImg(v string) predicate.User {
+// Icon applies equality check predicate on the "icon" field. It's identical to IconEQ.
+func Icon(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIconImg), v))
+		s.Where(sql.EQ(s.C(FieldIcon), v))
 	})
 }
 
@@ -175,6 +176,20 @@ func AgeLT(v int) predicate.User {
 func AgeLTE(v int) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldAge), v))
+	})
+}
+
+// AgeIsNil applies the IsNil predicate on the "age" field.
+func AgeIsNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAge)))
+	})
+}
+
+// AgeNotNil applies the NotNil predicate on the "age" field.
+func AgeNotNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAge)))
 	})
 }
 
@@ -291,201 +306,215 @@ func AuthenticatedNEQ(v bool) predicate.User {
 	})
 }
 
-// GmailEQ applies the EQ predicate on the "gmail" field.
-func GmailEQ(v string) predicate.User {
+// MailEQ applies the EQ predicate on the "mail" field.
+func MailEQ(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldGmail), v))
+		s.Where(sql.EQ(s.C(FieldMail), v))
 	})
 }
 
-// GmailNEQ applies the NEQ predicate on the "gmail" field.
-func GmailNEQ(v string) predicate.User {
+// MailNEQ applies the NEQ predicate on the "mail" field.
+func MailNEQ(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldGmail), v))
+		s.Where(sql.NEQ(s.C(FieldMail), v))
 	})
 }
 
-// GmailIn applies the In predicate on the "gmail" field.
-func GmailIn(vs ...string) predicate.User {
+// MailIn applies the In predicate on the "mail" field.
+func MailIn(vs ...string) predicate.User {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldGmail), v...))
+		s.Where(sql.In(s.C(FieldMail), v...))
 	})
 }
 
-// GmailNotIn applies the NotIn predicate on the "gmail" field.
-func GmailNotIn(vs ...string) predicate.User {
+// MailNotIn applies the NotIn predicate on the "mail" field.
+func MailNotIn(vs ...string) predicate.User {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldGmail), v...))
+		s.Where(sql.NotIn(s.C(FieldMail), v...))
 	})
 }
 
-// GmailGT applies the GT predicate on the "gmail" field.
-func GmailGT(v string) predicate.User {
+// MailGT applies the GT predicate on the "mail" field.
+func MailGT(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldGmail), v))
+		s.Where(sql.GT(s.C(FieldMail), v))
 	})
 }
 
-// GmailGTE applies the GTE predicate on the "gmail" field.
-func GmailGTE(v string) predicate.User {
+// MailGTE applies the GTE predicate on the "mail" field.
+func MailGTE(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldGmail), v))
+		s.Where(sql.GTE(s.C(FieldMail), v))
 	})
 }
 
-// GmailLT applies the LT predicate on the "gmail" field.
-func GmailLT(v string) predicate.User {
+// MailLT applies the LT predicate on the "mail" field.
+func MailLT(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldGmail), v))
+		s.Where(sql.LT(s.C(FieldMail), v))
 	})
 }
 
-// GmailLTE applies the LTE predicate on the "gmail" field.
-func GmailLTE(v string) predicate.User {
+// MailLTE applies the LTE predicate on the "mail" field.
+func MailLTE(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldGmail), v))
+		s.Where(sql.LTE(s.C(FieldMail), v))
 	})
 }
 
-// GmailContains applies the Contains predicate on the "gmail" field.
-func GmailContains(v string) predicate.User {
+// MailContains applies the Contains predicate on the "mail" field.
+func MailContains(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldGmail), v))
+		s.Where(sql.Contains(s.C(FieldMail), v))
 	})
 }
 
-// GmailHasPrefix applies the HasPrefix predicate on the "gmail" field.
-func GmailHasPrefix(v string) predicate.User {
+// MailHasPrefix applies the HasPrefix predicate on the "mail" field.
+func MailHasPrefix(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldGmail), v))
+		s.Where(sql.HasPrefix(s.C(FieldMail), v))
 	})
 }
 
-// GmailHasSuffix applies the HasSuffix predicate on the "gmail" field.
-func GmailHasSuffix(v string) predicate.User {
+// MailHasSuffix applies the HasSuffix predicate on the "mail" field.
+func MailHasSuffix(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldGmail), v))
+		s.Where(sql.HasSuffix(s.C(FieldMail), v))
 	})
 }
 
-// GmailEqualFold applies the EqualFold predicate on the "gmail" field.
-func GmailEqualFold(v string) predicate.User {
+// MailIsNil applies the IsNil predicate on the "mail" field.
+func MailIsNil() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldGmail), v))
+		s.Where(sql.IsNull(s.C(FieldMail)))
 	})
 }
 
-// GmailContainsFold applies the ContainsFold predicate on the "gmail" field.
-func GmailContainsFold(v string) predicate.User {
+// MailNotNil applies the NotNil predicate on the "mail" field.
+func MailNotNil() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldGmail), v))
+		s.Where(sql.NotNull(s.C(FieldMail)))
 	})
 }
 
-// IconImgEQ applies the EQ predicate on the "icon_img" field.
-func IconImgEQ(v string) predicate.User {
+// MailEqualFold applies the EqualFold predicate on the "mail" field.
+func MailEqualFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIconImg), v))
+		s.Where(sql.EqualFold(s.C(FieldMail), v))
 	})
 }
 
-// IconImgNEQ applies the NEQ predicate on the "icon_img" field.
-func IconImgNEQ(v string) predicate.User {
+// MailContainsFold applies the ContainsFold predicate on the "mail" field.
+func MailContainsFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIconImg), v))
+		s.Where(sql.ContainsFold(s.C(FieldMail), v))
 	})
 }
 
-// IconImgIn applies the In predicate on the "icon_img" field.
-func IconImgIn(vs ...string) predicate.User {
+// IconEQ applies the EQ predicate on the "icon" field.
+func IconEQ(v string) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIcon), v))
+	})
+}
+
+// IconNEQ applies the NEQ predicate on the "icon" field.
+func IconNEQ(v string) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIcon), v))
+	})
+}
+
+// IconIn applies the In predicate on the "icon" field.
+func IconIn(vs ...string) predicate.User {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldIconImg), v...))
+		s.Where(sql.In(s.C(FieldIcon), v...))
 	})
 }
 
-// IconImgNotIn applies the NotIn predicate on the "icon_img" field.
-func IconImgNotIn(vs ...string) predicate.User {
+// IconNotIn applies the NotIn predicate on the "icon" field.
+func IconNotIn(vs ...string) predicate.User {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldIconImg), v...))
+		s.Where(sql.NotIn(s.C(FieldIcon), v...))
 	})
 }
 
-// IconImgGT applies the GT predicate on the "icon_img" field.
-func IconImgGT(v string) predicate.User {
+// IconGT applies the GT predicate on the "icon" field.
+func IconGT(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIconImg), v))
+		s.Where(sql.GT(s.C(FieldIcon), v))
 	})
 }
 
-// IconImgGTE applies the GTE predicate on the "icon_img" field.
-func IconImgGTE(v string) predicate.User {
+// IconGTE applies the GTE predicate on the "icon" field.
+func IconGTE(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIconImg), v))
+		s.Where(sql.GTE(s.C(FieldIcon), v))
 	})
 }
 
-// IconImgLT applies the LT predicate on the "icon_img" field.
-func IconImgLT(v string) predicate.User {
+// IconLT applies the LT predicate on the "icon" field.
+func IconLT(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIconImg), v))
+		s.Where(sql.LT(s.C(FieldIcon), v))
 	})
 }
 
-// IconImgLTE applies the LTE predicate on the "icon_img" field.
-func IconImgLTE(v string) predicate.User {
+// IconLTE applies the LTE predicate on the "icon" field.
+func IconLTE(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIconImg), v))
+		s.Where(sql.LTE(s.C(FieldIcon), v))
 	})
 }
 
-// IconImgContains applies the Contains predicate on the "icon_img" field.
-func IconImgContains(v string) predicate.User {
+// IconContains applies the Contains predicate on the "icon" field.
+func IconContains(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIconImg), v))
+		s.Where(sql.Contains(s.C(FieldIcon), v))
 	})
 }
 
-// IconImgHasPrefix applies the HasPrefix predicate on the "icon_img" field.
-func IconImgHasPrefix(v string) predicate.User {
+// IconHasPrefix applies the HasPrefix predicate on the "icon" field.
+func IconHasPrefix(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIconImg), v))
+		s.Where(sql.HasPrefix(s.C(FieldIcon), v))
 	})
 }
 
-// IconImgHasSuffix applies the HasSuffix predicate on the "icon_img" field.
-func IconImgHasSuffix(v string) predicate.User {
+// IconHasSuffix applies the HasSuffix predicate on the "icon" field.
+func IconHasSuffix(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIconImg), v))
+		s.Where(sql.HasSuffix(s.C(FieldIcon), v))
 	})
 }
 
-// IconImgEqualFold applies the EqualFold predicate on the "icon_img" field.
-func IconImgEqualFold(v string) predicate.User {
+// IconEqualFold applies the EqualFold predicate on the "icon" field.
+func IconEqualFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIconImg), v))
+		s.Where(sql.EqualFold(s.C(FieldIcon), v))
 	})
 }
 
-// IconImgContainsFold applies the ContainsFold predicate on the "icon_img" field.
-func IconImgContainsFold(v string) predicate.User {
+// IconContainsFold applies the ContainsFold predicate on the "icon" field.
+func IconContainsFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIconImg), v))
+		s.Where(sql.ContainsFold(s.C(FieldIcon), v))
 	})
 }
 

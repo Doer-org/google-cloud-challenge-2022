@@ -9,7 +9,9 @@ import (
 	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/migrate"
+	"github.com/google/uuid"
 
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
@@ -29,6 +31,8 @@ type Client struct {
 	EState *EStateClient
 	// EType is the client for interacting with the EType builders.
 	EType *ETypeClient
+	// Ecomment is the client for interacting with the Ecomment builders.
+	Ecomment *EcommentClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
 	// User is the client for interacting with the User builders.
@@ -48,6 +52,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.EState = NewEStateClient(c.config)
 	c.EType = NewETypeClient(c.config)
+	c.Ecomment = NewEcommentClient(c.config)
 	c.Event = NewEventClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -81,12 +86,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		EState: NewEStateClient(cfg),
-		EType:  NewETypeClient(cfg),
-		Event:  NewEventClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		EState:   NewEStateClient(cfg),
+		EType:    NewETypeClient(cfg),
+		Ecomment: NewEcommentClient(cfg),
+		Event:    NewEventClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
@@ -104,12 +110,13 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		EState: NewEStateClient(cfg),
-		EType:  NewETypeClient(cfg),
-		Event:  NewEventClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		EState:   NewEStateClient(cfg),
+		EType:    NewETypeClient(cfg),
+		Ecomment: NewEcommentClient(cfg),
+		Event:    NewEventClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
@@ -140,6 +147,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.EState.Use(hooks...)
 	c.EType.Use(hooks...)
+	c.Ecomment.Use(hooks...)
 	c.Event.Use(hooks...)
 	c.User.Use(hooks...)
 }
@@ -184,7 +192,7 @@ func (c *EStateClient) UpdateOne(e *EState) *EStateUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *EStateClient) UpdateOneID(id int) *EStateUpdateOne {
+func (c *EStateClient) UpdateOneID(id uuid.UUID) *EStateUpdateOne {
 	mutation := newEStateMutation(c.config, OpUpdateOne, withEStateID(id))
 	return &EStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -201,7 +209,7 @@ func (c *EStateClient) DeleteOne(e *EState) *EStateDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *EStateClient) DeleteOneID(id int) *EStateDeleteOne {
+func (c *EStateClient) DeleteOneID(id uuid.UUID) *EStateDeleteOne {
 	builder := c.Delete().Where(estate.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -216,12 +224,12 @@ func (c *EStateClient) Query() *EStateQuery {
 }
 
 // Get returns a EState entity by its id.
-func (c *EStateClient) Get(ctx context.Context, id int) (*EState, error) {
+func (c *EStateClient) Get(ctx context.Context, id uuid.UUID) (*EState, error) {
 	return c.Query().Where(estate.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *EStateClient) GetX(ctx context.Context, id int) *EState {
+func (c *EStateClient) GetX(ctx context.Context, id uuid.UUID) *EState {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -290,7 +298,7 @@ func (c *ETypeClient) UpdateOne(e *EType) *ETypeUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ETypeClient) UpdateOneID(id int) *ETypeUpdateOne {
+func (c *ETypeClient) UpdateOneID(id uuid.UUID) *ETypeUpdateOne {
 	mutation := newETypeMutation(c.config, OpUpdateOne, withETypeID(id))
 	return &ETypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -307,7 +315,7 @@ func (c *ETypeClient) DeleteOne(e *EType) *ETypeDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ETypeClient) DeleteOneID(id int) *ETypeDeleteOne {
+func (c *ETypeClient) DeleteOneID(id uuid.UUID) *ETypeDeleteOne {
 	builder := c.Delete().Where(etype.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -322,12 +330,12 @@ func (c *ETypeClient) Query() *ETypeQuery {
 }
 
 // Get returns a EType entity by its id.
-func (c *ETypeClient) Get(ctx context.Context, id int) (*EType, error) {
+func (c *ETypeClient) Get(ctx context.Context, id uuid.UUID) (*EType, error) {
 	return c.Query().Where(etype.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ETypeClient) GetX(ctx context.Context, id int) *EType {
+func (c *ETypeClient) GetX(ctx context.Context, id uuid.UUID) *EType {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -354,6 +362,128 @@ func (c *ETypeClient) QueryEvent(e *EType) *EventQuery {
 // Hooks returns the client hooks.
 func (c *ETypeClient) Hooks() []Hook {
 	return c.hooks.EType
+}
+
+// EcommentClient is a client for the Ecomment schema.
+type EcommentClient struct {
+	config
+}
+
+// NewEcommentClient returns a client for the Ecomment from the given config.
+func NewEcommentClient(c config) *EcommentClient {
+	return &EcommentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `ecomment.Hooks(f(g(h())))`.
+func (c *EcommentClient) Use(hooks ...Hook) {
+	c.hooks.Ecomment = append(c.hooks.Ecomment, hooks...)
+}
+
+// Create returns a builder for creating a Ecomment entity.
+func (c *EcommentClient) Create() *EcommentCreate {
+	mutation := newEcommentMutation(c.config, OpCreate)
+	return &EcommentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Ecomment entities.
+func (c *EcommentClient) CreateBulk(builders ...*EcommentCreate) *EcommentCreateBulk {
+	return &EcommentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Ecomment.
+func (c *EcommentClient) Update() *EcommentUpdate {
+	mutation := newEcommentMutation(c.config, OpUpdate)
+	return &EcommentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EcommentClient) UpdateOne(e *Ecomment) *EcommentUpdateOne {
+	mutation := newEcommentMutation(c.config, OpUpdateOne, withEcomment(e))
+	return &EcommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EcommentClient) UpdateOneID(id uuid.UUID) *EcommentUpdateOne {
+	mutation := newEcommentMutation(c.config, OpUpdateOne, withEcommentID(id))
+	return &EcommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Ecomment.
+func (c *EcommentClient) Delete() *EcommentDelete {
+	mutation := newEcommentMutation(c.config, OpDelete)
+	return &EcommentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EcommentClient) DeleteOne(e *Ecomment) *EcommentDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EcommentClient) DeleteOneID(id uuid.UUID) *EcommentDeleteOne {
+	builder := c.Delete().Where(ecomment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EcommentDeleteOne{builder}
+}
+
+// Query returns a query builder for Ecomment.
+func (c *EcommentClient) Query() *EcommentQuery {
+	return &EcommentQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Ecomment entity by its id.
+func (c *EcommentClient) Get(ctx context.Context, id uuid.UUID) (*Ecomment, error) {
+	return c.Query().Where(ecomment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EcommentClient) GetX(ctx context.Context, id uuid.UUID) *Ecomment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEvent queries the event edge of a Ecomment.
+func (c *EcommentClient) QueryEvent(e *Ecomment) *EventQuery {
+	query := &EventQuery{config: c.config}
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ecomment.Table, ecomment.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ecomment.EventTable, ecomment.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUser queries the user edge of a Ecomment.
+func (c *EcommentClient) QueryUser(e *Ecomment) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ecomment.Table, ecomment.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ecomment.UserTable, ecomment.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EcommentClient) Hooks() []Hook {
+	return c.hooks.Ecomment
 }
 
 // EventClient is a client for the Event schema.
@@ -396,7 +526,7 @@ func (c *EventClient) UpdateOne(e *Event) *EventUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *EventClient) UpdateOneID(id int) *EventUpdateOne {
+func (c *EventClient) UpdateOneID(id uuid.UUID) *EventUpdateOne {
 	mutation := newEventMutation(c.config, OpUpdateOne, withEventID(id))
 	return &EventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -413,7 +543,7 @@ func (c *EventClient) DeleteOne(e *Event) *EventDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *EventClient) DeleteOneID(id int) *EventDeleteOne {
+func (c *EventClient) DeleteOneID(id uuid.UUID) *EventDeleteOne {
 	builder := c.Delete().Where(event.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -428,12 +558,12 @@ func (c *EventClient) Query() *EventQuery {
 }
 
 // Get returns a Event entity by its id.
-func (c *EventClient) Get(ctx context.Context, id int) (*Event, error) {
+func (c *EventClient) Get(ctx context.Context, id uuid.UUID) (*Event, error) {
 	return c.Query().Where(event.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *EventClient) GetX(ctx context.Context, id int) *Event {
+func (c *EventClient) GetX(ctx context.Context, id uuid.UUID) *Event {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -534,7 +664,7 @@ func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id int) *UserUpdateOne {
+func (c *UserClient) UpdateOneID(id uuid.UUID) *UserUpdateOne {
 	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
 	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -551,7 +681,7 @@ func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
+func (c *UserClient) DeleteOneID(id uuid.UUID) *UserDeleteOne {
 	builder := c.Delete().Where(user.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -566,12 +696,12 @@ func (c *UserClient) Query() *UserQuery {
 }
 
 // Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id int) (*User, error) {
+func (c *UserClient) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	return c.Query().Where(user.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id int) *User {
+func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

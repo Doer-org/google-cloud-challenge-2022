@@ -15,6 +15,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
+	"github.com/google/uuid"
 )
 
 // EventUpdate is the builder for updating Event entities.
@@ -36,17 +37,23 @@ func (eu *EventUpdate) SetName(s string) *EventUpdate {
 	return eu
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (eu *EventUpdate) SetNillableName(s *string) *EventUpdate {
+// SetDetail sets the "detail" field.
+func (eu *EventUpdate) SetDetail(s string) *EventUpdate {
+	eu.mutation.SetDetail(s)
+	return eu
+}
+
+// SetNillableDetail sets the "detail" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableDetail(s *string) *EventUpdate {
 	if s != nil {
-		eu.SetName(*s)
+		eu.SetDetail(*s)
 	}
 	return eu
 }
 
-// SetDetail sets the "detail" field.
-func (eu *EventUpdate) SetDetail(s string) *EventUpdate {
-	eu.mutation.SetDetail(s)
+// ClearDetail clears the value of the "detail" field.
+func (eu *EventUpdate) ClearDetail() *EventUpdate {
+	eu.mutation.ClearDetail()
 	return eu
 }
 
@@ -56,14 +63,28 @@ func (eu *EventUpdate) SetLocation(s string) *EventUpdate {
 	return eu
 }
 
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableLocation(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetLocation(*s)
+	}
+	return eu
+}
+
+// ClearLocation clears the value of the "location" field.
+func (eu *EventUpdate) ClearLocation() *EventUpdate {
+	eu.mutation.ClearLocation()
+	return eu
+}
+
 // SetStateID sets the "state" edge to the EState entity by ID.
-func (eu *EventUpdate) SetStateID(id int) *EventUpdate {
+func (eu *EventUpdate) SetStateID(id uuid.UUID) *EventUpdate {
 	eu.mutation.SetStateID(id)
 	return eu
 }
 
 // SetNillableStateID sets the "state" edge to the EState entity by ID if the given value is not nil.
-func (eu *EventUpdate) SetNillableStateID(id *int) *EventUpdate {
+func (eu *EventUpdate) SetNillableStateID(id *uuid.UUID) *EventUpdate {
 	if id != nil {
 		eu = eu.SetStateID(*id)
 	}
@@ -76,13 +97,13 @@ func (eu *EventUpdate) SetState(e *EState) *EventUpdate {
 }
 
 // SetTypeID sets the "type" edge to the EType entity by ID.
-func (eu *EventUpdate) SetTypeID(id int) *EventUpdate {
+func (eu *EventUpdate) SetTypeID(id uuid.UUID) *EventUpdate {
 	eu.mutation.SetTypeID(id)
 	return eu
 }
 
 // SetNillableTypeID sets the "type" edge to the EType entity by ID if the given value is not nil.
-func (eu *EventUpdate) SetNillableTypeID(id *int) *EventUpdate {
+func (eu *EventUpdate) SetNillableTypeID(id *uuid.UUID) *EventUpdate {
 	if id != nil {
 		eu = eu.SetTypeID(*id)
 	}
@@ -95,14 +116,14 @@ func (eu *EventUpdate) SetType(e *EType) *EventUpdate {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (eu *EventUpdate) AddUserIDs(ids ...int) *EventUpdate {
+func (eu *EventUpdate) AddUserIDs(ids ...uuid.UUID) *EventUpdate {
 	eu.mutation.AddUserIDs(ids...)
 	return eu
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (eu *EventUpdate) AddUsers(u ...*User) *EventUpdate {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -133,14 +154,14 @@ func (eu *EventUpdate) ClearUsers() *EventUpdate {
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (eu *EventUpdate) RemoveUserIDs(ids ...int) *EventUpdate {
+func (eu *EventUpdate) RemoveUserIDs(ids ...uuid.UUID) *EventUpdate {
 	eu.mutation.RemoveUserIDs(ids...)
 	return eu
 }
 
 // RemoveUsers removes "users" edges to User entities.
 func (eu *EventUpdate) RemoveUsers(u ...*User) *EventUpdate {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -233,7 +254,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   event.Table,
 			Columns: event.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: event.FieldID,
 			},
 		},
@@ -251,8 +272,14 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := eu.mutation.Detail(); ok {
 		_spec.SetField(event.FieldDetail, field.TypeString, value)
 	}
+	if eu.mutation.DetailCleared() {
+		_spec.ClearField(event.FieldDetail, field.TypeString)
+	}
 	if value, ok := eu.mutation.Location(); ok {
 		_spec.SetField(event.FieldLocation, field.TypeString, value)
+	}
+	if eu.mutation.LocationCleared() {
+		_spec.ClearField(event.FieldLocation, field.TypeString)
 	}
 	if eu.mutation.StateCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -263,7 +290,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: estate.FieldID,
 				},
 			},
@@ -279,7 +306,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: estate.FieldID,
 				},
 			},
@@ -298,7 +325,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: etype.FieldID,
 				},
 			},
@@ -314,7 +341,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: etype.FieldID,
 				},
 			},
@@ -333,7 +360,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -349,7 +376,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -368,7 +395,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -403,17 +430,23 @@ func (euo *EventUpdateOne) SetName(s string) *EventUpdateOne {
 	return euo
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableName(s *string) *EventUpdateOne {
+// SetDetail sets the "detail" field.
+func (euo *EventUpdateOne) SetDetail(s string) *EventUpdateOne {
+	euo.mutation.SetDetail(s)
+	return euo
+}
+
+// SetNillableDetail sets the "detail" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableDetail(s *string) *EventUpdateOne {
 	if s != nil {
-		euo.SetName(*s)
+		euo.SetDetail(*s)
 	}
 	return euo
 }
 
-// SetDetail sets the "detail" field.
-func (euo *EventUpdateOne) SetDetail(s string) *EventUpdateOne {
-	euo.mutation.SetDetail(s)
+// ClearDetail clears the value of the "detail" field.
+func (euo *EventUpdateOne) ClearDetail() *EventUpdateOne {
+	euo.mutation.ClearDetail()
 	return euo
 }
 
@@ -423,14 +456,28 @@ func (euo *EventUpdateOne) SetLocation(s string) *EventUpdateOne {
 	return euo
 }
 
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableLocation(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetLocation(*s)
+	}
+	return euo
+}
+
+// ClearLocation clears the value of the "location" field.
+func (euo *EventUpdateOne) ClearLocation() *EventUpdateOne {
+	euo.mutation.ClearLocation()
+	return euo
+}
+
 // SetStateID sets the "state" edge to the EState entity by ID.
-func (euo *EventUpdateOne) SetStateID(id int) *EventUpdateOne {
+func (euo *EventUpdateOne) SetStateID(id uuid.UUID) *EventUpdateOne {
 	euo.mutation.SetStateID(id)
 	return euo
 }
 
 // SetNillableStateID sets the "state" edge to the EState entity by ID if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableStateID(id *int) *EventUpdateOne {
+func (euo *EventUpdateOne) SetNillableStateID(id *uuid.UUID) *EventUpdateOne {
 	if id != nil {
 		euo = euo.SetStateID(*id)
 	}
@@ -443,13 +490,13 @@ func (euo *EventUpdateOne) SetState(e *EState) *EventUpdateOne {
 }
 
 // SetTypeID sets the "type" edge to the EType entity by ID.
-func (euo *EventUpdateOne) SetTypeID(id int) *EventUpdateOne {
+func (euo *EventUpdateOne) SetTypeID(id uuid.UUID) *EventUpdateOne {
 	euo.mutation.SetTypeID(id)
 	return euo
 }
 
 // SetNillableTypeID sets the "type" edge to the EType entity by ID if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableTypeID(id *int) *EventUpdateOne {
+func (euo *EventUpdateOne) SetNillableTypeID(id *uuid.UUID) *EventUpdateOne {
 	if id != nil {
 		euo = euo.SetTypeID(*id)
 	}
@@ -462,14 +509,14 @@ func (euo *EventUpdateOne) SetType(e *EType) *EventUpdateOne {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (euo *EventUpdateOne) AddUserIDs(ids ...int) *EventUpdateOne {
+func (euo *EventUpdateOne) AddUserIDs(ids ...uuid.UUID) *EventUpdateOne {
 	euo.mutation.AddUserIDs(ids...)
 	return euo
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (euo *EventUpdateOne) AddUsers(u ...*User) *EventUpdateOne {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -500,14 +547,14 @@ func (euo *EventUpdateOne) ClearUsers() *EventUpdateOne {
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (euo *EventUpdateOne) RemoveUserIDs(ids ...int) *EventUpdateOne {
+func (euo *EventUpdateOne) RemoveUserIDs(ids ...uuid.UUID) *EventUpdateOne {
 	euo.mutation.RemoveUserIDs(ids...)
 	return euo
 }
 
 // RemoveUsers removes "users" edges to User entities.
 func (euo *EventUpdateOne) RemoveUsers(u ...*User) *EventUpdateOne {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -613,7 +660,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Table:   event.Table,
 			Columns: event.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: event.FieldID,
 			},
 		},
@@ -648,8 +695,14 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if value, ok := euo.mutation.Detail(); ok {
 		_spec.SetField(event.FieldDetail, field.TypeString, value)
 	}
+	if euo.mutation.DetailCleared() {
+		_spec.ClearField(event.FieldDetail, field.TypeString)
+	}
 	if value, ok := euo.mutation.Location(); ok {
 		_spec.SetField(event.FieldLocation, field.TypeString, value)
+	}
+	if euo.mutation.LocationCleared() {
+		_spec.ClearField(event.FieldLocation, field.TypeString)
 	}
 	if euo.mutation.StateCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -660,7 +713,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: estate.FieldID,
 				},
 			},
@@ -676,7 +729,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: estate.FieldID,
 				},
 			},
@@ -695,7 +748,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: etype.FieldID,
 				},
 			},
@@ -711,7 +764,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: etype.FieldID,
 				},
 			},
@@ -730,7 +783,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -746,7 +799,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -765,7 +818,7 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},

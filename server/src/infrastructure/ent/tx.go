@@ -16,6 +16,8 @@ type Tx struct {
 	EState *EStateClient
 	// EType is the client for interacting with the EType builders.
 	EType *ETypeClient
+	// Ecomment is the client for interacting with the Ecomment builders.
+	Ecomment *EcommentClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
 	// User is the client for interacting with the User builders.
@@ -153,6 +155,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.EState = NewEStateClient(tx.config)
 	tx.EType = NewETypeClient(tx.config)
+	tx.Ecomment = NewEcommentClient(tx.config)
 	tx.Event = NewEventClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }

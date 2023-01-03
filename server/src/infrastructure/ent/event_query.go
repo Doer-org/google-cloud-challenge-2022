@@ -16,6 +16,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
+	"github.com/google/uuid"
 )
 
 // EventQuery is the builder for querying Event entities.
@@ -156,8 +157,8 @@ func (eq *EventQuery) FirstX(ctx context.Context) *Event {
 
 // FirstID returns the first Event ID from the query.
 // Returns a *NotFoundError when no Event ID was found.
-func (eq *EventQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *EventQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = eq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -169,7 +170,7 @@ func (eq *EventQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (eq *EventQuery) FirstIDX(ctx context.Context) int {
+func (eq *EventQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := eq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -207,8 +208,8 @@ func (eq *EventQuery) OnlyX(ctx context.Context) *Event {
 // OnlyID is like Only, but returns the only Event ID in the query.
 // Returns a *NotSingularError when more than one Event ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (eq *EventQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *EventQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = eq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -224,7 +225,7 @@ func (eq *EventQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (eq *EventQuery) OnlyIDX(ctx context.Context) int {
+func (eq *EventQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := eq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -250,8 +251,8 @@ func (eq *EventQuery) AllX(ctx context.Context) []*Event {
 }
 
 // IDs executes the query and returns a list of Event IDs.
-func (eq *EventQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (eq *EventQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := eq.Select(event.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -259,7 +260,7 @@ func (eq *EventQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (eq *EventQuery) IDsX(ctx context.Context) []int {
+func (eq *EventQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := eq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -477,7 +478,7 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 
 func (eq *EventQuery) loadState(ctx context.Context, query *EStateQuery, nodes []*Event, init func(*Event), assign func(*Event, *EState)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Event)
+	nodeids := make(map[uuid.UUID]*Event)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -505,7 +506,7 @@ func (eq *EventQuery) loadState(ctx context.Context, query *EStateQuery, nodes [
 }
 func (eq *EventQuery) loadType(ctx context.Context, query *ETypeQuery, nodes []*Event, init func(*Event), assign func(*Event, *EType)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Event)
+	nodeids := make(map[uuid.UUID]*Event)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -533,8 +534,8 @@ func (eq *EventQuery) loadType(ctx context.Context, query *ETypeQuery, nodes []*
 }
 func (eq *EventQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*Event, init func(*Event), assign func(*Event, *User)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*Event)
-	nids := make(map[int]map[*Event]struct{})
+	byID := make(map[uuid.UUID]*Event)
+	nids := make(map[uuid.UUID]map[*Event]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -562,11 +563,11 @@ func (eq *EventQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*
 			if err != nil {
 				return nil, err
 			}
-			return append([]any{new(sql.NullInt64)}, values...), nil
+			return append([]any{new(uuid.UUID)}, values...), nil
 		}
 		spec.Assign = func(columns []string, values []any) error {
-			outValue := int(values[0].(*sql.NullInt64).Int64)
-			inValue := int(values[1].(*sql.NullInt64).Int64)
+			outValue := *values[0].(*uuid.UUID)
+			inValue := *values[1].(*uuid.UUID)
 			if nids[inValue] == nil {
 				nids[inValue] = map[*Event]struct{}{byID[outValue]: {}}
 				return assign(columns[1:], values[1:])
@@ -616,7 +617,7 @@ func (eq *EventQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   event.Table,
 			Columns: event.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: event.FieldID,
 			},
 		},

@@ -123,8 +123,8 @@ func NewEStateEventRead(e *ent.Event) *EStateEventRead {
 	var ret EStateEventRead
 	ret.ID = e.ID
 	ret.Name = e.Name
-	ret.Detail = e.Detail
-	ret.Location = e.Location
+	ret.Detail = NewOptString(e.Detail)
+	ret.Location = NewOptString(e.Location)
 	return &ret
 }
 
@@ -265,8 +265,8 @@ func NewETypeEventRead(e *ent.Event) *ETypeEventRead {
 	var ret ETypeEventRead
 	ret.ID = e.ID
 	ret.Name = e.Name
-	ret.Detail = e.Detail
-	ret.Location = e.Location
+	ret.Detail = NewOptString(e.Detail)
+	ret.Location = NewOptString(e.Location)
 	return &ret
 }
 
@@ -288,6 +288,180 @@ func (e *ETypeEventRead) Elem() ETypeEventRead {
 	return *e
 }
 
+func NewEcommentCreate(e *ent.Ecomment) *EcommentCreate {
+	if e == nil {
+		return nil
+	}
+	var ret EcommentCreate
+	ret.ID = e.ID
+	ret.Body = e.Body
+	return &ret
+}
+
+func NewEcommentCreates(es []*ent.Ecomment) []EcommentCreate {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]EcommentCreate, len(es))
+	for i, e := range es {
+		r[i] = NewEcommentCreate(e).Elem()
+	}
+	return r
+}
+
+func (e *EcommentCreate) Elem() EcommentCreate {
+	if e == nil {
+		return EcommentCreate{}
+	}
+	return *e
+}
+
+func NewEcommentList(e *ent.Ecomment) *EcommentList {
+	if e == nil {
+		return nil
+	}
+	var ret EcommentList
+	ret.ID = e.ID
+	ret.Body = e.Body
+	return &ret
+}
+
+func NewEcommentLists(es []*ent.Ecomment) []EcommentList {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]EcommentList, len(es))
+	for i, e := range es {
+		r[i] = NewEcommentList(e).Elem()
+	}
+	return r
+}
+
+func (e *EcommentList) Elem() EcommentList {
+	if e == nil {
+		return EcommentList{}
+	}
+	return *e
+}
+
+func NewEcommentRead(e *ent.Ecomment) *EcommentRead {
+	if e == nil {
+		return nil
+	}
+	var ret EcommentRead
+	ret.ID = e.ID
+	ret.Body = e.Body
+	return &ret
+}
+
+func NewEcommentReads(es []*ent.Ecomment) []EcommentRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]EcommentRead, len(es))
+	for i, e := range es {
+		r[i] = NewEcommentRead(e).Elem()
+	}
+	return r
+}
+
+func (e *EcommentRead) Elem() EcommentRead {
+	if e == nil {
+		return EcommentRead{}
+	}
+	return *e
+}
+
+func NewEcommentUpdate(e *ent.Ecomment) *EcommentUpdate {
+	if e == nil {
+		return nil
+	}
+	var ret EcommentUpdate
+	ret.ID = e.ID
+	ret.Body = e.Body
+	return &ret
+}
+
+func NewEcommentUpdates(es []*ent.Ecomment) []EcommentUpdate {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]EcommentUpdate, len(es))
+	for i, e := range es {
+		r[i] = NewEcommentUpdate(e).Elem()
+	}
+	return r
+}
+
+func (e *EcommentUpdate) Elem() EcommentUpdate {
+	if e == nil {
+		return EcommentUpdate{}
+	}
+	return *e
+}
+
+func NewEcommentEventRead(e *ent.Event) *EcommentEventRead {
+	if e == nil {
+		return nil
+	}
+	var ret EcommentEventRead
+	ret.ID = e.ID
+	ret.Name = e.Name
+	ret.Detail = NewOptString(e.Detail)
+	ret.Location = NewOptString(e.Location)
+	return &ret
+}
+
+func NewEcommentEventReads(es []*ent.Event) []EcommentEventRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]EcommentEventRead, len(es))
+	for i, e := range es {
+		r[i] = NewEcommentEventRead(e).Elem()
+	}
+	return r
+}
+
+func (e *EcommentEventRead) Elem() EcommentEventRead {
+	if e == nil {
+		return EcommentEventRead{}
+	}
+	return *e
+}
+
+func NewEcommentUserRead(e *ent.User) *EcommentUserRead {
+	if e == nil {
+		return nil
+	}
+	var ret EcommentUserRead
+	ret.ID = e.ID
+	ret.Age = NewOptInt(e.Age)
+	ret.Name = e.Name
+	ret.Authenticated = e.Authenticated
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
+	return &ret
+}
+
+func NewEcommentUserReads(es []*ent.User) []EcommentUserRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]EcommentUserRead, len(es))
+	for i, e := range es {
+		r[i] = NewEcommentUserRead(e).Elem()
+	}
+	return r
+}
+
+func (u *EcommentUserRead) Elem() EcommentUserRead {
+	if u == nil {
+		return EcommentUserRead{}
+	}
+	return *u
+}
+
 func NewEventCreate(e *ent.Event) *EventCreate {
 	if e == nil {
 		return nil
@@ -295,8 +469,8 @@ func NewEventCreate(e *ent.Event) *EventCreate {
 	var ret EventCreate
 	ret.ID = e.ID
 	ret.Name = e.Name
-	ret.Detail = e.Detail
-	ret.Location = e.Location
+	ret.Detail = NewOptString(e.Detail)
+	ret.Location = NewOptString(e.Location)
 	return &ret
 }
 
@@ -325,8 +499,8 @@ func NewEventList(e *ent.Event) *EventList {
 	var ret EventList
 	ret.ID = e.ID
 	ret.Name = e.Name
-	ret.Detail = e.Detail
-	ret.Location = e.Location
+	ret.Detail = NewOptString(e.Detail)
+	ret.Location = NewOptString(e.Location)
 	return &ret
 }
 
@@ -355,8 +529,8 @@ func NewEventRead(e *ent.Event) *EventRead {
 	var ret EventRead
 	ret.ID = e.ID
 	ret.Name = e.Name
-	ret.Detail = e.Detail
-	ret.Location = e.Location
+	ret.Detail = NewOptString(e.Detail)
+	ret.Location = NewOptString(e.Location)
 	return &ret
 }
 
@@ -385,8 +559,8 @@ func NewEventUpdate(e *ent.Event) *EventUpdate {
 	var ret EventUpdate
 	ret.ID = e.ID
 	ret.Name = e.Name
-	ret.Detail = e.Detail
-	ret.Location = e.Location
+	ret.Detail = NewOptString(e.Detail)
+	ret.Location = NewOptString(e.Location)
 	return &ret
 }
 
@@ -470,11 +644,11 @@ func NewEventUsersList(e *ent.User) *EventUsersList {
 	}
 	var ret EventUsersList
 	ret.ID = e.ID
-	ret.Age = e.Age
+	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
-	ret.Gmail = e.Gmail
-	ret.IconImg = e.IconImg
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
 	return &ret
 }
 
@@ -502,11 +676,11 @@ func NewUserCreate(e *ent.User) *UserCreate {
 	}
 	var ret UserCreate
 	ret.ID = e.ID
-	ret.Age = e.Age
+	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
-	ret.Gmail = e.Gmail
-	ret.IconImg = e.IconImg
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
 	return &ret
 }
 
@@ -534,11 +708,11 @@ func NewUserList(e *ent.User) *UserList {
 	}
 	var ret UserList
 	ret.ID = e.ID
-	ret.Age = e.Age
+	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
-	ret.Gmail = e.Gmail
-	ret.IconImg = e.IconImg
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
 	return &ret
 }
 
@@ -566,11 +740,11 @@ func NewUserRead(e *ent.User) *UserRead {
 	}
 	var ret UserRead
 	ret.ID = e.ID
-	ret.Age = e.Age
+	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
-	ret.Gmail = e.Gmail
-	ret.IconImg = e.IconImg
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
 	return &ret
 }
 
@@ -598,11 +772,11 @@ func NewUserUpdate(e *ent.User) *UserUpdate {
 	}
 	var ret UserUpdate
 	ret.ID = e.ID
-	ret.Age = e.Age
+	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
-	ret.Gmail = e.Gmail
-	ret.IconImg = e.IconImg
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
 	return &ret
 }
 
@@ -631,8 +805,8 @@ func NewUserEventsList(e *ent.Event) *UserEventsList {
 	var ret UserEventsList
 	ret.ID = e.ID
 	ret.Name = e.Name
-	ret.Detail = e.Detail
-	ret.Location = e.Location
+	ret.Detail = NewOptString(e.Detail)
+	ret.Location = NewOptString(e.Location)
 	return &ret
 }
 

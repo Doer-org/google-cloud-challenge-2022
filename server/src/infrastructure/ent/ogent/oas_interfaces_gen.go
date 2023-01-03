@@ -9,6 +9,10 @@ type CreateETypeRes interface {
 	createETypeRes()
 }
 
+type CreateEcommentRes interface {
+	createEcommentRes()
+}
+
 type CreateEventRes interface {
 	createEventRes()
 }
@@ -25,6 +29,10 @@ type DeleteETypeRes interface {
 	deleteETypeRes()
 }
 
+type DeleteEcommentRes interface {
+	deleteEcommentRes()
+}
+
 type DeleteEventRes interface {
 	deleteEventRes()
 }
@@ -39,6 +47,10 @@ type ListEStateRes interface {
 
 type ListETypeRes interface {
 	listETypeRes()
+}
+
+type ListEcommentRes interface {
+	listEcommentRes()
 }
 
 type ListEventRes interface {
@@ -73,6 +85,18 @@ type ReadETypeRes interface {
 	readETypeRes()
 }
 
+type ReadEcommentEventRes interface {
+	readEcommentEventRes()
+}
+
+type ReadEcommentRes interface {
+	readEcommentRes()
+}
+
+type ReadEcommentUserRes interface {
+	readEcommentUserRes()
+}
+
 type ReadEventRes interface {
 	readEventRes()
 }
@@ -95,6 +119,10 @@ type UpdateEStateRes interface {
 
 type UpdateETypeRes interface {
 	updateETypeRes()
+}
+
+type UpdateEcommentRes interface {
+	updateEcommentRes()
 }
 
 type UpdateEventRes interface {

@@ -12,6 +12,9 @@ type EState func(*sql.Selector)
 // EType is the predicate function for etype builders.
 type EType func(*sql.Selector)
 
+// Ecomment is the predicate function for ecomment builders.
+type Ecomment func(*sql.Selector)
+
 // Event is the predicate function for event builders.
 type Event func(*sql.Selector)
 

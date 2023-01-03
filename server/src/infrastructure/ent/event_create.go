@@ -13,6 +13,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
+	"github.com/google/uuid"
 )
 
 // EventCreate is the builder for creating a Event entity.
@@ -28,17 +29,17 @@ func (ec *EventCreate) SetName(s string) *EventCreate {
 	return ec
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (ec *EventCreate) SetNillableName(s *string) *EventCreate {
-	if s != nil {
-		ec.SetName(*s)
-	}
-	return ec
-}
-
 // SetDetail sets the "detail" field.
 func (ec *EventCreate) SetDetail(s string) *EventCreate {
 	ec.mutation.SetDetail(s)
+	return ec
+}
+
+// SetNillableDetail sets the "detail" field if the given value is not nil.
+func (ec *EventCreate) SetNillableDetail(s *string) *EventCreate {
+	if s != nil {
+		ec.SetDetail(*s)
+	}
 	return ec
 }
 
@@ -48,14 +49,36 @@ func (ec *EventCreate) SetLocation(s string) *EventCreate {
 	return ec
 }
 
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (ec *EventCreate) SetNillableLocation(s *string) *EventCreate {
+	if s != nil {
+		ec.SetLocation(*s)
+	}
+	return ec
+}
+
+// SetID sets the "id" field.
+func (ec *EventCreate) SetID(u uuid.UUID) *EventCreate {
+	ec.mutation.SetID(u)
+	return ec
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ec *EventCreate) SetNillableID(u *uuid.UUID) *EventCreate {
+	if u != nil {
+		ec.SetID(*u)
+	}
+	return ec
+}
+
 // SetStateID sets the "state" edge to the EState entity by ID.
-func (ec *EventCreate) SetStateID(id int) *EventCreate {
+func (ec *EventCreate) SetStateID(id uuid.UUID) *EventCreate {
 	ec.mutation.SetStateID(id)
 	return ec
 }
 
 // SetNillableStateID sets the "state" edge to the EState entity by ID if the given value is not nil.
-func (ec *EventCreate) SetNillableStateID(id *int) *EventCreate {
+func (ec *EventCreate) SetNillableStateID(id *uuid.UUID) *EventCreate {
 	if id != nil {
 		ec = ec.SetStateID(*id)
 	}
@@ -68,13 +91,13 @@ func (ec *EventCreate) SetState(e *EState) *EventCreate {
 }
 
 // SetTypeID sets the "type" edge to the EType entity by ID.
-func (ec *EventCreate) SetTypeID(id int) *EventCreate {
+func (ec *EventCreate) SetTypeID(id uuid.UUID) *EventCreate {
 	ec.mutation.SetTypeID(id)
 	return ec
 }
 
 // SetNillableTypeID sets the "type" edge to the EType entity by ID if the given value is not nil.
-func (ec *EventCreate) SetNillableTypeID(id *int) *EventCreate {
+func (ec *EventCreate) SetNillableTypeID(id *uuid.UUID) *EventCreate {
 	if id != nil {
 		ec = ec.SetTypeID(*id)
 	}
@@ -87,14 +110,14 @@ func (ec *EventCreate) SetType(e *EType) *EventCreate {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (ec *EventCreate) AddUserIDs(ids ...int) *EventCreate {
+func (ec *EventCreate) AddUserIDs(ids ...uuid.UUID) *EventCreate {
 	ec.mutation.AddUserIDs(ids...)
 	return ec
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (ec *EventCreate) AddUsers(u ...*User) *EventCreate {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -178,9 +201,9 @@ func (ec *EventCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ec *EventCreate) defaults() {
-	if _, ok := ec.mutation.Name(); !ok {
-		v := event.DefaultName
-		ec.mutation.SetName(v)
+	if _, ok := ec.mutation.ID(); !ok {
+		v := event.DefaultID()
+		ec.mutation.SetID(v)
 	}
 }
 
@@ -194,16 +217,10 @@ func (ec *EventCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Event.name": %w`, err)}
 		}
 	}
-	if _, ok := ec.mutation.Detail(); !ok {
-		return &ValidationError{Name: "detail", err: errors.New(`ent: missing required field "Event.detail"`)}
-	}
 	if v, ok := ec.mutation.Detail(); ok {
 		if err := event.DetailValidator(v); err != nil {
 			return &ValidationError{Name: "detail", err: fmt.Errorf(`ent: validator failed for field "Event.detail": %w`, err)}
 		}
-	}
-	if _, ok := ec.mutation.Location(); !ok {
-		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "Event.location"`)}
 	}
 	if v, ok := ec.mutation.Location(); ok {
 		if err := event.LocationValidator(v); err != nil {
@@ -221,8 +238,13 @@ func (ec *EventCreate) sqlSave(ctx context.Context) (*Event, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	return _node, nil
 }
 
@@ -232,11 +254,15 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: event.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: event.FieldID,
 			},
 		}
 	)
+	if id, ok := ec.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
 	if value, ok := ec.mutation.Name(); ok {
 		_spec.SetField(event.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -258,7 +284,7 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: estate.FieldID,
 				},
 			},
@@ -277,7 +303,7 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: etype.FieldID,
 				},
 			},
@@ -296,7 +322,7 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -350,10 +376,6 @@ func (ecb *EventCreateBulk) Save(ctx context.Context) ([]*Event, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

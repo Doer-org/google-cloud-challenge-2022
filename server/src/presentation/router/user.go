@@ -8,12 +8,13 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func initUserRouter(r *chi.Mux,c *ent.Client){
+func initUserRouter(r *chi.Mux, c *ent.Client) {
 	repo := persistance.NewUserRepository(c)
 	uc := usecase.NewUserUsecase(repo)
 	h := handler.NewUserHandler(uc)
 
-	r.Route("/user",func(r chi.Router) {
-		r.Post("/",h.Create) //TODO: UC が大文字になっているのでなおす
+	r.Route("/user", func(r chi.Router) {
+		r.Post("/", h.Create)
+		r.Get("/{mail}", h.GetByMail)
 	})
 }

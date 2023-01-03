@@ -15,14 +15,10 @@ func InitRouter(c *ent.Client) {
 
 	setMiddleware(r)
 	initHealthRouer(r)
-	initUserRouter(r,c)
-
-	r.Get("/",func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("ok!"))
-	})
+	initUserRouter(r, c)
 
 	http.ListenAndServe(
-		fmt.Sprintf(":%s",helper.GetEnvOrDefault("PORT","8080")),
+		fmt.Sprintf(":%s", helper.GetEnvOrDefault("PORT", "8080")),
 		r,
 	)
 }

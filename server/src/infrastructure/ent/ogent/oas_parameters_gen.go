@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/go-faster/errors"
+	"github.com/google/uuid"
 
 	"github.com/ogen-go/ogen/conv"
 	"github.com/ogen-go/ogen/middleware"
@@ -18,7 +19,7 @@ import (
 // DeleteEStateParams is parameters of deleteEState operation.
 type DeleteEStateParams struct {
 	// ID of the EState.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackDeleteEStateParams(packed middleware.Parameters) (params DeleteEStateParams) {
@@ -27,7 +28,7 @@ func unpackDeleteEStateParams(packed middleware.Parameters) (params DeleteEState
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -53,7 +54,7 @@ func decodeDeleteEStateParams(args [1]string, r *http.Request) (params DeleteESt
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -80,7 +81,7 @@ func decodeDeleteEStateParams(args [1]string, r *http.Request) (params DeleteESt
 // DeleteETypeParams is parameters of deleteEType operation.
 type DeleteETypeParams struct {
 	// ID of the EType.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackDeleteETypeParams(packed middleware.Parameters) (params DeleteETypeParams) {
@@ -89,7 +90,7 @@ func unpackDeleteETypeParams(packed middleware.Parameters) (params DeleteETypePa
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -115,7 +116,69 @@ func decodeDeleteETypeParams(args [1]string, r *http.Request) (params DeleteETyp
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
+				if err != nil {
+					return err
+				}
+
+				params.ID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "id",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// DeleteEcommentParams is parameters of deleteEcomment operation.
+type DeleteEcommentParams struct {
+	// ID of the Ecomment.
+	ID uuid.UUID
+}
+
+func unpackDeleteEcommentParams(packed middleware.Parameters) (params DeleteEcommentParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "id",
+			In:   "path",
+		}
+		params.ID = packed[key].(uuid.UUID)
+	}
+	return params
+}
+
+func decodeDeleteEcommentParams(args [1]string, r *http.Request) (params DeleteEcommentParams, _ error) {
+	// Decode path: id.
+	if err := func() error {
+		param, err := url.PathUnescape(args[0])
+		if err != nil {
+			return errors.Wrap(err, "unescape path")
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "id",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -142,7 +205,7 @@ func decodeDeleteETypeParams(args [1]string, r *http.Request) (params DeleteETyp
 // DeleteEventParams is parameters of deleteEvent operation.
 type DeleteEventParams struct {
 	// ID of the Event.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackDeleteEventParams(packed middleware.Parameters) (params DeleteEventParams) {
@@ -151,7 +214,7 @@ func unpackDeleteEventParams(packed middleware.Parameters) (params DeleteEventPa
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -177,7 +240,7 @@ func decodeDeleteEventParams(args [1]string, r *http.Request) (params DeleteEven
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -204,7 +267,7 @@ func decodeDeleteEventParams(args [1]string, r *http.Request) (params DeleteEven
 // DeleteUserParams is parameters of deleteUser operation.
 type DeleteUserParams struct {
 	// ID of the User.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackDeleteUserParams(packed middleware.Parameters) (params DeleteUserParams) {
@@ -213,7 +276,7 @@ func unpackDeleteUserParams(packed middleware.Parameters) (params DeleteUserPara
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -239,7 +302,7 @@ func decodeDeleteUserParams(args [1]string, r *http.Request) (params DeleteUserP
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -497,6 +560,123 @@ func decodeListETypeParams(args [0]string, r *http.Request) (params ListETypePar
 	return params, nil
 }
 
+// ListEcommentParams is parameters of listEcomment operation.
+type ListEcommentParams struct {
+	// What page to render.
+	Page OptInt
+	// Item count to render per page.
+	ItemsPerPage OptInt
+}
+
+func unpackListEcommentParams(packed middleware.Parameters) (params ListEcommentParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "page",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Page = v.(OptInt)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "itemsPerPage",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.ItemsPerPage = v.(OptInt)
+		}
+	}
+	return params
+}
+
+func decodeListEcommentParams(args [0]string, r *http.Request) (params ListEcommentParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: page.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "page",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotPageVal int
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotPageVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Page.SetTo(paramsDotPageVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "page",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: itemsPerPage.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "itemsPerPage",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotItemsPerPageVal int
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotItemsPerPageVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.ItemsPerPage.SetTo(paramsDotItemsPerPageVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "itemsPerPage",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // ListEventParams is parameters of listEvent operation.
 type ListEventParams struct {
 	// What page to render.
@@ -617,7 +797,7 @@ func decodeListEventParams(args [0]string, r *http.Request) (params ListEventPar
 // ListEventUsersParams is parameters of listEventUsers operation.
 type ListEventUsersParams struct {
 	// ID of the Event.
-	ID int
+	ID uuid.UUID
 	// What page to render.
 	Page OptInt
 	// Item count to render per page.
@@ -630,7 +810,7 @@ func unpackListEventUsersParams(packed middleware.Parameters) (params ListEventU
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -675,7 +855,7 @@ func decodeListEventUsersParams(args [1]string, r *http.Request) (params ListEve
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -901,7 +1081,7 @@ func decodeListUserParams(args [0]string, r *http.Request) (params ListUserParam
 // ListUserEventsParams is parameters of listUserEvents operation.
 type ListUserEventsParams struct {
 	// ID of the User.
-	ID int
+	ID uuid.UUID
 	// What page to render.
 	Page OptInt
 	// Item count to render per page.
@@ -914,7 +1094,7 @@ func unpackListUserEventsParams(packed middleware.Parameters) (params ListUserEv
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -959,7 +1139,7 @@ func decodeListUserEventsParams(args [1]string, r *http.Request) (params ListUse
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1068,7 +1248,7 @@ func decodeListUserEventsParams(args [1]string, r *http.Request) (params ListUse
 // ReadEStateParams is parameters of readEState operation.
 type ReadEStateParams struct {
 	// ID of the EState.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackReadEStateParams(packed middleware.Parameters) (params ReadEStateParams) {
@@ -1077,7 +1257,7 @@ func unpackReadEStateParams(packed middleware.Parameters) (params ReadEStatePara
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1103,7 +1283,7 @@ func decodeReadEStateParams(args [1]string, r *http.Request) (params ReadEStateP
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1130,7 +1310,7 @@ func decodeReadEStateParams(args [1]string, r *http.Request) (params ReadEStateP
 // ReadEStateEventParams is parameters of readEStateEvent operation.
 type ReadEStateEventParams struct {
 	// ID of the EState.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackReadEStateEventParams(packed middleware.Parameters) (params ReadEStateEventParams) {
@@ -1139,7 +1319,7 @@ func unpackReadEStateEventParams(packed middleware.Parameters) (params ReadEStat
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1165,7 +1345,7 @@ func decodeReadEStateEventParams(args [1]string, r *http.Request) (params ReadES
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1192,7 +1372,7 @@ func decodeReadEStateEventParams(args [1]string, r *http.Request) (params ReadES
 // ReadETypeParams is parameters of readEType operation.
 type ReadETypeParams struct {
 	// ID of the EType.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackReadETypeParams(packed middleware.Parameters) (params ReadETypeParams) {
@@ -1201,7 +1381,7 @@ func unpackReadETypeParams(packed middleware.Parameters) (params ReadETypeParams
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1227,7 +1407,7 @@ func decodeReadETypeParams(args [1]string, r *http.Request) (params ReadETypePar
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1254,7 +1434,7 @@ func decodeReadETypeParams(args [1]string, r *http.Request) (params ReadETypePar
 // ReadETypeEventParams is parameters of readETypeEvent operation.
 type ReadETypeEventParams struct {
 	// ID of the EType.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackReadETypeEventParams(packed middleware.Parameters) (params ReadETypeEventParams) {
@@ -1263,7 +1443,7 @@ func unpackReadETypeEventParams(packed middleware.Parameters) (params ReadETypeE
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1289,7 +1469,193 @@ func decodeReadETypeEventParams(args [1]string, r *http.Request) (params ReadETy
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
+				if err != nil {
+					return err
+				}
+
+				params.ID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "id",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// ReadEcommentParams is parameters of readEcomment operation.
+type ReadEcommentParams struct {
+	// ID of the Ecomment.
+	ID uuid.UUID
+}
+
+func unpackReadEcommentParams(packed middleware.Parameters) (params ReadEcommentParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "id",
+			In:   "path",
+		}
+		params.ID = packed[key].(uuid.UUID)
+	}
+	return params
+}
+
+func decodeReadEcommentParams(args [1]string, r *http.Request) (params ReadEcommentParams, _ error) {
+	// Decode path: id.
+	if err := func() error {
+		param, err := url.PathUnescape(args[0])
+		if err != nil {
+			return errors.Wrap(err, "unescape path")
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "id",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToUUID(val)
+				if err != nil {
+					return err
+				}
+
+				params.ID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "id",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// ReadEcommentEventParams is parameters of readEcommentEvent operation.
+type ReadEcommentEventParams struct {
+	// ID of the Ecomment.
+	ID uuid.UUID
+}
+
+func unpackReadEcommentEventParams(packed middleware.Parameters) (params ReadEcommentEventParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "id",
+			In:   "path",
+		}
+		params.ID = packed[key].(uuid.UUID)
+	}
+	return params
+}
+
+func decodeReadEcommentEventParams(args [1]string, r *http.Request) (params ReadEcommentEventParams, _ error) {
+	// Decode path: id.
+	if err := func() error {
+		param, err := url.PathUnescape(args[0])
+		if err != nil {
+			return errors.Wrap(err, "unescape path")
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "id",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToUUID(val)
+				if err != nil {
+					return err
+				}
+
+				params.ID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "id",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// ReadEcommentUserParams is parameters of readEcommentUser operation.
+type ReadEcommentUserParams struct {
+	// ID of the Ecomment.
+	ID uuid.UUID
+}
+
+func unpackReadEcommentUserParams(packed middleware.Parameters) (params ReadEcommentUserParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "id",
+			In:   "path",
+		}
+		params.ID = packed[key].(uuid.UUID)
+	}
+	return params
+}
+
+func decodeReadEcommentUserParams(args [1]string, r *http.Request) (params ReadEcommentUserParams, _ error) {
+	// Decode path: id.
+	if err := func() error {
+		param, err := url.PathUnescape(args[0])
+		if err != nil {
+			return errors.Wrap(err, "unescape path")
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "id",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1316,7 +1682,7 @@ func decodeReadETypeEventParams(args [1]string, r *http.Request) (params ReadETy
 // ReadEventParams is parameters of readEvent operation.
 type ReadEventParams struct {
 	// ID of the Event.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackReadEventParams(packed middleware.Parameters) (params ReadEventParams) {
@@ -1325,7 +1691,7 @@ func unpackReadEventParams(packed middleware.Parameters) (params ReadEventParams
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1351,7 +1717,7 @@ func decodeReadEventParams(args [1]string, r *http.Request) (params ReadEventPar
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1378,7 +1744,7 @@ func decodeReadEventParams(args [1]string, r *http.Request) (params ReadEventPar
 // ReadEventStateParams is parameters of readEventState operation.
 type ReadEventStateParams struct {
 	// ID of the Event.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackReadEventStateParams(packed middleware.Parameters) (params ReadEventStateParams) {
@@ -1387,7 +1753,7 @@ func unpackReadEventStateParams(packed middleware.Parameters) (params ReadEventS
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1413,7 +1779,7 @@ func decodeReadEventStateParams(args [1]string, r *http.Request) (params ReadEve
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1440,7 +1806,7 @@ func decodeReadEventStateParams(args [1]string, r *http.Request) (params ReadEve
 // ReadEventTypeParams is parameters of readEventType operation.
 type ReadEventTypeParams struct {
 	// ID of the Event.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackReadEventTypeParams(packed middleware.Parameters) (params ReadEventTypeParams) {
@@ -1449,7 +1815,7 @@ func unpackReadEventTypeParams(packed middleware.Parameters) (params ReadEventTy
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1475,7 +1841,7 @@ func decodeReadEventTypeParams(args [1]string, r *http.Request) (params ReadEven
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1502,7 +1868,7 @@ func decodeReadEventTypeParams(args [1]string, r *http.Request) (params ReadEven
 // ReadUserParams is parameters of readUser operation.
 type ReadUserParams struct {
 	// ID of the User.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackReadUserParams(packed middleware.Parameters) (params ReadUserParams) {
@@ -1511,7 +1877,7 @@ func unpackReadUserParams(packed middleware.Parameters) (params ReadUserParams) 
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1537,7 +1903,7 @@ func decodeReadUserParams(args [1]string, r *http.Request) (params ReadUserParam
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1564,7 +1930,7 @@ func decodeReadUserParams(args [1]string, r *http.Request) (params ReadUserParam
 // UpdateEStateParams is parameters of updateEState operation.
 type UpdateEStateParams struct {
 	// ID of the EState.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackUpdateEStateParams(packed middleware.Parameters) (params UpdateEStateParams) {
@@ -1573,7 +1939,7 @@ func unpackUpdateEStateParams(packed middleware.Parameters) (params UpdateEState
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1599,7 +1965,7 @@ func decodeUpdateEStateParams(args [1]string, r *http.Request) (params UpdateESt
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1626,7 +1992,7 @@ func decodeUpdateEStateParams(args [1]string, r *http.Request) (params UpdateESt
 // UpdateETypeParams is parameters of updateEType operation.
 type UpdateETypeParams struct {
 	// ID of the EType.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackUpdateETypeParams(packed middleware.Parameters) (params UpdateETypeParams) {
@@ -1635,7 +2001,7 @@ func unpackUpdateETypeParams(packed middleware.Parameters) (params UpdateETypePa
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1661,7 +2027,69 @@ func decodeUpdateETypeParams(args [1]string, r *http.Request) (params UpdateETyp
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
+				if err != nil {
+					return err
+				}
+
+				params.ID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "id",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// UpdateEcommentParams is parameters of updateEcomment operation.
+type UpdateEcommentParams struct {
+	// ID of the Ecomment.
+	ID uuid.UUID
+}
+
+func unpackUpdateEcommentParams(packed middleware.Parameters) (params UpdateEcommentParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "id",
+			In:   "path",
+		}
+		params.ID = packed[key].(uuid.UUID)
+	}
+	return params
+}
+
+func decodeUpdateEcommentParams(args [1]string, r *http.Request) (params UpdateEcommentParams, _ error) {
+	// Decode path: id.
+	if err := func() error {
+		param, err := url.PathUnescape(args[0])
+		if err != nil {
+			return errors.Wrap(err, "unescape path")
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "id",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1688,7 +2116,7 @@ func decodeUpdateETypeParams(args [1]string, r *http.Request) (params UpdateETyp
 // UpdateEventParams is parameters of updateEvent operation.
 type UpdateEventParams struct {
 	// ID of the Event.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackUpdateEventParams(packed middleware.Parameters) (params UpdateEventParams) {
@@ -1697,7 +2125,7 @@ func unpackUpdateEventParams(packed middleware.Parameters) (params UpdateEventPa
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1723,7 +2151,7 @@ func decodeUpdateEventParams(args [1]string, r *http.Request) (params UpdateEven
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}
@@ -1750,7 +2178,7 @@ func decodeUpdateEventParams(args [1]string, r *http.Request) (params UpdateEven
 // UpdateUserParams is parameters of updateUser operation.
 type UpdateUserParams struct {
 	// ID of the User.
-	ID int
+	ID uuid.UUID
 }
 
 func unpackUpdateUserParams(packed middleware.Parameters) (params UpdateUserParams) {
@@ -1759,7 +2187,7 @@ func unpackUpdateUserParams(packed middleware.Parameters) (params UpdateUserPara
 			Name: "id",
 			In:   "path",
 		}
-		params.ID = packed[key].(int)
+		params.ID = packed[key].(uuid.UUID)
 	}
 	return params
 }
@@ -1785,7 +2213,7 @@ func decodeUpdateUserParams(args [1]string, r *http.Request) (params UpdateUserP
 					return err
 				}
 
-				c, err := conv.ToInt(val)
+				c, err := conv.ToUUID(val)
 				if err != nil {
 					return err
 				}

@@ -20,6 +20,12 @@ type Handler interface {
 	//
 	// POST /e-types
 	CreateEType(ctx context.Context, req *CreateETypeReq) (CreateETypeRes, error)
+	// CreateEcomment implements createEcomment operation.
+	//
+	// Creates a new Ecomment and persists it to storage.
+	//
+	// POST /ecomments
+	CreateEcomment(ctx context.Context, req *CreateEcommentReq) (CreateEcommentRes, error)
 	// CreateEvent implements createEvent operation.
 	//
 	// Creates a new Event and persists it to storage.
@@ -44,6 +50,12 @@ type Handler interface {
 	//
 	// DELETE /e-types/{id}
 	DeleteEType(ctx context.Context, params DeleteETypeParams) (DeleteETypeRes, error)
+	// DeleteEcomment implements deleteEcomment operation.
+	//
+	// Deletes the Ecomment with the requested ID.
+	//
+	// DELETE /ecomments/{id}
+	DeleteEcomment(ctx context.Context, params DeleteEcommentParams) (DeleteEcommentRes, error)
 	// DeleteEvent implements deleteEvent operation.
 	//
 	// Deletes the Event with the requested ID.
@@ -68,6 +80,12 @@ type Handler interface {
 	//
 	// GET /e-types
 	ListEType(ctx context.Context, params ListETypeParams) (ListETypeRes, error)
+	// ListEcomment implements listEcomment operation.
+	//
+	// List Ecomments.
+	//
+	// GET /ecomments
+	ListEcomment(ctx context.Context, params ListEcommentParams) (ListEcommentRes, error)
 	// ListEvent implements listEvent operation.
 	//
 	// List Events.
@@ -116,6 +134,24 @@ type Handler interface {
 	//
 	// GET /e-types/{id}/event
 	ReadETypeEvent(ctx context.Context, params ReadETypeEventParams) (ReadETypeEventRes, error)
+	// ReadEcomment implements readEcomment operation.
+	//
+	// Finds the Ecomment with the requested ID and returns it.
+	//
+	// GET /ecomments/{id}
+	ReadEcomment(ctx context.Context, params ReadEcommentParams) (ReadEcommentRes, error)
+	// ReadEcommentEvent implements readEcommentEvent operation.
+	//
+	// Find the attached Event of the Ecomment with the given ID.
+	//
+	// GET /ecomments/{id}/event
+	ReadEcommentEvent(ctx context.Context, params ReadEcommentEventParams) (ReadEcommentEventRes, error)
+	// ReadEcommentUser implements readEcommentUser operation.
+	//
+	// Find the attached User of the Ecomment with the given ID.
+	//
+	// GET /ecomments/{id}/user
+	ReadEcommentUser(ctx context.Context, params ReadEcommentUserParams) (ReadEcommentUserRes, error)
 	// ReadEvent implements readEvent operation.
 	//
 	// Finds the Event with the requested ID and returns it.
@@ -152,6 +188,12 @@ type Handler interface {
 	//
 	// PATCH /e-types/{id}
 	UpdateEType(ctx context.Context, req *UpdateETypeReq, params UpdateETypeParams) (UpdateETypeRes, error)
+	// UpdateEcomment implements updateEcomment operation.
+	//
+	// Updates a Ecomment and persists changes to storage.
+	//
+	// PATCH /ecomments/{id}
+	UpdateEcomment(ctx context.Context, req *UpdateEcommentReq, params UpdateEcommentParams) (UpdateEcommentRes, error)
 	// UpdateEvent implements updateEvent operation.
 	//
 	// Updates a Event and persists changes to storage.

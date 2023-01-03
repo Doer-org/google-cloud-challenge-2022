@@ -12,11 +12,11 @@ func DSN() (string, error) {
 	}
 
 	// DBの環境変数
-	dbHost     := os.Getenv("POSTGRES_HOST")
-	dbPort     := os.Getenv("POSTGRES_PORT")
-	dbUser     := os.Getenv("POSTGRES_USER")
+	dbHost := os.Getenv("POSTGRES_HOST")
+	dbPort := os.Getenv("POSTGRES_PORT")
+	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
-	dbName     := os.Getenv("POSTGRES_DB")
+	dbName := os.Getenv("POSTGRES_DB")
 
 	if dbUser == "" ||
 		dbPassword == "" ||

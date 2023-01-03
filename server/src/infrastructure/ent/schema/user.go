@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // User holds the schema definition for the User entity.
@@ -14,18 +15,22 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
+		field.UUID("id", uuid.UUID{}).
+			Default(uuid.New),
 		field.Int("age").
+			Optional().
 			Min(0).
 			Max(100),
 		field.String("name").
-			Default("unknown").
+			NotEmpty().
 			MaxLen(20),
 		field.Bool("authenticated").
 			Default(false),
-		field.String("gmail").
-			MaxLen(50).
-			Unique(),
-		field.String("icon_img").
+		field.String("mail").
+			Optional().
+			MaxLen(50),
+		field.String("icon").
+			NotEmpty().
 			MaxLen(200),
 	}
 }
@@ -33,6 +38,6 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("events",Event.Type),
+		edge.To("events", Event.Type),
 	}
 }

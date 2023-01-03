@@ -8,23 +8,24 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
+	"github.com/google/uuid"
 )
 
 // User is the model entity for the User schema.
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// Age holds the value of the "age" field.
 	Age int `json:"age,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Authenticated holds the value of the "authenticated" field.
 	Authenticated bool `json:"authenticated,omitempty"`
-	// Gmail holds the value of the "gmail" field.
-	Gmail string `json:"gmail,omitempty"`
-	// IconImg holds the value of the "icon_img" field.
-	IconImg string `json:"icon_img,omitempty"`
+	// Mail holds the value of the "mail" field.
+	Mail string `json:"mail,omitempty"`
+	// Icon holds the value of the "icon" field.
+	Icon string `json:"icon,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges UserEdges `json:"edges"`
@@ -55,10 +56,12 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldAuthenticated:
 			values[i] = new(sql.NullBool)
-		case user.FieldID, user.FieldAge:
+		case user.FieldAge:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldGmail, user.FieldIconImg:
+		case user.FieldName, user.FieldMail, user.FieldIcon:
 			values[i] = new(sql.NullString)
+		case user.FieldID:
+			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
 		}
@@ -75,11 +78,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				u.ID = *value
 			}
-			u.ID = int(value.Int64)
 		case user.FieldAge:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field age", values[i])
@@ -98,17 +101,17 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Authenticated = value.Bool
 			}
-		case user.FieldGmail:
+		case user.FieldMail:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field gmail", values[i])
+				return fmt.Errorf("unexpected type %T for field mail", values[i])
 			} else if value.Valid {
-				u.Gmail = value.String
+				u.Mail = value.String
 			}
-		case user.FieldIconImg:
+		case user.FieldIcon:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field icon_img", values[i])
+				return fmt.Errorf("unexpected type %T for field icon", values[i])
 			} else if value.Valid {
-				u.IconImg = value.String
+				u.Icon = value.String
 			}
 		}
 	}
@@ -152,11 +155,11 @@ func (u *User) String() string {
 	builder.WriteString("authenticated=")
 	builder.WriteString(fmt.Sprintf("%v", u.Authenticated))
 	builder.WriteString(", ")
-	builder.WriteString("gmail=")
-	builder.WriteString(u.Gmail)
+	builder.WriteString("mail=")
+	builder.WriteString(u.Mail)
 	builder.WriteString(", ")
-	builder.WriteString("icon_img=")
-	builder.WriteString(u.IconImg)
+	builder.WriteString("icon=")
+	builder.WriteString(u.Icon)
 	builder.WriteByte(')')
 	return builder.String()
 }

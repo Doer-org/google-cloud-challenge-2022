@@ -13,6 +13,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
+	"github.com/google/uuid"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -35,23 +36,29 @@ func (uu *UserUpdate) SetAge(i int) *UserUpdate {
 	return uu
 }
 
+// SetNillableAge sets the "age" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableAge(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetAge(*i)
+	}
+	return uu
+}
+
 // AddAge adds i to the "age" field.
 func (uu *UserUpdate) AddAge(i int) *UserUpdate {
 	uu.mutation.AddAge(i)
 	return uu
 }
 
-// SetName sets the "name" field.
-func (uu *UserUpdate) SetName(s string) *UserUpdate {
-	uu.mutation.SetName(s)
+// ClearAge clears the value of the "age" field.
+func (uu *UserUpdate) ClearAge() *UserUpdate {
+	uu.mutation.ClearAge()
 	return uu
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableName(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetName(*s)
-	}
+// SetName sets the "name" field.
+func (uu *UserUpdate) SetName(s string) *UserUpdate {
+	uu.mutation.SetName(s)
 	return uu
 }
 
@@ -69,27 +76,41 @@ func (uu *UserUpdate) SetNillableAuthenticated(b *bool) *UserUpdate {
 	return uu
 }
 
-// SetGmail sets the "gmail" field.
-func (uu *UserUpdate) SetGmail(s string) *UserUpdate {
-	uu.mutation.SetGmail(s)
+// SetMail sets the "mail" field.
+func (uu *UserUpdate) SetMail(s string) *UserUpdate {
+	uu.mutation.SetMail(s)
 	return uu
 }
 
-// SetIconImg sets the "icon_img" field.
-func (uu *UserUpdate) SetIconImg(s string) *UserUpdate {
-	uu.mutation.SetIconImg(s)
+// SetNillableMail sets the "mail" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableMail(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetMail(*s)
+	}
+	return uu
+}
+
+// ClearMail clears the value of the "mail" field.
+func (uu *UserUpdate) ClearMail() *UserUpdate {
+	uu.mutation.ClearMail()
+	return uu
+}
+
+// SetIcon sets the "icon" field.
+func (uu *UserUpdate) SetIcon(s string) *UserUpdate {
+	uu.mutation.SetIcon(s)
 	return uu
 }
 
 // AddEventIDs adds the "events" edge to the Event entity by IDs.
-func (uu *UserUpdate) AddEventIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) AddEventIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.AddEventIDs(ids...)
 	return uu
 }
 
 // AddEvents adds the "events" edges to the Event entity.
 func (uu *UserUpdate) AddEvents(e ...*Event) *UserUpdate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -108,14 +129,14 @@ func (uu *UserUpdate) ClearEvents() *UserUpdate {
 }
 
 // RemoveEventIDs removes the "events" edge to Event entities by IDs.
-func (uu *UserUpdate) RemoveEventIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) RemoveEventIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.RemoveEventIDs(ids...)
 	return uu
 }
 
 // RemoveEvents removes "events" edges to Event entities.
 func (uu *UserUpdate) RemoveEvents(e ...*Event) *UserUpdate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -194,14 +215,14 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
 		}
 	}
-	if v, ok := uu.mutation.Gmail(); ok {
-		if err := user.GmailValidator(v); err != nil {
-			return &ValidationError{Name: "gmail", err: fmt.Errorf(`ent: validator failed for field "User.gmail": %w`, err)}
+	if v, ok := uu.mutation.Mail(); ok {
+		if err := user.MailValidator(v); err != nil {
+			return &ValidationError{Name: "mail", err: fmt.Errorf(`ent: validator failed for field "User.mail": %w`, err)}
 		}
 	}
-	if v, ok := uu.mutation.IconImg(); ok {
-		if err := user.IconImgValidator(v); err != nil {
-			return &ValidationError{Name: "icon_img", err: fmt.Errorf(`ent: validator failed for field "User.icon_img": %w`, err)}
+	if v, ok := uu.mutation.Icon(); ok {
+		if err := user.IconValidator(v); err != nil {
+			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "User.icon": %w`, err)}
 		}
 	}
 	return nil
@@ -213,7 +234,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		},
@@ -231,17 +252,23 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.AddedAge(); ok {
 		_spec.AddField(user.FieldAge, field.TypeInt, value)
 	}
+	if uu.mutation.AgeCleared() {
+		_spec.ClearField(user.FieldAge, field.TypeInt)
+	}
 	if value, ok := uu.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 	}
 	if value, ok := uu.mutation.Authenticated(); ok {
 		_spec.SetField(user.FieldAuthenticated, field.TypeBool, value)
 	}
-	if value, ok := uu.mutation.Gmail(); ok {
-		_spec.SetField(user.FieldGmail, field.TypeString, value)
+	if value, ok := uu.mutation.Mail(); ok {
+		_spec.SetField(user.FieldMail, field.TypeString, value)
 	}
-	if value, ok := uu.mutation.IconImg(); ok {
-		_spec.SetField(user.FieldIconImg, field.TypeString, value)
+	if uu.mutation.MailCleared() {
+		_spec.ClearField(user.FieldMail, field.TypeString)
+	}
+	if value, ok := uu.mutation.Icon(); ok {
+		_spec.SetField(user.FieldIcon, field.TypeString, value)
 	}
 	if uu.mutation.EventsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -252,7 +279,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -268,7 +295,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -287,7 +314,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -323,23 +350,29 @@ func (uuo *UserUpdateOne) SetAge(i int) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableAge sets the "age" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableAge(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetAge(*i)
+	}
+	return uuo
+}
+
 // AddAge adds i to the "age" field.
 func (uuo *UserUpdateOne) AddAge(i int) *UserUpdateOne {
 	uuo.mutation.AddAge(i)
 	return uuo
 }
 
-// SetName sets the "name" field.
-func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
-	uuo.mutation.SetName(s)
+// ClearAge clears the value of the "age" field.
+func (uuo *UserUpdateOne) ClearAge() *UserUpdateOne {
+	uuo.mutation.ClearAge()
 	return uuo
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableName(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetName(*s)
-	}
+// SetName sets the "name" field.
+func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
+	uuo.mutation.SetName(s)
 	return uuo
 }
 
@@ -357,27 +390,41 @@ func (uuo *UserUpdateOne) SetNillableAuthenticated(b *bool) *UserUpdateOne {
 	return uuo
 }
 
-// SetGmail sets the "gmail" field.
-func (uuo *UserUpdateOne) SetGmail(s string) *UserUpdateOne {
-	uuo.mutation.SetGmail(s)
+// SetMail sets the "mail" field.
+func (uuo *UserUpdateOne) SetMail(s string) *UserUpdateOne {
+	uuo.mutation.SetMail(s)
 	return uuo
 }
 
-// SetIconImg sets the "icon_img" field.
-func (uuo *UserUpdateOne) SetIconImg(s string) *UserUpdateOne {
-	uuo.mutation.SetIconImg(s)
+// SetNillableMail sets the "mail" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableMail(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetMail(*s)
+	}
+	return uuo
+}
+
+// ClearMail clears the value of the "mail" field.
+func (uuo *UserUpdateOne) ClearMail() *UserUpdateOne {
+	uuo.mutation.ClearMail()
+	return uuo
+}
+
+// SetIcon sets the "icon" field.
+func (uuo *UserUpdateOne) SetIcon(s string) *UserUpdateOne {
+	uuo.mutation.SetIcon(s)
 	return uuo
 }
 
 // AddEventIDs adds the "events" edge to the Event entity by IDs.
-func (uuo *UserUpdateOne) AddEventIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddEventIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.AddEventIDs(ids...)
 	return uuo
 }
 
 // AddEvents adds the "events" edges to the Event entity.
 func (uuo *UserUpdateOne) AddEvents(e ...*Event) *UserUpdateOne {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -396,14 +443,14 @@ func (uuo *UserUpdateOne) ClearEvents() *UserUpdateOne {
 }
 
 // RemoveEventIDs removes the "events" edge to Event entities by IDs.
-func (uuo *UserUpdateOne) RemoveEventIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemoveEventIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.RemoveEventIDs(ids...)
 	return uuo
 }
 
 // RemoveEvents removes "events" edges to Event entities.
 func (uuo *UserUpdateOne) RemoveEvents(e ...*Event) *UserUpdateOne {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -495,14 +542,14 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
 		}
 	}
-	if v, ok := uuo.mutation.Gmail(); ok {
-		if err := user.GmailValidator(v); err != nil {
-			return &ValidationError{Name: "gmail", err: fmt.Errorf(`ent: validator failed for field "User.gmail": %w`, err)}
+	if v, ok := uuo.mutation.Mail(); ok {
+		if err := user.MailValidator(v); err != nil {
+			return &ValidationError{Name: "mail", err: fmt.Errorf(`ent: validator failed for field "User.mail": %w`, err)}
 		}
 	}
-	if v, ok := uuo.mutation.IconImg(); ok {
-		if err := user.IconImgValidator(v); err != nil {
-			return &ValidationError{Name: "icon_img", err: fmt.Errorf(`ent: validator failed for field "User.icon_img": %w`, err)}
+	if v, ok := uuo.mutation.Icon(); ok {
+		if err := user.IconValidator(v); err != nil {
+			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "User.icon": %w`, err)}
 		}
 	}
 	return nil
@@ -514,7 +561,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		},
@@ -549,17 +596,23 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.AddedAge(); ok {
 		_spec.AddField(user.FieldAge, field.TypeInt, value)
 	}
+	if uuo.mutation.AgeCleared() {
+		_spec.ClearField(user.FieldAge, field.TypeInt)
+	}
 	if value, ok := uuo.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 	}
 	if value, ok := uuo.mutation.Authenticated(); ok {
 		_spec.SetField(user.FieldAuthenticated, field.TypeBool, value)
 	}
-	if value, ok := uuo.mutation.Gmail(); ok {
-		_spec.SetField(user.FieldGmail, field.TypeString, value)
+	if value, ok := uuo.mutation.Mail(); ok {
+		_spec.SetField(user.FieldMail, field.TypeString, value)
 	}
-	if value, ok := uuo.mutation.IconImg(); ok {
-		_spec.SetField(user.FieldIconImg, field.TypeString, value)
+	if uuo.mutation.MailCleared() {
+		_spec.ClearField(user.FieldMail, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Icon(); ok {
+		_spec.SetField(user.FieldIcon, field.TypeString, value)
 	}
 	if uuo.mutation.EventsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -570,7 +623,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -586,7 +639,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -605,7 +658,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},

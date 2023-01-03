@@ -4,6 +4,7 @@
 # docker
 DOCKER_COMPOSE_DIR         := ./docker
 DOCKER_COMPOSE             := $(DOCKER_COMPOSE_DIR)/docker-compose.yml
+DOCKER_COMPOSE_PJ_NAME     := gc-challenge-2022-swagger
 
 # rm
 RM := rm -rf
@@ -13,12 +14,14 @@ RM := rm -rf
 up: ## docker環境を立ち上げる
 	docker-compose \
 	-f $(DOCKER_COMPOSE) \
+	-p $(DOCKER_COMPOSE_PJ_NAME) \
 	up -d
 
 .PHONY: down
 down: ## dockerイメージを削除し、docker環境を閉じる
 	docker-compose \
 	-f $(DOCKER_COMPOSE) \
+	-p $(DOCKER_COMPOSE_PJ_NAME) \
 	down \
 	--rmi all --volumes --remove-orphans
 
@@ -34,6 +37,7 @@ log: ## docker compose環境のログを確認する
 	-f $(DOCKER_COMPOSE_DEV) \
 	-f $(DOCKER_COMPOSE_DEV_SERVER) \
 	-f $(DOCKER_COMPOSE_DEV_DB) \
+	-p $(DOCKER_COMPOSE_PJ_NAME) \
 	logs -f
 
 .PHONY: help

@@ -6,31 +6,32 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.Event {
+func ID(id uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.Event {
+func IDEQ(id uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.Event {
+func IDNEQ(id uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.Event {
+func IDIn(ids ...uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		v := make([]any, len(ids))
 		for i := range v {
@@ -41,7 +42,7 @@ func IDIn(ids ...int) predicate.Event {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.Event {
+func IDNotIn(ids ...uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		v := make([]any, len(ids))
 		for i := range v {
@@ -52,28 +53,28 @@ func IDNotIn(ids ...int) predicate.Event {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.Event {
+func IDGT(id uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.Event {
+func IDGTE(id uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.Event {
+func IDLT(id uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.Event {
+func IDLTE(id uuid.UUID) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
 	})
@@ -284,6 +285,20 @@ func DetailHasSuffix(v string) predicate.Event {
 	})
 }
 
+// DetailIsNil applies the IsNil predicate on the "detail" field.
+func DetailIsNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDetail)))
+	})
+}
+
+// DetailNotNil applies the NotNil predicate on the "detail" field.
+func DetailNotNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDetail)))
+	})
+}
+
 // DetailEqualFold applies the EqualFold predicate on the "detail" field.
 func DetailEqualFold(v string) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -380,6 +395,20 @@ func LocationHasPrefix(v string) predicate.Event {
 func LocationHasSuffix(v string) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldLocation), v))
+	})
+}
+
+// LocationIsNil applies the IsNil predicate on the "location" field.
+func LocationIsNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLocation)))
+	})
+}
+
+// LocationNotNil applies the NotNil predicate on the "location" field.
+func LocationNotNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLocation)))
 	})
 }
 

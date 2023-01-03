@@ -19,4 +19,3 @@ func ConvertToJsonResponseAndErrCheck(w http.ResponseWriter, v any) {
 		logger.Println(err.Error())
 	}
 }
-

@@ -29,7 +29,7 @@ func setMiddleware(r *chi.Mux) {
 	}))
 
 	// ContentTypeにjsonを書き込む
-	r.Use(ContentTypeJson)	
+	r.Use(ContentTypeJson)
 }
 
 func ContentTypeJson(next http.Handler) http.Handler {

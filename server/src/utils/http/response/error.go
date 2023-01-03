@@ -14,12 +14,12 @@ type ErrResponse struct {
 // TODO: 成功時のステータスを引数に受け取り、
 // ConvertToJsonResponseAndErrCheckかこちらで統一した処理にしたほうがよさそう
 func NewErrResponse(w http.ResponseWriter, message error) {
-	b,err := json.Marshal(
+	b, err := json.Marshal(
 		ErrResponse{
 			Message: message.Error(),
 		},
 	)
-	if err!=nil{
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return

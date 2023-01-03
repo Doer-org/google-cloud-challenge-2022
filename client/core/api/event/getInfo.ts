@@ -1,10 +1,8 @@
- 
-import { fptsHelper } from '../uitls/fptsHelper'
+import { fptsHelper } from '../../uitls/fptsHelper'
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
-import { EventApi }from '../uitls/mockApi'  
-import { Event, Host, Participant } from '../types/event'
-import ts from 'typescript'
+import { EventApi }from '../../uitls/mockApi'  
+import { Event, Host, Participant } from '../../types/event' 
 
 const tryGetEventInfo = (event_id: number) => { 
     const getEventInfo = flow (
@@ -40,21 +38,14 @@ const tryGetEventInfo = (event_id: number) => {
     )
 }
 
-export default () => {  
-
-    const getEventInfo = (
-        okHandler : (event :  Event) => void,
-        errorHandler : (e: Error) => void,
-    ) => flow (
-        tryGetEventInfo,
-        TE.match(
-            errorHandler,
-            okHandler
-        ),
-        (task) => task().then(() => {})
-    )
-
-    return { 
-        getEventInfo, 
-    }
-}
+export const getEventInfo = (
+    okHandler : (event :  Event) => void,
+    errorHandler : (e: Error) => void,
+) => flow (
+    tryGetEventInfo,
+    TE.match(
+        errorHandler,
+        okHandler
+    ),
+    (task) => task().then(() => {})
+)

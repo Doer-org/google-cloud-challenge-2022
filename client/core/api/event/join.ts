@@ -1,11 +1,11 @@
  
-import { fptsHelper } from '../uitls/fptsHelper'
+import { fptsHelper } from '../../uitls/fptsHelper'
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
 import * as E from 'fp-ts/Either'
-import { EventApi }from '../uitls/mockApi'
-import { Event, Host } from '../types/event'
+import { EventApi }from '../../uitls/mockApi'
+import { Event, Host } from '../../types/event'
  
 
 const tryJoinEvent = (current_event_state : Event) => ( 
@@ -27,20 +27,20 @@ const tryJoinEvent = (current_event_state : Event) => (
     }
     return TE.right(next_event_state) 
 }
+export  const joinEvent = (
+    okHandler : (event :  Event) => void,
+    errorHandler : (e: Error) => void,
+) => (aaaabbbbbcccc : Event) => flow (
+    tryJoinEvent(aaaabbbbbcccc),
+    TE.match(
+        errorHandler,
+        okHandler
+    ),
+    (task) => task().then(() => {})
+)
 
 export default () => {  
 
-    const joinEvent = (
-        okHandler : (event :  Event) => void,
-        errorHandler : (e: Error) => void,
-    ) => (aaaabbbbbcccc : Event) => flow (
-        tryJoinEvent(aaaabbbbbcccc),
-        TE.match(
-            errorHandler,
-            okHandler
-        ),
-        (task) => task().then(() => {})
-    )
     return { 
         joinEvent
     }

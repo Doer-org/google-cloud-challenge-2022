@@ -2,7 +2,7 @@ import { fptsHelper } from '../../uitls/fptsHelper'
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
 import { EventApi }from '../../uitls/mockApi'  
-import { Event, Host, Participant } from '../../types/event' 
+import { Event } from '../../types/event' 
 
 const tryGetEventInfo = (event_id: number) => { 
     const getEventInfo = flow (

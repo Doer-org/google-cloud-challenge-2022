@@ -1,12 +1,6 @@
- 
-import { fptsHelper } from '../../uitls/fptsHelper'
-import {flow, pipe} from 'fp-ts/lib/function'
-import * as TE from 'fp-ts/TaskEither'
-import * as T from 'fp-ts/Task'
-import * as E from 'fp-ts/Either'
-import { EventApi }from '../../uitls/mockApi'
-import { Event, Host } from '../../types/event'
- 
+import { flow } from 'fp-ts/lib/function'
+import * as TE from 'fp-ts/TaskEither' 
+import { Event } from '../../types/event'
 
 const tryJoinEvent = (current_event_state : Event) => ( 
     param : {

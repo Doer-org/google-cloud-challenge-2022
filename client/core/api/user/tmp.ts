@@ -2,9 +2,9 @@
 import { fptsHelper } from '../../uitls/fptsHelper'
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither'
-import * as T from 'fp-ts/Task'
 import * as E from 'fp-ts/Either'
 import { UserApi }from '../../uitls/mockApi'
+
 const getUser = flow (
     UserApi.findById,
     fptsHelper.TE.ofApiResponse

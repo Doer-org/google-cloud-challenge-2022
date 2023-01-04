@@ -2,6 +2,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import useHostApi from '../../../core/hooks/useEventHost';
 import { BasicTemplate } from '../../../components/templates/shared/BasicTemplate';
+import { TypoWrapper } from '../../../components/atoms/TypoWrapper';
+import { Input } from '../../../components/atoms/form/Input';
+import { Textarea } from '../../../components/atoms/form/Textarea';
+import { FormWrapper } from '../../../components/atoms/form/FormWrapper';
+import { Button } from '../../../components/atoms/Button';
 
 export default function New() {
   const { createNewEvent } = useHostApi();
@@ -13,52 +18,55 @@ export default function New() {
   }, console.log);
 
   const [created, setCreated] = useState(false);
-  const [event_name, setEventName] = useState('event name');
-  const [max_n, setMaxN] = useState(10);
-  const [detail, setDetail] = useState('hogehogefugafuga');
-  const [location, setLocation] = useState('earth');
-
+  const [name, setName] = useState('');
+  const [capacity, setCapacity] = useState(1);
+  const [detail, setDetail] = useState('');
+  const [location, setLocation] = useState('');
   return (
     <BasicTemplate className="text-center">
-      <h1>募集する</h1>
-      <h2>イベント名</h2>
-      <input
-        value={event_name}
-        onChange={(e) => setEventName(e.target.textContent ?? '')}
-      />
-      <h2>募集人数</h2>
-      <input
-        value={max_n}
-        onChange={(e) => setMaxN(Number(e.target.textContent) ?? 0)}
-      />
-      <h2>詳細</h2>
-      <input
-        value={detail}
-        onChange={(e) => setDetail(e.target.textContent ?? '')}
-      />
-      <h2>場所</h2>
-      <input
-        value={location}
-        onChange={(e) => setLocation(e.target.textContent ?? '')}
-      />
-      <button
-        onClick={() =>
-          createEvent(
-            { user_id: 'abc' },
-            {
-              event_name: event_name,
-              max_member: max_n,
-              detail: detail,
-              location: location,
-            }
-          )
-        }
-      >
-        募集
-      </button>
-      {created ?? (
+      <TypoWrapper size="large" line="bold">
+        <h1>募集する</h1>
+      </TypoWrapper>
+      <FormWrapper>
+        <Input
+          type="text"
+          label="イベント名"
+          content={name}
+          changeContent={setName}
+        />
+        <Input
+          type="number"
+          label="募集人数"
+          content={capacity}
+          changeContent={setCapacity}
+        />
+        <Textarea label="詳細" content={detail} changeContent={setDetail} />
+        <Input
+          type="text"
+          label="場所"
+          content={location}
+          changeContent={setLocation}
+        />
+        <Button
+          className="flex m-auto my-5"
+          onClick={() => {
+            // createEvent(
+            //   { user_id: 'abc' },
+            //   {
+            //     event_name: name,
+            //     max_member: capacity,
+            //     detail: detail,
+            //     location: location,
+            //   }
+            // );
+          }}
+        >
+          募集する
+        </Button>
+      </FormWrapper>
+      {/* {created ?? (
         <Link href={`/event?id=${createdEventId}`}>募集したイベント</Link>
-      )}
+      )} */}
     </BasicTemplate>
   );
 }

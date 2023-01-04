@@ -13,7 +13,6 @@ export default function Home() {
         <TypoWrapper size="large" line="bold">
           <h1>サービス名</h1>
         </TypoWrapper>
-        <a href="/debug"> {'> '} debug page</a>
         <AuthLinks auth={auth} changeAuth={setAuth} />
       </BasicTemplate>
     </>

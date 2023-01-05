@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import useHostApi from '../../../core/hooks/useEventHost';
-import { BasicTemplate } from '../../../components/templates/shared/BasicTemplate';
-import { TypoWrapper } from '../../../components/atoms/TypoWrapper';
-import { Input } from '../../../components/atoms/form/Input';
-import { Textarea } from '../../../components/atoms/form/Textarea';
-import { FormWrapper } from '../../../components/atoms/form/FormWrapper';
-import { Button } from '../../../components/atoms/Button';
-import { MapForm } from '../../../components/atoms/form/MapForm';
+import { Button } from '../../../../components/atoms/Button';
+import { FormWrapper } from '../../../../components/atoms/form/FormWrapper';
+import { Input } from '../../../../components/atoms/form/Input';
+import { MapForm } from '../../../../components/atoms/form/MapForm';
+import { Textarea } from '../../../../components/atoms/form/Textarea';
+import { TypoWrapper } from '../../../../components/atoms/TypoWrapper';
+import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
+import useHostApi from '../../../../core/hooks/useEventHost';
 
-export default function New() {
+export default function Edit() {
   const { createNewEvent } = useHostApi();
   const [createdEventId, setCreatedEventId] = useState(0);
   const createEvent = createNewEvent((v) => {
@@ -25,7 +25,7 @@ export default function New() {
   return (
     <BasicTemplate className="text-center">
       <TypoWrapper size="large" line="bold">
-        <h1 className="mt-5">募集する</h1>
+        <h1 className="mt-5">編集する</h1>
       </TypoWrapper>
 
       <FormWrapper>
@@ -64,7 +64,7 @@ export default function New() {
             );
           }}
         >
-          募集する
+          編集完了する
         </Button>
       </FormWrapper>
 

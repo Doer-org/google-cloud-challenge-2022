@@ -1,42 +1,25 @@
-import Head from 'next/head';
-import { Inter } from '@next/font/google';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { MyHead } from '../../../../components/templates/shared/MyHead';
 import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
+import { TypoWrapper } from '../../../../components/atoms/TypoWrapper';
+import { FormWrapper } from '../../../../components/atoms/form/FormWrapper';
+import { Button } from '../../../../components/atoms/Button';
+import { EventInfo } from '../../../../components/molecules/EventInfo';
 
-const inter = Inter({ subsets: ['latin'] });
-
-export default function Completion() {
-  const [isHost, setIsHost] = useState(false);
-  const [hasJoined, setHasJoined] = useState(false);
+export default function Participate() {
+  // ここはイベントを作成したときにリンクをコピーする画面
+  const [name, setName] = useState('');
+  const [word, setWord] = useState('');
   const event_id = useRouter().query.id;
   return (
     <>
-      <MyHead title="募集タイトルを入れる" description="" />
+      <MyHead title="イベントURLコピー" description="" />
       <BasicTemplate className="text-center">
-        <h1>参加フォーム画面</h1>
-        <div>event id: {event_id}</div>
-        <button onClick={() => setIsHost((v) => !v)}>
-          isHost : {isHost ? 'true' : 'false'}
-        </button>
-
-        {isHost ? (
-          <button>募集を締め切る</button>
-        ) : !hasJoined ? (
-          <>
-            <h2>名前</h2>
-            <input></input>
-            <h2>ひとこと</h2>
-            <input></input>
-            <button onClick={() => setHasJoined(true)}> 参加 </button>
-          </>
-        ) : (
-          <>
-            <h1>参加済みです</h1>
-            <button onClick={() => setHasJoined(false)}> キャンセル </button>
-          </>
-        )}
+        <EventInfo />
+        <Button className="flex m-auto my-5" onClick={() => {}}>
+          URLをコピー
+        </Button>
       </BasicTemplate>
     </>
   );

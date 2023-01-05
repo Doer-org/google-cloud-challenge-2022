@@ -33,14 +33,21 @@ export default function New() {
           label="イベント名"
           content={name}
           changeContent={setName}
+          required={true}
         />
         <Input
           type="number"
           label="募集人数"
           content={capacity}
           changeContent={setCapacity}
+          required={true}
         />
-        <Textarea label="詳細" content={detail} changeContent={setDetail} />
+        <Textarea
+          label="詳細"
+          content={detail}
+          changeContent={setDetail}
+          required={true}
+        />
         <Input
           type="text"
           label="場所"

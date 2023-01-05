@@ -36,6 +36,8 @@ func (Event) Edges() []ent.Edge {
 			Unique(),
 		edge.To("type", EType.Type).
 			Unique(),
+		edge.To("admin", User.Type).
+			Unique(),
 		edge.From("users", User.Type).
 			Ref("events"),
 	}

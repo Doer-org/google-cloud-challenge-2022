@@ -413,6 +413,26 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								break
 							}
 							switch elem[0] {
+							case 'a': // Prefix: "admin"
+								if l := len("admin"); len(elem) >= l && elem[0:l] == "admin" {
+									elem = elem[l:]
+								} else {
+									break
+								}
+
+								if len(elem) == 0 {
+									// Leaf node.
+									switch r.Method {
+									case "GET":
+										s.handleReadEventAdminRequest([1]string{
+											args[0],
+										}, w, r)
+									default:
+										s.notAllowed(w, r, "GET")
+									}
+
+									return
+								}
 							case 's': // Prefix: "state"
 								if l := len("state"); len(elem) >= l && elem[0:l] == "state" {
 									elem = elem[l:]
@@ -1031,6 +1051,26 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								break
 							}
 							switch elem[0] {
+							case 'a': // Prefix: "admin"
+								if l := len("admin"); len(elem) >= l && elem[0:l] == "admin" {
+									elem = elem[l:]
+								} else {
+									break
+								}
+
+								if len(elem) == 0 {
+									switch method {
+									case "GET":
+										// Leaf: ReadEventAdmin
+										r.name = "ReadEventAdmin"
+										r.operationID = "readEventAdmin"
+										r.args = args
+										r.count = 1
+										return r, true
+									default:
+										return
+									}
+								}
 							case 's': // Prefix: "state"
 								if l := len("state"); len(elem) >= l && elem[0:l] == "state" {
 									elem = elem[l:]

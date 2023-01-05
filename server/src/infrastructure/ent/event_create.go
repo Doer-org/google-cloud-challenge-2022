@@ -109,6 +109,25 @@ func (ec *EventCreate) SetType(e *EType) *EventCreate {
 	return ec.SetTypeID(e.ID)
 }
 
+// SetAdminID sets the "admin" edge to the User entity by ID.
+func (ec *EventCreate) SetAdminID(id uuid.UUID) *EventCreate {
+	ec.mutation.SetAdminID(id)
+	return ec
+}
+
+// SetNillableAdminID sets the "admin" edge to the User entity by ID if the given value is not nil.
+func (ec *EventCreate) SetNillableAdminID(id *uuid.UUID) *EventCreate {
+	if id != nil {
+		ec = ec.SetAdminID(*id)
+	}
+	return ec
+}
+
+// SetAdmin sets the "admin" edge to the User entity.
+func (ec *EventCreate) SetAdmin(u *User) *EventCreate {
+	return ec.SetAdminID(u.ID)
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (ec *EventCreate) AddUserIDs(ids ...uuid.UUID) *EventCreate {
 	ec.mutation.AddUserIDs(ids...)
@@ -311,6 +330,26 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.AdminIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.event_admin = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ec.mutation.UsersIDs(); len(nodes) > 0 {

@@ -21,6 +21,8 @@ const (
 	EdgeState = "state"
 	// EdgeType holds the string denoting the type edge name in mutations.
 	EdgeType = "type"
+	// EdgeAdmin holds the string denoting the admin edge name in mutations.
+	EdgeAdmin = "admin"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
 	EdgeUsers = "users"
 	// Table holds the table name of the event in the database.
@@ -39,6 +41,13 @@ const (
 	TypeInverseTable = "etypes"
 	// TypeColumn is the table column denoting the type relation/edge.
 	TypeColumn = "event_type"
+	// AdminTable is the table that holds the admin relation/edge.
+	AdminTable = "events"
+	// AdminInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	AdminInverseTable = "users"
+	// AdminColumn is the table column denoting the admin relation/edge.
+	AdminColumn = "event_admin"
 	// UsersTable is the table that holds the users relation/edge. The primary key declared below.
 	UsersTable = "user_events"
 	// UsersInverseTable is the table name for the User entity.
@@ -54,6 +63,12 @@ var Columns = []string{
 	FieldLocation,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "events"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"event_admin",
+}
+
 var (
 	// UsersPrimaryKey and UsersColumn2 are the table columns denoting the
 	// primary key for the users relation (M2M).
@@ -64,6 +79,11 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

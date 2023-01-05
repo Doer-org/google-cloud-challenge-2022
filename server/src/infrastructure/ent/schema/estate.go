@@ -26,8 +26,8 @@ func (EState) Fields() []ent.Field {
 func (EState) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("event", Event.Type).
-			Unique().
 			Required().
+			Unique().
 			Ref("state"),
 	}
 }

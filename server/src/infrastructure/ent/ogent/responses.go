@@ -582,6 +582,38 @@ func (e *EventUpdate) Elem() EventUpdate {
 	return *e
 }
 
+func NewEventAdminRead(e *ent.User) *EventAdminRead {
+	if e == nil {
+		return nil
+	}
+	var ret EventAdminRead
+	ret.ID = e.ID
+	ret.Age = NewOptInt(e.Age)
+	ret.Name = e.Name
+	ret.Authenticated = e.Authenticated
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
+	return &ret
+}
+
+func NewEventAdminReads(es []*ent.User) []EventAdminRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]EventAdminRead, len(es))
+	for i, e := range es {
+		r[i] = NewEventAdminRead(e).Elem()
+	}
+	return r
+}
+
+func (u *EventAdminRead) Elem() EventAdminRead {
+	if u == nil {
+		return EventAdminRead{}
+	}
+	return *u
+}
+
 func NewEventStateRead(e *ent.EState) *EventStateRead {
 	if e == nil {
 		return nil

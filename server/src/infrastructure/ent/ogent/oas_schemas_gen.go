@@ -58,9 +58,9 @@ func (s *CreateETypeReq) SetEvent(val uuid.UUID) {
 }
 
 type CreateEcommentReq struct {
-	Body  string  `json:"body"`
-	Event OptUUID `json:"event"`
-	User  OptUUID `json:"user"`
+	Body  string    `json:"body"`
+	Event uuid.UUID `json:"event"`
+	User  uuid.UUID `json:"user"`
 }
 
 // GetBody returns the value of Body.
@@ -69,12 +69,12 @@ func (s *CreateEcommentReq) GetBody() string {
 }
 
 // GetEvent returns the value of Event.
-func (s *CreateEcommentReq) GetEvent() OptUUID {
+func (s *CreateEcommentReq) GetEvent() uuid.UUID {
 	return s.Event
 }
 
 // GetUser returns the value of User.
-func (s *CreateEcommentReq) GetUser() OptUUID {
+func (s *CreateEcommentReq) GetUser() uuid.UUID {
 	return s.User
 }
 
@@ -84,12 +84,12 @@ func (s *CreateEcommentReq) SetBody(val string) {
 }
 
 // SetEvent sets the value of Event.
-func (s *CreateEcommentReq) SetEvent(val OptUUID) {
+func (s *CreateEcommentReq) SetEvent(val uuid.UUID) {
 	s.Event = val
 }
 
 // SetUser sets the value of User.
-func (s *CreateEcommentReq) SetUser(val OptUUID) {
+func (s *CreateEcommentReq) SetUser(val uuid.UUID) {
 	s.User = val
 }
 
@@ -99,6 +99,7 @@ type CreateEventReq struct {
 	Location OptString   `json:"location"`
 	State    OptUUID     `json:"state"`
 	Type     OptUUID     `json:"type"`
+	Admin    OptUUID     `json:"admin"`
 	Users    []uuid.UUID `json:"users"`
 }
 
@@ -125,6 +126,11 @@ func (s *CreateEventReq) GetState() OptUUID {
 // GetType returns the value of Type.
 func (s *CreateEventReq) GetType() OptUUID {
 	return s.Type
+}
+
+// GetAdmin returns the value of Admin.
+func (s *CreateEventReq) GetAdmin() OptUUID {
+	return s.Admin
 }
 
 // GetUsers returns the value of Users.
@@ -155,6 +161,11 @@ func (s *CreateEventReq) SetState(val OptUUID) {
 // SetType sets the value of Type.
 func (s *CreateEventReq) SetType(val OptUUID) {
 	s.Type = val
+}
+
+// SetAdmin sets the value of Admin.
+func (s *CreateEventReq) SetAdmin(val OptUUID) {
+	s.Admin = val
 }
 
 // SetUsers sets the value of Users.
@@ -808,6 +819,78 @@ func (s *EcommentUserRead) SetIcon(val string) {
 
 func (*EcommentUserRead) readEcommentUserRes() {}
 
+// Ref: #/components/schemas/Event_AdminRead
+type EventAdminRead struct {
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
+}
+
+// GetID returns the value of ID.
+func (s *EventAdminRead) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetAge returns the value of Age.
+func (s *EventAdminRead) GetAge() OptInt {
+	return s.Age
+}
+
+// GetName returns the value of Name.
+func (s *EventAdminRead) GetName() string {
+	return s.Name
+}
+
+// GetAuthenticated returns the value of Authenticated.
+func (s *EventAdminRead) GetAuthenticated() bool {
+	return s.Authenticated
+}
+
+// GetMail returns the value of Mail.
+func (s *EventAdminRead) GetMail() OptString {
+	return s.Mail
+}
+
+// GetIcon returns the value of Icon.
+func (s *EventAdminRead) GetIcon() string {
+	return s.Icon
+}
+
+// SetID sets the value of ID.
+func (s *EventAdminRead) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetAge sets the value of Age.
+func (s *EventAdminRead) SetAge(val OptInt) {
+	s.Age = val
+}
+
+// SetName sets the value of Name.
+func (s *EventAdminRead) SetName(val string) {
+	s.Name = val
+}
+
+// SetAuthenticated sets the value of Authenticated.
+func (s *EventAdminRead) SetAuthenticated(val bool) {
+	s.Authenticated = val
+}
+
+// SetMail sets the value of Mail.
+func (s *EventAdminRead) SetMail(val OptString) {
+	s.Mail = val
+}
+
+// SetIcon sets the value of Icon.
+func (s *EventAdminRead) SetIcon(val string) {
+	s.Icon = val
+}
+
+func (*EventAdminRead) readEventAdminRes() {}
+
 // Ref: #/components/schemas/EventCreate
 type EventCreate struct {
 	ID       uuid.UUID `json:"id"`
@@ -1404,6 +1487,7 @@ func (*R400) readETypeRes()         {}
 func (*R400) readEcommentEventRes() {}
 func (*R400) readEcommentRes()      {}
 func (*R400) readEcommentUserRes()  {}
+func (*R400) readEventAdminRes()    {}
 func (*R400) readEventRes()         {}
 func (*R400) readEventStateRes()    {}
 func (*R400) readEventTypeRes()     {}
@@ -1469,6 +1553,7 @@ func (*R404) readETypeRes()         {}
 func (*R404) readEcommentEventRes() {}
 func (*R404) readEcommentRes()      {}
 func (*R404) readEcommentUserRes()  {}
+func (*R404) readEventAdminRes()    {}
 func (*R404) readEventRes()         {}
 func (*R404) readEventStateRes()    {}
 func (*R404) readEventTypeRes()     {}
@@ -1539,6 +1624,7 @@ func (*R409) readETypeRes()         {}
 func (*R409) readEcommentEventRes() {}
 func (*R409) readEcommentRes()      {}
 func (*R409) readEcommentUserRes()  {}
+func (*R409) readEventAdminRes()    {}
 func (*R409) readEventRes()         {}
 func (*R409) readEventStateRes()    {}
 func (*R409) readEventTypeRes()     {}
@@ -1609,6 +1695,7 @@ func (*R500) readETypeRes()         {}
 func (*R500) readEcommentEventRes() {}
 func (*R500) readEcommentRes()      {}
 func (*R500) readEcommentUserRes()  {}
+func (*R500) readEventAdminRes()    {}
 func (*R500) readEventRes()         {}
 func (*R500) readEventStateRes()    {}
 func (*R500) readEventTypeRes()     {}
@@ -1711,6 +1798,7 @@ type UpdateEventReq struct {
 	Location OptString   `json:"location"`
 	State    OptUUID     `json:"state"`
 	Type     OptUUID     `json:"type"`
+	Admin    OptUUID     `json:"admin"`
 	Users    []uuid.UUID `json:"users"`
 }
 
@@ -1737,6 +1825,11 @@ func (s *UpdateEventReq) GetState() OptUUID {
 // GetType returns the value of Type.
 func (s *UpdateEventReq) GetType() OptUUID {
 	return s.Type
+}
+
+// GetAdmin returns the value of Admin.
+func (s *UpdateEventReq) GetAdmin() OptUUID {
+	return s.Admin
 }
 
 // GetUsers returns the value of Users.
@@ -1767,6 +1860,11 @@ func (s *UpdateEventReq) SetState(val OptUUID) {
 // SetType sets the value of Type.
 func (s *UpdateEventReq) SetType(val OptUUID) {
 	s.Type = val
+}
+
+// SetAdmin sets the value of Admin.
+func (s *UpdateEventReq) SetAdmin(val OptUUID) {
+	s.Admin = val
 }
 
 // SetUsers sets the value of Users.

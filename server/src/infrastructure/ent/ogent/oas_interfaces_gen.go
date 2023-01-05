@@ -97,6 +97,10 @@ type ReadEcommentUserRes interface {
 	readEcommentUserRes()
 }
 
+type ReadEventAdminRes interface {
+	readEventAdminRes()
+}
+
 type ReadEventRes interface {
 	readEventRes()
 }

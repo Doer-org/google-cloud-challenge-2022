@@ -603,6 +603,22 @@ func (c *EventClient) QueryType(e *Event) *ETypeQuery {
 	return query
 }
 
+// QueryAdmin queries the admin edge of a Event.
+func (c *EventClient) QueryAdmin(e *Event) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, event.AdminTable, event.AdminColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryUsers queries the users edge of a Event.
 func (c *EventClient) QueryUsers(e *Event) *UserQuery {
 	query := &UserQuery{config: c.config}

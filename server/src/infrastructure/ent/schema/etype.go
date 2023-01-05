@@ -26,8 +26,8 @@ func (EType) Fields() []ent.Field {
 func (EType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("event", Event.Type).
-			Unique().
 			Required().
+			Unique().
 			Ref("type"),
 	}
 }

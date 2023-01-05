@@ -426,12 +426,8 @@ func (h *OgentHandler) CreateEcomment(ctx context.Context, req CreateEcommentReq
 	// Add all fields.
 	b.SetBody(req.Body)
 	// Add all edges.
-	if v, ok := req.Event.Get(); ok {
-		b.SetEventID(v)
-	}
-	if v, ok := req.User.Get(); ok {
-		b.SetUserID(v)
-	}
+	b.SetEventID(req.Event)
+	b.SetUserID(req.User)
 	// Persist to storage.
 	e, err := b.Save(ctx)
 	if err != nil {
@@ -667,6 +663,9 @@ func (h *OgentHandler) CreateEvent(ctx context.Context, req CreateEventReq) (Cre
 	if v, ok := req.Type.Get(); ok {
 		b.SetTypeID(v)
 	}
+	if v, ok := req.Admin.Get(); ok {
+		b.SetAdminID(v)
+	}
 	b.AddUserIDs(req.Users...)
 	// Persist to storage.
 	e, err := b.Save(ctx)
@@ -744,6 +743,9 @@ func (h *OgentHandler) UpdateEvent(ctx context.Context, req UpdateEventReq, para
 	}
 	if v, ok := req.Type.Get(); ok {
 		b.SetTypeID(v)
+	}
+	if v, ok := req.Admin.Get(); ok {
+		b.SetAdminID(v)
 	}
 	b.ClearUsers().AddUserIDs(req.Users...)
 	// Persist to storage.
@@ -890,6 +892,32 @@ func (h *OgentHandler) ReadEventType(ctx context.Context, params ReadEventTypePa
 		}
 	}
 	return NewEventTypeRead(e), nil
+}
+
+// ReadEventAdmin handles GET /events/{id}/admin requests.
+func (h *OgentHandler) ReadEventAdmin(ctx context.Context, params ReadEventAdminParams) (ReadEventAdminRes, error) {
+	q := h.client.Event.Query().Where(event.IDEQ(params.ID)).QueryAdmin()
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewEventAdminRead(e), nil
 }
 
 // ListEventUsers handles GET /events/{id}/users requests.

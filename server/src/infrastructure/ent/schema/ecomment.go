@@ -26,8 +26,10 @@ func (Ecomment) Fields() []ent.Field {
 func (Ecomment) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("event", Event.Type).
+			Required().
 			Unique(),
 		edge.To("user", User.Type).
+			Required().
 			Unique(),
 	}
 }

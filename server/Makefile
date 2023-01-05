@@ -33,7 +33,7 @@ ENT_DIR := $(GO_SRC_DIR)/infrastructure/ent
 RM := rm -rf
 
 .PHONY: up
-up: ## docker環境を立ち上げる
+up: ent-generate ## docker環境を立ち上げる
 	docker-compose $(DOCKER_COMPOSE_DEFAULT_OPTIONS) \
 	up -d
 

@@ -30,7 +30,9 @@ type EventQuery struct {
 	predicates []predicate.Event
 	withState  *EStateQuery
 	withType   *ETypeQuery
+	withAdmin  *UserQuery
 	withUsers  *UserQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -104,6 +106,28 @@ func (eq *EventQuery) QueryType() *ETypeQuery {
 			sqlgraph.From(event.Table, event.FieldID, selector),
 			sqlgraph.To(etype.Table, etype.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, event.TypeTable, event.TypeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAdmin chains the current query on the "admin" edge.
+func (eq *EventQuery) QueryAdmin() *UserQuery {
+	query := &UserQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, event.AdminTable, event.AdminColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -316,6 +340,7 @@ func (eq *EventQuery) Clone() *EventQuery {
 		predicates: append([]predicate.Event{}, eq.predicates...),
 		withState:  eq.withState.Clone(),
 		withType:   eq.withType.Clone(),
+		withAdmin:  eq.withAdmin.Clone(),
 		withUsers:  eq.withUsers.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
@@ -343,6 +368,17 @@ func (eq *EventQuery) WithType(opts ...func(*ETypeQuery)) *EventQuery {
 		opt(query)
 	}
 	eq.withType = query
+	return eq
+}
+
+// WithAdmin tells the query-builder to eager-load the nodes that are connected to
+// the "admin" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithAdmin(opts ...func(*UserQuery)) *EventQuery {
+	query := &UserQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withAdmin = query
 	return eq
 }
 
@@ -429,13 +465,21 @@ func (eq *EventQuery) prepareQuery(ctx context.Context) error {
 func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event, error) {
 	var (
 		nodes       = []*Event{}
+		withFKs     = eq.withFKs
 		_spec       = eq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			eq.withState != nil,
 			eq.withType != nil,
+			eq.withAdmin != nil,
 			eq.withUsers != nil,
 		}
 	)
+	if eq.withAdmin != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, event.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Event).scanValues(nil, columns)
 	}
@@ -463,6 +507,12 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 	if query := eq.withType; query != nil {
 		if err := eq.loadType(ctx, query, nodes, nil,
 			func(n *Event, e *EType) { n.Edges.Type = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withAdmin; query != nil {
+		if err := eq.loadAdmin(ctx, query, nodes, nil,
+			func(n *Event, e *User) { n.Edges.Admin = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -529,6 +579,35 @@ func (eq *EventQuery) loadType(ctx context.Context, query *ETypeQuery, nodes []*
 			return fmt.Errorf(`unexpected foreign-key "event_type" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadAdmin(ctx context.Context, query *UserQuery, nodes []*Event, init func(*Event), assign func(*Event, *User)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Event)
+	for i := range nodes {
+		if nodes[i].event_admin == nil {
+			continue
+		}
+		fk := *nodes[i].event_admin
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "event_admin" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }

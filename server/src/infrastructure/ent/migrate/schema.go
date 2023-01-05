@@ -52,8 +52,8 @@ var (
 	EcommentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "body", Type: field.TypeString},
-		{Name: "ecomment_event", Type: field.TypeUUID, Nullable: true},
-		{Name: "ecomment_user", Type: field.TypeUUID, Nullable: true},
+		{Name: "ecomment_event", Type: field.TypeUUID},
+		{Name: "ecomment_user", Type: field.TypeUUID},
 	}
 	// EcommentsTable holds the schema information for the "ecomments" table.
 	EcommentsTable = &schema.Table{
@@ -65,13 +65,13 @@ var (
 				Symbol:     "ecomments_events_event",
 				Columns:    []*schema.Column{EcommentsColumns[2]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "ecomments_users_user",
 				Columns:    []*schema.Column{EcommentsColumns[3]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -81,12 +81,21 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 100},
 		{Name: "detail", Type: field.TypeString, Nullable: true, Size: 500},
 		{Name: "location", Type: field.TypeString, Nullable: true, Size: 200},
+		{Name: "event_admin", Type: field.TypeUUID, Nullable: true},
 	}
 	// EventsTable holds the schema information for the "events" table.
 	EventsTable = &schema.Table{
 		Name:       "events",
 		Columns:    EventsColumns,
 		PrimaryKey: []*schema.Column{EventsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "events_users_admin",
+				Columns:    []*schema.Column{EventsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
@@ -144,6 +153,7 @@ func init() {
 	EtypesTable.ForeignKeys[0].RefTable = EventsTable
 	EcommentsTable.ForeignKeys[0].RefTable = EventsTable
 	EcommentsTable.ForeignKeys[1].RefTable = UsersTable
+	EventsTable.ForeignKeys[0].RefTable = UsersTable
 	UserEventsTable.ForeignKeys[0].RefTable = UsersTable
 	UserEventsTable.ForeignKeys[1].RefTable = EventsTable
 }

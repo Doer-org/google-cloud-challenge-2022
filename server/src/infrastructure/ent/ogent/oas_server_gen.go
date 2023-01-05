@@ -158,6 +158,12 @@ type Handler interface {
 	//
 	// GET /events/{id}
 	ReadEvent(ctx context.Context, params ReadEventParams) (ReadEventRes, error)
+	// ReadEventAdmin implements readEventAdmin operation.
+	//
+	// Find the attached User of the Event with the given ID.
+	//
+	// GET /events/{id}/admin
+	ReadEventAdmin(ctx context.Context, params ReadEventAdminParams) (ReadEventAdminRes, error)
 	// ReadEventState implements readEventState operation.
 	//
 	// Find the attached EState of the Event with the given ID.

@@ -259,16 +259,14 @@ func (s *CreateEcommentReq) encodeFields(e *jx.Encoder) {
 		e.Str(s.Body)
 	}
 	{
-		if s.Event.Set {
-			e.FieldStart("event")
-			s.Event.Encode(e)
-		}
+
+		e.FieldStart("event")
+		json.EncodeUUID(e, s.Event)
 	}
 	{
-		if s.User.Set {
-			e.FieldStart("user")
-			s.User.Encode(e)
-		}
+
+		e.FieldStart("user")
+		json.EncodeUUID(e, s.User)
 	}
 }
 
@@ -300,9 +298,11 @@ func (s *CreateEcommentReq) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"body\"")
 			}
 		case "event":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				s.Event.Reset()
-				if err := s.Event.Decode(d); err != nil {
+				v, err := json.DecodeUUID(d)
+				s.Event = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -310,9 +310,11 @@ func (s *CreateEcommentReq) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"event\"")
 			}
 		case "user":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				s.User.Reset()
-				if err := s.User.Decode(d); err != nil {
+				v, err := json.DecodeUUID(d)
+				s.User = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -329,7 +331,7 @@ func (s *CreateEcommentReq) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000001,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -414,6 +416,12 @@ func (s *CreateEventReq) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Admin.Set {
+			e.FieldStart("admin")
+			s.Admin.Encode(e)
+		}
+	}
+	{
 		if s.Users != nil {
 			e.FieldStart("users")
 			e.ArrStart()
@@ -425,13 +433,14 @@ func (s *CreateEventReq) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfCreateEventReq = [6]string{
+var jsonFieldsNameOfCreateEventReq = [7]string{
 	0: "name",
 	1: "detail",
 	2: "location",
 	3: "state",
 	4: "type",
-	5: "users",
+	5: "admin",
+	6: "users",
 }
 
 // Decode decodes CreateEventReq from json.
@@ -494,6 +503,16 @@ func (s *CreateEventReq) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"type\"")
+			}
+		case "admin":
+			if err := func() error {
+				s.Admin.Reset()
+				if err := s.Admin.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"admin\"")
 			}
 		case "users":
 			if err := func() error {
@@ -2775,6 +2794,191 @@ func (s *EcommentUserRead) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *EcommentUserRead) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *EventAdminRead) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *EventAdminRead) encodeFields(e *jx.Encoder) {
+	{
+
+		e.FieldStart("id")
+		json.EncodeUUID(e, s.ID)
+	}
+	{
+		if s.Age.Set {
+			e.FieldStart("age")
+			s.Age.Encode(e)
+		}
+	}
+	{
+
+		e.FieldStart("name")
+		e.Str(s.Name)
+	}
+	{
+
+		e.FieldStart("authenticated")
+		e.Bool(s.Authenticated)
+	}
+	{
+		if s.Mail.Set {
+			e.FieldStart("mail")
+			s.Mail.Encode(e)
+		}
+	}
+	{
+
+		e.FieldStart("icon")
+		e.Str(s.Icon)
+	}
+}
+
+var jsonFieldsNameOfEventAdminRead = [6]string{
+	0: "id",
+	1: "age",
+	2: "name",
+	3: "authenticated",
+	4: "mail",
+	5: "icon",
+}
+
+// Decode decodes EventAdminRead from json.
+func (s *EventAdminRead) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode EventAdminRead to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "id":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := json.DecodeUUID(d)
+				s.ID = v
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "age":
+			if err := func() error {
+				s.Age.Reset()
+				if err := s.Age.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"age\"")
+			}
+		case "name":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.Name = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "authenticated":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Bool()
+				s.Authenticated = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"authenticated\"")
+			}
+		case "mail":
+			if err := func() error {
+				s.Mail.Reset()
+				if err := s.Mail.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"mail\"")
+			}
+		case "icon":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				v, err := d.Str()
+				s.Icon = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"icon\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode EventAdminRead")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00101101,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfEventAdminRead) {
+					name = jsonFieldsNameOfEventAdminRead[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *EventAdminRead) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *EventAdminRead) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -5113,6 +5317,12 @@ func (s *UpdateEventReq) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Admin.Set {
+			e.FieldStart("admin")
+			s.Admin.Encode(e)
+		}
+	}
+	{
 		if s.Users != nil {
 			e.FieldStart("users")
 			e.ArrStart()
@@ -5124,13 +5334,14 @@ func (s *UpdateEventReq) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfUpdateEventReq = [6]string{
+var jsonFieldsNameOfUpdateEventReq = [7]string{
 	0: "name",
 	1: "detail",
 	2: "location",
 	3: "state",
 	4: "type",
-	5: "users",
+	5: "admin",
+	6: "users",
 }
 
 // Decode decodes UpdateEventReq from json.
@@ -5190,6 +5401,16 @@ func (s *UpdateEventReq) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"type\"")
+			}
+		case "admin":
+			if err := func() error {
+				s.Admin.Reset()
+				if err := s.Admin.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"admin\"")
 			}
 		case "users":
 			if err := func() error {

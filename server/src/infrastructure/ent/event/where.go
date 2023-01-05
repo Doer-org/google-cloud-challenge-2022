@@ -482,6 +482,34 @@ func HasTypeWith(preds ...predicate.EType) predicate.Event {
 	})
 }
 
+// HasAdmin applies the HasEdge predicate on the "admin" edge.
+func HasAdmin() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AdminTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AdminTable, AdminColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAdminWith applies the HasEdge predicate on the "admin" edge with a given conditions (other predicates).
+func HasAdminWith(preds ...predicate.User) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AdminInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AdminTable, AdminColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasUsers applies the HasEdge predicate on the "users" edge.
 func HasUsers() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {

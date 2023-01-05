@@ -42,14 +42,6 @@ func (eu *EcommentUpdate) SetEventID(id uuid.UUID) *EcommentUpdate {
 	return eu
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (eu *EcommentUpdate) SetNillableEventID(id *uuid.UUID) *EcommentUpdate {
-	if id != nil {
-		eu = eu.SetEventID(*id)
-	}
-	return eu
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (eu *EcommentUpdate) SetEvent(e *Event) *EcommentUpdate {
 	return eu.SetEventID(e.ID)
@@ -58,14 +50,6 @@ func (eu *EcommentUpdate) SetEvent(e *Event) *EcommentUpdate {
 // SetUserID sets the "user" edge to the User entity by ID.
 func (eu *EcommentUpdate) SetUserID(id uuid.UUID) *EcommentUpdate {
 	eu.mutation.SetUserID(id)
-	return eu
-}
-
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (eu *EcommentUpdate) SetNillableUserID(id *uuid.UUID) *EcommentUpdate {
-	if id != nil {
-		eu = eu.SetUserID(*id)
-	}
 	return eu
 }
 
@@ -157,6 +141,12 @@ func (eu *EcommentUpdate) check() error {
 		if err := ecomment.BodyValidator(v); err != nil {
 			return &ValidationError{Name: "body", err: fmt.Errorf(`ent: validator failed for field "Ecomment.body": %w`, err)}
 		}
+	}
+	if _, ok := eu.mutation.EventID(); eu.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Ecomment.event"`)
+	}
+	if _, ok := eu.mutation.UserID(); eu.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Ecomment.user"`)
 	}
 	return nil
 }
@@ -283,14 +273,6 @@ func (euo *EcommentUpdateOne) SetEventID(id uuid.UUID) *EcommentUpdateOne {
 	return euo
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (euo *EcommentUpdateOne) SetNillableEventID(id *uuid.UUID) *EcommentUpdateOne {
-	if id != nil {
-		euo = euo.SetEventID(*id)
-	}
-	return euo
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (euo *EcommentUpdateOne) SetEvent(e *Event) *EcommentUpdateOne {
 	return euo.SetEventID(e.ID)
@@ -299,14 +281,6 @@ func (euo *EcommentUpdateOne) SetEvent(e *Event) *EcommentUpdateOne {
 // SetUserID sets the "user" edge to the User entity by ID.
 func (euo *EcommentUpdateOne) SetUserID(id uuid.UUID) *EcommentUpdateOne {
 	euo.mutation.SetUserID(id)
-	return euo
-}
-
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (euo *EcommentUpdateOne) SetNillableUserID(id *uuid.UUID) *EcommentUpdateOne {
-	if id != nil {
-		euo = euo.SetUserID(*id)
-	}
 	return euo
 }
 
@@ -411,6 +385,12 @@ func (euo *EcommentUpdateOne) check() error {
 		if err := ecomment.BodyValidator(v); err != nil {
 			return &ValidationError{Name: "body", err: fmt.Errorf(`ent: validator failed for field "Ecomment.body": %w`, err)}
 		}
+	}
+	if _, ok := euo.mutation.EventID(); euo.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Ecomment.event"`)
+	}
+	if _, ok := euo.mutation.UserID(); euo.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Ecomment.user"`)
 	}
 	return nil
 }

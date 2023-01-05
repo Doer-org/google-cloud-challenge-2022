@@ -689,7 +689,9 @@
                   }
                 },
                 "required": [
-                  "body"
+                  "body",
+                  "event",
+                  "user"
                 ]
               }
             }
@@ -1047,6 +1049,10 @@
                     "type": "string",
                     "format": "uuid"
                   },
+                  "admin": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
                   "users": {
                     "type": "array",
                     "items": {
@@ -1211,6 +1217,10 @@
                     "type": "string",
                     "format": "uuid"
                   },
+                  "admin": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
                   "users": {
                     "type": "array",
                     "items": {
@@ -1231,6 +1241,52 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/EventUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/events/{id}/admin": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "summary": "Find the attached User",
+        "description": "Find the attached User of the Event with the given ID",
+        "operationId": "readEventAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Event",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User attached to Event with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Event_AdminRead"
                 }
               }
             }
@@ -1992,7 +2048,9 @@
         },
         "required": [
           "id",
-          "body"
+          "body",
+          "event",
+          "user"
         ]
       },
       "EcommentCreate": {
@@ -2133,6 +2191,9 @@
           "type": {
             "$ref": "#/components/schemas/EType"
           },
+          "admin": {
+            "$ref": "#/components/schemas/User"
+          },
           "users": {
             "type": "array",
             "items": {
@@ -2231,6 +2292,36 @@
         "required": [
           "id",
           "name"
+        ]
+      },
+      "Event_AdminRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "age": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "authenticated": {
+            "type": "boolean"
+          },
+          "mail": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "authenticated",
+          "icon"
         ]
       },
       "Event_StateRead": {

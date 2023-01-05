@@ -9,7 +9,7 @@ import (
 )
 
 type IUserUsecase interface {
-	Create(ctx context.Context, age int, name string, authenticated bool, mail string, icon string) error
+	Create(ctx context.Context, name string, authenticated bool, mail string, icon string) (*entity.User, error)
 	GetByMail(ctx context.Context, mail string) (*entity.User, error)
 	GetById(ctx context.Context, id string) (*entity.User, error)
 }
@@ -24,36 +24,35 @@ func NewUserUsecase(r repository.IUserRepository) IUserUsecase {
 	}
 }
 
-func (u *UserUsecase) Create(ctx context.Context, age int, name string, authenticated bool, mail string, icon string) error {
+func (uc *UserUsecase) Create(ctx context.Context, name string, authenticated bool, mail string, icon string) (*entity.User, error) {
 	if name == "" {
-		return fmt.Errorf("UserUsecase: name is empty")
+		return nil, fmt.Errorf("UserUsecase: name is empty")
 	}
 	if icon == "" {
-		return fmt.Errorf("UserUsecase: icon is empty")
+		return nil, fmt.Errorf("UserUsecase: icon is empty")
 	}
 	// TODO: mailが存在するかの確認
 
 	user := &entity.User{
-		Age:           age,
 		Name:          name,
 		Authenticated: authenticated,
 		Mail:          mail,
 		Icon:          icon,
 	}
-	return u.repo.Create(ctx, user)
+	return uc.repo.Create(ctx, user)
 }
 
-func (u *UserUsecase) GetByMail(ctx context.Context, mail string) (*entity.User, error) {
+func (uc *UserUsecase) GetByMail(ctx context.Context, mail string) (*entity.User, error) {
 	if mail == "" {
 		return nil, fmt.Errorf("UserUsecase: mail is empty")
 	}
-	return u.repo.GetByMail(ctx, mail)
+	return uc.repo.GetByMail(ctx, mail)
 }
 
-func (u *UserUsecase) GetById(ctx context.Context, id string) (*entity.User, error) {
-	uId := entity.UserId(id)
-	if uId == "" {
-		return nil, fmt.Errorf("UserUsecase: id is empty")
+func (uc *UserUsecase) GetById(ctx context.Context, userIdString string) (*entity.User, error) {
+	userId := entity.UserId(userIdString)
+	if userId == "" {
+		return nil, fmt.Errorf("UserUsecase: userId parse failed")
 	}
-	return u.repo.GetById(ctx, uId)
+	return uc.repo.GetById(ctx, userId)
 }

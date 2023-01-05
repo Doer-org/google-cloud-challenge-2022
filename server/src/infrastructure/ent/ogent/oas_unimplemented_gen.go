@@ -238,6 +238,15 @@ func (UnimplementedHandler) ReadEvent(ctx context.Context, params ReadEventParam
 	return r, ht.ErrNotImplemented
 }
 
+// ReadEventAdmin implements readEventAdmin operation.
+//
+// Find the attached User of the Event with the given ID.
+//
+// GET /events/{id}/admin
+func (UnimplementedHandler) ReadEventAdmin(ctx context.Context, params ReadEventAdminParams) (r ReadEventAdminRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ReadEventState implements readEventState operation.
 //
 // Find the attached EState of the Event with the given ID.

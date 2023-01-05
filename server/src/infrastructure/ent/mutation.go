@@ -1260,6 +1260,8 @@ type EventMutation struct {
 	clearedstate  bool
 	_type         *uuid.UUID
 	cleared_type  bool
+	admin         *uuid.UUID
+	clearedadmin  bool
 	users         map[uuid.UUID]struct{}
 	removedusers  map[uuid.UUID]struct{}
 	clearedusers  bool
@@ -1584,6 +1586,45 @@ func (m *EventMutation) ResetType() {
 	m.cleared_type = false
 }
 
+// SetAdminID sets the "admin" edge to the User entity by id.
+func (m *EventMutation) SetAdminID(id uuid.UUID) {
+	m.admin = &id
+}
+
+// ClearAdmin clears the "admin" edge to the User entity.
+func (m *EventMutation) ClearAdmin() {
+	m.clearedadmin = true
+}
+
+// AdminCleared reports if the "admin" edge to the User entity was cleared.
+func (m *EventMutation) AdminCleared() bool {
+	return m.clearedadmin
+}
+
+// AdminID returns the "admin" edge ID in the mutation.
+func (m *EventMutation) AdminID() (id uuid.UUID, exists bool) {
+	if m.admin != nil {
+		return *m.admin, true
+	}
+	return
+}
+
+// AdminIDs returns the "admin" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AdminID instead. It exists only for internal usage by the builders.
+func (m *EventMutation) AdminIDs() (ids []uuid.UUID) {
+	if id := m.admin; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAdmin resets all changes to the "admin" edge.
+func (m *EventMutation) ResetAdmin() {
+	m.admin = nil
+	m.clearedadmin = false
+}
+
 // AddUserIDs adds the "users" edge to the User entity by ids.
 func (m *EventMutation) AddUserIDs(ids ...uuid.UUID) {
 	if m.users == nil {
@@ -1805,12 +1846,15 @@ func (m *EventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.state != nil {
 		edges = append(edges, event.EdgeState)
 	}
 	if m._type != nil {
 		edges = append(edges, event.EdgeType)
+	}
+	if m.admin != nil {
+		edges = append(edges, event.EdgeAdmin)
 	}
 	if m.users != nil {
 		edges = append(edges, event.EdgeUsers)
@@ -1830,6 +1874,10 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 		if id := m._type; id != nil {
 			return []ent.Value{*id}
 		}
+	case event.EdgeAdmin:
+		if id := m.admin; id != nil {
+			return []ent.Value{*id}
+		}
 	case event.EdgeUsers:
 		ids := make([]ent.Value, 0, len(m.users))
 		for id := range m.users {
@@ -1842,7 +1890,7 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedusers != nil {
 		edges = append(edges, event.EdgeUsers)
 	}
@@ -1865,12 +1913,15 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedstate {
 		edges = append(edges, event.EdgeState)
 	}
 	if m.cleared_type {
 		edges = append(edges, event.EdgeType)
+	}
+	if m.clearedadmin {
+		edges = append(edges, event.EdgeAdmin)
 	}
 	if m.clearedusers {
 		edges = append(edges, event.EdgeUsers)
@@ -1886,6 +1937,8 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 		return m.clearedstate
 	case event.EdgeType:
 		return m.cleared_type
+	case event.EdgeAdmin:
+		return m.clearedadmin
 	case event.EdgeUsers:
 		return m.clearedusers
 	}
@@ -1902,6 +1955,9 @@ func (m *EventMutation) ClearEdge(name string) error {
 	case event.EdgeType:
 		m.ClearType()
 		return nil
+	case event.EdgeAdmin:
+		m.ClearAdmin()
+		return nil
 	}
 	return fmt.Errorf("unknown Event unique edge %s", name)
 }
@@ -1915,6 +1971,9 @@ func (m *EventMutation) ResetEdge(name string) error {
 		return nil
 	case event.EdgeType:
 		m.ResetType()
+		return nil
+	case event.EdgeAdmin:
+		m.ResetAdmin()
 		return nil
 	case event.EdgeUsers:
 		m.ResetUsers()

@@ -48,14 +48,6 @@ func (ec *EcommentCreate) SetEventID(id uuid.UUID) *EcommentCreate {
 	return ec
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (ec *EcommentCreate) SetNillableEventID(id *uuid.UUID) *EcommentCreate {
-	if id != nil {
-		ec = ec.SetEventID(*id)
-	}
-	return ec
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (ec *EcommentCreate) SetEvent(e *Event) *EcommentCreate {
 	return ec.SetEventID(e.ID)
@@ -64,14 +56,6 @@ func (ec *EcommentCreate) SetEvent(e *Event) *EcommentCreate {
 // SetUserID sets the "user" edge to the User entity by ID.
 func (ec *EcommentCreate) SetUserID(id uuid.UUID) *EcommentCreate {
 	ec.mutation.SetUserID(id)
-	return ec
-}
-
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (ec *EcommentCreate) SetNillableUserID(id *uuid.UUID) *EcommentCreate {
-	if id != nil {
-		ec = ec.SetUserID(*id)
-	}
 	return ec
 }
 
@@ -172,6 +156,12 @@ func (ec *EcommentCreate) check() error {
 		if err := ecomment.BodyValidator(v); err != nil {
 			return &ValidationError{Name: "body", err: fmt.Errorf(`ent: validator failed for field "Ecomment.body": %w`, err)}
 		}
+	}
+	if _, ok := ec.mutation.EventID(); !ok {
+		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "Ecomment.event"`)}
+	}
+	if _, ok := ec.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Ecomment.user"`)}
 	}
 	return nil
 }

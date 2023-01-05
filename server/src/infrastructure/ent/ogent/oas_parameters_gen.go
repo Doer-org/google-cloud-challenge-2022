@@ -1741,6 +1741,68 @@ func decodeReadEventParams(args [1]string, r *http.Request) (params ReadEventPar
 	return params, nil
 }
 
+// ReadEventAdminParams is parameters of readEventAdmin operation.
+type ReadEventAdminParams struct {
+	// ID of the Event.
+	ID uuid.UUID
+}
+
+func unpackReadEventAdminParams(packed middleware.Parameters) (params ReadEventAdminParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "id",
+			In:   "path",
+		}
+		params.ID = packed[key].(uuid.UUID)
+	}
+	return params
+}
+
+func decodeReadEventAdminParams(args [1]string, r *http.Request) (params ReadEventAdminParams, _ error) {
+	// Decode path: id.
+	if err := func() error {
+		param, err := url.PathUnescape(args[0])
+		if err != nil {
+			return errors.Wrap(err, "unescape path")
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "id",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToUUID(val)
+				if err != nil {
+					return err
+				}
+
+				params.ID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "id",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // ReadEventStateParams is parameters of readEventState operation.
 type ReadEventStateParams struct {
 	// ID of the Event.

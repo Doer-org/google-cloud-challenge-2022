@@ -115,6 +115,25 @@ func (eu *EventUpdate) SetType(e *EType) *EventUpdate {
 	return eu.SetTypeID(e.ID)
 }
 
+// SetAdminID sets the "admin" edge to the User entity by ID.
+func (eu *EventUpdate) SetAdminID(id uuid.UUID) *EventUpdate {
+	eu.mutation.SetAdminID(id)
+	return eu
+}
+
+// SetNillableAdminID sets the "admin" edge to the User entity by ID if the given value is not nil.
+func (eu *EventUpdate) SetNillableAdminID(id *uuid.UUID) *EventUpdate {
+	if id != nil {
+		eu = eu.SetAdminID(*id)
+	}
+	return eu
+}
+
+// SetAdmin sets the "admin" edge to the User entity.
+func (eu *EventUpdate) SetAdmin(u *User) *EventUpdate {
+	return eu.SetAdminID(u.ID)
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (eu *EventUpdate) AddUserIDs(ids ...uuid.UUID) *EventUpdate {
 	eu.mutation.AddUserIDs(ids...)
@@ -144,6 +163,12 @@ func (eu *EventUpdate) ClearState() *EventUpdate {
 // ClearType clears the "type" edge to the EType entity.
 func (eu *EventUpdate) ClearType() *EventUpdate {
 	eu.mutation.ClearType()
+	return eu
+}
+
+// ClearAdmin clears the "admin" edge to the User entity.
+func (eu *EventUpdate) ClearAdmin() *EventUpdate {
+	eu.mutation.ClearAdmin()
 	return eu
 }
 
@@ -351,6 +376,41 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.AdminCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.AdminIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if eu.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -508,6 +568,25 @@ func (euo *EventUpdateOne) SetType(e *EType) *EventUpdateOne {
 	return euo.SetTypeID(e.ID)
 }
 
+// SetAdminID sets the "admin" edge to the User entity by ID.
+func (euo *EventUpdateOne) SetAdminID(id uuid.UUID) *EventUpdateOne {
+	euo.mutation.SetAdminID(id)
+	return euo
+}
+
+// SetNillableAdminID sets the "admin" edge to the User entity by ID if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableAdminID(id *uuid.UUID) *EventUpdateOne {
+	if id != nil {
+		euo = euo.SetAdminID(*id)
+	}
+	return euo
+}
+
+// SetAdmin sets the "admin" edge to the User entity.
+func (euo *EventUpdateOne) SetAdmin(u *User) *EventUpdateOne {
+	return euo.SetAdminID(u.ID)
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (euo *EventUpdateOne) AddUserIDs(ids ...uuid.UUID) *EventUpdateOne {
 	euo.mutation.AddUserIDs(ids...)
@@ -537,6 +616,12 @@ func (euo *EventUpdateOne) ClearState() *EventUpdateOne {
 // ClearType clears the "type" edge to the EType entity.
 func (euo *EventUpdateOne) ClearType() *EventUpdateOne {
 	euo.mutation.ClearType()
+	return euo
+}
+
+// ClearAdmin clears the "admin" edge to the User entity.
+func (euo *EventUpdateOne) ClearAdmin() *EventUpdateOne {
+	euo.mutation.ClearAdmin()
 	return euo
 }
 
@@ -766,6 +851,41 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: etype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.AdminCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.AdminIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
 				},
 			},
 		}

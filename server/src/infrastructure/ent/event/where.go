@@ -101,6 +101,20 @@ func Location(v string) predicate.Event {
 	})
 }
 
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldType), v))
+	})
+}
+
+// State applies equality check predicate on the "state" field. It's identical to StateEQ.
+func State(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldState), v))
+	})
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -426,59 +440,201 @@ func LocationContainsFold(v string) predicate.Event {
 	})
 }
 
-// HasState applies the HasEdge predicate on the "state" edge.
-func HasState() predicate.Event {
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v string) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StateTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, StateTable, StateColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
+		s.Where(sql.EQ(s.C(FieldType), v))
 	})
 }
 
-// HasStateWith applies the HasEdge predicate on the "state" edge with a given conditions (other predicates).
-func HasStateWith(preds ...predicate.EState) predicate.Event {
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v string) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StateInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, StateTable, StateColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
+		s.Where(sql.NEQ(s.C(FieldType), v))
 	})
 }
 
-// HasType applies the HasEdge predicate on the "type" edge.
-func HasType() predicate.Event {
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...string) predicate.Event {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
 	return predicate.Event(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TypeTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, TypeTable, TypeColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
+		s.Where(sql.In(s.C(FieldType), v...))
 	})
 }
 
-// HasTypeWith applies the HasEdge predicate on the "type" edge with a given conditions (other predicates).
-func HasTypeWith(preds ...predicate.EType) predicate.Event {
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...string) predicate.Event {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
 	return predicate.Event(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TypeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, TypeTable, TypeColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
+		s.Where(sql.NotIn(s.C(FieldType), v...))
+	})
+}
+
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldType), v))
+	})
+}
+
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldType), v))
+	})
+}
+
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldType), v))
+	})
+}
+
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldType), v))
+	})
+}
+
+// TypeContains applies the Contains predicate on the "type" field.
+func TypeContains(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldType), v))
+	})
+}
+
+// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
+func TypeHasPrefix(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldType), v))
+	})
+}
+
+// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
+func TypeHasSuffix(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldType), v))
+	})
+}
+
+// TypeEqualFold applies the EqualFold predicate on the "type" field.
+func TypeEqualFold(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldType), v))
+	})
+}
+
+// TypeContainsFold applies the ContainsFold predicate on the "type" field.
+func TypeContainsFold(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldType), v))
+	})
+}
+
+// StateEQ applies the EQ predicate on the "state" field.
+func StateEQ(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldState), v))
+	})
+}
+
+// StateNEQ applies the NEQ predicate on the "state" field.
+func StateNEQ(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldState), v))
+	})
+}
+
+// StateIn applies the In predicate on the "state" field.
+func StateIn(vs ...string) predicate.Event {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldState), v...))
+	})
+}
+
+// StateNotIn applies the NotIn predicate on the "state" field.
+func StateNotIn(vs ...string) predicate.Event {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldState), v...))
+	})
+}
+
+// StateGT applies the GT predicate on the "state" field.
+func StateGT(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldState), v))
+	})
+}
+
+// StateGTE applies the GTE predicate on the "state" field.
+func StateGTE(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldState), v))
+	})
+}
+
+// StateLT applies the LT predicate on the "state" field.
+func StateLT(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldState), v))
+	})
+}
+
+// StateLTE applies the LTE predicate on the "state" field.
+func StateLTE(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldState), v))
+	})
+}
+
+// StateContains applies the Contains predicate on the "state" field.
+func StateContains(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldState), v))
+	})
+}
+
+// StateHasPrefix applies the HasPrefix predicate on the "state" field.
+func StateHasPrefix(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldState), v))
+	})
+}
+
+// StateHasSuffix applies the HasSuffix predicate on the "state" field.
+func StateHasSuffix(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldState), v))
+	})
+}
+
+// StateEqualFold applies the EqualFold predicate on the "state" field.
+func StateEqualFold(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldState), v))
+	})
+}
+
+// StateContainsFold applies the ContainsFold predicate on the "state" field.
+func StateContainsFold(v string) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldState), v))
 	})
 }
 

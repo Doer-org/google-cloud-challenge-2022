@@ -9,8 +9,10 @@ import (
 )
 
 type IEventUsecase interface {
-	Create(ctx context.Context, name, detail, location, adminIdString string) (*entity.Event, error)
-	GetById(ctx context.Context, eventIdString string) (*entity.Event, error)
+	CreateNewEvent(ctx context.Context, name, detail, location, adminIdString string) (*entity.Event, error)
+	GetEventById(ctx context.Context, eventIdString string) (*entity.Event, error)
+	ChangeEventStatusToCloseOfId(ctx context.Context, eventIdString string) (*entity.Event, error)
+	ChangeEventStatusToCancelOfId(ctx context.Context, eventIdString string) (*entity.Event, error)
 }
 
 type EventUsecase struct {
@@ -23,7 +25,7 @@ func NewEventUsecae(r repository.IEventRepository) IEventUsecase {
 	}
 }
 
-func (uc *EventUsecase) Create(ctx context.Context, name, detail, location, adminIdString string) (*entity.Event, error) {
+func (uc *EventUsecase) CreateNewEvent(ctx context.Context, name, detail, location, adminIdString string) (*entity.Event, error) {
 	if name == "" {
 		return nil, fmt.Errorf("EventUsecase: name is empty")
 	}
@@ -36,14 +38,30 @@ func (uc *EventUsecase) Create(ctx context.Context, name, detail, location, admi
 		Detail:   detail,
 		Location: location,
 	}
-	return uc.repo.Create(ctx, e, adminId)
+	return uc.repo.CreateNewEvent(ctx, e, adminId)
 }
 
-func (uc *EventUsecase) GetById(ctx context.Context, eventIdString string) (*entity.Event, error) {
-	// TODO: serviceとかでcastかんすを用意すべき
+func (uc *EventUsecase) GetEventById(ctx context.Context, eventIdString string) (*entity.Event, error) {
+	// TODO: serviceとかでcast関数を用意すべき
 	eventId := entity.EventId(eventIdString)
 	if eventId == "" {
 		return nil, fmt.Errorf("EventUsecase: eventId parse failed")
 	}
-	return uc.repo.GetById(ctx, eventId)
+	return uc.repo.GetEventById(ctx, eventId)
+}
+
+func (uc *EventUsecase) ChangeEventStatusToCloseOfId(ctx context.Context, eventIdString string) (*entity.Event, error) {
+	eventId := entity.EventId(eventIdString)
+	if eventId == "" {
+		return nil, fmt.Errorf("EventUsecase: eventId parse failed")
+	}
+	return uc.repo.ChangeEventStatusToCloseOfId(ctx, eventId)
+}
+
+func (uc *EventUsecase) ChangeEventStatusToCancelOfId(ctx context.Context, eventIdString string) (*entity.Event, error) {
+	eventId := entity.EventId(eventIdString)
+	if eventId == "" {
+		return nil, fmt.Errorf("EventUsecase: eventId parse failed")
+	}
+	return uc.repo.ChangeEventStatusToCancelOfId(ctx, eventId)
 }

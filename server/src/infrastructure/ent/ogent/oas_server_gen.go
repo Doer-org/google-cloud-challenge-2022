@@ -8,24 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// CreateEState implements createEState operation.
+	// CreateComment implements createComment operation.
 	//
-	// Creates a new EState and persists it to storage.
+	// Creates a new Comment and persists it to storage.
 	//
-	// POST /e-states
-	CreateEState(ctx context.Context, req *CreateEStateReq) (CreateEStateRes, error)
-	// CreateEType implements createEType operation.
-	//
-	// Creates a new EType and persists it to storage.
-	//
-	// POST /e-types
-	CreateEType(ctx context.Context, req *CreateETypeReq) (CreateETypeRes, error)
-	// CreateEcomment implements createEcomment operation.
-	//
-	// Creates a new Ecomment and persists it to storage.
-	//
-	// POST /ecomments
-	CreateEcomment(ctx context.Context, req *CreateEcommentReq) (CreateEcommentRes, error)
+	// POST /comments
+	CreateComment(ctx context.Context, req *CreateCommentReq) (CreateCommentRes, error)
 	// CreateEvent implements createEvent operation.
 	//
 	// Creates a new Event and persists it to storage.
@@ -38,24 +26,12 @@ type Handler interface {
 	//
 	// POST /users
 	CreateUser(ctx context.Context, req *CreateUserReq) (CreateUserRes, error)
-	// DeleteEState implements deleteEState operation.
+	// DeleteComment implements deleteComment operation.
 	//
-	// Deletes the EState with the requested ID.
+	// Deletes the Comment with the requested ID.
 	//
-	// DELETE /e-states/{id}
-	DeleteEState(ctx context.Context, params DeleteEStateParams) (DeleteEStateRes, error)
-	// DeleteEType implements deleteEType operation.
-	//
-	// Deletes the EType with the requested ID.
-	//
-	// DELETE /e-types/{id}
-	DeleteEType(ctx context.Context, params DeleteETypeParams) (DeleteETypeRes, error)
-	// DeleteEcomment implements deleteEcomment operation.
-	//
-	// Deletes the Ecomment with the requested ID.
-	//
-	// DELETE /ecomments/{id}
-	DeleteEcomment(ctx context.Context, params DeleteEcommentParams) (DeleteEcommentRes, error)
+	// DELETE /comments/{id}
+	DeleteComment(ctx context.Context, params DeleteCommentParams) (DeleteCommentRes, error)
 	// DeleteEvent implements deleteEvent operation.
 	//
 	// Deletes the Event with the requested ID.
@@ -68,24 +44,12 @@ type Handler interface {
 	//
 	// DELETE /users/{id}
 	DeleteUser(ctx context.Context, params DeleteUserParams) (DeleteUserRes, error)
-	// ListEState implements listEState operation.
+	// ListComment implements listComment operation.
 	//
-	// List EStates.
+	// List Comments.
 	//
-	// GET /e-states
-	ListEState(ctx context.Context, params ListEStateParams) (ListEStateRes, error)
-	// ListEType implements listEType operation.
-	//
-	// List ETypes.
-	//
-	// GET /e-types
-	ListEType(ctx context.Context, params ListETypeParams) (ListETypeRes, error)
-	// ListEcomment implements listEcomment operation.
-	//
-	// List Ecomments.
-	//
-	// GET /ecomments
-	ListEcomment(ctx context.Context, params ListEcommentParams) (ListEcommentRes, error)
+	// GET /comments
+	ListComment(ctx context.Context, params ListCommentParams) (ListCommentRes, error)
 	// ListEvent implements listEvent operation.
 	//
 	// List Events.
@@ -110,48 +74,24 @@ type Handler interface {
 	//
 	// GET /users/{id}/events
 	ListUserEvents(ctx context.Context, params ListUserEventsParams) (ListUserEventsRes, error)
-	// ReadEState implements readEState operation.
+	// ReadComment implements readComment operation.
 	//
-	// Finds the EState with the requested ID and returns it.
+	// Finds the Comment with the requested ID and returns it.
 	//
-	// GET /e-states/{id}
-	ReadEState(ctx context.Context, params ReadEStateParams) (ReadEStateRes, error)
-	// ReadEStateEvent implements readEStateEvent operation.
+	// GET /comments/{id}
+	ReadComment(ctx context.Context, params ReadCommentParams) (ReadCommentRes, error)
+	// ReadCommentEvent implements readCommentEvent operation.
 	//
-	// Find the attached Event of the EState with the given ID.
+	// Find the attached Event of the Comment with the given ID.
 	//
-	// GET /e-states/{id}/event
-	ReadEStateEvent(ctx context.Context, params ReadEStateEventParams) (ReadEStateEventRes, error)
-	// ReadEType implements readEType operation.
+	// GET /comments/{id}/event
+	ReadCommentEvent(ctx context.Context, params ReadCommentEventParams) (ReadCommentEventRes, error)
+	// ReadCommentUser implements readCommentUser operation.
 	//
-	// Finds the EType with the requested ID and returns it.
+	// Find the attached User of the Comment with the given ID.
 	//
-	// GET /e-types/{id}
-	ReadEType(ctx context.Context, params ReadETypeParams) (ReadETypeRes, error)
-	// ReadETypeEvent implements readETypeEvent operation.
-	//
-	// Find the attached Event of the EType with the given ID.
-	//
-	// GET /e-types/{id}/event
-	ReadETypeEvent(ctx context.Context, params ReadETypeEventParams) (ReadETypeEventRes, error)
-	// ReadEcomment implements readEcomment operation.
-	//
-	// Finds the Ecomment with the requested ID and returns it.
-	//
-	// GET /ecomments/{id}
-	ReadEcomment(ctx context.Context, params ReadEcommentParams) (ReadEcommentRes, error)
-	// ReadEcommentEvent implements readEcommentEvent operation.
-	//
-	// Find the attached Event of the Ecomment with the given ID.
-	//
-	// GET /ecomments/{id}/event
-	ReadEcommentEvent(ctx context.Context, params ReadEcommentEventParams) (ReadEcommentEventRes, error)
-	// ReadEcommentUser implements readEcommentUser operation.
-	//
-	// Find the attached User of the Ecomment with the given ID.
-	//
-	// GET /ecomments/{id}/user
-	ReadEcommentUser(ctx context.Context, params ReadEcommentUserParams) (ReadEcommentUserRes, error)
+	// GET /comments/{id}/user
+	ReadCommentUser(ctx context.Context, params ReadCommentUserParams) (ReadCommentUserRes, error)
 	// ReadEvent implements readEvent operation.
 	//
 	// Finds the Event with the requested ID and returns it.
@@ -164,42 +104,18 @@ type Handler interface {
 	//
 	// GET /events/{id}/admin
 	ReadEventAdmin(ctx context.Context, params ReadEventAdminParams) (ReadEventAdminRes, error)
-	// ReadEventState implements readEventState operation.
-	//
-	// Find the attached EState of the Event with the given ID.
-	//
-	// GET /events/{id}/state
-	ReadEventState(ctx context.Context, params ReadEventStateParams) (ReadEventStateRes, error)
-	// ReadEventType implements readEventType operation.
-	//
-	// Find the attached EType of the Event with the given ID.
-	//
-	// GET /events/{id}/type
-	ReadEventType(ctx context.Context, params ReadEventTypeParams) (ReadEventTypeRes, error)
 	// ReadUser implements readUser operation.
 	//
 	// Finds the User with the requested ID and returns it.
 	//
 	// GET /users/{id}
 	ReadUser(ctx context.Context, params ReadUserParams) (ReadUserRes, error)
-	// UpdateEState implements updateEState operation.
+	// UpdateComment implements updateComment operation.
 	//
-	// Updates a EState and persists changes to storage.
+	// Updates a Comment and persists changes to storage.
 	//
-	// PATCH /e-states/{id}
-	UpdateEState(ctx context.Context, req *UpdateEStateReq, params UpdateEStateParams) (UpdateEStateRes, error)
-	// UpdateEType implements updateEType operation.
-	//
-	// Updates a EType and persists changes to storage.
-	//
-	// PATCH /e-types/{id}
-	UpdateEType(ctx context.Context, req *UpdateETypeReq, params UpdateETypeParams) (UpdateETypeRes, error)
-	// UpdateEcomment implements updateEcomment operation.
-	//
-	// Updates a Ecomment and persists changes to storage.
-	//
-	// PATCH /ecomments/{id}
-	UpdateEcomment(ctx context.Context, req *UpdateEcommentReq, params UpdateEcommentParams) (UpdateEcommentRes, error)
+	// PATCH /comments/{id}
+	UpdateComment(ctx context.Context, req *UpdateCommentReq, params UpdateCommentParams) (UpdateCommentRes, error)
 	// UpdateEvent implements updateEvent operation.
 	//
 	// Updates a Event and persists changes to storage.

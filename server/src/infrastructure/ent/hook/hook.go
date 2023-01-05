@@ -9,41 +9,15 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 )
 
-// The EStateFunc type is an adapter to allow the use of ordinary
-// function as EState mutator.
-type EStateFunc func(context.Context, *ent.EStateMutation) (ent.Value, error)
+// The CommentFunc type is an adapter to allow the use of ordinary
+// function as Comment mutator.
+type CommentFunc func(context.Context, *ent.CommentMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f EStateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.EStateMutation)
+func (f CommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CommentMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EStateMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The ETypeFunc type is an adapter to allow the use of ordinary
-// function as EType mutator.
-type ETypeFunc func(context.Context, *ent.ETypeMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ETypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.ETypeMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ETypeMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The EcommentFunc type is an adapter to allow the use of ordinary
-// function as Ecomment mutator.
-type EcommentFunc func(context.Context, *ent.EcommentMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f EcommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.EcommentMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EcommentMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CommentMutation", m)
 	}
 	return f(ctx, mv)
 }

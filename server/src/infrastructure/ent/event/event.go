@@ -17,30 +17,16 @@ const (
 	FieldDetail = "detail"
 	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
-	// EdgeState holds the string denoting the state edge name in mutations.
-	EdgeState = "state"
-	// EdgeType holds the string denoting the type edge name in mutations.
-	EdgeType = "type"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
+	// FieldState holds the string denoting the state field in the database.
+	FieldState = "state"
 	// EdgeAdmin holds the string denoting the admin edge name in mutations.
 	EdgeAdmin = "admin"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
 	EdgeUsers = "users"
 	// Table holds the table name of the event in the database.
 	Table = "events"
-	// StateTable is the table that holds the state relation/edge.
-	StateTable = "estates"
-	// StateInverseTable is the table name for the EState entity.
-	// It exists in this package in order to avoid circular dependency with the "estate" package.
-	StateInverseTable = "estates"
-	// StateColumn is the table column denoting the state relation/edge.
-	StateColumn = "event_state"
-	// TypeTable is the table that holds the type relation/edge.
-	TypeTable = "etypes"
-	// TypeInverseTable is the table name for the EType entity.
-	// It exists in this package in order to avoid circular dependency with the "etype" package.
-	TypeInverseTable = "etypes"
-	// TypeColumn is the table column denoting the type relation/edge.
-	TypeColumn = "event_type"
 	// AdminTable is the table that holds the admin relation/edge.
 	AdminTable = "events"
 	// AdminInverseTable is the table name for the User entity.
@@ -61,6 +47,8 @@ var Columns = []string{
 	FieldName,
 	FieldDetail,
 	FieldLocation,
+	FieldType,
+	FieldState,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "events"
@@ -97,6 +85,10 @@ var (
 	DetailValidator func(string) error
 	// LocationValidator is a validator for the "location" field. It is called by the builders before save.
 	LocationValidator func(string) error
+	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
+	TypeValidator func(string) error
+	// StateValidator is a validator for the "state" field. It is called by the builders before save.
+	StateValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

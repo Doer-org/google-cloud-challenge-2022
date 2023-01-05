@@ -21,7 +21,7 @@ func NewUserRepository(c *ent.Client) repository.IUserRepository {
 	}
 }
 
-func (r *UserRepository) Create(ctx context.Context, u *entity.User) (*entity.User, error) {
+func (r *UserRepository) CreateNewUser(ctx context.Context, u *entity.User) (*entity.User, error) {
 	entUser, err := r.client.User.
 		Create().
 		SetName(u.Name).
@@ -35,7 +35,7 @@ func (r *UserRepository) Create(ctx context.Context, u *entity.User) (*entity.Us
 	return EntToEntityUser(entUser), nil
 }
 
-func (r *UserRepository) GetByMail(ctx context.Context, mail string) (*entity.User, error) {
+func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*entity.User, error) {
 	entUser, err := r.client.User.
 		Query().
 		Where(user.Mail(mail)).
@@ -46,7 +46,7 @@ func (r *UserRepository) GetByMail(ctx context.Context, mail string) (*entity.Us
 	return EntToEntityUser(entUser), nil
 }
 
-func (r *UserRepository) GetById(ctx context.Context, id entity.UserId) (*entity.User, error) {
+func (r *UserRepository) GetUserById(ctx context.Context, id entity.UserId) (*entity.User, error) {
 	userUuid, err := uuid.Parse(string(id))
 	if err != nil {
 		return nil, fmt.Errorf("UserRepository: userUuid parse error: %w", err)
@@ -56,7 +56,7 @@ func (r *UserRepository) GetById(ctx context.Context, id entity.UserId) (*entity
 		Where(user.ID(userUuid)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("UserRepository: user query error: %w", err)
+		return nil, fmt.Errorf("UserRepository: get user query error: %w", err)
 	}
 	return EntToEntityUser(entUser), nil
 }
@@ -80,7 +80,7 @@ func EntityToEntUser(u *entity.User) *ent.User {
 	}
 }
 
-func EntToEntityParticipant(eu *ent.User, ec *ent.Ecomment) *entity.Participant {
+func EntToEntityParticipant(eu *ent.User, ec *ent.Comment) *entity.Participant {
 	p := &entity.Participant{
 		Id:   entity.UserId(eu.ID.String()),
 		Name: eu.Name,
@@ -90,12 +90,12 @@ func EntToEntityParticipant(eu *ent.User, ec *ent.Ecomment) *entity.Participant 
 	if ec == nil {
 		return p
 	}
-	c := EntToEntityEComment(ec)
+	c := EntToEntityComment(ec)
 	p.Comment = c
 	return p
 }
 
-func EntsToEntitiesParticipant(eus []*ent.User, ecs []*ent.Ecomment) []*entity.Participant {
+func EntsToEntitiesParticipant(eus []*ent.User, ecs []*ent.Comment) []*entity.Participant {
 	var ps []*entity.Participant
 	for _, eu := range eus {
 		hasCommentFlg := false

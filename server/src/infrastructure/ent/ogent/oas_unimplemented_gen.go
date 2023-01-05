@@ -13,30 +13,12 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// CreateEState implements createEState operation.
+// CreateComment implements createComment operation.
 //
-// Creates a new EState and persists it to storage.
+// Creates a new Comment and persists it to storage.
 //
-// POST /e-states
-func (UnimplementedHandler) CreateEState(ctx context.Context, req *CreateEStateReq) (r CreateEStateRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// CreateEType implements createEType operation.
-//
-// Creates a new EType and persists it to storage.
-//
-// POST /e-types
-func (UnimplementedHandler) CreateEType(ctx context.Context, req *CreateETypeReq) (r CreateETypeRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// CreateEcomment implements createEcomment operation.
-//
-// Creates a new Ecomment and persists it to storage.
-//
-// POST /ecomments
-func (UnimplementedHandler) CreateEcomment(ctx context.Context, req *CreateEcommentReq) (r CreateEcommentRes, _ error) {
+// POST /comments
+func (UnimplementedHandler) CreateComment(ctx context.Context, req *CreateCommentReq) (r CreateCommentRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -58,30 +40,12 @@ func (UnimplementedHandler) CreateUser(ctx context.Context, req *CreateUserReq) 
 	return r, ht.ErrNotImplemented
 }
 
-// DeleteEState implements deleteEState operation.
+// DeleteComment implements deleteComment operation.
 //
-// Deletes the EState with the requested ID.
+// Deletes the Comment with the requested ID.
 //
-// DELETE /e-states/{id}
-func (UnimplementedHandler) DeleteEState(ctx context.Context, params DeleteEStateParams) (r DeleteEStateRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DeleteEType implements deleteEType operation.
-//
-// Deletes the EType with the requested ID.
-//
-// DELETE /e-types/{id}
-func (UnimplementedHandler) DeleteEType(ctx context.Context, params DeleteETypeParams) (r DeleteETypeRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DeleteEcomment implements deleteEcomment operation.
-//
-// Deletes the Ecomment with the requested ID.
-//
-// DELETE /ecomments/{id}
-func (UnimplementedHandler) DeleteEcomment(ctx context.Context, params DeleteEcommentParams) (r DeleteEcommentRes, _ error) {
+// DELETE /comments/{id}
+func (UnimplementedHandler) DeleteComment(ctx context.Context, params DeleteCommentParams) (r DeleteCommentRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -103,30 +67,12 @@ func (UnimplementedHandler) DeleteUser(ctx context.Context, params DeleteUserPar
 	return r, ht.ErrNotImplemented
 }
 
-// ListEState implements listEState operation.
+// ListComment implements listComment operation.
 //
-// List EStates.
+// List Comments.
 //
-// GET /e-states
-func (UnimplementedHandler) ListEState(ctx context.Context, params ListEStateParams) (r ListEStateRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// ListEType implements listEType operation.
-//
-// List ETypes.
-//
-// GET /e-types
-func (UnimplementedHandler) ListEType(ctx context.Context, params ListETypeParams) (r ListETypeRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// ListEcomment implements listEcomment operation.
-//
-// List Ecomments.
-//
-// GET /ecomments
-func (UnimplementedHandler) ListEcomment(ctx context.Context, params ListEcommentParams) (r ListEcommentRes, _ error) {
+// GET /comments
+func (UnimplementedHandler) ListComment(ctx context.Context, params ListCommentParams) (r ListCommentRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -166,66 +112,30 @@ func (UnimplementedHandler) ListUserEvents(ctx context.Context, params ListUserE
 	return r, ht.ErrNotImplemented
 }
 
-// ReadEState implements readEState operation.
+// ReadComment implements readComment operation.
 //
-// Finds the EState with the requested ID and returns it.
+// Finds the Comment with the requested ID and returns it.
 //
-// GET /e-states/{id}
-func (UnimplementedHandler) ReadEState(ctx context.Context, params ReadEStateParams) (r ReadEStateRes, _ error) {
+// GET /comments/{id}
+func (UnimplementedHandler) ReadComment(ctx context.Context, params ReadCommentParams) (r ReadCommentRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// ReadEStateEvent implements readEStateEvent operation.
+// ReadCommentEvent implements readCommentEvent operation.
 //
-// Find the attached Event of the EState with the given ID.
+// Find the attached Event of the Comment with the given ID.
 //
-// GET /e-states/{id}/event
-func (UnimplementedHandler) ReadEStateEvent(ctx context.Context, params ReadEStateEventParams) (r ReadEStateEventRes, _ error) {
+// GET /comments/{id}/event
+func (UnimplementedHandler) ReadCommentEvent(ctx context.Context, params ReadCommentEventParams) (r ReadCommentEventRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// ReadEType implements readEType operation.
+// ReadCommentUser implements readCommentUser operation.
 //
-// Finds the EType with the requested ID and returns it.
+// Find the attached User of the Comment with the given ID.
 //
-// GET /e-types/{id}
-func (UnimplementedHandler) ReadEType(ctx context.Context, params ReadETypeParams) (r ReadETypeRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// ReadETypeEvent implements readETypeEvent operation.
-//
-// Find the attached Event of the EType with the given ID.
-//
-// GET /e-types/{id}/event
-func (UnimplementedHandler) ReadETypeEvent(ctx context.Context, params ReadETypeEventParams) (r ReadETypeEventRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// ReadEcomment implements readEcomment operation.
-//
-// Finds the Ecomment with the requested ID and returns it.
-//
-// GET /ecomments/{id}
-func (UnimplementedHandler) ReadEcomment(ctx context.Context, params ReadEcommentParams) (r ReadEcommentRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// ReadEcommentEvent implements readEcommentEvent operation.
-//
-// Find the attached Event of the Ecomment with the given ID.
-//
-// GET /ecomments/{id}/event
-func (UnimplementedHandler) ReadEcommentEvent(ctx context.Context, params ReadEcommentEventParams) (r ReadEcommentEventRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// ReadEcommentUser implements readEcommentUser operation.
-//
-// Find the attached User of the Ecomment with the given ID.
-//
-// GET /ecomments/{id}/user
-func (UnimplementedHandler) ReadEcommentUser(ctx context.Context, params ReadEcommentUserParams) (r ReadEcommentUserRes, _ error) {
+// GET /comments/{id}/user
+func (UnimplementedHandler) ReadCommentUser(ctx context.Context, params ReadCommentUserParams) (r ReadCommentUserRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -247,24 +157,6 @@ func (UnimplementedHandler) ReadEventAdmin(ctx context.Context, params ReadEvent
 	return r, ht.ErrNotImplemented
 }
 
-// ReadEventState implements readEventState operation.
-//
-// Find the attached EState of the Event with the given ID.
-//
-// GET /events/{id}/state
-func (UnimplementedHandler) ReadEventState(ctx context.Context, params ReadEventStateParams) (r ReadEventStateRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// ReadEventType implements readEventType operation.
-//
-// Find the attached EType of the Event with the given ID.
-//
-// GET /events/{id}/type
-func (UnimplementedHandler) ReadEventType(ctx context.Context, params ReadEventTypeParams) (r ReadEventTypeRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // ReadUser implements readUser operation.
 //
 // Finds the User with the requested ID and returns it.
@@ -274,30 +166,12 @@ func (UnimplementedHandler) ReadUser(ctx context.Context, params ReadUserParams)
 	return r, ht.ErrNotImplemented
 }
 
-// UpdateEState implements updateEState operation.
+// UpdateComment implements updateComment operation.
 //
-// Updates a EState and persists changes to storage.
+// Updates a Comment and persists changes to storage.
 //
-// PATCH /e-states/{id}
-func (UnimplementedHandler) UpdateEState(ctx context.Context, req *UpdateEStateReq, params UpdateEStateParams) (r UpdateEStateRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// UpdateEType implements updateEType operation.
-//
-// Updates a EType and persists changes to storage.
-//
-// PATCH /e-types/{id}
-func (UnimplementedHandler) UpdateEType(ctx context.Context, req *UpdateETypeReq, params UpdateETypeParams) (r UpdateETypeRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// UpdateEcomment implements updateEcomment operation.
-//
-// Updates a Ecomment and persists changes to storage.
-//
-// PATCH /ecomments/{id}
-func (UnimplementedHandler) UpdateEcomment(ctx context.Context, req *UpdateEcommentReq, params UpdateEcommentParams) (r UpdateEcommentRes, _ error) {
+// PATCH /comments/{id}
+func (UnimplementedHandler) UpdateComment(ctx context.Context, req *UpdateCommentReq, params UpdateCommentParams) (r UpdateCommentRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

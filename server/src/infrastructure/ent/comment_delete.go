@@ -9,49 +9,49 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 )
 
-// EcommentDelete is the builder for deleting a Ecomment entity.
-type EcommentDelete struct {
+// CommentDelete is the builder for deleting a Comment entity.
+type CommentDelete struct {
 	config
 	hooks    []Hook
-	mutation *EcommentMutation
+	mutation *CommentMutation
 }
 
-// Where appends a list predicates to the EcommentDelete builder.
-func (ed *EcommentDelete) Where(ps ...predicate.Ecomment) *EcommentDelete {
-	ed.mutation.Where(ps...)
-	return ed
+// Where appends a list predicates to the CommentDelete builder.
+func (cd *CommentDelete) Where(ps ...predicate.Comment) *CommentDelete {
+	cd.mutation.Where(ps...)
+	return cd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (ed *EcommentDelete) Exec(ctx context.Context) (int, error) {
+func (cd *CommentDelete) Exec(ctx context.Context) (int, error) {
 	var (
 		err      error
 		affected int
 	)
-	if len(ed.hooks) == 0 {
-		affected, err = ed.sqlExec(ctx)
+	if len(cd.hooks) == 0 {
+		affected, err = cd.sqlExec(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EcommentMutation)
+			mutation, ok := m.(*CommentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			ed.mutation = mutation
-			affected, err = ed.sqlExec(ctx)
+			cd.mutation = mutation
+			affected, err = cd.sqlExec(ctx)
 			mutation.done = true
 			return affected, err
 		})
-		for i := len(ed.hooks) - 1; i >= 0; i-- {
-			if ed.hooks[i] == nil {
+		for i := len(cd.hooks) - 1; i >= 0; i-- {
+			if cd.hooks[i] == nil {
 				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = ed.hooks[i](mut)
+			mut = cd.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, ed.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, cd.mutation); err != nil {
 			return 0, err
 		}
 	}
@@ -59,57 +59,57 @@ func (ed *EcommentDelete) Exec(ctx context.Context) (int, error) {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ed *EcommentDelete) ExecX(ctx context.Context) int {
-	n, err := ed.Exec(ctx)
+func (cd *CommentDelete) ExecX(ctx context.Context) int {
+	n, err := cd.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (ed *EcommentDelete) sqlExec(ctx context.Context) (int, error) {
+func (cd *CommentDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := &sqlgraph.DeleteSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table: ecomment.Table,
+			Table: comment.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeUUID,
-				Column: ecomment.FieldID,
+				Column: comment.FieldID,
 			},
 		},
 	}
-	if ps := ed.mutation.predicates; len(ps) > 0 {
+	if ps := cd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, ed.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, cd.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
 	return affected, err
 }
 
-// EcommentDeleteOne is the builder for deleting a single Ecomment entity.
-type EcommentDeleteOne struct {
-	ed *EcommentDelete
+// CommentDeleteOne is the builder for deleting a single Comment entity.
+type CommentDeleteOne struct {
+	cd *CommentDelete
 }
 
 // Exec executes the deletion query.
-func (edo *EcommentDeleteOne) Exec(ctx context.Context) error {
-	n, err := edo.ed.Exec(ctx)
+func (cdo *CommentDeleteOne) Exec(ctx context.Context) error {
+	n, err := cdo.cd.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{ecomment.Label}
+		return &NotFoundError{comment.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (edo *EcommentDeleteOne) ExecX(ctx context.Context) {
-	edo.ed.ExecX(ctx)
+func (cdo *CommentDeleteOne) ExecX(ctx context.Context) {
+	cdo.cd.ExecX(ctx)
 }

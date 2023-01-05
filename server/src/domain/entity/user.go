@@ -10,10 +10,9 @@ type User struct {
 	Icon          string
 }
 
-// TODO: ageってなんだw
 type Participant struct {
 	Id      UserId
 	Name    string
 	Icon    string
-	Comment *EComment
+	Comment *Comment
 }

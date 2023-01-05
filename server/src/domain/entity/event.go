@@ -8,7 +8,21 @@ type Event struct {
 	Detail       string
 	Location     string
 	Admin        *User
-	State        *EState
-	Type         *EType
+	State        string
+	Type         string
 	Participants []*Participant
 }
+
+type State string
+
+var (
+	OPEN_STATE   State = "open"
+	CLOSE_STATE  State = "close"
+	CANCEL_STATE State = "cancel"
+)
+
+type Type string
+
+var (
+	ONCE_TYPE Type = "once"
+)

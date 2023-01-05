@@ -26,16 +26,18 @@ func (Event) Fields() []ent.Field {
 		field.String("location").
 			Optional().
 			MaxLen(200),
+		field.String("type").
+			NotEmpty().
+			MaxLen(30),
+		field.String("state").
+			NotEmpty().
+			MaxLen(30),
 	}
 }
 
 // Edges of the Event.
 func (Event) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("state", EState.Type).
-			Unique(),
-		edge.To("type", EType.Type).
-			Unique(),
 		edge.To("admin", User.Type).
 			Unique(),
 		edge.From("users", User.Type).

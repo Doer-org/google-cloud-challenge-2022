@@ -8,9 +8,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
@@ -28,783 +26,13 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeEState   = "EState"
-	TypeEType    = "EType"
-	TypeEcomment = "Ecomment"
-	TypeEvent    = "Event"
-	TypeUser     = "User"
+	TypeComment = "Comment"
+	TypeEvent   = "Event"
+	TypeUser    = "User"
 )
 
-// EStateMutation represents an operation that mutates the EState nodes in the graph.
-type EStateMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	name          *string
-	clearedFields map[string]struct{}
-	event         *uuid.UUID
-	clearedevent  bool
-	done          bool
-	oldValue      func(context.Context) (*EState, error)
-	predicates    []predicate.EState
-}
-
-var _ ent.Mutation = (*EStateMutation)(nil)
-
-// estateOption allows management of the mutation configuration using functional options.
-type estateOption func(*EStateMutation)
-
-// newEStateMutation creates new mutation for the EState entity.
-func newEStateMutation(c config, op Op, opts ...estateOption) *EStateMutation {
-	m := &EStateMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeEState,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withEStateID sets the ID field of the mutation.
-func withEStateID(id uuid.UUID) estateOption {
-	return func(m *EStateMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *EState
-		)
-		m.oldValue = func(ctx context.Context) (*EState, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().EState.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withEState sets the old EState of the mutation.
-func withEState(node *EState) estateOption {
-	return func(m *EStateMutation) {
-		m.oldValue = func(context.Context) (*EState, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m EStateMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m EStateMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of EState entities.
-func (m *EStateMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *EStateMutation) ID() (id uuid.UUID, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *EStateMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []uuid.UUID{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().EState.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetName sets the "name" field.
-func (m *EStateMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *EStateMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the EState entity.
-// If the EState object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EStateMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *EStateMutation) ResetName() {
-	m.name = nil
-}
-
-// SetEventID sets the "event" edge to the Event entity by id.
-func (m *EStateMutation) SetEventID(id uuid.UUID) {
-	m.event = &id
-}
-
-// ClearEvent clears the "event" edge to the Event entity.
-func (m *EStateMutation) ClearEvent() {
-	m.clearedevent = true
-}
-
-// EventCleared reports if the "event" edge to the Event entity was cleared.
-func (m *EStateMutation) EventCleared() bool {
-	return m.clearedevent
-}
-
-// EventID returns the "event" edge ID in the mutation.
-func (m *EStateMutation) EventID() (id uuid.UUID, exists bool) {
-	if m.event != nil {
-		return *m.event, true
-	}
-	return
-}
-
-// EventIDs returns the "event" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// EventID instead. It exists only for internal usage by the builders.
-func (m *EStateMutation) EventIDs() (ids []uuid.UUID) {
-	if id := m.event; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetEvent resets all changes to the "event" edge.
-func (m *EStateMutation) ResetEvent() {
-	m.event = nil
-	m.clearedevent = false
-}
-
-// Where appends a list predicates to the EStateMutation builder.
-func (m *EStateMutation) Where(ps ...predicate.EState) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// Op returns the operation name.
-func (m *EStateMutation) Op() Op {
-	return m.op
-}
-
-// Type returns the node type of this mutation (EState).
-func (m *EStateMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *EStateMutation) Fields() []string {
-	fields := make([]string, 0, 1)
-	if m.name != nil {
-		fields = append(fields, estate.FieldName)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *EStateMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case estate.FieldName:
-		return m.Name()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *EStateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case estate.FieldName:
-		return m.OldName(ctx)
-	}
-	return nil, fmt.Errorf("unknown EState field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *EStateMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case estate.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
-	}
-	return fmt.Errorf("unknown EState field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *EStateMutation) AddedFields() []string {
-	return nil
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *EStateMutation) AddedField(name string) (ent.Value, bool) {
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *EStateMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown EState numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *EStateMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *EStateMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *EStateMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown EState nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *EStateMutation) ResetField(name string) error {
-	switch name {
-	case estate.FieldName:
-		m.ResetName()
-		return nil
-	}
-	return fmt.Errorf("unknown EState field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *EStateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.event != nil {
-		edges = append(edges, estate.EdgeEvent)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *EStateMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case estate.EdgeEvent:
-		if id := m.event; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *EStateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *EStateMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *EStateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedevent {
-		edges = append(edges, estate.EdgeEvent)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *EStateMutation) EdgeCleared(name string) bool {
-	switch name {
-	case estate.EdgeEvent:
-		return m.clearedevent
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *EStateMutation) ClearEdge(name string) error {
-	switch name {
-	case estate.EdgeEvent:
-		m.ClearEvent()
-		return nil
-	}
-	return fmt.Errorf("unknown EState unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *EStateMutation) ResetEdge(name string) error {
-	switch name {
-	case estate.EdgeEvent:
-		m.ResetEvent()
-		return nil
-	}
-	return fmt.Errorf("unknown EState edge %s", name)
-}
-
-// ETypeMutation represents an operation that mutates the EType nodes in the graph.
-type ETypeMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	name          *string
-	clearedFields map[string]struct{}
-	event         *uuid.UUID
-	clearedevent  bool
-	done          bool
-	oldValue      func(context.Context) (*EType, error)
-	predicates    []predicate.EType
-}
-
-var _ ent.Mutation = (*ETypeMutation)(nil)
-
-// etypeOption allows management of the mutation configuration using functional options.
-type etypeOption func(*ETypeMutation)
-
-// newETypeMutation creates new mutation for the EType entity.
-func newETypeMutation(c config, op Op, opts ...etypeOption) *ETypeMutation {
-	m := &ETypeMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeEType,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withETypeID sets the ID field of the mutation.
-func withETypeID(id uuid.UUID) etypeOption {
-	return func(m *ETypeMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *EType
-		)
-		m.oldValue = func(ctx context.Context) (*EType, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().EType.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withEType sets the old EType of the mutation.
-func withEType(node *EType) etypeOption {
-	return func(m *ETypeMutation) {
-		m.oldValue = func(context.Context) (*EType, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m ETypeMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m ETypeMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of EType entities.
-func (m *ETypeMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *ETypeMutation) ID() (id uuid.UUID, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *ETypeMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []uuid.UUID{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().EType.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetName sets the "name" field.
-func (m *ETypeMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *ETypeMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the EType entity.
-// If the EType object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ETypeMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *ETypeMutation) ResetName() {
-	m.name = nil
-}
-
-// SetEventID sets the "event" edge to the Event entity by id.
-func (m *ETypeMutation) SetEventID(id uuid.UUID) {
-	m.event = &id
-}
-
-// ClearEvent clears the "event" edge to the Event entity.
-func (m *ETypeMutation) ClearEvent() {
-	m.clearedevent = true
-}
-
-// EventCleared reports if the "event" edge to the Event entity was cleared.
-func (m *ETypeMutation) EventCleared() bool {
-	return m.clearedevent
-}
-
-// EventID returns the "event" edge ID in the mutation.
-func (m *ETypeMutation) EventID() (id uuid.UUID, exists bool) {
-	if m.event != nil {
-		return *m.event, true
-	}
-	return
-}
-
-// EventIDs returns the "event" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// EventID instead. It exists only for internal usage by the builders.
-func (m *ETypeMutation) EventIDs() (ids []uuid.UUID) {
-	if id := m.event; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetEvent resets all changes to the "event" edge.
-func (m *ETypeMutation) ResetEvent() {
-	m.event = nil
-	m.clearedevent = false
-}
-
-// Where appends a list predicates to the ETypeMutation builder.
-func (m *ETypeMutation) Where(ps ...predicate.EType) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// Op returns the operation name.
-func (m *ETypeMutation) Op() Op {
-	return m.op
-}
-
-// Type returns the node type of this mutation (EType).
-func (m *ETypeMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *ETypeMutation) Fields() []string {
-	fields := make([]string, 0, 1)
-	if m.name != nil {
-		fields = append(fields, etype.FieldName)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *ETypeMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case etype.FieldName:
-		return m.Name()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *ETypeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case etype.FieldName:
-		return m.OldName(ctx)
-	}
-	return nil, fmt.Errorf("unknown EType field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *ETypeMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case etype.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
-	}
-	return fmt.Errorf("unknown EType field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *ETypeMutation) AddedFields() []string {
-	return nil
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *ETypeMutation) AddedField(name string) (ent.Value, bool) {
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *ETypeMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown EType numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *ETypeMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *ETypeMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *ETypeMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown EType nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *ETypeMutation) ResetField(name string) error {
-	switch name {
-	case etype.FieldName:
-		m.ResetName()
-		return nil
-	}
-	return fmt.Errorf("unknown EType field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *ETypeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.event != nil {
-		edges = append(edges, etype.EdgeEvent)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *ETypeMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case etype.EdgeEvent:
-		if id := m.event; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *ETypeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *ETypeMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *ETypeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedevent {
-		edges = append(edges, etype.EdgeEvent)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *ETypeMutation) EdgeCleared(name string) bool {
-	switch name {
-	case etype.EdgeEvent:
-		return m.clearedevent
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *ETypeMutation) ClearEdge(name string) error {
-	switch name {
-	case etype.EdgeEvent:
-		m.ClearEvent()
-		return nil
-	}
-	return fmt.Errorf("unknown EType unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *ETypeMutation) ResetEdge(name string) error {
-	switch name {
-	case etype.EdgeEvent:
-		m.ResetEvent()
-		return nil
-	}
-	return fmt.Errorf("unknown EType edge %s", name)
-}
-
-// EcommentMutation represents an operation that mutates the Ecomment nodes in the graph.
-type EcommentMutation struct {
+// CommentMutation represents an operation that mutates the Comment nodes in the graph.
+type CommentMutation struct {
 	config
 	op            Op
 	typ           string
@@ -816,21 +44,21 @@ type EcommentMutation struct {
 	user          *uuid.UUID
 	cleareduser   bool
 	done          bool
-	oldValue      func(context.Context) (*Ecomment, error)
-	predicates    []predicate.Ecomment
+	oldValue      func(context.Context) (*Comment, error)
+	predicates    []predicate.Comment
 }
 
-var _ ent.Mutation = (*EcommentMutation)(nil)
+var _ ent.Mutation = (*CommentMutation)(nil)
 
-// ecommentOption allows management of the mutation configuration using functional options.
-type ecommentOption func(*EcommentMutation)
+// commentOption allows management of the mutation configuration using functional options.
+type commentOption func(*CommentMutation)
 
-// newEcommentMutation creates new mutation for the Ecomment entity.
-func newEcommentMutation(c config, op Op, opts ...ecommentOption) *EcommentMutation {
-	m := &EcommentMutation{
+// newCommentMutation creates new mutation for the Comment entity.
+func newCommentMutation(c config, op Op, opts ...commentOption) *CommentMutation {
+	m := &CommentMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeEcomment,
+		typ:           TypeComment,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -839,20 +67,20 @@ func newEcommentMutation(c config, op Op, opts ...ecommentOption) *EcommentMutat
 	return m
 }
 
-// withEcommentID sets the ID field of the mutation.
-func withEcommentID(id uuid.UUID) ecommentOption {
-	return func(m *EcommentMutation) {
+// withCommentID sets the ID field of the mutation.
+func withCommentID(id uuid.UUID) commentOption {
+	return func(m *CommentMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Ecomment
+			value *Comment
 		)
-		m.oldValue = func(ctx context.Context) (*Ecomment, error) {
+		m.oldValue = func(ctx context.Context) (*Comment, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Ecomment.Get(ctx, id)
+					value, err = m.Client().Comment.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -861,10 +89,10 @@ func withEcommentID(id uuid.UUID) ecommentOption {
 	}
 }
 
-// withEcomment sets the old Ecomment of the mutation.
-func withEcomment(node *Ecomment) ecommentOption {
-	return func(m *EcommentMutation) {
-		m.oldValue = func(context.Context) (*Ecomment, error) {
+// withComment sets the old Comment of the mutation.
+func withComment(node *Comment) commentOption {
+	return func(m *CommentMutation) {
+		m.oldValue = func(context.Context) (*Comment, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -873,7 +101,7 @@ func withEcomment(node *Ecomment) ecommentOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m EcommentMutation) Client() *Client {
+func (m CommentMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -881,7 +109,7 @@ func (m EcommentMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m EcommentMutation) Tx() (*Tx, error) {
+func (m CommentMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -891,14 +119,14 @@ func (m EcommentMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Ecomment entities.
-func (m *EcommentMutation) SetID(id uuid.UUID) {
+// operation is only accepted on creation of Comment entities.
+func (m *CommentMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *EcommentMutation) ID() (id uuid.UUID, exists bool) {
+func (m *CommentMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -909,7 +137,7 @@ func (m *EcommentMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *EcommentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *CommentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -918,19 +146,19 @@ func (m *EcommentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Ecomment.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().Comment.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetBody sets the "body" field.
-func (m *EcommentMutation) SetBody(s string) {
+func (m *CommentMutation) SetBody(s string) {
 	m.body = &s
 }
 
 // Body returns the value of the "body" field in the mutation.
-func (m *EcommentMutation) Body() (r string, exists bool) {
+func (m *CommentMutation) Body() (r string, exists bool) {
 	v := m.body
 	if v == nil {
 		return
@@ -938,10 +166,10 @@ func (m *EcommentMutation) Body() (r string, exists bool) {
 	return *v, true
 }
 
-// OldBody returns the old "body" field's value of the Ecomment entity.
-// If the Ecomment object wasn't provided to the builder, the object is fetched from the database.
+// OldBody returns the old "body" field's value of the Comment entity.
+// If the Comment object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EcommentMutation) OldBody(ctx context.Context) (v string, err error) {
+func (m *CommentMutation) OldBody(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldBody is only allowed on UpdateOne operations")
 	}
@@ -956,27 +184,27 @@ func (m *EcommentMutation) OldBody(ctx context.Context) (v string, err error) {
 }
 
 // ResetBody resets all changes to the "body" field.
-func (m *EcommentMutation) ResetBody() {
+func (m *CommentMutation) ResetBody() {
 	m.body = nil
 }
 
 // SetEventID sets the "event" edge to the Event entity by id.
-func (m *EcommentMutation) SetEventID(id uuid.UUID) {
+func (m *CommentMutation) SetEventID(id uuid.UUID) {
 	m.event = &id
 }
 
 // ClearEvent clears the "event" edge to the Event entity.
-func (m *EcommentMutation) ClearEvent() {
+func (m *CommentMutation) ClearEvent() {
 	m.clearedevent = true
 }
 
 // EventCleared reports if the "event" edge to the Event entity was cleared.
-func (m *EcommentMutation) EventCleared() bool {
+func (m *CommentMutation) EventCleared() bool {
 	return m.clearedevent
 }
 
 // EventID returns the "event" edge ID in the mutation.
-func (m *EcommentMutation) EventID() (id uuid.UUID, exists bool) {
+func (m *CommentMutation) EventID() (id uuid.UUID, exists bool) {
 	if m.event != nil {
 		return *m.event, true
 	}
@@ -986,7 +214,7 @@ func (m *EcommentMutation) EventID() (id uuid.UUID, exists bool) {
 // EventIDs returns the "event" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // EventID instead. It exists only for internal usage by the builders.
-func (m *EcommentMutation) EventIDs() (ids []uuid.UUID) {
+func (m *CommentMutation) EventIDs() (ids []uuid.UUID) {
 	if id := m.event; id != nil {
 		ids = append(ids, *id)
 	}
@@ -994,28 +222,28 @@ func (m *EcommentMutation) EventIDs() (ids []uuid.UUID) {
 }
 
 // ResetEvent resets all changes to the "event" edge.
-func (m *EcommentMutation) ResetEvent() {
+func (m *CommentMutation) ResetEvent() {
 	m.event = nil
 	m.clearedevent = false
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *EcommentMutation) SetUserID(id uuid.UUID) {
+func (m *CommentMutation) SetUserID(id uuid.UUID) {
 	m.user = &id
 }
 
 // ClearUser clears the "user" edge to the User entity.
-func (m *EcommentMutation) ClearUser() {
+func (m *CommentMutation) ClearUser() {
 	m.cleareduser = true
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
-func (m *EcommentMutation) UserCleared() bool {
+func (m *CommentMutation) UserCleared() bool {
 	return m.cleareduser
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *EcommentMutation) UserID() (id uuid.UUID, exists bool) {
+func (m *CommentMutation) UserID() (id uuid.UUID, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -1025,7 +253,7 @@ func (m *EcommentMutation) UserID() (id uuid.UUID, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *EcommentMutation) UserIDs() (ids []uuid.UUID) {
+func (m *CommentMutation) UserIDs() (ids []uuid.UUID) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1033,33 +261,33 @@ func (m *EcommentMutation) UserIDs() (ids []uuid.UUID) {
 }
 
 // ResetUser resets all changes to the "user" edge.
-func (m *EcommentMutation) ResetUser() {
+func (m *CommentMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
 }
 
-// Where appends a list predicates to the EcommentMutation builder.
-func (m *EcommentMutation) Where(ps ...predicate.Ecomment) {
+// Where appends a list predicates to the CommentMutation builder.
+func (m *CommentMutation) Where(ps ...predicate.Comment) {
 	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
-func (m *EcommentMutation) Op() Op {
+func (m *CommentMutation) Op() Op {
 	return m.op
 }
 
-// Type returns the node type of this mutation (Ecomment).
-func (m *EcommentMutation) Type() string {
+// Type returns the node type of this mutation (Comment).
+func (m *CommentMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *EcommentMutation) Fields() []string {
+func (m *CommentMutation) Fields() []string {
 	fields := make([]string, 0, 1)
 	if m.body != nil {
-		fields = append(fields, ecomment.FieldBody)
+		fields = append(fields, comment.FieldBody)
 	}
 	return fields
 }
@@ -1067,9 +295,9 @@ func (m *EcommentMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *EcommentMutation) Field(name string) (ent.Value, bool) {
+func (m *CommentMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case ecomment.FieldBody:
+	case comment.FieldBody:
 		return m.Body()
 	}
 	return nil, false
@@ -1078,20 +306,20 @@ func (m *EcommentMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *EcommentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *CommentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case ecomment.FieldBody:
+	case comment.FieldBody:
 		return m.OldBody(ctx)
 	}
-	return nil, fmt.Errorf("unknown Ecomment field %s", name)
+	return nil, fmt.Errorf("unknown Comment field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *EcommentMutation) SetField(name string, value ent.Value) error {
+func (m *CommentMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case ecomment.FieldBody:
+	case comment.FieldBody:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -1099,82 +327,82 @@ func (m *EcommentMutation) SetField(name string, value ent.Value) error {
 		m.SetBody(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Ecomment field %s", name)
+	return fmt.Errorf("unknown Comment field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *EcommentMutation) AddedFields() []string {
+func (m *CommentMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *EcommentMutation) AddedField(name string) (ent.Value, bool) {
+func (m *CommentMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *EcommentMutation) AddField(name string, value ent.Value) error {
+func (m *CommentMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown Ecomment numeric field %s", name)
+	return fmt.Errorf("unknown Comment numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *EcommentMutation) ClearedFields() []string {
+func (m *CommentMutation) ClearedFields() []string {
 	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *EcommentMutation) FieldCleared(name string) bool {
+func (m *CommentMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *EcommentMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Ecomment nullable field %s", name)
+func (m *CommentMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Comment nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *EcommentMutation) ResetField(name string) error {
+func (m *CommentMutation) ResetField(name string) error {
 	switch name {
-	case ecomment.FieldBody:
+	case comment.FieldBody:
 		m.ResetBody()
 		return nil
 	}
-	return fmt.Errorf("unknown Ecomment field %s", name)
+	return fmt.Errorf("unknown Comment field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *EcommentMutation) AddedEdges() []string {
+func (m *CommentMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
 	if m.event != nil {
-		edges = append(edges, ecomment.EdgeEvent)
+		edges = append(edges, comment.EdgeEvent)
 	}
 	if m.user != nil {
-		edges = append(edges, ecomment.EdgeUser)
+		edges = append(edges, comment.EdgeUser)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *EcommentMutation) AddedIDs(name string) []ent.Value {
+func (m *CommentMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case ecomment.EdgeEvent:
+	case comment.EdgeEvent:
 		if id := m.event; id != nil {
 			return []ent.Value{*id}
 		}
-	case ecomment.EdgeUser:
+	case comment.EdgeUser:
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
@@ -1183,36 +411,36 @@ func (m *EcommentMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *EcommentMutation) RemovedEdges() []string {
+func (m *CommentMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *EcommentMutation) RemovedIDs(name string) []ent.Value {
+func (m *CommentMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *EcommentMutation) ClearedEdges() []string {
+func (m *CommentMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
 	if m.clearedevent {
-		edges = append(edges, ecomment.EdgeEvent)
+		edges = append(edges, comment.EdgeEvent)
 	}
 	if m.cleareduser {
-		edges = append(edges, ecomment.EdgeUser)
+		edges = append(edges, comment.EdgeUser)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *EcommentMutation) EdgeCleared(name string) bool {
+func (m *CommentMutation) EdgeCleared(name string) bool {
 	switch name {
-	case ecomment.EdgeEvent:
+	case comment.EdgeEvent:
 		return m.clearedevent
-	case ecomment.EdgeUser:
+	case comment.EdgeUser:
 		return m.cleareduser
 	}
 	return false
@@ -1220,30 +448,30 @@ func (m *EcommentMutation) EdgeCleared(name string) bool {
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *EcommentMutation) ClearEdge(name string) error {
+func (m *CommentMutation) ClearEdge(name string) error {
 	switch name {
-	case ecomment.EdgeEvent:
+	case comment.EdgeEvent:
 		m.ClearEvent()
 		return nil
-	case ecomment.EdgeUser:
+	case comment.EdgeUser:
 		m.ClearUser()
 		return nil
 	}
-	return fmt.Errorf("unknown Ecomment unique edge %s", name)
+	return fmt.Errorf("unknown Comment unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *EcommentMutation) ResetEdge(name string) error {
+func (m *CommentMutation) ResetEdge(name string) error {
 	switch name {
-	case ecomment.EdgeEvent:
+	case comment.EdgeEvent:
 		m.ResetEvent()
 		return nil
-	case ecomment.EdgeUser:
+	case comment.EdgeUser:
 		m.ResetUser()
 		return nil
 	}
-	return fmt.Errorf("unknown Ecomment edge %s", name)
+	return fmt.Errorf("unknown Comment edge %s", name)
 }
 
 // EventMutation represents an operation that mutates the Event nodes in the graph.
@@ -1255,11 +483,9 @@ type EventMutation struct {
 	name          *string
 	detail        *string
 	location      *string
+	_type         *string
+	state         *string
 	clearedFields map[string]struct{}
-	state         *uuid.UUID
-	clearedstate  bool
-	_type         *uuid.UUID
-	cleared_type  bool
 	admin         *uuid.UUID
 	clearedadmin  bool
 	users         map[uuid.UUID]struct{}
@@ -1508,82 +734,76 @@ func (m *EventMutation) ResetLocation() {
 	delete(m.clearedFields, event.FieldLocation)
 }
 
-// SetStateID sets the "state" edge to the EState entity by id.
-func (m *EventMutation) SetStateID(id uuid.UUID) {
-	m.state = &id
+// SetType sets the "type" field.
+func (m *EventMutation) SetType(s string) {
+	m._type = &s
 }
 
-// ClearState clears the "state" edge to the EState entity.
-func (m *EventMutation) ClearState() {
-	m.clearedstate = true
-}
-
-// StateCleared reports if the "state" edge to the EState entity was cleared.
-func (m *EventMutation) StateCleared() bool {
-	return m.clearedstate
-}
-
-// StateID returns the "state" edge ID in the mutation.
-func (m *EventMutation) StateID() (id uuid.UUID, exists bool) {
-	if m.state != nil {
-		return *m.state, true
+// GetType returns the value of the "type" field in the mutation.
+func (m *EventMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
 	}
-	return
+	return *v, true
 }
 
-// StateIDs returns the "state" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// StateID instead. It exists only for internal usage by the builders.
-func (m *EventMutation) StateIDs() (ids []uuid.UUID) {
-	if id := m.state; id != nil {
-		ids = append(ids, *id)
+// OldType returns the old "type" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
 	}
-	return
-}
-
-// ResetState resets all changes to the "state" edge.
-func (m *EventMutation) ResetState() {
-	m.state = nil
-	m.clearedstate = false
-}
-
-// SetTypeID sets the "type" edge to the EType entity by id.
-func (m *EventMutation) SetTypeID(id uuid.UUID) {
-	m._type = &id
-}
-
-// ClearType clears the "type" edge to the EType entity.
-func (m *EventMutation) ClearType() {
-	m.cleared_type = true
-}
-
-// TypeCleared reports if the "type" edge to the EType entity was cleared.
-func (m *EventMutation) TypeCleared() bool {
-	return m.cleared_type
-}
-
-// TypeID returns the "type" edge ID in the mutation.
-func (m *EventMutation) TypeID() (id uuid.UUID, exists bool) {
-	if m._type != nil {
-		return *m._type, true
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
 	}
-	return
-}
-
-// TypeIDs returns the "type" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// TypeID instead. It exists only for internal usage by the builders.
-func (m *EventMutation) TypeIDs() (ids []uuid.UUID) {
-	if id := m._type; id != nil {
-		ids = append(ids, *id)
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
 	}
-	return
+	return oldValue.Type, nil
 }
 
-// ResetType resets all changes to the "type" edge.
+// ResetType resets all changes to the "type" field.
 func (m *EventMutation) ResetType() {
 	m._type = nil
-	m.cleared_type = false
+}
+
+// SetState sets the "state" field.
+func (m *EventMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *EventMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *EventMutation) ResetState() {
+	m.state = nil
 }
 
 // SetAdminID sets the "admin" edge to the User entity by id.
@@ -1698,7 +918,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, event.FieldName)
 	}
@@ -1707,6 +927,12 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.location != nil {
 		fields = append(fields, event.FieldLocation)
+	}
+	if m._type != nil {
+		fields = append(fields, event.FieldType)
+	}
+	if m.state != nil {
+		fields = append(fields, event.FieldState)
 	}
 	return fields
 }
@@ -1722,6 +948,10 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.Detail()
 	case event.FieldLocation:
 		return m.Location()
+	case event.FieldType:
+		return m.GetType()
+	case event.FieldState:
+		return m.State()
 	}
 	return nil, false
 }
@@ -1737,6 +967,10 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldDetail(ctx)
 	case event.FieldLocation:
 		return m.OldLocation(ctx)
+	case event.FieldType:
+		return m.OldType(ctx)
+	case event.FieldState:
+		return m.OldState(ctx)
 	}
 	return nil, fmt.Errorf("unknown Event field %s", name)
 }
@@ -1766,6 +1000,20 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLocation(v)
+		return nil
+	case event.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case event.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
@@ -1840,19 +1088,19 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldLocation:
 		m.ResetLocation()
 		return nil
+	case event.FieldType:
+		m.ResetType()
+		return nil
+	case event.FieldState:
+		m.ResetState()
+		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
-	if m.state != nil {
-		edges = append(edges, event.EdgeState)
-	}
-	if m._type != nil {
-		edges = append(edges, event.EdgeType)
-	}
+	edges := make([]string, 0, 2)
 	if m.admin != nil {
 		edges = append(edges, event.EdgeAdmin)
 	}
@@ -1866,14 +1114,6 @@ func (m *EventMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *EventMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case event.EdgeState:
-		if id := m.state; id != nil {
-			return []ent.Value{*id}
-		}
-	case event.EdgeType:
-		if id := m._type; id != nil {
-			return []ent.Value{*id}
-		}
 	case event.EdgeAdmin:
 		if id := m.admin; id != nil {
 			return []ent.Value{*id}
@@ -1890,7 +1130,7 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 2)
 	if m.removedusers != nil {
 		edges = append(edges, event.EdgeUsers)
 	}
@@ -1913,13 +1153,7 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
-	if m.clearedstate {
-		edges = append(edges, event.EdgeState)
-	}
-	if m.cleared_type {
-		edges = append(edges, event.EdgeType)
-	}
+	edges := make([]string, 0, 2)
 	if m.clearedadmin {
 		edges = append(edges, event.EdgeAdmin)
 	}
@@ -1933,10 +1167,6 @@ func (m *EventMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *EventMutation) EdgeCleared(name string) bool {
 	switch name {
-	case event.EdgeState:
-		return m.clearedstate
-	case event.EdgeType:
-		return m.cleared_type
 	case event.EdgeAdmin:
 		return m.clearedadmin
 	case event.EdgeUsers:
@@ -1949,12 +1179,6 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *EventMutation) ClearEdge(name string) error {
 	switch name {
-	case event.EdgeState:
-		m.ClearState()
-		return nil
-	case event.EdgeType:
-		m.ClearType()
-		return nil
 	case event.EdgeAdmin:
 		m.ClearAdmin()
 		return nil
@@ -1966,12 +1190,6 @@ func (m *EventMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *EventMutation) ResetEdge(name string) error {
 	switch name {
-	case event.EdgeState:
-		m.ResetState()
-		return nil
-	case event.EdgeType:
-		m.ResetType()
-		return nil
 	case event.EdgeAdmin:
 		m.ResetAdmin()
 		return nil
@@ -1988,8 +1206,6 @@ type UserMutation struct {
 	op            Op
 	typ           string
 	id            *uuid.UUID
-	age           *int
-	addage        *int
 	name          *string
 	authenticated *bool
 	mail          *string
@@ -2105,76 +1321,6 @@ func (m *UserMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetAge sets the "age" field.
-func (m *UserMutation) SetAge(i int) {
-	m.age = &i
-	m.addage = nil
-}
-
-// Age returns the value of the "age" field in the mutation.
-func (m *UserMutation) Age() (r int, exists bool) {
-	v := m.age
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAge returns the old "age" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldAge(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAge is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAge requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAge: %w", err)
-	}
-	return oldValue.Age, nil
-}
-
-// AddAge adds i to the "age" field.
-func (m *UserMutation) AddAge(i int) {
-	if m.addage != nil {
-		*m.addage += i
-	} else {
-		m.addage = &i
-	}
-}
-
-// AddedAge returns the value that was added to the "age" field in this mutation.
-func (m *UserMutation) AddedAge() (r int, exists bool) {
-	v := m.addage
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearAge clears the value of the "age" field.
-func (m *UserMutation) ClearAge() {
-	m.age = nil
-	m.addage = nil
-	m.clearedFields[user.FieldAge] = struct{}{}
-}
-
-// AgeCleared returns if the "age" field was cleared in this mutation.
-func (m *UserMutation) AgeCleared() bool {
-	_, ok := m.clearedFields[user.FieldAge]
-	return ok
-}
-
-// ResetAge resets all changes to the "age" field.
-func (m *UserMutation) ResetAge() {
-	m.age = nil
-	m.addage = nil
-	delete(m.clearedFields, user.FieldAge)
 }
 
 // SetName sets the "name" field.
@@ -2407,10 +1553,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 5)
-	if m.age != nil {
-		fields = append(fields, user.FieldAge)
-	}
+	fields := make([]string, 0, 4)
 	if m.name != nil {
 		fields = append(fields, user.FieldName)
 	}
@@ -2431,8 +1574,6 @@ func (m *UserMutation) Fields() []string {
 // schema.
 func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case user.FieldAge:
-		return m.Age()
 	case user.FieldName:
 		return m.Name()
 	case user.FieldAuthenticated:
@@ -2450,8 +1591,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case user.FieldAge:
-		return m.OldAge(ctx)
 	case user.FieldName:
 		return m.OldName(ctx)
 	case user.FieldAuthenticated:
@@ -2469,13 +1608,6 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *UserMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldAge:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAge(v)
-		return nil
 	case user.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -2511,21 +1643,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *UserMutation) AddedFields() []string {
-	var fields []string
-	if m.addage != nil {
-		fields = append(fields, user.FieldAge)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case user.FieldAge:
-		return m.AddedAge()
-	}
 	return nil, false
 }
 
@@ -2534,13 +1658,6 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldAge:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddAge(v)
-		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
 }
@@ -2549,9 +1666,6 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(user.FieldAge) {
-		fields = append(fields, user.FieldAge)
-	}
 	if m.FieldCleared(user.FieldMail) {
 		fields = append(fields, user.FieldMail)
 	}
@@ -2569,9 +1683,6 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
 	switch name {
-	case user.FieldAge:
-		m.ClearAge()
-		return nil
 	case user.FieldMail:
 		m.ClearMail()
 		return nil
@@ -2583,9 +1694,6 @@ func (m *UserMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *UserMutation) ResetField(name string) error {
 	switch name {
-	case user.FieldAge:
-		m.ResetAge()
-		return nil
 	case user.FieldName:
 		m.ResetName()
 		return nil

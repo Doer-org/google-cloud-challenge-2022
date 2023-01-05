@@ -11,8 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
@@ -28,8 +26,6 @@ type EventQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Event
-	withState  *EStateQuery
-	withType   *ETypeQuery
 	withAdmin  *UserQuery
 	withUsers  *UserQuery
 	withFKs    bool
@@ -67,50 +63,6 @@ func (eq *EventQuery) Unique(unique bool) *EventQuery {
 func (eq *EventQuery) Order(o ...OrderFunc) *EventQuery {
 	eq.order = append(eq.order, o...)
 	return eq
-}
-
-// QueryState chains the current query on the "state" edge.
-func (eq *EventQuery) QueryState() *EStateQuery {
-	query := &EStateQuery{config: eq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := eq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(event.Table, event.FieldID, selector),
-			sqlgraph.To(estate.Table, estate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, event.StateTable, event.StateColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryType chains the current query on the "type" edge.
-func (eq *EventQuery) QueryType() *ETypeQuery {
-	query := &ETypeQuery{config: eq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := eq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(event.Table, event.FieldID, selector),
-			sqlgraph.To(etype.Table, etype.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, event.TypeTable, event.TypeColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryAdmin chains the current query on the "admin" edge.
@@ -338,8 +290,6 @@ func (eq *EventQuery) Clone() *EventQuery {
 		offset:     eq.offset,
 		order:      append([]OrderFunc{}, eq.order...),
 		predicates: append([]predicate.Event{}, eq.predicates...),
-		withState:  eq.withState.Clone(),
-		withType:   eq.withType.Clone(),
 		withAdmin:  eq.withAdmin.Clone(),
 		withUsers:  eq.withUsers.Clone(),
 		// clone intermediate query.
@@ -347,28 +297,6 @@ func (eq *EventQuery) Clone() *EventQuery {
 		path:   eq.path,
 		unique: eq.unique,
 	}
-}
-
-// WithState tells the query-builder to eager-load the nodes that are connected to
-// the "state" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EventQuery) WithState(opts ...func(*EStateQuery)) *EventQuery {
-	query := &EStateQuery{config: eq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	eq.withState = query
-	return eq
-}
-
-// WithType tells the query-builder to eager-load the nodes that are connected to
-// the "type" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EventQuery) WithType(opts ...func(*ETypeQuery)) *EventQuery {
-	query := &ETypeQuery{config: eq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	eq.withType = query
-	return eq
 }
 
 // WithAdmin tells the query-builder to eager-load the nodes that are connected to
@@ -467,9 +395,7 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		nodes       = []*Event{}
 		withFKs     = eq.withFKs
 		_spec       = eq.querySpec()
-		loadedTypes = [4]bool{
-			eq.withState != nil,
-			eq.withType != nil,
+		loadedTypes = [2]bool{
 			eq.withAdmin != nil,
 			eq.withUsers != nil,
 		}
@@ -498,18 +424,6 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := eq.withState; query != nil {
-		if err := eq.loadState(ctx, query, nodes, nil,
-			func(n *Event, e *EState) { n.Edges.State = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := eq.withType; query != nil {
-		if err := eq.loadType(ctx, query, nodes, nil,
-			func(n *Event, e *EType) { n.Edges.Type = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := eq.withAdmin; query != nil {
 		if err := eq.loadAdmin(ctx, query, nodes, nil,
 			func(n *Event, e *User) { n.Edges.Admin = e }); err != nil {
@@ -526,62 +440,6 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 	return nodes, nil
 }
 
-func (eq *EventQuery) loadState(ctx context.Context, query *EStateQuery, nodes []*Event, init func(*Event), assign func(*Event, *EState)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Event)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-	}
-	query.withFKs = true
-	query.Where(predicate.EState(func(s *sql.Selector) {
-		s.Where(sql.InValues(event.StateColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.event_state
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "event_state" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "event_state" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (eq *EventQuery) loadType(ctx context.Context, query *ETypeQuery, nodes []*Event, init func(*Event), assign func(*Event, *EType)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Event)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-	}
-	query.withFKs = true
-	query.Where(predicate.EType(func(s *sql.Selector) {
-		s.Where(sql.InValues(event.TypeColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.event_type
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "event_type" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "event_type" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 func (eq *EventQuery) loadAdmin(ctx context.Context, query *UserQuery, nodes []*Event, init func(*Event), assign func(*Event, *User)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Event)

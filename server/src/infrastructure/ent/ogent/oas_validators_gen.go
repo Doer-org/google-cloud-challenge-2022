@@ -6,19 +6,7 @@ import (
 	"github.com/go-faster/errors"
 )
 
-func (s ListEStateOKApplicationJSON) Validate() error {
-	if s == nil {
-		return errors.New("nil is invalid value")
-	}
-	return nil
-}
-func (s ListETypeOKApplicationJSON) Validate() error {
-	if s == nil {
-		return errors.New("nil is invalid value")
-	}
-	return nil
-}
-func (s ListEcommentOKApplicationJSON) Validate() error {
+func (s ListCommentOKApplicationJSON) Validate() error {
 	if s == nil {
 		return errors.New("nil is invalid value")
 	}

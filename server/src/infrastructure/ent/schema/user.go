@@ -17,10 +17,6 @@ func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New),
-		field.Int("age").
-			Optional().
-			Min(0).
-			Max(100),
 		field.String("name").
 			NotEmpty().
 			MaxLen(20),

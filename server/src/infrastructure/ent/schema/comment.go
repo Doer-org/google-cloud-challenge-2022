@@ -7,13 +7,13 @@ import (
 	"github.com/google/uuid"
 )
 
-// Ecomment holds the schema definition for the Ecomment entity.
-type Ecomment struct {
+// Comment holds the schema definition for the Comment entity.
+type Comment struct {
 	ent.Schema
 }
 
-// Fields of the Ecomment.
-func (Ecomment) Fields() []ent.Field {
+// Fields of the Comment.
+func (Comment) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New),
@@ -22,8 +22,8 @@ func (Ecomment) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Ecomment.
-func (Ecomment) Edges() []ent.Edge {
+// Edges of the Comment.
+func (Comment) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("event", Event.Type).
 			Required().

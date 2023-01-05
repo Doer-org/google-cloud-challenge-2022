@@ -7,9 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/go-faster/jx"
@@ -30,399 +28,9 @@ func rawError(err error) jx.Raw {
 	return e.Bytes()
 }
 
-// CreateEState handles POST /e-states requests.
-func (h *OgentHandler) CreateEState(ctx context.Context, req CreateEStateReq) (CreateEStateRes, error) {
-	b := h.client.EState.Create()
-	// Add all fields.
-	b.SetName(req.Name)
-	// Add all edges.
-	b.SetEventID(req.Event)
-	// Persist to storage.
-	e, err := b.Save(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsConstraintError(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	// Reload the entity to attach all eager-loaded edges.
-	q := h.client.EState.Query().Where(estate.ID(e.ID))
-	e, err = q.Only(ctx)
-	if err != nil {
-		// This should never happen.
-		return nil, err
-	}
-	return NewEStateCreate(e), nil
-}
-
-// ReadEState handles GET /e-states/{id} requests.
-func (h *OgentHandler) ReadEState(ctx context.Context, params ReadEStateParams) (ReadEStateRes, error) {
-	q := h.client.EState.Query().Where(estate.IDEQ(params.ID))
-	e, err := q.Only(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	return NewEStateRead(e), nil
-}
-
-// UpdateEState handles PATCH /e-states/{id} requests.
-func (h *OgentHandler) UpdateEState(ctx context.Context, req UpdateEStateReq, params UpdateEStateParams) (UpdateEStateRes, error) {
-	b := h.client.EState.UpdateOneID(params.ID)
-	// Add all fields.
-	if v, ok := req.Name.Get(); ok {
-		b.SetName(v)
-	}
-	// Add all edges.
-	if v, ok := req.Event.Get(); ok {
-		b.SetEventID(v)
-	}
-	// Persist to storage.
-	e, err := b.Save(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsConstraintError(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	// Reload the entity to attach all eager-loaded edges.
-	q := h.client.EState.Query().Where(estate.ID(e.ID))
-	e, err = q.Only(ctx)
-	if err != nil {
-		// This should never happen.
-		return nil, err
-	}
-	return NewEStateUpdate(e), nil
-}
-
-// DeleteEState handles DELETE /e-states/{id} requests.
-func (h *OgentHandler) DeleteEState(ctx context.Context, params DeleteEStateParams) (DeleteEStateRes, error) {
-	err := h.client.EState.DeleteOneID(params.ID).Exec(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsConstraintError(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	return new(DeleteEStateNoContent), nil
-
-}
-
-// ListEState handles GET /e-states requests.
-func (h *OgentHandler) ListEState(ctx context.Context, params ListEStateParams) (ListEStateRes, error) {
-	q := h.client.EState.Query()
-	page := 1
-	if v, ok := params.Page.Get(); ok {
-		page = v
-	}
-	itemsPerPage := 30
-	if v, ok := params.ItemsPerPage.Get(); ok {
-		itemsPerPage = v
-	}
-	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
-
-	es, err := q.All(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	r := NewEStateLists(es)
-	return (*ListEStateOKApplicationJSON)(&r), nil
-}
-
-// ReadEStateEvent handles GET /e-states/{id}/event requests.
-func (h *OgentHandler) ReadEStateEvent(ctx context.Context, params ReadEStateEventParams) (ReadEStateEventRes, error) {
-	q := h.client.EState.Query().Where(estate.IDEQ(params.ID)).QueryEvent()
-	e, err := q.Only(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	return NewEStateEventRead(e), nil
-}
-
-// CreateEType handles POST /e-types requests.
-func (h *OgentHandler) CreateEType(ctx context.Context, req CreateETypeReq) (CreateETypeRes, error) {
-	b := h.client.EType.Create()
-	// Add all fields.
-	b.SetName(req.Name)
-	// Add all edges.
-	b.SetEventID(req.Event)
-	// Persist to storage.
-	e, err := b.Save(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsConstraintError(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	// Reload the entity to attach all eager-loaded edges.
-	q := h.client.EType.Query().Where(etype.ID(e.ID))
-	e, err = q.Only(ctx)
-	if err != nil {
-		// This should never happen.
-		return nil, err
-	}
-	return NewETypeCreate(e), nil
-}
-
-// ReadEType handles GET /e-types/{id} requests.
-func (h *OgentHandler) ReadEType(ctx context.Context, params ReadETypeParams) (ReadETypeRes, error) {
-	q := h.client.EType.Query().Where(etype.IDEQ(params.ID))
-	e, err := q.Only(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	return NewETypeRead(e), nil
-}
-
-// UpdateEType handles PATCH /e-types/{id} requests.
-func (h *OgentHandler) UpdateEType(ctx context.Context, req UpdateETypeReq, params UpdateETypeParams) (UpdateETypeRes, error) {
-	b := h.client.EType.UpdateOneID(params.ID)
-	// Add all fields.
-	if v, ok := req.Name.Get(); ok {
-		b.SetName(v)
-	}
-	// Add all edges.
-	if v, ok := req.Event.Get(); ok {
-		b.SetEventID(v)
-	}
-	// Persist to storage.
-	e, err := b.Save(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsConstraintError(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	// Reload the entity to attach all eager-loaded edges.
-	q := h.client.EType.Query().Where(etype.ID(e.ID))
-	e, err = q.Only(ctx)
-	if err != nil {
-		// This should never happen.
-		return nil, err
-	}
-	return NewETypeUpdate(e), nil
-}
-
-// DeleteEType handles DELETE /e-types/{id} requests.
-func (h *OgentHandler) DeleteEType(ctx context.Context, params DeleteETypeParams) (DeleteETypeRes, error) {
-	err := h.client.EType.DeleteOneID(params.ID).Exec(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsConstraintError(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	return new(DeleteETypeNoContent), nil
-
-}
-
-// ListEType handles GET /e-types requests.
-func (h *OgentHandler) ListEType(ctx context.Context, params ListETypeParams) (ListETypeRes, error) {
-	q := h.client.EType.Query()
-	page := 1
-	if v, ok := params.Page.Get(); ok {
-		page = v
-	}
-	itemsPerPage := 30
-	if v, ok := params.ItemsPerPage.Get(); ok {
-		itemsPerPage = v
-	}
-	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
-
-	es, err := q.All(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	r := NewETypeLists(es)
-	return (*ListETypeOKApplicationJSON)(&r), nil
-}
-
-// ReadETypeEvent handles GET /e-types/{id}/event requests.
-func (h *OgentHandler) ReadETypeEvent(ctx context.Context, params ReadETypeEventParams) (ReadETypeEventRes, error) {
-	q := h.client.EType.Query().Where(etype.IDEQ(params.ID)).QueryEvent()
-	e, err := q.Only(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	return NewETypeEventRead(e), nil
-}
-
-// CreateEcomment handles POST /ecomments requests.
-func (h *OgentHandler) CreateEcomment(ctx context.Context, req CreateEcommentReq) (CreateEcommentRes, error) {
-	b := h.client.Ecomment.Create()
+// CreateComment handles POST /comments requests.
+func (h *OgentHandler) CreateComment(ctx context.Context, req CreateCommentReq) (CreateCommentRes, error) {
+	b := h.client.Comment.Create()
 	// Add all fields.
 	b.SetBody(req.Body)
 	// Add all edges.
@@ -450,18 +58,18 @@ func (h *OgentHandler) CreateEcomment(ctx context.Context, req CreateEcommentReq
 		}
 	}
 	// Reload the entity to attach all eager-loaded edges.
-	q := h.client.Ecomment.Query().Where(ecomment.ID(e.ID))
+	q := h.client.Comment.Query().Where(comment.ID(e.ID))
 	e, err = q.Only(ctx)
 	if err != nil {
 		// This should never happen.
 		return nil, err
 	}
-	return NewEcommentCreate(e), nil
+	return NewCommentCreate(e), nil
 }
 
-// ReadEcomment handles GET /ecomments/{id} requests.
-func (h *OgentHandler) ReadEcomment(ctx context.Context, params ReadEcommentParams) (ReadEcommentRes, error) {
-	q := h.client.Ecomment.Query().Where(ecomment.IDEQ(params.ID))
+// ReadComment handles GET /comments/{id} requests.
+func (h *OgentHandler) ReadComment(ctx context.Context, params ReadCommentParams) (ReadCommentRes, error) {
+	q := h.client.Comment.Query().Where(comment.IDEQ(params.ID))
 	e, err := q.Only(ctx)
 	if err != nil {
 		switch {
@@ -482,12 +90,12 @@ func (h *OgentHandler) ReadEcomment(ctx context.Context, params ReadEcommentPara
 			return nil, err
 		}
 	}
-	return NewEcommentRead(e), nil
+	return NewCommentRead(e), nil
 }
 
-// UpdateEcomment handles PATCH /ecomments/{id} requests.
-func (h *OgentHandler) UpdateEcomment(ctx context.Context, req UpdateEcommentReq, params UpdateEcommentParams) (UpdateEcommentRes, error) {
-	b := h.client.Ecomment.UpdateOneID(params.ID)
+// UpdateComment handles PATCH /comments/{id} requests.
+func (h *OgentHandler) UpdateComment(ctx context.Context, req UpdateCommentReq, params UpdateCommentParams) (UpdateCommentRes, error) {
+	b := h.client.Comment.UpdateOneID(params.ID)
 	// Add all fields.
 	if v, ok := req.Body.Get(); ok {
 		b.SetBody(v)
@@ -521,18 +129,18 @@ func (h *OgentHandler) UpdateEcomment(ctx context.Context, req UpdateEcommentReq
 		}
 	}
 	// Reload the entity to attach all eager-loaded edges.
-	q := h.client.Ecomment.Query().Where(ecomment.ID(e.ID))
+	q := h.client.Comment.Query().Where(comment.ID(e.ID))
 	e, err = q.Only(ctx)
 	if err != nil {
 		// This should never happen.
 		return nil, err
 	}
-	return NewEcommentUpdate(e), nil
+	return NewCommentUpdate(e), nil
 }
 
-// DeleteEcomment handles DELETE /ecomments/{id} requests.
-func (h *OgentHandler) DeleteEcomment(ctx context.Context, params DeleteEcommentParams) (DeleteEcommentRes, error) {
-	err := h.client.Ecomment.DeleteOneID(params.ID).Exec(ctx)
+// DeleteComment handles DELETE /comments/{id} requests.
+func (h *OgentHandler) DeleteComment(ctx context.Context, params DeleteCommentParams) (DeleteCommentRes, error) {
+	err := h.client.Comment.DeleteOneID(params.ID).Exec(ctx)
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
@@ -552,13 +160,13 @@ func (h *OgentHandler) DeleteEcomment(ctx context.Context, params DeleteEcomment
 			return nil, err
 		}
 	}
-	return new(DeleteEcommentNoContent), nil
+	return new(DeleteCommentNoContent), nil
 
 }
 
-// ListEcomment handles GET /ecomments requests.
-func (h *OgentHandler) ListEcomment(ctx context.Context, params ListEcommentParams) (ListEcommentRes, error) {
-	q := h.client.Ecomment.Query()
+// ListComment handles GET /comments requests.
+func (h *OgentHandler) ListComment(ctx context.Context, params ListCommentParams) (ListCommentRes, error) {
+	q := h.client.Comment.Query()
 	page := 1
 	if v, ok := params.Page.Get(); ok {
 		page = v
@@ -589,13 +197,13 @@ func (h *OgentHandler) ListEcomment(ctx context.Context, params ListEcommentPara
 			return nil, err
 		}
 	}
-	r := NewEcommentLists(es)
-	return (*ListEcommentOKApplicationJSON)(&r), nil
+	r := NewCommentLists(es)
+	return (*ListCommentOKApplicationJSON)(&r), nil
 }
 
-// ReadEcommentEvent handles GET /ecomments/{id}/event requests.
-func (h *OgentHandler) ReadEcommentEvent(ctx context.Context, params ReadEcommentEventParams) (ReadEcommentEventRes, error) {
-	q := h.client.Ecomment.Query().Where(ecomment.IDEQ(params.ID)).QueryEvent()
+// ReadCommentEvent handles GET /comments/{id}/event requests.
+func (h *OgentHandler) ReadCommentEvent(ctx context.Context, params ReadCommentEventParams) (ReadCommentEventRes, error) {
+	q := h.client.Comment.Query().Where(comment.IDEQ(params.ID)).QueryEvent()
 	e, err := q.Only(ctx)
 	if err != nil {
 		switch {
@@ -616,12 +224,12 @@ func (h *OgentHandler) ReadEcommentEvent(ctx context.Context, params ReadEcommen
 			return nil, err
 		}
 	}
-	return NewEcommentEventRead(e), nil
+	return NewCommentEventRead(e), nil
 }
 
-// ReadEcommentUser handles GET /ecomments/{id}/user requests.
-func (h *OgentHandler) ReadEcommentUser(ctx context.Context, params ReadEcommentUserParams) (ReadEcommentUserRes, error) {
-	q := h.client.Ecomment.Query().Where(ecomment.IDEQ(params.ID)).QueryUser()
+// ReadCommentUser handles GET /comments/{id}/user requests.
+func (h *OgentHandler) ReadCommentUser(ctx context.Context, params ReadCommentUserParams) (ReadCommentUserRes, error) {
+	q := h.client.Comment.Query().Where(comment.IDEQ(params.ID)).QueryUser()
 	e, err := q.Only(ctx)
 	if err != nil {
 		switch {
@@ -642,7 +250,7 @@ func (h *OgentHandler) ReadEcommentUser(ctx context.Context, params ReadEcomment
 			return nil, err
 		}
 	}
-	return NewEcommentUserRead(e), nil
+	return NewCommentUserRead(e), nil
 }
 
 // CreateEvent handles POST /events requests.
@@ -656,13 +264,9 @@ func (h *OgentHandler) CreateEvent(ctx context.Context, req CreateEventReq) (Cre
 	if v, ok := req.Location.Get(); ok {
 		b.SetLocation(v)
 	}
+	b.SetType(req.Type)
+	b.SetState(req.State)
 	// Add all edges.
-	if v, ok := req.State.Get(); ok {
-		b.SetStateID(v)
-	}
-	if v, ok := req.Type.Get(); ok {
-		b.SetTypeID(v)
-	}
 	if v, ok := req.Admin.Get(); ok {
 		b.SetAdminID(v)
 	}
@@ -737,13 +341,13 @@ func (h *OgentHandler) UpdateEvent(ctx context.Context, req UpdateEventReq, para
 	if v, ok := req.Location.Get(); ok {
 		b.SetLocation(v)
 	}
-	// Add all edges.
-	if v, ok := req.State.Get(); ok {
-		b.SetStateID(v)
-	}
 	if v, ok := req.Type.Get(); ok {
-		b.SetTypeID(v)
+		b.SetType(v)
 	}
+	if v, ok := req.State.Get(); ok {
+		b.SetState(v)
+	}
+	// Add all edges.
 	if v, ok := req.Admin.Get(); ok {
 		b.SetAdminID(v)
 	}
@@ -842,58 +446,6 @@ func (h *OgentHandler) ListEvent(ctx context.Context, params ListEventParams) (L
 	return (*ListEventOKApplicationJSON)(&r), nil
 }
 
-// ReadEventState handles GET /events/{id}/state requests.
-func (h *OgentHandler) ReadEventState(ctx context.Context, params ReadEventStateParams) (ReadEventStateRes, error) {
-	q := h.client.Event.Query().Where(event.IDEQ(params.ID)).QueryState()
-	e, err := q.Only(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	return NewEventStateRead(e), nil
-}
-
-// ReadEventType handles GET /events/{id}/type requests.
-func (h *OgentHandler) ReadEventType(ctx context.Context, params ReadEventTypeParams) (ReadEventTypeRes, error) {
-	q := h.client.Event.Query().Where(event.IDEQ(params.ID)).QueryType()
-	e, err := q.Only(ctx)
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			return &R404{
-				Code:   http.StatusNotFound,
-				Status: http.StatusText(http.StatusNotFound),
-				Errors: rawError(err),
-			}, nil
-		case ent.IsNotSingular(err):
-			return &R409{
-				Code:   http.StatusConflict,
-				Status: http.StatusText(http.StatusConflict),
-				Errors: rawError(err),
-			}, nil
-		default:
-			// Let the server handle the error.
-			return nil, err
-		}
-	}
-	return NewEventTypeRead(e), nil
-}
-
 // ReadEventAdmin handles GET /events/{id}/admin requests.
 func (h *OgentHandler) ReadEventAdmin(ctx context.Context, params ReadEventAdminParams) (ReadEventAdminRes, error) {
 	q := h.client.Event.Query().Where(event.IDEQ(params.ID)).QueryAdmin()
@@ -960,9 +512,6 @@ func (h *OgentHandler) ListEventUsers(ctx context.Context, params ListEventUsers
 func (h *OgentHandler) CreateUser(ctx context.Context, req CreateUserReq) (CreateUserRes, error) {
 	b := h.client.User.Create()
 	// Add all fields.
-	if v, ok := req.Age.Get(); ok {
-		b.SetAge(v)
-	}
 	b.SetName(req.Name)
 	b.SetAuthenticated(req.Authenticated)
 	if v, ok := req.Mail.Get(); ok {
@@ -1032,9 +581,6 @@ func (h *OgentHandler) ReadUser(ctx context.Context, params ReadUserParams) (Rea
 func (h *OgentHandler) UpdateUser(ctx context.Context, req UpdateUserReq, params UpdateUserParams) (UpdateUserRes, error) {
 	b := h.client.User.UpdateOneID(params.ID)
 	// Add all fields.
-	if v, ok := req.Age.Get(); ok {
-		b.SetAge(v)
-	}
 	if v, ok := req.Name.Get(); ok {
 		b.SetName(v)
 	}

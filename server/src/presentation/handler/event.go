@@ -19,7 +19,7 @@ func NewEventHandler(uc usecase.IEventUsecase) *EventHandler {
 	}
 }
 
-func (h *EventHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *EventHandler) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 	eJson := &EventJson{}
 	if err := json.NewDecoder(r.Body).Decode(eJson); err != nil {
 		response.NewErrResponse(w, err)
@@ -27,7 +27,7 @@ func (h *EventHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	event, err := h.uc.Create(
+	event, err := h.uc.CreateNewEvent(
 		r.Context(),
 		eJson.Name,
 		eJson.Detail,
@@ -41,9 +41,21 @@ func (h *EventHandler) Create(w http.ResponseWriter, r *http.Request) {
 	response.ConvertToJsonResponseAndErrCheck(w, event)
 }
 
-func (h *EventHandler) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *EventHandler) GetEventById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
-	event, err := h.uc.GetById(r.Context(), idParam)
+	event, err := h.uc.GetEventById(r.Context(), idParam)
+	if err != nil {
+		response.NewErrResponse(w, err)
+		return
+	}
+	response.ConvertToJsonResponseAndErrCheck(w, event)
+}
+
+// TODO: close,cancelのような動詞をURLに埋め込むことになるので統一すべき、
+// Patchで統一
+func (h *EventHandler) ChangeEventStatusToCloseOfId(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+	event, err := h.uc.GetEventById(r.Context(), idParam)
 	if err != nil {
 		response.NewErrResponse(w, err)
 		return
@@ -52,12 +64,12 @@ func (h *EventHandler) GetById(w http.ResponseWriter, r *http.Request) {
 }
 
 type EventJson struct {
-	Id       string         `json:"id"`
-	Name     string         `json:"name"`
-	Detail   string         `json:"detail"`
-	Location string         `json:"location"`
-	AdminId  string         `json:"admin_id"`
-	State    EStateJson     `json:"state"`
-	Type     ETypeJson      `json:"type"`
-	Comments []ECommentJson `json:"comments"`
+	Id       string        `json:"id"`
+	Name     string        `json:"name"`
+	Detail   string        `json:"detail"`
+	Location string        `json:"location"`
+	AdminId  string        `json:"admin_id"`
+	State    EStateJson    `json:"state"`
+	Type     ETypeJson     `json:"type"`
+	Comments []CommentJson `json:"comments"`
 }

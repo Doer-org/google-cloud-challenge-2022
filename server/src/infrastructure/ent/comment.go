@@ -7,28 +7,28 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
 )
 
-// Ecomment is the model entity for the Ecomment schema.
-type Ecomment struct {
+// Comment is the model entity for the Comment schema.
+type Comment struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
 	// Body holds the value of the "body" field.
 	Body string `json:"body,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the EcommentQuery when eager-loading is set.
-	Edges          EcommentEdges `json:"edges"`
-	ecomment_event *uuid.UUID
-	ecomment_user  *uuid.UUID
+	// The values are being populated by the CommentQuery when eager-loading is set.
+	Edges         CommentEdges `json:"edges"`
+	comment_event *uuid.UUID
+	comment_user  *uuid.UUID
 }
 
-// EcommentEdges holds the relations/edges for other nodes in the graph.
-type EcommentEdges struct {
+// CommentEdges holds the relations/edges for other nodes in the graph.
+type CommentEdges struct {
 	// Event holds the value of the event edge.
 	Event *Event `json:"event,omitempty"`
 	// User holds the value of the user edge.
@@ -40,7 +40,7 @@ type EcommentEdges struct {
 
 // EventOrErr returns the Event value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e EcommentEdges) EventOrErr() (*Event, error) {
+func (e CommentEdges) EventOrErr() (*Event, error) {
 	if e.loadedTypes[0] {
 		if e.Event == nil {
 			// Edge was loaded but was not found.
@@ -53,7 +53,7 @@ func (e EcommentEdges) EventOrErr() (*Event, error) {
 
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e EcommentEdges) UserOrErr() (*User, error) {
+func (e CommentEdges) UserOrErr() (*User, error) {
 	if e.loadedTypes[1] {
 		if e.User == nil {
 			// Edge was loaded but was not found.
@@ -65,108 +65,108 @@ func (e EcommentEdges) UserOrErr() (*User, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Ecomment) scanValues(columns []string) ([]any, error) {
+func (*Comment) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case ecomment.FieldBody:
+		case comment.FieldBody:
 			values[i] = new(sql.NullString)
-		case ecomment.FieldID:
+		case comment.FieldID:
 			values[i] = new(uuid.UUID)
-		case ecomment.ForeignKeys[0]: // ecomment_event
+		case comment.ForeignKeys[0]: // comment_event
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
-		case ecomment.ForeignKeys[1]: // ecomment_user
+		case comment.ForeignKeys[1]: // comment_user
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Ecomment", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type Comment", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Ecomment fields.
-func (e *Ecomment) assignValues(columns []string, values []any) error {
+// to the Comment fields.
+func (c *Comment) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case ecomment.FieldID:
+		case comment.FieldID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				e.ID = *value
+				c.ID = *value
 			}
-		case ecomment.FieldBody:
+		case comment.FieldBody:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field body", values[i])
 			} else if value.Valid {
-				e.Body = value.String
+				c.Body = value.String
 			}
-		case ecomment.ForeignKeys[0]:
+		case comment.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field ecomment_event", values[i])
+				return fmt.Errorf("unexpected type %T for field comment_event", values[i])
 			} else if value.Valid {
-				e.ecomment_event = new(uuid.UUID)
-				*e.ecomment_event = *value.S.(*uuid.UUID)
+				c.comment_event = new(uuid.UUID)
+				*c.comment_event = *value.S.(*uuid.UUID)
 			}
-		case ecomment.ForeignKeys[1]:
+		case comment.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field ecomment_user", values[i])
+				return fmt.Errorf("unexpected type %T for field comment_user", values[i])
 			} else if value.Valid {
-				e.ecomment_user = new(uuid.UUID)
-				*e.ecomment_user = *value.S.(*uuid.UUID)
+				c.comment_user = new(uuid.UUID)
+				*c.comment_user = *value.S.(*uuid.UUID)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryEvent queries the "event" edge of the Ecomment entity.
-func (e *Ecomment) QueryEvent() *EventQuery {
-	return (&EcommentClient{config: e.config}).QueryEvent(e)
+// QueryEvent queries the "event" edge of the Comment entity.
+func (c *Comment) QueryEvent() *EventQuery {
+	return (&CommentClient{config: c.config}).QueryEvent(c)
 }
 
-// QueryUser queries the "user" edge of the Ecomment entity.
-func (e *Ecomment) QueryUser() *UserQuery {
-	return (&EcommentClient{config: e.config}).QueryUser(e)
+// QueryUser queries the "user" edge of the Comment entity.
+func (c *Comment) QueryUser() *UserQuery {
+	return (&CommentClient{config: c.config}).QueryUser(c)
 }
 
-// Update returns a builder for updating this Ecomment.
-// Note that you need to call Ecomment.Unwrap() before calling this method if this Ecomment
+// Update returns a builder for updating this Comment.
+// Note that you need to call Comment.Unwrap() before calling this method if this Comment
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (e *Ecomment) Update() *EcommentUpdateOne {
-	return (&EcommentClient{config: e.config}).UpdateOne(e)
+func (c *Comment) Update() *CommentUpdateOne {
+	return (&CommentClient{config: c.config}).UpdateOne(c)
 }
 
-// Unwrap unwraps the Ecomment entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Comment entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (e *Ecomment) Unwrap() *Ecomment {
-	_tx, ok := e.config.driver.(*txDriver)
+func (c *Comment) Unwrap() *Comment {
+	_tx, ok := c.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Ecomment is not a transactional entity")
+		panic("ent: Comment is not a transactional entity")
 	}
-	e.config.driver = _tx.drv
-	return e
+	c.config.driver = _tx.drv
+	return c
 }
 
 // String implements the fmt.Stringer.
-func (e *Ecomment) String() string {
+func (c *Comment) String() string {
 	var builder strings.Builder
-	builder.WriteString("Ecomment(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", e.ID))
+	builder.WriteString("Comment(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
 	builder.WriteString("body=")
-	builder.WriteString(e.Body)
+	builder.WriteString(c.Body)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Ecomments is a parsable slice of Ecomment.
-type Ecomments []*Ecomment
+// Comments is a parsable slice of Comment.
+type Comments []*Comment
 
-func (e Ecomments) config(cfg config) {
-	for _i := range e {
-		e[_i].config = cfg
+func (c Comments) config(cfg config) {
+	for _i := range c {
+		c[_i].config = cfg
 	}
 }

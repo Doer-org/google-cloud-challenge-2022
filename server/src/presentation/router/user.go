@@ -14,7 +14,8 @@ func initUserRouter(r *chi.Mux, c *ent.Client) {
 	h := handler.NewUserHandler(uc)
 
 	r.Route("/user", func(r chi.Router) {
-		r.Post("/", h.Create)
-		r.Get("/{mail}", h.GetByMail)
+		r.Post("/", h.CreateNewUser)
+		r.Get("/", h.GetUserByMail)
+		r.Get("/{id}", h.GetUserById)
 	})
 }

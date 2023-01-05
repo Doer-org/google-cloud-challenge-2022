@@ -59,20 +59,20 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 	return u
 }
 
-// CreateEState invokes createEState operation.
+// CreateComment invokes createComment operation.
 //
-// Creates a new EState and persists it to storage.
+// Creates a new Comment and persists it to storage.
 //
-// POST /e-states
-func (c *Client) CreateEState(ctx context.Context, request *CreateEStateReq) (CreateEStateRes, error) {
-	res, err := c.sendCreateEState(ctx, request)
+// POST /comments
+func (c *Client) CreateComment(ctx context.Context, request *CreateCommentReq) (CreateCommentRes, error) {
+	res, err := c.sendCreateComment(ctx, request)
 	_ = res
 	return res, err
 }
 
-func (c *Client) sendCreateEState(ctx context.Context, request *CreateEStateReq) (res CreateEStateRes, err error) {
+func (c *Client) sendCreateComment(ctx context.Context, request *CreateCommentReq) (res CreateCommentRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("createEState"),
+		otelogen.OperationID("createComment"),
 	}
 
 	// Run stopwatch.
@@ -86,7 +86,7 @@ func (c *Client) sendCreateEState(ctx context.Context, request *CreateEStateReq)
 	c.requests.Add(ctx, 1, otelAttrs...)
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "CreateEState",
+	ctx, span := c.cfg.Tracer.Start(ctx, "CreateComment",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -103,14 +103,14 @@ func (c *Client) sendCreateEState(ctx context.Context, request *CreateEStateReq)
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-states"
+	u.Path += "/comments"
 
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "POST", u, nil)
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
 	}
-	if err := encodeCreateEStateRequest(request, r); err != nil {
+	if err := encodeCreateCommentRequest(request, r); err != nil {
 		return res, errors.Wrap(err, "encode request")
 	}
 
@@ -122,149 +122,7 @@ func (c *Client) sendCreateEState(ctx context.Context, request *CreateEStateReq)
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeCreateEStateResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// CreateEType invokes createEType operation.
-//
-// Creates a new EType and persists it to storage.
-//
-// POST /e-types
-func (c *Client) CreateEType(ctx context.Context, request *CreateETypeReq) (CreateETypeRes, error) {
-	res, err := c.sendCreateEType(ctx, request)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendCreateEType(ctx context.Context, request *CreateETypeReq) (res CreateETypeRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("createEType"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "CreateEType",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-types"
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeCreateETypeRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeCreateETypeResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// CreateEcomment invokes createEcomment operation.
-//
-// Creates a new Ecomment and persists it to storage.
-//
-// POST /ecomments
-func (c *Client) CreateEcomment(ctx context.Context, request *CreateEcommentReq) (CreateEcommentRes, error) {
-	res, err := c.sendCreateEcomment(ctx, request)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendCreateEcomment(ctx context.Context, request *CreateEcommentReq) (res CreateEcommentRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("createEcomment"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "CreateEcomment",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/ecomments"
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeCreateEcommentRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeCreateEcommentResponse(resp)
+	result, err := decodeCreateCommentResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -414,20 +272,20 @@ func (c *Client) sendCreateUser(ctx context.Context, request *CreateUserReq) (re
 	return result, nil
 }
 
-// DeleteEState invokes deleteEState operation.
+// DeleteComment invokes deleteComment operation.
 //
-// Deletes the EState with the requested ID.
+// Deletes the Comment with the requested ID.
 //
-// DELETE /e-states/{id}
-func (c *Client) DeleteEState(ctx context.Context, params DeleteEStateParams) (DeleteEStateRes, error) {
-	res, err := c.sendDeleteEState(ctx, params)
+// DELETE /comments/{id}
+func (c *Client) DeleteComment(ctx context.Context, params DeleteCommentParams) (DeleteCommentRes, error) {
+	res, err := c.sendDeleteComment(ctx, params)
 	_ = res
 	return res, err
 }
 
-func (c *Client) sendDeleteEState(ctx context.Context, params DeleteEStateParams) (res DeleteEStateRes, err error) {
+func (c *Client) sendDeleteComment(ctx context.Context, params DeleteCommentParams) (res DeleteCommentRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteEState"),
+		otelogen.OperationID("deleteComment"),
 	}
 
 	// Run stopwatch.
@@ -441,7 +299,7 @@ func (c *Client) sendDeleteEState(ctx context.Context, params DeleteEStateParams
 	c.requests.Add(ctx, 1, otelAttrs...)
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteEState",
+	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteComment",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -458,7 +316,7 @@ func (c *Client) sendDeleteEState(ctx context.Context, params DeleteEStateParams
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-states/"
+	u.Path += "/comments/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -488,171 +346,7 @@ func (c *Client) sendDeleteEState(ctx context.Context, params DeleteEStateParams
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeDeleteEStateResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// DeleteEType invokes deleteEType operation.
-//
-// Deletes the EType with the requested ID.
-//
-// DELETE /e-types/{id}
-func (c *Client) DeleteEType(ctx context.Context, params DeleteETypeParams) (DeleteETypeRes, error) {
-	res, err := c.sendDeleteEType(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendDeleteEType(ctx context.Context, params DeleteETypeParams) (res DeleteETypeRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteEType"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteEType",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-types/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "DELETE", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeDeleteETypeResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// DeleteEcomment invokes deleteEcomment operation.
-//
-// Deletes the Ecomment with the requested ID.
-//
-// DELETE /ecomments/{id}
-func (c *Client) DeleteEcomment(ctx context.Context, params DeleteEcommentParams) (DeleteEcommentRes, error) {
-	res, err := c.sendDeleteEcomment(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendDeleteEcomment(ctx context.Context, params DeleteEcommentParams) (res DeleteEcommentRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteEcomment"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteEcomment",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/ecomments/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "DELETE", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeDeleteEcommentResponse(resp)
+	result, err := decodeDeleteCommentResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -824,20 +518,20 @@ func (c *Client) sendDeleteUser(ctx context.Context, params DeleteUserParams) (r
 	return result, nil
 }
 
-// ListEState invokes listEState operation.
+// ListComment invokes listComment operation.
 //
-// List EStates.
+// List Comments.
 //
-// GET /e-states
-func (c *Client) ListEState(ctx context.Context, params ListEStateParams) (ListEStateRes, error) {
-	res, err := c.sendListEState(ctx, params)
+// GET /comments
+func (c *Client) ListComment(ctx context.Context, params ListCommentParams) (ListCommentRes, error) {
+	res, err := c.sendListComment(ctx, params)
 	_ = res
 	return res, err
 }
 
-func (c *Client) sendListEState(ctx context.Context, params ListEStateParams) (res ListEStateRes, err error) {
+func (c *Client) sendListComment(ctx context.Context, params ListCommentParams) (res ListCommentRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listEState"),
+		otelogen.OperationID("listComment"),
 	}
 
 	// Run stopwatch.
@@ -851,7 +545,7 @@ func (c *Client) sendListEState(ctx context.Context, params ListEStateParams) (r
 	c.requests.Add(ctx, 1, otelAttrs...)
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ListEState",
+	ctx, span := c.cfg.Tracer.Start(ctx, "ListComment",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -868,7 +562,7 @@ func (c *Client) sendListEState(ctx context.Context, params ListEStateParams) (r
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-states"
+	u.Path += "/comments"
 
 	stage = "EncodeQueryParams"
 	q := uri.NewQueryEncoder()
@@ -922,219 +616,7 @@ func (c *Client) sendListEState(ctx context.Context, params ListEStateParams) (r
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeListEStateResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// ListEType invokes listEType operation.
-//
-// List ETypes.
-//
-// GET /e-types
-func (c *Client) ListEType(ctx context.Context, params ListETypeParams) (ListETypeRes, error) {
-	res, err := c.sendListEType(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendListEType(ctx context.Context, params ListETypeParams) (res ListETypeRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listEType"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ListEType",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-types"
-
-	stage = "EncodeQueryParams"
-	q := uri.NewQueryEncoder()
-	{
-		// Encode "page" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "page",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.Page.Get(); ok {
-				return e.EncodeValue(conv.IntToString(val))
-			}
-			return nil
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	{
-		// Encode "itemsPerPage" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "itemsPerPage",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.ItemsPerPage.Get(); ok {
-				return e.EncodeValue(conv.IntToString(val))
-			}
-			return nil
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	u.RawQuery = q.Values().Encode()
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeListETypeResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// ListEcomment invokes listEcomment operation.
-//
-// List Ecomments.
-//
-// GET /ecomments
-func (c *Client) ListEcomment(ctx context.Context, params ListEcommentParams) (ListEcommentRes, error) {
-	res, err := c.sendListEcomment(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendListEcomment(ctx context.Context, params ListEcommentParams) (res ListEcommentRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listEcomment"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ListEcomment",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/ecomments"
-
-	stage = "EncodeQueryParams"
-	q := uri.NewQueryEncoder()
-	{
-		// Encode "page" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "page",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.Page.Get(); ok {
-				return e.EncodeValue(conv.IntToString(val))
-			}
-			return nil
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	{
-		// Encode "itemsPerPage" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "itemsPerPage",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.ItemsPerPage.Get(); ok {
-				return e.EncodeValue(conv.IntToString(val))
-			}
-			return nil
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	u.RawQuery = q.Values().Encode()
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeListEcommentResponse(resp)
+	result, err := decodeListCommentResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -1596,20 +1078,20 @@ func (c *Client) sendListUserEvents(ctx context.Context, params ListUserEventsPa
 	return result, nil
 }
 
-// ReadEState invokes readEState operation.
+// ReadComment invokes readComment operation.
 //
-// Finds the EState with the requested ID and returns it.
+// Finds the Comment with the requested ID and returns it.
 //
-// GET /e-states/{id}
-func (c *Client) ReadEState(ctx context.Context, params ReadEStateParams) (ReadEStateRes, error) {
-	res, err := c.sendReadEState(ctx, params)
+// GET /comments/{id}
+func (c *Client) ReadComment(ctx context.Context, params ReadCommentParams) (ReadCommentRes, error) {
+	res, err := c.sendReadComment(ctx, params)
 	_ = res
 	return res, err
 }
 
-func (c *Client) sendReadEState(ctx context.Context, params ReadEStateParams) (res ReadEStateRes, err error) {
+func (c *Client) sendReadComment(ctx context.Context, params ReadCommentParams) (res ReadCommentRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEState"),
+		otelogen.OperationID("readComment"),
 	}
 
 	// Run stopwatch.
@@ -1623,7 +1105,7 @@ func (c *Client) sendReadEState(ctx context.Context, params ReadEStateParams) (r
 	c.requests.Add(ctx, 1, otelAttrs...)
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadEState",
+	ctx, span := c.cfg.Tracer.Start(ctx, "ReadComment",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1640,7 +1122,7 @@ func (c *Client) sendReadEState(ctx context.Context, params ReadEStateParams) (r
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-states/"
+	u.Path += "/comments/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1670,7 +1152,7 @@ func (c *Client) sendReadEState(ctx context.Context, params ReadEStateParams) (r
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeReadEStateResponse(resp)
+	result, err := decodeReadCommentResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -1678,20 +1160,20 @@ func (c *Client) sendReadEState(ctx context.Context, params ReadEStateParams) (r
 	return result, nil
 }
 
-// ReadEStateEvent invokes readEStateEvent operation.
+// ReadCommentEvent invokes readCommentEvent operation.
 //
-// Find the attached Event of the EState with the given ID.
+// Find the attached Event of the Comment with the given ID.
 //
-// GET /e-states/{id}/event
-func (c *Client) ReadEStateEvent(ctx context.Context, params ReadEStateEventParams) (ReadEStateEventRes, error) {
-	res, err := c.sendReadEStateEvent(ctx, params)
+// GET /comments/{id}/event
+func (c *Client) ReadCommentEvent(ctx context.Context, params ReadCommentEventParams) (ReadCommentEventRes, error) {
+	res, err := c.sendReadCommentEvent(ctx, params)
 	_ = res
 	return res, err
 }
 
-func (c *Client) sendReadEStateEvent(ctx context.Context, params ReadEStateEventParams) (res ReadEStateEventRes, err error) {
+func (c *Client) sendReadCommentEvent(ctx context.Context, params ReadCommentEventParams) (res ReadCommentEventRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEStateEvent"),
+		otelogen.OperationID("readCommentEvent"),
 	}
 
 	// Run stopwatch.
@@ -1705,7 +1187,7 @@ func (c *Client) sendReadEStateEvent(ctx context.Context, params ReadEStateEvent
 	c.requests.Add(ctx, 1, otelAttrs...)
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadEStateEvent",
+	ctx, span := c.cfg.Tracer.Start(ctx, "ReadCommentEvent",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1722,172 +1204,7 @@ func (c *Client) sendReadEStateEvent(ctx context.Context, params ReadEStateEvent
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-states/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-	u.Path += "/event"
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeReadEStateEventResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// ReadEType invokes readEType operation.
-//
-// Finds the EType with the requested ID and returns it.
-//
-// GET /e-types/{id}
-func (c *Client) ReadEType(ctx context.Context, params ReadETypeParams) (ReadETypeRes, error) {
-	res, err := c.sendReadEType(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendReadEType(ctx context.Context, params ReadETypeParams) (res ReadETypeRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEType"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadEType",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-types/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeReadETypeResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// ReadETypeEvent invokes readETypeEvent operation.
-//
-// Find the attached Event of the EType with the given ID.
-//
-// GET /e-types/{id}/event
-func (c *Client) ReadETypeEvent(ctx context.Context, params ReadETypeEventParams) (ReadETypeEventRes, error) {
-	res, err := c.sendReadETypeEvent(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendReadETypeEvent(ctx context.Context, params ReadETypeEventParams) (res ReadETypeEventRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readETypeEvent"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadETypeEvent",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-types/"
+	u.Path += "/comments/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1918,7 +1235,7 @@ func (c *Client) sendReadETypeEvent(ctx context.Context, params ReadETypeEventPa
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeReadETypeEventResponse(resp)
+	result, err := decodeReadCommentEventResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -1926,20 +1243,20 @@ func (c *Client) sendReadETypeEvent(ctx context.Context, params ReadETypeEventPa
 	return result, nil
 }
 
-// ReadEcomment invokes readEcomment operation.
+// ReadCommentUser invokes readCommentUser operation.
 //
-// Finds the Ecomment with the requested ID and returns it.
+// Find the attached User of the Comment with the given ID.
 //
-// GET /ecomments/{id}
-func (c *Client) ReadEcomment(ctx context.Context, params ReadEcommentParams) (ReadEcommentRes, error) {
-	res, err := c.sendReadEcomment(ctx, params)
+// GET /comments/{id}/user
+func (c *Client) ReadCommentUser(ctx context.Context, params ReadCommentUserParams) (ReadCommentUserRes, error) {
+	res, err := c.sendReadCommentUser(ctx, params)
 	_ = res
 	return res, err
 }
 
-func (c *Client) sendReadEcomment(ctx context.Context, params ReadEcommentParams) (res ReadEcommentRes, err error) {
+func (c *Client) sendReadCommentUser(ctx context.Context, params ReadCommentUserParams) (res ReadCommentUserRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEcomment"),
+		otelogen.OperationID("readCommentUser"),
 	}
 
 	// Run stopwatch.
@@ -1953,7 +1270,7 @@ func (c *Client) sendReadEcomment(ctx context.Context, params ReadEcommentParams
 	c.requests.Add(ctx, 1, otelAttrs...)
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadEcomment",
+	ctx, span := c.cfg.Tracer.Start(ctx, "ReadCommentUser",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1970,172 +1287,7 @@ func (c *Client) sendReadEcomment(ctx context.Context, params ReadEcommentParams
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/ecomments/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeReadEcommentResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// ReadEcommentEvent invokes readEcommentEvent operation.
-//
-// Find the attached Event of the Ecomment with the given ID.
-//
-// GET /ecomments/{id}/event
-func (c *Client) ReadEcommentEvent(ctx context.Context, params ReadEcommentEventParams) (ReadEcommentEventRes, error) {
-	res, err := c.sendReadEcommentEvent(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendReadEcommentEvent(ctx context.Context, params ReadEcommentEventParams) (res ReadEcommentEventRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEcommentEvent"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadEcommentEvent",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/ecomments/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-	u.Path += "/event"
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeReadEcommentEventResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// ReadEcommentUser invokes readEcommentUser operation.
-//
-// Find the attached User of the Ecomment with the given ID.
-//
-// GET /ecomments/{id}/user
-func (c *Client) ReadEcommentUser(ctx context.Context, params ReadEcommentUserParams) (ReadEcommentUserRes, error) {
-	res, err := c.sendReadEcommentUser(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendReadEcommentUser(ctx context.Context, params ReadEcommentUserParams) (res ReadEcommentUserRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEcommentUser"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadEcommentUser",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/ecomments/"
+	u.Path += "/comments/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2166,7 +1318,7 @@ func (c *Client) sendReadEcommentUser(ctx context.Context, params ReadEcommentUs
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeReadEcommentUserResponse(resp)
+	result, err := decodeReadCommentUserResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -2339,172 +1491,6 @@ func (c *Client) sendReadEventAdmin(ctx context.Context, params ReadEventAdminPa
 	return result, nil
 }
 
-// ReadEventState invokes readEventState operation.
-//
-// Find the attached EState of the Event with the given ID.
-//
-// GET /events/{id}/state
-func (c *Client) ReadEventState(ctx context.Context, params ReadEventStateParams) (ReadEventStateRes, error) {
-	res, err := c.sendReadEventState(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendReadEventState(ctx context.Context, params ReadEventStateParams) (res ReadEventStateRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEventState"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadEventState",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/events/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-	u.Path += "/state"
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeReadEventStateResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// ReadEventType invokes readEventType operation.
-//
-// Find the attached EType of the Event with the given ID.
-//
-// GET /events/{id}/type
-func (c *Client) ReadEventType(ctx context.Context, params ReadEventTypeParams) (ReadEventTypeRes, error) {
-	res, err := c.sendReadEventType(ctx, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendReadEventType(ctx context.Context, params ReadEventTypeParams) (res ReadEventTypeRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEventType"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ReadEventType",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/events/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-	u.Path += "/type"
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeReadEventTypeResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
 // ReadUser invokes readUser operation.
 //
 // Finds the User with the requested ID and returns it.
@@ -2587,20 +1573,20 @@ func (c *Client) sendReadUser(ctx context.Context, params ReadUserParams) (res R
 	return result, nil
 }
 
-// UpdateEState invokes updateEState operation.
+// UpdateComment invokes updateComment operation.
 //
-// Updates a EState and persists changes to storage.
+// Updates a Comment and persists changes to storage.
 //
-// PATCH /e-states/{id}
-func (c *Client) UpdateEState(ctx context.Context, request *UpdateEStateReq, params UpdateEStateParams) (UpdateEStateRes, error) {
-	res, err := c.sendUpdateEState(ctx, request, params)
+// PATCH /comments/{id}
+func (c *Client) UpdateComment(ctx context.Context, request *UpdateCommentReq, params UpdateCommentParams) (UpdateCommentRes, error) {
+	res, err := c.sendUpdateComment(ctx, request, params)
 	_ = res
 	return res, err
 }
 
-func (c *Client) sendUpdateEState(ctx context.Context, request *UpdateEStateReq, params UpdateEStateParams) (res UpdateEStateRes, err error) {
+func (c *Client) sendUpdateComment(ctx context.Context, request *UpdateCommentReq, params UpdateCommentParams) (res UpdateCommentRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("updateEState"),
+		otelogen.OperationID("updateComment"),
 	}
 
 	// Run stopwatch.
@@ -2614,7 +1600,7 @@ func (c *Client) sendUpdateEState(ctx context.Context, request *UpdateEStateReq,
 	c.requests.Add(ctx, 1, otelAttrs...)
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "UpdateEState",
+	ctx, span := c.cfg.Tracer.Start(ctx, "UpdateComment",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -2631,7 +1617,7 @@ func (c *Client) sendUpdateEState(ctx context.Context, request *UpdateEStateReq,
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-states/"
+	u.Path += "/comments/"
 	{
 		// Encode "id" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -2652,7 +1638,7 @@ func (c *Client) sendUpdateEState(ctx context.Context, request *UpdateEStateReq,
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
 	}
-	if err := encodeUpdateEStateRequest(request, r); err != nil {
+	if err := encodeUpdateCommentRequest(request, r); err != nil {
 		return res, errors.Wrap(err, "encode request")
 	}
 
@@ -2664,177 +1650,7 @@ func (c *Client) sendUpdateEState(ctx context.Context, request *UpdateEStateReq,
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeUpdateEStateResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// UpdateEType invokes updateEType operation.
-//
-// Updates a EType and persists changes to storage.
-//
-// PATCH /e-types/{id}
-func (c *Client) UpdateEType(ctx context.Context, request *UpdateETypeReq, params UpdateETypeParams) (UpdateETypeRes, error) {
-	res, err := c.sendUpdateEType(ctx, request, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendUpdateEType(ctx context.Context, request *UpdateETypeReq, params UpdateETypeParams) (res UpdateETypeRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("updateEType"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "UpdateEType",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/e-types/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "PATCH", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeUpdateETypeRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeUpdateETypeResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// UpdateEcomment invokes updateEcomment operation.
-//
-// Updates a Ecomment and persists changes to storage.
-//
-// PATCH /ecomments/{id}
-func (c *Client) UpdateEcomment(ctx context.Context, request *UpdateEcommentReq, params UpdateEcommentParams) (UpdateEcommentRes, error) {
-	res, err := c.sendUpdateEcomment(ctx, request, params)
-	_ = res
-	return res, err
-}
-
-func (c *Client) sendUpdateEcomment(ctx context.Context, request *UpdateEcommentReq, params UpdateEcommentParams) (res UpdateEcommentRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("updateEcomment"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, otelAttrs...)
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "UpdateEcomment",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, otelAttrs...)
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	u.Path += "/ecomments/"
-	{
-		// Encode "id" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "id",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.ID))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		u.Path += e.Result()
-	}
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "PATCH", u, nil)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeUpdateEcommentRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeUpdateEcommentResponse(resp)
+	result, err := decodeUpdateCommentResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

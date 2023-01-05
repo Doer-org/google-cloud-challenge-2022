@@ -9,8 +9,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
@@ -57,6 +55,18 @@ func (ec *EventCreate) SetNillableLocation(s *string) *EventCreate {
 	return ec
 }
 
+// SetType sets the "type" field.
+func (ec *EventCreate) SetType(s string) *EventCreate {
+	ec.mutation.SetType(s)
+	return ec
+}
+
+// SetState sets the "state" field.
+func (ec *EventCreate) SetState(s string) *EventCreate {
+	ec.mutation.SetState(s)
+	return ec
+}
+
 // SetID sets the "id" field.
 func (ec *EventCreate) SetID(u uuid.UUID) *EventCreate {
 	ec.mutation.SetID(u)
@@ -69,44 +79,6 @@ func (ec *EventCreate) SetNillableID(u *uuid.UUID) *EventCreate {
 		ec.SetID(*u)
 	}
 	return ec
-}
-
-// SetStateID sets the "state" edge to the EState entity by ID.
-func (ec *EventCreate) SetStateID(id uuid.UUID) *EventCreate {
-	ec.mutation.SetStateID(id)
-	return ec
-}
-
-// SetNillableStateID sets the "state" edge to the EState entity by ID if the given value is not nil.
-func (ec *EventCreate) SetNillableStateID(id *uuid.UUID) *EventCreate {
-	if id != nil {
-		ec = ec.SetStateID(*id)
-	}
-	return ec
-}
-
-// SetState sets the "state" edge to the EState entity.
-func (ec *EventCreate) SetState(e *EState) *EventCreate {
-	return ec.SetStateID(e.ID)
-}
-
-// SetTypeID sets the "type" edge to the EType entity by ID.
-func (ec *EventCreate) SetTypeID(id uuid.UUID) *EventCreate {
-	ec.mutation.SetTypeID(id)
-	return ec
-}
-
-// SetNillableTypeID sets the "type" edge to the EType entity by ID if the given value is not nil.
-func (ec *EventCreate) SetNillableTypeID(id *uuid.UUID) *EventCreate {
-	if id != nil {
-		ec = ec.SetTypeID(*id)
-	}
-	return ec
-}
-
-// SetType sets the "type" edge to the EType entity.
-func (ec *EventCreate) SetType(e *EType) *EventCreate {
-	return ec.SetTypeID(e.ID)
 }
 
 // SetAdminID sets the "admin" edge to the User entity by ID.
@@ -246,6 +218,22 @@ func (ec *EventCreate) check() error {
 			return &ValidationError{Name: "location", err: fmt.Errorf(`ent: validator failed for field "Event.location": %w`, err)}
 		}
 	}
+	if _, ok := ec.mutation.GetType(); !ok {
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Event.type"`)}
+	}
+	if v, ok := ec.mutation.GetType(); ok {
+		if err := event.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
+		}
+	}
+	if _, ok := ec.mutation.State(); !ok {
+		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "Event.state"`)}
+	}
+	if v, ok := ec.mutation.State(); ok {
+		if err := event.StateValidator(v); err != nil {
+			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "Event.state": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -294,43 +282,13 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec.SetField(event.FieldLocation, field.TypeString, value)
 		_node.Location = value
 	}
-	if nodes := ec.mutation.StateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   event.StateTable,
-			Columns: []string{event.StateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: estate.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
+	if value, ok := ec.mutation.GetType(); ok {
+		_spec.SetField(event.FieldType, field.TypeString, value)
+		_node.Type = value
 	}
-	if nodes := ec.mutation.TypeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   event.TypeTable,
-			Columns: []string{event.TypeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: etype.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
+	if value, ok := ec.mutation.State(); ok {
+		_spec.SetField(event.FieldState, field.TypeString, value)
+		_node.State = value
 	}
 	if nodes := ec.mutation.AdminIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

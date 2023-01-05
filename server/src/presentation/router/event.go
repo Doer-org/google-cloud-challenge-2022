@@ -14,7 +14,7 @@ func initEventHandler(r *chi.Mux, c *ent.Client) {
 	h := handler.NewEventHandler(uc)
 
 	r.Route("/event", func(r chi.Router) {
-		r.Post("/", h.Create)
-		r.Get("/{id}", h.GetById)
+		r.Post("/", h.CreateNewEvent)
+		r.Get("/{id}", h.GetEventById)
 	})
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
@@ -21,7 +20,7 @@ func NewUserHandler(uc usecase.IUserUsecase) *UserHandler {
 	}
 }
 
-func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	j := &UserJson{}
 	if err := json.NewDecoder(r.Body).Decode(j); err != nil {
 		response.NewErrResponse(w, err)
@@ -29,7 +28,7 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	user, err := h.uc.Create(
+	user, err := h.uc.CreateNewUser(
 		r.Context(),
 		j.Name,
 		j.Authenticated,
@@ -44,10 +43,19 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	response.ConvertToJsonResponseAndErrCheck(w, uJson)
 }
 
-func (h *UserHandler) GetByMail(w http.ResponseWriter, r *http.Request) {
-	//TODO: getbyidとかぶる、queryとかで指定したほうがよさそう
-	mailParam := chi.URLParam(r, "mail")
-	user, err := h.uc.GetByMail(context.Background(), mailParam)
+func (h *UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+	user, err := h.uc.GetUserById(r.Context(), idParam)
+	if err != nil {
+		response.NewErrResponse(w, err)
+		return
+	}
+	response.ConvertToJsonResponseAndErrCheck(w, user)
+}
+
+func (h *UserHandler) GetUserByMail(w http.ResponseWriter, r *http.Request) {
+	mailQuery := r.URL.Query().Get("err")
+	user, err := h.uc.GetUserByMail(r.Context(), mailQuery)
 	if err != nil {
 		response.NewErrResponse(w, err)
 		return

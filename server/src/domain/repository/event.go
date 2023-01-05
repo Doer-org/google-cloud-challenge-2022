@@ -7,6 +7,8 @@ import (
 )
 
 type IEventRepository interface {
-	Create(ctx context.Context, e *entity.Event, adminId entity.UserId) (*entity.Event, error)
-	GetById(ctx context.Context, id entity.EventId) (*entity.Event, error)
+	CreateNewEvent(ctx context.Context, e *entity.Event, adminId entity.UserId) (*entity.Event, error)
+	GetEventById(ctx context.Context, eventId entity.EventId) (*entity.Event, error)
+	ChangeEventStatusToCloseOfId(ctx context.Context, eventId entity.EventId) (*entity.Event, error)
+	ChangeEventStatusToCancelOfId(ctx context.Context, eventId entity.EventId) (*entity.Event, error)
 }

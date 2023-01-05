@@ -16,18 +16,18 @@ import (
 	"github.com/ogen-go/ogen/otelogen"
 )
 
-// handleCreateEStateRequest handles createEState operation.
+// handleCreateCommentRequest handles createComment operation.
 //
-// Creates a new EState and persists it to storage.
+// Creates a new Comment and persists it to storage.
 //
-// POST /e-states
-func (s *Server) handleCreateEStateRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+// POST /comments
+func (s *Server) handleCreateCommentRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("createEState"),
+		otelogen.OperationID("createComment"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "CreateEState",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "CreateComment",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -51,11 +51,11 @@ func (s *Server) handleCreateEStateRequest(args [0]string, w http.ResponseWriter
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "CreateEState",
-			ID:   "createEState",
+			Name: "CreateComment",
+			ID:   "createComment",
 		}
 	)
-	request, close, err := s.decodeCreateEStateRequest(r)
+	request, close, err := s.decodeCreateCommentRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -71,21 +71,21 @@ func (s *Server) handleCreateEStateRequest(args [0]string, w http.ResponseWriter
 		}
 	}()
 
-	var response CreateEStateRes
+	var response CreateCommentRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "CreateEState",
-			OperationID:   "createEState",
+			OperationName: "CreateComment",
+			OperationID:   "createComment",
 			Body:          request,
 			Params:        middleware.Parameters{},
 			Raw:           r,
 		}
 
 		type (
-			Request  = *CreateEStateReq
+			Request  = *CreateCommentReq
 			Params   = struct{}
-			Response = CreateEStateRes
+			Response = CreateCommentRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -96,12 +96,12 @@ func (s *Server) handleCreateEStateRequest(args [0]string, w http.ResponseWriter
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.CreateEState(ctx, request)
+				response, err = s.h.CreateComment(ctx, request)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.CreateEState(ctx, request)
+		response, err = s.h.CreateComment(ctx, request)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -109,207 +109,7 @@ func (s *Server) handleCreateEStateRequest(args [0]string, w http.ResponseWriter
 		return
 	}
 
-	if err := encodeCreateEStateResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleCreateETypeRequest handles createEType operation.
-//
-// Creates a new EType and persists it to storage.
-//
-// POST /e-types
-func (s *Server) handleCreateETypeRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("createEType"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "CreateEType",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "CreateEType",
-			ID:   "createEType",
-		}
-	)
-	request, close, err := s.decodeCreateETypeRequest(r)
-	if err != nil {
-		err = &ogenerrors.DecodeRequestError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeRequest", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	defer func() {
-		if err := close(); err != nil {
-			recordError("CloseRequest", err)
-		}
-	}()
-
-	var response CreateETypeRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "CreateEType",
-			OperationID:   "createEType",
-			Body:          request,
-			Params:        middleware.Parameters{},
-			Raw:           r,
-		}
-
-		type (
-			Request  = *CreateETypeReq
-			Params   = struct{}
-			Response = CreateETypeRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			nil,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.CreateEType(ctx, request)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.CreateEType(ctx, request)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeCreateETypeResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleCreateEcommentRequest handles createEcomment operation.
-//
-// Creates a new Ecomment and persists it to storage.
-//
-// POST /ecomments
-func (s *Server) handleCreateEcommentRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("createEcomment"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "CreateEcomment",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "CreateEcomment",
-			ID:   "createEcomment",
-		}
-	)
-	request, close, err := s.decodeCreateEcommentRequest(r)
-	if err != nil {
-		err = &ogenerrors.DecodeRequestError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeRequest", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	defer func() {
-		if err := close(); err != nil {
-			recordError("CloseRequest", err)
-		}
-	}()
-
-	var response CreateEcommentRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "CreateEcomment",
-			OperationID:   "createEcomment",
-			Body:          request,
-			Params:        middleware.Parameters{},
-			Raw:           r,
-		}
-
-		type (
-			Request  = *CreateEcommentReq
-			Params   = struct{}
-			Response = CreateEcommentRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			nil,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.CreateEcomment(ctx, request)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.CreateEcomment(ctx, request)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeCreateEcommentResponse(response, w, span); err != nil {
+	if err := encodeCreateCommentResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
@@ -516,18 +316,18 @@ func (s *Server) handleCreateUserRequest(args [0]string, w http.ResponseWriter, 
 	}
 }
 
-// handleDeleteEStateRequest handles deleteEState operation.
+// handleDeleteCommentRequest handles deleteComment operation.
 //
-// Deletes the EState with the requested ID.
+// Deletes the Comment with the requested ID.
 //
-// DELETE /e-states/{id}
-func (s *Server) handleDeleteEStateRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
+// DELETE /comments/{id}
+func (s *Server) handleDeleteCommentRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteEState"),
+		otelogen.OperationID("deleteComment"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "DeleteEState",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "DeleteComment",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -551,11 +351,11 @@ func (s *Server) handleDeleteEStateRequest(args [1]string, w http.ResponseWriter
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "DeleteEState",
-			ID:   "deleteEState",
+			Name: "DeleteComment",
+			ID:   "deleteComment",
 		}
 	)
-	params, err := decodeDeleteEStateParams(args, r)
+	params, err := decodeDeleteCommentParams(args, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -566,12 +366,12 @@ func (s *Server) handleDeleteEStateRequest(args [1]string, w http.ResponseWriter
 		return
 	}
 
-	var response DeleteEStateRes
+	var response DeleteCommentRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "DeleteEState",
-			OperationID:   "deleteEState",
+			OperationName: "DeleteComment",
+			OperationID:   "deleteComment",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -584,8 +384,8 @@ func (s *Server) handleDeleteEStateRequest(args [1]string, w http.ResponseWriter
 
 		type (
 			Request  = struct{}
-			Params   = DeleteEStateParams
-			Response = DeleteEStateRes
+			Params   = DeleteCommentParams
+			Response = DeleteCommentRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -594,14 +394,14 @@ func (s *Server) handleDeleteEStateRequest(args [1]string, w http.ResponseWriter
 		](
 			m,
 			mreq,
-			unpackDeleteEStateParams,
+			unpackDeleteCommentParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.DeleteEState(ctx, params)
+				response, err = s.h.DeleteComment(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.DeleteEState(ctx, params)
+		response, err = s.h.DeleteComment(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -609,207 +409,7 @@ func (s *Server) handleDeleteEStateRequest(args [1]string, w http.ResponseWriter
 		return
 	}
 
-	if err := encodeDeleteEStateResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleDeleteETypeRequest handles deleteEType operation.
-//
-// Deletes the EType with the requested ID.
-//
-// DELETE /e-types/{id}
-func (s *Server) handleDeleteETypeRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteEType"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "DeleteEType",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "DeleteEType",
-			ID:   "deleteEType",
-		}
-	)
-	params, err := decodeDeleteETypeParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response DeleteETypeRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "DeleteEType",
-			OperationID:   "deleteEType",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = DeleteETypeParams
-			Response = DeleteETypeRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackDeleteETypeParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.DeleteEType(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.DeleteEType(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeDeleteETypeResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleDeleteEcommentRequest handles deleteEcomment operation.
-//
-// Deletes the Ecomment with the requested ID.
-//
-// DELETE /ecomments/{id}
-func (s *Server) handleDeleteEcommentRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteEcomment"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "DeleteEcomment",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "DeleteEcomment",
-			ID:   "deleteEcomment",
-		}
-	)
-	params, err := decodeDeleteEcommentParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response DeleteEcommentRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "DeleteEcomment",
-			OperationID:   "deleteEcomment",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = DeleteEcommentParams
-			Response = DeleteEcommentRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackDeleteEcommentParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.DeleteEcomment(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.DeleteEcomment(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeDeleteEcommentResponse(response, w, span); err != nil {
+	if err := encodeDeleteCommentResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
@@ -1016,18 +616,18 @@ func (s *Server) handleDeleteUserRequest(args [1]string, w http.ResponseWriter, 
 	}
 }
 
-// handleListEStateRequest handles listEState operation.
+// handleListCommentRequest handles listComment operation.
 //
-// List EStates.
+// List Comments.
 //
-// GET /e-states
-func (s *Server) handleListEStateRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
+// GET /comments
+func (s *Server) handleListCommentRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listEState"),
+		otelogen.OperationID("listComment"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ListEState",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ListComment",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -1051,11 +651,11 @@ func (s *Server) handleListEStateRequest(args [0]string, w http.ResponseWriter, 
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "ListEState",
-			ID:   "listEState",
+			Name: "ListComment",
+			ID:   "listComment",
 		}
 	)
-	params, err := decodeListEStateParams(args, r)
+	params, err := decodeListCommentParams(args, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -1066,12 +666,12 @@ func (s *Server) handleListEStateRequest(args [0]string, w http.ResponseWriter, 
 		return
 	}
 
-	var response ListEStateRes
+	var response ListCommentRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "ListEState",
-			OperationID:   "listEState",
+			OperationName: "ListComment",
+			OperationID:   "listComment",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -1088,8 +688,8 @@ func (s *Server) handleListEStateRequest(args [0]string, w http.ResponseWriter, 
 
 		type (
 			Request  = struct{}
-			Params   = ListEStateParams
-			Response = ListEStateRes
+			Params   = ListCommentParams
+			Response = ListCommentRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1098,14 +698,14 @@ func (s *Server) handleListEStateRequest(args [0]string, w http.ResponseWriter, 
 		](
 			m,
 			mreq,
-			unpackListEStateParams,
+			unpackListCommentParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ListEState(ctx, params)
+				response, err = s.h.ListComment(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ListEState(ctx, params)
+		response, err = s.h.ListComment(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -1113,215 +713,7 @@ func (s *Server) handleListEStateRequest(args [0]string, w http.ResponseWriter, 
 		return
 	}
 
-	if err := encodeListEStateResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleListETypeRequest handles listEType operation.
-//
-// List ETypes.
-//
-// GET /e-types
-func (s *Server) handleListETypeRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listEType"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ListEType",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "ListEType",
-			ID:   "listEType",
-		}
-	)
-	params, err := decodeListETypeParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response ListETypeRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "ListEType",
-			OperationID:   "listEType",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "page",
-					In:   "query",
-				}: params.Page,
-				{
-					Name: "itemsPerPage",
-					In:   "query",
-				}: params.ItemsPerPage,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = ListETypeParams
-			Response = ListETypeRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackListETypeParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ListEType(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.ListEType(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeListETypeResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleListEcommentRequest handles listEcomment operation.
-//
-// List Ecomments.
-//
-// GET /ecomments
-func (s *Server) handleListEcommentRequest(args [0]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listEcomment"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ListEcomment",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "ListEcomment",
-			ID:   "listEcomment",
-		}
-	)
-	params, err := decodeListEcommentParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response ListEcommentRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "ListEcomment",
-			OperationID:   "listEcomment",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "page",
-					In:   "query",
-				}: params.Page,
-				{
-					Name: "itemsPerPage",
-					In:   "query",
-				}: params.ItemsPerPage,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = ListEcommentParams
-			Response = ListEcommentRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackListEcommentParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ListEcomment(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.ListEcomment(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeListEcommentResponse(response, w, span); err != nil {
+	if err := encodeListCommentResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
@@ -1752,18 +1144,18 @@ func (s *Server) handleListUserEventsRequest(args [1]string, w http.ResponseWrit
 	}
 }
 
-// handleReadEStateRequest handles readEState operation.
+// handleReadCommentRequest handles readComment operation.
 //
-// Finds the EState with the requested ID and returns it.
+// Finds the Comment with the requested ID and returns it.
 //
-// GET /e-states/{id}
-func (s *Server) handleReadEStateRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
+// GET /comments/{id}
+func (s *Server) handleReadCommentRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEState"),
+		otelogen.OperationID("readComment"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadEState",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadComment",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -1787,11 +1179,11 @@ func (s *Server) handleReadEStateRequest(args [1]string, w http.ResponseWriter, 
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadEState",
-			ID:   "readEState",
+			Name: "ReadComment",
+			ID:   "readComment",
 		}
 	)
-	params, err := decodeReadEStateParams(args, r)
+	params, err := decodeReadCommentParams(args, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -1802,12 +1194,12 @@ func (s *Server) handleReadEStateRequest(args [1]string, w http.ResponseWriter, 
 		return
 	}
 
-	var response ReadEStateRes
+	var response ReadCommentRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "ReadEState",
-			OperationID:   "readEState",
+			OperationName: "ReadComment",
+			OperationID:   "readComment",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -1820,8 +1212,8 @@ func (s *Server) handleReadEStateRequest(args [1]string, w http.ResponseWriter, 
 
 		type (
 			Request  = struct{}
-			Params   = ReadEStateParams
-			Response = ReadEStateRes
+			Params   = ReadCommentParams
+			Response = ReadCommentRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1830,14 +1222,14 @@ func (s *Server) handleReadEStateRequest(args [1]string, w http.ResponseWriter, 
 		](
 			m,
 			mreq,
-			unpackReadEStateParams,
+			unpackReadCommentParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadEState(ctx, params)
+				response, err = s.h.ReadComment(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ReadEState(ctx, params)
+		response, err = s.h.ReadComment(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -1845,25 +1237,25 @@ func (s *Server) handleReadEStateRequest(args [1]string, w http.ResponseWriter, 
 		return
 	}
 
-	if err := encodeReadEStateResponse(response, w, span); err != nil {
+	if err := encodeReadCommentResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 }
 
-// handleReadEStateEventRequest handles readEStateEvent operation.
+// handleReadCommentEventRequest handles readCommentEvent operation.
 //
-// Find the attached Event of the EState with the given ID.
+// Find the attached Event of the Comment with the given ID.
 //
-// GET /e-states/{id}/event
-func (s *Server) handleReadEStateEventRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
+// GET /comments/{id}/event
+func (s *Server) handleReadCommentEventRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEStateEvent"),
+		otelogen.OperationID("readCommentEvent"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadEStateEvent",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadCommentEvent",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -1887,11 +1279,11 @@ func (s *Server) handleReadEStateEventRequest(args [1]string, w http.ResponseWri
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadEStateEvent",
-			ID:   "readEStateEvent",
+			Name: "ReadCommentEvent",
+			ID:   "readCommentEvent",
 		}
 	)
-	params, err := decodeReadEStateEventParams(args, r)
+	params, err := decodeReadCommentEventParams(args, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -1902,12 +1294,12 @@ func (s *Server) handleReadEStateEventRequest(args [1]string, w http.ResponseWri
 		return
 	}
 
-	var response ReadEStateEventRes
+	var response ReadCommentEventRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "ReadEStateEvent",
-			OperationID:   "readEStateEvent",
+			OperationName: "ReadCommentEvent",
+			OperationID:   "readCommentEvent",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -1920,8 +1312,8 @@ func (s *Server) handleReadEStateEventRequest(args [1]string, w http.ResponseWri
 
 		type (
 			Request  = struct{}
-			Params   = ReadEStateEventParams
-			Response = ReadEStateEventRes
+			Params   = ReadCommentEventParams
+			Response = ReadCommentEventRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1930,14 +1322,14 @@ func (s *Server) handleReadEStateEventRequest(args [1]string, w http.ResponseWri
 		](
 			m,
 			mreq,
-			unpackReadEStateEventParams,
+			unpackReadCommentEventParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadEStateEvent(ctx, params)
+				response, err = s.h.ReadCommentEvent(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ReadEStateEvent(ctx, params)
+		response, err = s.h.ReadCommentEvent(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -1945,25 +1337,25 @@ func (s *Server) handleReadEStateEventRequest(args [1]string, w http.ResponseWri
 		return
 	}
 
-	if err := encodeReadEStateEventResponse(response, w, span); err != nil {
+	if err := encodeReadCommentEventResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 }
 
-// handleReadETypeRequest handles readEType operation.
+// handleReadCommentUserRequest handles readCommentUser operation.
 //
-// Finds the EType with the requested ID and returns it.
+// Find the attached User of the Comment with the given ID.
 //
-// GET /e-types/{id}
-func (s *Server) handleReadETypeRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
+// GET /comments/{id}/user
+func (s *Server) handleReadCommentUserRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEType"),
+		otelogen.OperationID("readCommentUser"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadEType",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadCommentUser",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -1987,11 +1379,11 @@ func (s *Server) handleReadETypeRequest(args [1]string, w http.ResponseWriter, r
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadEType",
-			ID:   "readEType",
+			Name: "ReadCommentUser",
+			ID:   "readCommentUser",
 		}
 	)
-	params, err := decodeReadETypeParams(args, r)
+	params, err := decodeReadCommentUserParams(args, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -2002,12 +1394,12 @@ func (s *Server) handleReadETypeRequest(args [1]string, w http.ResponseWriter, r
 		return
 	}
 
-	var response ReadETypeRes
+	var response ReadCommentUserRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "ReadEType",
-			OperationID:   "readEType",
+			OperationName: "ReadCommentUser",
+			OperationID:   "readCommentUser",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -2020,8 +1412,8 @@ func (s *Server) handleReadETypeRequest(args [1]string, w http.ResponseWriter, r
 
 		type (
 			Request  = struct{}
-			Params   = ReadETypeParams
-			Response = ReadETypeRes
+			Params   = ReadCommentUserParams
+			Response = ReadCommentUserRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -2030,14 +1422,14 @@ func (s *Server) handleReadETypeRequest(args [1]string, w http.ResponseWriter, r
 		](
 			m,
 			mreq,
-			unpackReadETypeParams,
+			unpackReadCommentUserParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadEType(ctx, params)
+				response, err = s.h.ReadCommentUser(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.ReadEType(ctx, params)
+		response, err = s.h.ReadCommentUser(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -2045,407 +1437,7 @@ func (s *Server) handleReadETypeRequest(args [1]string, w http.ResponseWriter, r
 		return
 	}
 
-	if err := encodeReadETypeResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleReadETypeEventRequest handles readETypeEvent operation.
-//
-// Find the attached Event of the EType with the given ID.
-//
-// GET /e-types/{id}/event
-func (s *Server) handleReadETypeEventRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readETypeEvent"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadETypeEvent",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadETypeEvent",
-			ID:   "readETypeEvent",
-		}
-	)
-	params, err := decodeReadETypeEventParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response ReadETypeEventRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "ReadETypeEvent",
-			OperationID:   "readETypeEvent",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = ReadETypeEventParams
-			Response = ReadETypeEventRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackReadETypeEventParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadETypeEvent(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.ReadETypeEvent(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeReadETypeEventResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleReadEcommentRequest handles readEcomment operation.
-//
-// Finds the Ecomment with the requested ID and returns it.
-//
-// GET /ecomments/{id}
-func (s *Server) handleReadEcommentRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEcomment"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadEcomment",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadEcomment",
-			ID:   "readEcomment",
-		}
-	)
-	params, err := decodeReadEcommentParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response ReadEcommentRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "ReadEcomment",
-			OperationID:   "readEcomment",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = ReadEcommentParams
-			Response = ReadEcommentRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackReadEcommentParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadEcomment(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.ReadEcomment(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeReadEcommentResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleReadEcommentEventRequest handles readEcommentEvent operation.
-//
-// Find the attached Event of the Ecomment with the given ID.
-//
-// GET /ecomments/{id}/event
-func (s *Server) handleReadEcommentEventRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEcommentEvent"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadEcommentEvent",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadEcommentEvent",
-			ID:   "readEcommentEvent",
-		}
-	)
-	params, err := decodeReadEcommentEventParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response ReadEcommentEventRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "ReadEcommentEvent",
-			OperationID:   "readEcommentEvent",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = ReadEcommentEventParams
-			Response = ReadEcommentEventRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackReadEcommentEventParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadEcommentEvent(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.ReadEcommentEvent(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeReadEcommentEventResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleReadEcommentUserRequest handles readEcommentUser operation.
-//
-// Find the attached User of the Ecomment with the given ID.
-//
-// GET /ecomments/{id}/user
-func (s *Server) handleReadEcommentUserRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEcommentUser"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadEcommentUser",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadEcommentUser",
-			ID:   "readEcommentUser",
-		}
-	)
-	params, err := decodeReadEcommentUserParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response ReadEcommentUserRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "ReadEcommentUser",
-			OperationID:   "readEcommentUser",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = ReadEcommentUserParams
-			Response = ReadEcommentUserRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackReadEcommentUserParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadEcommentUser(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.ReadEcommentUser(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeReadEcommentUserResponse(response, w, span); err != nil {
+	if err := encodeReadCommentUserResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
@@ -2652,206 +1644,6 @@ func (s *Server) handleReadEventAdminRequest(args [1]string, w http.ResponseWrit
 	}
 }
 
-// handleReadEventStateRequest handles readEventState operation.
-//
-// Find the attached EState of the Event with the given ID.
-//
-// GET /events/{id}/state
-func (s *Server) handleReadEventStateRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEventState"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadEventState",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadEventState",
-			ID:   "readEventState",
-		}
-	)
-	params, err := decodeReadEventStateParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response ReadEventStateRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "ReadEventState",
-			OperationID:   "readEventState",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = ReadEventStateParams
-			Response = ReadEventStateRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackReadEventStateParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadEventState(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.ReadEventState(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeReadEventStateResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleReadEventTypeRequest handles readEventType operation.
-//
-// Find the attached EType of the Event with the given ID.
-//
-// GET /events/{id}/type
-func (s *Server) handleReadEventTypeRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("readEventType"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "ReadEventType",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "ReadEventType",
-			ID:   "readEventType",
-		}
-	)
-	params, err := decodeReadEventTypeParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	var response ReadEventTypeRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "ReadEventType",
-			OperationID:   "readEventType",
-			Body:          nil,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = struct{}
-			Params   = ReadEventTypeParams
-			Response = ReadEventTypeRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackReadEventTypeParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.ReadEventType(ctx, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.ReadEventType(ctx, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeReadEventTypeResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
 // handleReadUserRequest handles readUser operation.
 //
 // Finds the User with the requested ID and returns it.
@@ -2952,18 +1744,18 @@ func (s *Server) handleReadUserRequest(args [1]string, w http.ResponseWriter, r 
 	}
 }
 
-// handleUpdateEStateRequest handles updateEState operation.
+// handleUpdateCommentRequest handles updateComment operation.
 //
-// Updates a EState and persists changes to storage.
+// Updates a Comment and persists changes to storage.
 //
-// PATCH /e-states/{id}
-func (s *Server) handleUpdateEStateRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
+// PATCH /comments/{id}
+func (s *Server) handleUpdateCommentRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("updateEState"),
+		otelogen.OperationID("updateComment"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "UpdateEState",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "UpdateComment",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -2987,11 +1779,11 @@ func (s *Server) handleUpdateEStateRequest(args [1]string, w http.ResponseWriter
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "UpdateEState",
-			ID:   "updateEState",
+			Name: "UpdateComment",
+			ID:   "updateComment",
 		}
 	)
-	params, err := decodeUpdateEStateParams(args, r)
+	params, err := decodeUpdateCommentParams(args, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -3001,7 +1793,7 @@ func (s *Server) handleUpdateEStateRequest(args [1]string, w http.ResponseWriter
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeUpdateEStateRequest(r)
+	request, close, err := s.decodeUpdateCommentRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -3017,12 +1809,12 @@ func (s *Server) handleUpdateEStateRequest(args [1]string, w http.ResponseWriter
 		}
 	}()
 
-	var response UpdateEStateRes
+	var response UpdateCommentRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "UpdateEState",
-			OperationID:   "updateEState",
+			OperationName: "UpdateComment",
+			OperationID:   "updateComment",
 			Body:          request,
 			Params: middleware.Parameters{
 				{
@@ -3034,9 +1826,9 @@ func (s *Server) handleUpdateEStateRequest(args [1]string, w http.ResponseWriter
 		}
 
 		type (
-			Request  = *UpdateEStateReq
-			Params   = UpdateEStateParams
-			Response = UpdateEStateRes
+			Request  = *UpdateCommentReq
+			Params   = UpdateCommentParams
+			Response = UpdateCommentRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -3045,14 +1837,14 @@ func (s *Server) handleUpdateEStateRequest(args [1]string, w http.ResponseWriter
 		](
 			m,
 			mreq,
-			unpackUpdateEStateParams,
+			unpackUpdateCommentParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.UpdateEState(ctx, request, params)
+				response, err = s.h.UpdateComment(ctx, request, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.UpdateEState(ctx, request, params)
+		response, err = s.h.UpdateComment(ctx, request, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -3060,237 +1852,7 @@ func (s *Server) handleUpdateEStateRequest(args [1]string, w http.ResponseWriter
 		return
 	}
 
-	if err := encodeUpdateEStateResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleUpdateETypeRequest handles updateEType operation.
-//
-// Updates a EType and persists changes to storage.
-//
-// PATCH /e-types/{id}
-func (s *Server) handleUpdateETypeRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("updateEType"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "UpdateEType",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "UpdateEType",
-			ID:   "updateEType",
-		}
-	)
-	params, err := decodeUpdateETypeParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	request, close, err := s.decodeUpdateETypeRequest(r)
-	if err != nil {
-		err = &ogenerrors.DecodeRequestError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeRequest", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	defer func() {
-		if err := close(); err != nil {
-			recordError("CloseRequest", err)
-		}
-	}()
-
-	var response UpdateETypeRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "UpdateEType",
-			OperationID:   "updateEType",
-			Body:          request,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = *UpdateETypeReq
-			Params   = UpdateETypeParams
-			Response = UpdateETypeRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackUpdateETypeParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.UpdateEType(ctx, request, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.UpdateEType(ctx, request, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeUpdateETypeResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handleUpdateEcommentRequest handles updateEcomment operation.
-//
-// Updates a Ecomment and persists changes to storage.
-//
-// PATCH /ecomments/{id}
-func (s *Server) handleUpdateEcommentRequest(args [1]string, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("updateEcomment"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "UpdateEcomment",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), otelAttrs...)
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, otelAttrs...)
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, otelAttrs...)
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "UpdateEcomment",
-			ID:   "updateEcomment",
-		}
-	)
-	params, err := decodeUpdateEcommentParams(args, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	request, close, err := s.decodeUpdateEcommentRequest(r)
-	if err != nil {
-		err = &ogenerrors.DecodeRequestError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeRequest", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	defer func() {
-		if err := close(); err != nil {
-			recordError("CloseRequest", err)
-		}
-	}()
-
-	var response UpdateEcommentRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "UpdateEcomment",
-			OperationID:   "updateEcomment",
-			Body:          request,
-			Params: middleware.Parameters{
-				{
-					Name: "id",
-					In:   "path",
-				}: params.ID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = *UpdateEcommentReq
-			Params   = UpdateEcommentParams
-			Response = UpdateEcommentRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackUpdateEcommentParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.UpdateEcomment(ctx, request, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.UpdateEcomment(ctx, request, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodeUpdateEcommentResponse(response, w, span); err != nil {
+	if err := encodeUpdateCommentResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return

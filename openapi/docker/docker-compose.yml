@@ -3,7 +3,7 @@ version: "3"
 services:
   swagger-ui:
     image: swaggerapi/swagger-ui
-    container_name: "swagger-ui"
+    container_name: gc-challenge-2022-swagger-ui
     ports:
       - "8081:8080"
     volumes:

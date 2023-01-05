@@ -13,6 +13,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // ETypeQuery is the builder for querying EType entities.
@@ -108,8 +109,8 @@ func (eq *ETypeQuery) FirstX(ctx context.Context) *EType {
 
 // FirstID returns the first EType ID from the query.
 // Returns a *NotFoundError when no EType ID was found.
-func (eq *ETypeQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *ETypeQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = eq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -121,7 +122,7 @@ func (eq *ETypeQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (eq *ETypeQuery) FirstIDX(ctx context.Context) int {
+func (eq *ETypeQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := eq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -159,8 +160,8 @@ func (eq *ETypeQuery) OnlyX(ctx context.Context) *EType {
 // OnlyID is like Only, but returns the only EType ID in the query.
 // Returns a *NotSingularError when more than one EType ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (eq *ETypeQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *ETypeQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = eq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -176,7 +177,7 @@ func (eq *ETypeQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (eq *ETypeQuery) OnlyIDX(ctx context.Context) int {
+func (eq *ETypeQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := eq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -202,8 +203,8 @@ func (eq *ETypeQuery) AllX(ctx context.Context) []*EType {
 }
 
 // IDs executes the query and returns a list of EType IDs.
-func (eq *ETypeQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (eq *ETypeQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := eq.Select(etype.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -211,7 +212,7 @@ func (eq *ETypeQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (eq *ETypeQuery) IDsX(ctx context.Context) []int {
+func (eq *ETypeQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := eq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -396,8 +397,8 @@ func (eq *ETypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EType,
 }
 
 func (eq *ETypeQuery) loadEvent(ctx context.Context, query *EventQuery, nodes []*EType, init func(*EType), assign func(*EType, *Event)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*EType)
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*EType)
 	for i := range nodes {
 		if nodes[i].event_type == nil {
 			continue
@@ -451,7 +452,7 @@ func (eq *ETypeQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   etype.Table,
 			Columns: etype.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: etype.FieldID,
 			},
 		},

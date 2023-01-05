@@ -35,6 +35,19 @@ func (f ETypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The EcommentFunc type is an adapter to allow the use of ordinary
+// function as Ecomment mutator.
+type EcommentFunc func(context.Context, *ent.EcommentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EcommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EcommentMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EcommentMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The EventFunc type is an adapter to allow the use of ordinary
 // function as Event mutator.
 type EventFunc func(context.Context, *ent.EventMutation) (ent.Value, error)

@@ -7,7 +7,7 @@ import (
 	"github.com/oklog/ulid"
 )
 
-// auto increment は id からサービスの規模や、user の id が判明してしまったり良くない。
+// auto increment は id からサービスの規模や、簡単にuser の id が判明してしまったり良くない。
 // ulid は uuid のデメリットである、処理速度を解消するためのもの
 func GetUlid() string {
 	t := time.Now()

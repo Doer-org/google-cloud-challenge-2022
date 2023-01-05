@@ -9,16 +9,22 @@ GO           := go run
 GO_SRC_DIR   := ./src
 
 # docker
-DOCKER_COMPOSE_DIR         := ./docker
-DOCKER_COMPOSE_DEV_DIR     := $(DOCKER_COMPOSE_DIR)/dev
-DOCKER_COMPOSE_DEV         := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.yml
-DOCKER_COMPOSE_DEV_DB      := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.db.yml
-DOCKER_COMPOSE_DEV_SERVER  := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.server.yml
-DOCKER_EXEC                := docker exec -it
-SERVER_CONTAINER_NAME      := google-cloud-challenge-2022-server
-DB_CONTAINER_NAME          := google-cloud-challenge-2022-db
+DOCKER_COMPOSE_DIR                 := ./docker
+DOCKER_COMPOSE_DEV_DIR             := $(DOCKER_COMPOSE_DIR)/dev
+DOCKER_COMPOSE_DEV                 := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.yml
+DOCKER_COMPOSE_DEV_DB              := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.db.yml
+DOCKER_COMPOSE_DEV_SERVER          := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.server.yml
+DOCKER_EXEC                        := docker exec -it
+DOCKER_COMPOSE_PJ_NAME             := gc-challenge-2022-api
+SERVER_CONTAINER_NAME              := $(DOCKER_COMPOSE_PJ_NAME)-server
+DB_CONTAINER_NAME                  := $(DOCKER_COMPOSE_PJ_NAME)-db
+DOCKER_COMPOSE_DEFAULT_OPTIONS     := -f $(DOCKER_COMPOSE_DEV) \
+									-f $(DOCKER_COMPOSE_DEV_SERVER) \
+									-f $(DOCKER_COMPOSE_DEV_DB) \
+									-p $(DOCKER_COMPOSE_PJ_NAME)
 # volume
 DATA_DIR := ./db/data
+
 
 #ent
 ENT_DIR := $(GO_SRC_DIR)/infrastructure/ent
@@ -28,18 +34,12 @@ RM := rm -rf
 
 .PHONY: up
 up: ## docker環境を立ち上げる
-	docker-compose \
-	-f $(DOCKER_COMPOSE_DEV) \
-	-f $(DOCKER_COMPOSE_DEV_SERVER) \
-	-f $(DOCKER_COMPOSE_DEV_DB) \
+	docker-compose $(DOCKER_COMPOSE_DEFAULT_OPTIONS) \
 	up -d
 
 .PHONY: down
 down: ## dockerイメージを削除し、docker環境を閉じる
-	docker-compose \
-	-f $(DOCKER_COMPOSE_DEV) \
-	-f $(DOCKER_COMPOSE_DEV_SERVER) \
-	-f $(DOCKER_COMPOSE_DEV_DB) \
+	docker-compose $(DOCKER_COMPOSE_DEFAULT_OPTIONS) \
 	down \
 	--rmi all --volumes --remove-orphans
 
@@ -65,7 +65,7 @@ attach-db: ## dockerのdbコンテナにアクセスする
 	$(DOCKER_EXEC) $(DB_CONTAINER_NAME) bash
 
 .PHONY: server-lint
-server-lint: ## src配下のコードを整形する
+go-lint: ## src配下のコードを整形する
 	cd $(GO_SRC_DIR) && gofmt -l -w .
 
 .PHONY: test
@@ -74,15 +74,15 @@ test: ## テストを実行する
 
 .PHONY: log
 log: ## docker compose環境のログを確認する
-	docker-compose \
-	-f $(DOCKER_COMPOSE_DEV) \
-	-f $(DOCKER_COMPOSE_DEV_SERVER) \
-	-f $(DOCKER_COMPOSE_DEV_DB) \
+	docker-compose $(DOCKER_COMPOSE_DEFAULT_OPTIONS) \
 	logs -f
 
 #ent
 ent-generate: ## entのファイルを自動生成する
 	cd $(ENT_DIR) && go generate .
+
+ent-describe: ## entのスキーマの詳細を表示する
+	cd $(ENT_DIR) && go run -mod=mod entgo.io/ent/cmd/ent describe ./schema
 
 .PHONY: help
 help: ## コマンドの一覧を標示する

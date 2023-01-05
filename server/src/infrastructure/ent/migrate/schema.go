@@ -10,9 +10,9 @@ import (
 var (
 	// EstatesColumns holds the columns for the "estates" table.
 	EstatesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
-		{Name: "event_state", Type: field.TypeInt, Unique: true},
+		{Name: "event_state", Type: field.TypeUUID, Unique: true},
 	}
 	// EstatesTable holds the schema information for the "estates" table.
 	EstatesTable = &schema.Table{
@@ -30,9 +30,9 @@ var (
 	}
 	// EtypesColumns holds the columns for the "etypes" table.
 	EtypesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
-		{Name: "event_type", Type: field.TypeInt, Unique: true},
+		{Name: "event_type", Type: field.TypeUUID, Unique: true},
 	}
 	// EtypesTable holds the schema information for the "etypes" table.
 	EtypesTable = &schema.Table{
@@ -48,12 +48,39 @@ var (
 			},
 		},
 	}
+	// EcommentsColumns holds the columns for the "ecomments" table.
+	EcommentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "body", Type: field.TypeString},
+		{Name: "ecomment_event", Type: field.TypeUUID, Nullable: true},
+		{Name: "ecomment_user", Type: field.TypeUUID, Nullable: true},
+	}
+	// EcommentsTable holds the schema information for the "ecomments" table.
+	EcommentsTable = &schema.Table{
+		Name:       "ecomments",
+		Columns:    EcommentsColumns,
+		PrimaryKey: []*schema.Column{EcommentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "ecomments_events_event",
+				Columns:    []*schema.Column{EcommentsColumns[2]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ecomments_users_user",
+				Columns:    []*schema.Column{EcommentsColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString, Size: 100, Default: "unknown"},
-		{Name: "detail", Type: field.TypeString, Size: 500},
-		{Name: "location", Type: field.TypeString, Size: 200},
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "name", Type: field.TypeString, Size: 100},
+		{Name: "detail", Type: field.TypeString, Nullable: true, Size: 500},
+		{Name: "location", Type: field.TypeString, Nullable: true, Size: 200},
 	}
 	// EventsTable holds the schema information for the "events" table.
 	EventsTable = &schema.Table{
@@ -63,12 +90,12 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "age", Type: field.TypeInt},
-		{Name: "name", Type: field.TypeString, Size: 20, Default: "unknown"},
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "age", Type: field.TypeInt, Nullable: true},
+		{Name: "name", Type: field.TypeString, Size: 20},
 		{Name: "authenticated", Type: field.TypeBool, Default: false},
-		{Name: "gmail", Type: field.TypeString, Unique: true, Size: 50},
-		{Name: "icon_img", Type: field.TypeString, Size: 200},
+		{Name: "mail", Type: field.TypeString, Nullable: true, Size: 50},
+		{Name: "icon", Type: field.TypeString, Size: 200},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -78,8 +105,8 @@ var (
 	}
 	// UserEventsColumns holds the columns for the "user_events" table.
 	UserEventsColumns = []*schema.Column{
-		{Name: "user_id", Type: field.TypeInt},
-		{Name: "event_id", Type: field.TypeInt},
+		{Name: "user_id", Type: field.TypeUUID},
+		{Name: "event_id", Type: field.TypeUUID},
 	}
 	// UserEventsTable holds the schema information for the "user_events" table.
 	UserEventsTable = &schema.Table{
@@ -105,6 +132,7 @@ var (
 	Tables = []*schema.Table{
 		EstatesTable,
 		EtypesTable,
+		EcommentsTable,
 		EventsTable,
 		UsersTable,
 		UserEventsTable,
@@ -114,6 +142,8 @@ var (
 func init() {
 	EstatesTable.ForeignKeys[0].RefTable = EventsTable
 	EtypesTable.ForeignKeys[0].RefTable = EventsTable
+	EcommentsTable.ForeignKeys[0].RefTable = EventsTable
+	EcommentsTable.ForeignKeys[1].RefTable = UsersTable
 	UserEventsTable.ForeignKeys[0].RefTable = UsersTable
 	UserEventsTable.ForeignKeys[1].RefTable = EventsTable
 }

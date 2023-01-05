@@ -13,6 +13,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // EStateUpdate is the builder for updating EState entities.
@@ -35,7 +36,7 @@ func (eu *EStateUpdate) SetName(s string) *EStateUpdate {
 }
 
 // SetEventID sets the "event" edge to the Event entity by ID.
-func (eu *EStateUpdate) SetEventID(id int) *EStateUpdate {
+func (eu *EStateUpdate) SetEventID(id uuid.UUID) *EStateUpdate {
 	eu.mutation.SetEventID(id)
 	return eu
 }
@@ -135,7 +136,7 @@ func (eu *EStateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   estate.Table,
 			Columns: estate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: estate.FieldID,
 			},
 		},
@@ -159,7 +160,7 @@ func (eu *EStateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -175,7 +176,7 @@ func (eu *EStateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -211,7 +212,7 @@ func (euo *EStateUpdateOne) SetName(s string) *EStateUpdateOne {
 }
 
 // SetEventID sets the "event" edge to the Event entity by ID.
-func (euo *EStateUpdateOne) SetEventID(id int) *EStateUpdateOne {
+func (euo *EStateUpdateOne) SetEventID(id uuid.UUID) *EStateUpdateOne {
 	euo.mutation.SetEventID(id)
 	return euo
 }
@@ -324,7 +325,7 @@ func (euo *EStateUpdateOne) sqlSave(ctx context.Context) (_node *EState, err err
 			Table:   estate.Table,
 			Columns: estate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: estate.FieldID,
 			},
 		},
@@ -365,7 +366,7 @@ func (euo *EStateUpdateOne) sqlSave(ctx context.Context) (_node *EState, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},
@@ -381,7 +382,7 @@ func (euo *EStateUpdateOne) sqlSave(ctx context.Context) (_node *EState, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: event.FieldID,
 				},
 			},

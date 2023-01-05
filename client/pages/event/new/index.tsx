@@ -7,6 +7,8 @@ import { Input } from '../../../components/atoms/form/Input';
 import { Textarea } from '../../../components/atoms/form/Textarea';
 import { FormWrapper } from '../../../components/atoms/form/FormWrapper';
 import { Button } from '../../../components/atoms/Button';
+import { MapForm } from '../../../components/atoms/form/MapForm';
+import { EventFormTemplate } from '../../../components/templates/shared/EventFormTemplate';
 
 export default function New() {
   const { createNewEvent } = useHostApi();
@@ -23,10 +25,11 @@ export default function New() {
   const [detail, setDetail] = useState('');
   const [location, setLocation] = useState('');
   return (
-    <BasicTemplate className="text-center">
+    <EventFormTemplate className="text-center">
       <TypoWrapper size="large" line="bold">
-        <h1>募集する</h1>
+        <h1 className="mt-5">募集する</h1>
       </TypoWrapper>
+
       <FormWrapper>
         <Input
           type="text"
@@ -48,32 +51,28 @@ export default function New() {
           changeContent={setDetail}
           required={true}
         />
-        <Input
-          type="text"
-          label="場所"
-          content={location}
-          changeContent={setLocation}
-        />
+        <MapForm />
         <Button
           className="flex m-auto my-5"
           onClick={() => {
-            // createEvent(
-            //   { user_id: 'abc' },
-            //   {
-            //     event_name: name,
-            //     max_member: capacity,
-            //     detail: detail,
-            //     location: location,
-            //   }
-            // );
+            createEvent(
+              { user_id: 'abc' },
+              {
+                event_name: name,
+                max_member: capacity,
+                detail: detail,
+                location: location,
+              }
+            );
           }}
         >
           募集する
         </Button>
       </FormWrapper>
+
       {/* {created ?? (
         <Link href={`/event?id=${createdEventId}`}>募集したイベント</Link>
       )} */}
-    </BasicTemplate>
+    </EventFormTemplate>
   );
 }

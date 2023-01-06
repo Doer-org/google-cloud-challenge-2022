@@ -11,8 +11,7 @@ import (
 type IEventUsecase interface {
 	CreateNewEvent(ctx context.Context, name, detail, location, adminIdString string) (*entity.Event, error)
 	GetEventById(ctx context.Context, eventIdString string) (*entity.Event, error)
-	ChangeEventStatusToCloseOfId(ctx context.Context, eventIdString string) (*entity.Event, error)
-	ChangeEventStatusToCancelOfId(ctx context.Context, eventIdString string) (*entity.Event, error)
+	ChangeEventStatusOfId(ctx context.Context, eventIdString string, stateString string) (*entity.Event, error)
 }
 
 type EventUsecase struct {
@@ -50,18 +49,25 @@ func (uc *EventUsecase) GetEventById(ctx context.Context, eventIdString string) 
 	return uc.repo.GetEventById(ctx, eventId)
 }
 
-func (uc *EventUsecase) ChangeEventStatusToCloseOfId(ctx context.Context, eventIdString string) (*entity.Event, error) {
+func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString string, stateString string) (*entity.Event, error) {
 	eventId := entity.EventId(eventIdString)
 	if eventId == "" {
 		return nil, fmt.Errorf("EventUsecase: eventId parse failed")
 	}
-	return uc.repo.ChangeEventStatusToCloseOfId(ctx, eventId)
-}
-
-func (uc *EventUsecase) ChangeEventStatusToCancelOfId(ctx context.Context, eventIdString string) (*entity.Event, error) {
-	eventId := entity.EventId(eventIdString)
-	if eventId == "" {
-		return nil, fmt.Errorf("EventUsecase: eventId parse failed")
+	state := entity.State(stateString)
+	if state == "" {
+		return nil, fmt.Errorf("EventUsecase: state parse failed")
 	}
-	return uc.repo.ChangeEventStatusToCancelOfId(ctx, eventId)
+	// すでにclose,cancelだった場合
+	if state == entity.CLOSE_STATE || state == entity.CANCEL_STATE{
+		return nil, fmt.Errorf("EventUsecase: this event is already close or cancel")
+	}
+	switch state {
+	case entity.CLOSE_STATE:
+		return uc.repo.ChangeEventStatusToCloseOfId(ctx, eventId)
+	case entity.CANCEL_STATE:
+		return uc.repo.ChangeEventStatusToCancelOfId(ctx, eventId)
+	default:
+		return nil,fmt.Errorf("EventUsecase: selected state is not matched")
+	}
 }

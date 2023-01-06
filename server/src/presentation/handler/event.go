@@ -73,11 +73,21 @@ func (h *EventHandler) GetEventById(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// TODO: close,cancelのような動詞をURLに埋め込むことになるので統一すべき、
-// Patchで統一
-func (h *EventHandler) ChangeEventStatusToCloseOfId(w http.ResponseWriter, r *http.Request) {
+func (h *EventHandler) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
-	event, err := h.uc.GetEventById(r.Context(), idParam)
+
+	j := &json_res.EventJson{}
+	if err := json.NewDecoder(r.Body).Decode(j); err != nil {
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
+		return
+	}
+	defer r.Body.Close()
+
+	event, err := h.uc.ChangeEventStatusOfId(r.Context(), idParam, j.State)
 	if err != nil {
 		response.WriteJsonResponse(
 			w,

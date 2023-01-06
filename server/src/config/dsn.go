@@ -7,7 +7,7 @@ import (
 
 // DSNはdataSourceNameを返します、もし必須の環境変数が設定されてなかった場合はerrorを返します
 func DSN() (string, error) {
-	if os.Getenv("ENVIROMENT") == "PRD" {
+	if os.Getenv("ENVIRONMENT") == "PRD" {
 		return os.Getenv("POSTGRES_URL"), nil
 	}
 

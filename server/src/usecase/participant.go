@@ -8,7 +8,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 )
 
-type IParticipantUsecase interface{
+type IParticipantUsecase interface {
 	CreateNewParticipant(ctx context.Context, name string, body string, eventIdString string) (*entity.Participant, error)
 }
 
@@ -41,5 +41,5 @@ func (uc *ParticipantUsecase) CreateNewParticipant(ctx context.Context, name str
 			Body: body,
 		},
 	}
-	return uc.repo.CreateNewParticipant(ctx,p,eventId)
+	return uc.repo.CreateNewParticipant(ctx, p, eventId)
 }

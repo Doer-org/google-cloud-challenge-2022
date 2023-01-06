@@ -79,4 +79,3 @@ func EntityToEntUser(u *entity.User) *ent.User {
 		Icon:          u.Icon,
 	}
 }
-

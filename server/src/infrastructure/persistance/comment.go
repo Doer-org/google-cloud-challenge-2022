@@ -16,7 +16,7 @@ func NewCommentRepository(c *ent.Client) repository.ICommentRepository {
 
 func EntToEntityComment(e *ent.Comment) *entity.Comment {
 	return &entity.Comment{
-		Id:      entity.CommentId(e.ID.String()),
-		Body:    e.Body,
+		Id:   entity.CommentId(e.ID.String()),
+		Body: e.Body,
 	}
 }

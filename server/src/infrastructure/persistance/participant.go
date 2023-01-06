@@ -35,9 +35,9 @@ func (r *ParticipantRepository) CreateNewParticipant(ctx context.Context, p *ent
 		return nil, fmt.Errorf("ParticipantRepository: user create query error: %w", err)
 	}
 	if p.Comment == nil {
-		return EntToEntityParticipant(entUser,nil),nil
+		return EntToEntityParticipant(entUser, nil), nil
 	}
-	entComment,err := r.client.Comment.
+	entComment, err := r.client.Comment.
 		Create().
 		SetBody(p.Comment.Body).
 		SetUserID(entUser.ID).
@@ -46,7 +46,7 @@ func (r *ParticipantRepository) CreateNewParticipant(ctx context.Context, p *ent
 	if err != nil {
 		return nil, fmt.Errorf("ParticipantRepository: comment create query error: %w", err)
 	}
-	return EntToEntityParticipant(entUser,entComment),nil
+	return EntToEntityParticipant(entUser, entComment), nil
 }
 
 func EntToEntityParticipant(eu *ent.User, ec *ent.Comment) *entity.Participant {

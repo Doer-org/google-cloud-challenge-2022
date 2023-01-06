@@ -7,5 +7,5 @@ import (
 )
 
 type IParticipantRepository interface {
-	CreateNewParticipant(ctx context.Context,p *entity.Participant, eventId entity.EventId) (*entity.Participant, error)
+	CreateNewParticipant(ctx context.Context, p *entity.Participant, eventId entity.EventId) (*entity.Participant, error)
 }

@@ -14,7 +14,7 @@ func InitRouter(c *ent.Client) {
 	r := chi.NewRouter()
 
 	setMiddleware(r)
-	initHealthRouer(r)
+	initHealthRouter(r)
 	initUserRouter(r, c)
 	initEventHandler(r, c)
 

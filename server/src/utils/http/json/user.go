@@ -22,23 +22,22 @@ func EntityToJsonUser(e *entity.User) *UserJson {
 
 func EntityToJsonUsers(es []*entity.User) []*UserJson {
 	var js []*UserJson
-	for _,e := range es {
+	for _, e := range es {
 		js = append(js, EntityToJsonUser(e))
 	}
 	return js
 }
 
-
 type ParticipantJson struct {
-	Id            string `json:"id"`
-	Name          string `json:"name"`
-	Icon          string `json:"icon"`
-	Comment       *CommentJson `json:"comment"`
+	Id      string       `json:"id"`
+	Name    string       `json:"name"`
+	Icon    string       `json:"icon"`
+	Comment *CommentJson `json:"comment"`
 }
 
 func EntityToJsonParticipant(e *entity.Participant) *ParticipantJson {
 	p := &ParticipantJson{
-		Id: string(e.Id),
+		Id:   string(e.Id),
 		Name: e.Name,
 		Icon: e.Icon,
 	}
@@ -52,7 +51,7 @@ func EntityToJsonParticipant(e *entity.Participant) *ParticipantJson {
 
 func EntityToJsonParticipants(es []*entity.Participant) []*ParticipantJson {
 	var js []*ParticipantJson
-	for _,e := range es {
+	for _, e := range es {
 		js = append(js, EntityToJsonParticipant(e))
 	}
 	return js

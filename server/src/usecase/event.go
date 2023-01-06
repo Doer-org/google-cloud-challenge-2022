@@ -59,7 +59,7 @@ func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString
 		return nil, fmt.Errorf("EventUsecase: state parse failed")
 	}
 	// すでにclose,cancelだった場合
-	if state == entity.CLOSE_STATE || state == entity.CANCEL_STATE{
+	if state == entity.CLOSE_STATE || state == entity.CANCEL_STATE {
 		return nil, fmt.Errorf("EventUsecase: this event is already close or cancel")
 	}
 	switch state {
@@ -68,6 +68,6 @@ func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString
 	case entity.CANCEL_STATE:
 		return uc.repo.ChangeEventStatusToCancelOfId(ctx, eventId)
 	default:
-		return nil,fmt.Errorf("EventUsecase: selected state is not matched")
+		return nil, fmt.Errorf("EventUsecase: selected state is not matched")
 	}
 }

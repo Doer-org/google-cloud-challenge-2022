@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
+	json_res "github.com/Doer-org/google-cloud-challenge-2022/utils/http/json"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/http/response"
 	"github.com/go-chi/chi/v5"
 )
@@ -21,9 +21,13 @@ func NewUserHandler(uc usecase.IUserUsecase) *UserHandler {
 }
 
 func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
-	j := &UserJson{}
+	j := &json_res.UserJson{}
 	if err := json.NewDecoder(r.Body).Decode(j); err != nil {
-		response.WriteJsonResponse(w,response.NewErrResponse(err),http.StatusBadRequest)
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
 		return
 	}
 	defer r.Body.Close()
@@ -36,29 +40,52 @@ func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		j.Icon,
 	)
 	if err != nil {
-		response.WriteJsonResponse(w,response.NewErrResponse(err),http.StatusBadRequest)
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
 		return
 	}
-	uJson := EntityToJsonUser(user)
-	response.WriteJsonResponse(w,uJson,http.StatusCreated)
+	response.WriteJsonResponse(
+		w,
+		json_res.EntityToJsonUser(user),
+		http.StatusCreated,
+	)
 }
 
 func (h *UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	user, err := h.uc.GetUserById(r.Context(), idParam)
 	if err != nil {
-		response.WriteJsonResponse(w,response.NewErrResponse(err),http.StatusBadRequest)
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
 		return
 	}
-	response.WriteJsonResponse(w,user,http.StatusOK)
+	response.WriteJsonResponse(
+		w,
+		json_res.EntityToJsonUser(user),
+		http.StatusOK,
+	)
 }
 
 func (h *UserHandler) GetUserByMail(w http.ResponseWriter, r *http.Request) {
 	mailQuery := r.URL.Query().Get("mail")
 	user, err := h.uc.GetUserByMail(r.Context(), mailQuery)
 	if err != nil {
-		response.WriteJsonResponse(w,response.NewErrResponse(err),http.StatusBadRequest)
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
 		return
 	}
-	response.WriteJsonResponse(w,user,http.StatusOK)
+	response.WriteJsonResponse(
+		w,
+		json_res.EntityToJsonUser(user),
+		http.StatusOK,
+	)
 }

@@ -139,6 +139,6 @@ func EntToEntityEvent(ee *ent.Event, eus []*ent.User, ecs []*ent.Comment) *entit
 		Admin:        EntToEntityUser(ee.Edges.Admin),
 		State:        ee.State,
 		Type:         ee.Type,
-		Participants: EntsToEntitiesParticipant(eus, ecs),
+		Participants: EntToEntityParticipants(eus, ecs),
 	}
 }

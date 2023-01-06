@@ -95,7 +95,9 @@ func EntToEntityParticipant(eu *ent.User, ec *ent.Comment) *entity.Participant {
 	return p
 }
 
-func EntsToEntitiesParticipant(eus []*ent.User, ecs []*ent.Comment) []*entity.Participant {
+// TODO entの設計がいけてないかもしれない
+// 本来はeu.Edges.Commentでアクセスできるべき...?
+func EntToEntityParticipants(eus []*ent.User, ecs []*ent.Comment) []*entity.Participant {
 	var ps []*entity.Participant
 	for _, eu := range eus {
 		hasCommentFlg := false

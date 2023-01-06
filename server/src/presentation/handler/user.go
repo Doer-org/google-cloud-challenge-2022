@@ -23,7 +23,7 @@ func NewUserHandler(uc usecase.IUserUsecase) *UserHandler {
 func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	j := &UserJson{}
 	if err := json.NewDecoder(r.Body).Decode(j); err != nil {
-		response.NewErrResponse(w, err)
+		response.WriteJsonResponse(w,response.NewErrResponse(err),http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -36,47 +36,29 @@ func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		j.Icon,
 	)
 	if err != nil {
-		response.NewErrResponse(w, err)
+		response.WriteJsonResponse(w,response.NewErrResponse(err),http.StatusBadRequest)
 		return
 	}
 	uJson := EntityToJsonUser(user)
-	response.ConvertToJsonResponseAndErrCheck(w, uJson)
+	response.WriteJsonResponse(w,uJson,http.StatusCreated)
 }
 
 func (h *UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	user, err := h.uc.GetUserById(r.Context(), idParam)
 	if err != nil {
-		response.NewErrResponse(w, err)
+		response.WriteJsonResponse(w,response.NewErrResponse(err),http.StatusBadRequest)
 		return
 	}
-	response.ConvertToJsonResponseAndErrCheck(w, user)
+	response.WriteJsonResponse(w,user,http.StatusOK)
 }
 
 func (h *UserHandler) GetUserByMail(w http.ResponseWriter, r *http.Request) {
-	mailQuery := r.URL.Query().Get("err")
+	mailQuery := r.URL.Query().Get("mail")
 	user, err := h.uc.GetUserByMail(r.Context(), mailQuery)
 	if err != nil {
-		response.NewErrResponse(w, err)
+		response.WriteJsonResponse(w,response.NewErrResponse(err),http.StatusBadRequest)
 		return
 	}
-	response.ConvertToJsonResponseAndErrCheck(w, user)
-}
-
-type UserJson struct {
-	Id            string `json:"id"`
-	Name          string `json:"name"`
-	Authenticated bool   `json:"authenticated"`
-	Mail          string `json:"mail"`
-	Icon          string `json:"icon"`
-}
-
-func EntityToJsonUser(e *entity.User) *UserJson {
-	return &UserJson{
-		Id:            string(e.Id),
-		Name:          e.Name,
-		Authenticated: e.Authenticated,
-		Mail:          e.Mail,
-		Icon:          e.Icon,
-	}
+	response.WriteJsonResponse(w,user,http.StatusOK)
 }

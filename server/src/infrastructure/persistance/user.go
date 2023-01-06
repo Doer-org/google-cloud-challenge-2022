@@ -80,38 +80,3 @@ func EntityToEntUser(u *entity.User) *ent.User {
 	}
 }
 
-func EntToEntityParticipant(eu *ent.User, ec *ent.Comment) *entity.Participant {
-	p := &entity.Participant{
-		Id:   entity.UserId(eu.ID.String()),
-		Name: eu.Name,
-		Icon: eu.Icon,
-	}
-	//コメントがない場合
-	if ec == nil {
-		return p
-	}
-	c := EntToEntityComment(ec)
-	p.Comment = c
-	return p
-}
-
-// TODO entの設計がいけてないかもしれない
-// 本来はeu.Edges.Commentでアクセスできるべき...?
-func EntToEntityParticipants(eus []*ent.User, ecs []*ent.Comment) []*entity.Participant {
-	var ps []*entity.Participant
-	for _, eu := range eus {
-		hasCommentFlg := false
-		for _, ec := range ecs {
-			if eu.ID == ec.Edges.User.ID {
-				hasCommentFlg = true
-				ps = append(ps, EntToEntityParticipant(eu, ec))
-				break
-			}
-		}
-		// もしコメントがなかった場合,nilを渡す
-		if !hasCommentFlg {
-			ps = append(ps, EntToEntityParticipant(eu, nil))
-		}
-	}
-	return ps
-}

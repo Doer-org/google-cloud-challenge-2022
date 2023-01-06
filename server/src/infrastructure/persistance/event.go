@@ -123,6 +123,8 @@ func (r *EventRepository) getEventById(ctx context.Context, eventUuid uuid.UUID)
 	entParticipantsComments, err := r.client.Comment.
 		Query().
 		Where(comment.HasEventWith(event.ID(eventUuid))).
+		WithUser().
+		WithEvent().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("EventRepository: get participants comments query error: %w", err)

@@ -17,6 +17,7 @@ func InitRouter(c *ent.Client) {
 	initHealthRouter(r)
 	initUserRouter(r, c)
 	initEventHandler(r, c)
+	initParticipantHandler(r,c)
 
 	http.ListenAndServe(
 		fmt.Sprintf(":%s", helper.GetEnvOrDefault("PORT", "8080")),

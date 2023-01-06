@@ -30,7 +30,7 @@ func (uc *EventUsecase) CreateNewEvent(ctx context.Context, name, detail, locati
 	}
 	adminId := entity.UserId(adminIdString)
 	if adminId == "" {
-		return nil, fmt.Errorf("EventUsecase: adminId is empty")
+		return nil, fmt.Errorf("EventUsecase: adminId parse failed")
 	}
 	e := &entity.Event{
 		Name:     name,

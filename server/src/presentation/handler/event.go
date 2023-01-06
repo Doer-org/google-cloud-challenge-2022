@@ -69,7 +69,7 @@ type EventJson struct {
 	Detail   string        `json:"detail"`
 	Location string        `json:"location"`
 	AdminId  string        `json:"admin_id"`
-	State    EStateJson    `json:"state"`
-	Type     ETypeJson     `json:"type"`
+	State    string        `json:"state"`
+	Type     string        `json:"type"`
 	Comments []CommentJson `json:"comments"`
 }

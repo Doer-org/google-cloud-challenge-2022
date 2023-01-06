@@ -59,6 +59,7 @@ export default function New() {
                 max_member: capacity,
                 detail: detail,
                 location: location,
+                timestamp: Date.now()
               }
             );
           }}

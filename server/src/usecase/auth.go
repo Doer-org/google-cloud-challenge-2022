@@ -23,7 +23,8 @@ type IAuthUsecase interface {
 
 type AuthUsecase struct {
 	repo       repository.IAuthRepository
-	authGoogle google.Auth
+	authGoogle google.IAuth
+	googleUser google.IUser
 	userRepo   repository.IUserRepository
 }
 
@@ -61,5 +62,5 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 }
 
 func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (string, error) {
-	
+
 }

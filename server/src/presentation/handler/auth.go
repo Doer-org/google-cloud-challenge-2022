@@ -29,4 +29,10 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 	err := r.FormValue("error")
+
+	if err != "" {
+
+	}
+
+	
 }

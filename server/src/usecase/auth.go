@@ -14,16 +14,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type IAuthUsecase interface {
-	GetTokenByUserID(userID string) (*oauth2.Token, error)
-	StoreSession(sessionID, userID string) error
-	GetUserIDFromSession(sessionID string) (string, error)
-
-	StoreState(authState *entity.AuthState) error
-	FindStateByState(state string) (*entity.AuthState, error)
-	DeleteState(state string) error
-}
-
 type AuthUsecase struct {
 	repo       repository.IAuthRepository
 	authGoogle google.IAuth
@@ -31,9 +21,12 @@ type AuthUsecase struct {
 	userRepo   repository.IUserRepository
 }
 
-func NewAuthrUsecase(r repository.IAuthRepository) IAuthUsecase {
+func NewAuthrUsecase(r repository.IAuthRepository, ag google.IAuth, gu google.IUser, ur repository.IUserRepository) *AuthUsecase {
 	return &AuthUsecase{
-		repo: r,
+		repo:       r,
+		authGoogle: ag,
+		googleUser: gu,
+		userRepo:   ur,
 	}
 }
 
@@ -139,14 +132,4 @@ func (u *AuthUsecase) RefreshAccessToken(userID string, token *oauth2.Token) (*o
 		return nil, fmt.Errorf("update new token: %w", err)
 	}
 	return newToken, nil
-}
-
-// GetTokenAndCreatorIDBySessionID は指定されたidからsessionの持つcreatorのtokenを返します
-func (u *AuthUsecase) GetTokenAndCreatorIDBySessionID(sessionID string) (*oauth2.Token, string, error) {
-	token, creatorID, err := u.sessionRepo.FindCreatorTokenBySessionID(context.Background(), sessionID)
-	if err != nil {
-		return nil, "", fmt.Errorf("FindCreatorTokenBySessionID: sessionID=%s: %w", sessionID, err)
-	}
-
-	return token, creatorID, nil
 }

@@ -3,12 +3,14 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/google"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/hash"
+	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 )
 
@@ -66,8 +68,22 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 		return storedState.RedirectURL, "", fmt.Errorf("get or create user: %w", err)
 	}
 
-	
+	if err := u.StoreORUpdateToken(userID, token); err != nil {
+		return storedState.RedirectURL, "", fmt.Errorf("store or update oauth token though repo userID=%s: %w", userID, err)
+	}
 
+	sessionID := uuid.New().String()
+	if err := u.repo.StoreSession(sessionID, string(userID)); err != nil {
+		return storedState.RedirectURL, "", fmt.Errorf("store session sessionID=%s userID=%s : %w", sessionID, userID, err)
+	}
+
+	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
+	if err := u.repo.DeleteState(state); err != nil {
+		log.Printf("Failed to delete state state=%s: %v\n", state, err)
+		return storedState.RedirectURL, sessionID, nil
+	}
+
+	return storedState.RedirectURL, sessionID, nil
 }
 
 // createUserIfNotExists はユーザが存在していなかったら新規に作成しIDを返します。
@@ -93,4 +109,44 @@ func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (entity.UserId,
 	}
 
 	return user.Id, nil
+}
+
+func (u *AuthUsecase) StoreORUpdateToken(userID entity.UserId, token *oauth2.Token) error {
+	return nil
+}
+
+// GetUserIDFromSession はセッションIDから対応するユーザIDを返します。
+func (u *AuthUsecase) GetUserIDFromSession(sessionID string) (string, error) {
+	userID, err := u.repo.GetUserIDFromSession(sessionID)
+	if err != nil {
+		return "", fmt.Errorf("get user from session sessionID=%s: %w", sessionID, err)
+	}
+	return userID, nil
+}
+
+// RefreshAccessToken はリフレッシュトークンを使用してアクセストークンを更新し保存します。
+func (u *AuthUsecase) RefreshAccessToken(userID string, token *oauth2.Token) (*oauth2.Token, error) {
+	if token.Valid() {
+		return token, nil
+	}
+	ctx := context.Background()
+	newToken, err := u.authGoogle.Refresh(ctx, token)
+	if err != nil {
+		return nil, fmt.Errorf("refresh access token through spotify client: %w", err)
+	}
+
+	if err := u.StoreORUpdateToken(entity.UserId(userID), newToken); err != nil {
+		return nil, fmt.Errorf("update new token: %w", err)
+	}
+	return newToken, nil
+}
+
+// GetTokenAndCreatorIDBySessionID は指定されたidからsessionの持つcreatorのtokenを返します
+func (u *AuthUsecase) GetTokenAndCreatorIDBySessionID(sessionID string) (*oauth2.Token, string, error) {
+	token, creatorID, err := u.sessionRepo.FindCreatorTokenBySessionID(context.Background(), sessionID)
+	if err != nil {
+		return nil, "", fmt.Errorf("FindCreatorTokenBySessionID: sessionID=%s: %w", sessionID, err)
+	}
+
+	return token, creatorID, nil
 }

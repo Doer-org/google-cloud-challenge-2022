@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { MyHead } from '../../../../components/templates/shared/MyHead';
 import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
-import { TypoWrapper } from '../../../../components/atoms/TypoWrapper';
+import { TypoWrapper } from '../../../../components/atoms/text/TypoWrapper';
 import { FormWrapper } from '../../../../components/atoms/form/FormWrapper';
 import { Input } from '../../../../components/atoms/form/Input';
-import { Button } from '../../../../components/atoms/Button';
+import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
 
 export default function Participate() {

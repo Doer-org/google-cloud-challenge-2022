@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MyHead } from '../components/templates/shared/MyHead';
 import { BasicTemplate } from '../components/templates/shared/BasicTemplate';
-import { TypoWrapper } from '../components/atoms/TypoWrapper';
+import { TypoWrapper } from '../components/atoms/text/TypoWrapper';
 import { AuthLinks } from '../components/molecules/AuthLinks';
 
 export default function Home() {

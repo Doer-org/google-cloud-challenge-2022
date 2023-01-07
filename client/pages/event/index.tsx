@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TypoWrapper } from '../../components/atoms/TypoWrapper';
+import { TypoWrapper } from '../../components/atoms/text/TypoWrapper';
 import { EventBasicInfo } from '../../components/molecules/Event/EventBasicInfo';
 import { EventWrapper } from '../../components/molecules/Event/EventWrapper';
 import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';

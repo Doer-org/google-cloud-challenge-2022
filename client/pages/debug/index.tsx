@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { Button } from '../../components/atoms/Button';
+import { Button } from '../../components/atoms/text/Button';
 import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
-import { createNewEvent, CreateParamExample } from '../../core/api/event/create';
+import {
+  createNewEvent,
+  CreateParamExample,
+} from '../../core/api/event/create';
 export default function New() {
   const [createdEventId, setCreatedEventId] = useState(-1);
   const createEvent = createNewEvent(
@@ -11,16 +14,18 @@ export default function New() {
     },
     (v) => {
       setCreatedEventId(-1);
-      console.log(v); 
-    },
-  ); 
+      console.log(v);
+    }
+  );
 
   return (
     <BasicTemplate className="text-center">
       eventid : {createdEventId}
       <Button
         className="flex m-auto my-5"
-        onClick={() => createEvent({ user_id: "" }, CreateParamExample.causeError)}
+        onClick={() =>
+          createEvent({ user_id: '' }, CreateParamExample.causeError)
+        }
       >
         fail
       </Button>
@@ -29,9 +34,7 @@ export default function New() {
         onClick={() => {
           createEvent(
             { user_id: 'abc' },
-            { ...CreateParamExample.causeError,
-              max_member : 1
-            }
+            { ...CreateParamExample.causeError, max_member: 1 }
           );
         }}
       >

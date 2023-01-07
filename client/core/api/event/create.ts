@@ -4,15 +4,29 @@ import * as TE from 'fp-ts/TaskEither'
 import { EventApi }from '../../uitls/mockApi' 
 import { Event, Host } from '../../types/event'
 
+export module CreateParamExample {
+    export const causeError = {
+        event_name : "err",
+        max_member : -1,
+        detail : "err",
+        location : "err",
+        timestamp : Date.now() 
+    }
+}
+
 const tryCreateNewEvent = (
     host : Host,
     param : {
         event_name: string,
         max_member : number,
         detail : string,
-        location : string
+        location : string,
+        timestamp : number
     } 
 ) : TE.TaskEither<Error, {url:string, created_event : Event}> => { 
+    if (param.max_member === -1) {
+        return TE.left(Error("fail > tryCreateNewEvent"))
+    }
     return pipe (
         {
             name : param.event_name,

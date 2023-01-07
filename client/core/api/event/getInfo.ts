@@ -4,7 +4,15 @@ import * as TE from 'fp-ts/TaskEither'
 import { EventApi }from '../../uitls/mockApi'  
 import { Event } from '../../types/event' 
 
-const tryGetEventInfo = (event_id: number) => { 
+export module GetEventInputsExample {
+    export const causeError = -1
+}
+
+
+const tryGetEventInfo = (event_id: number) => {
+    if (event_id === GetEventInputsExample.causeError) {
+        return TE.left(Error("fail > tryGetEventInfo"))
+    }
     const getEventInfo = flow (
         EventApi.findById,
         fptsHelper.TE.ofApiResponse, 

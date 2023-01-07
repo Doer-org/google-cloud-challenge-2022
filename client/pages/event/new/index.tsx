@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import useHostApi from '../../../core/hooks/useEventHost';
+import { createNewEvent } from '../../../core/api/event/create';
 import { BasicTemplate } from '../../../components/templates/shared/BasicTemplate';
 import { TypoWrapper } from '../../../components/atoms/TypoWrapper';
 import { Input } from '../../../components/atoms/form/Input';
@@ -8,8 +8,7 @@ import { FormWrapper } from '../../../components/atoms/form/FormWrapper';
 import { Button } from '../../../components/atoms/Button';
 import { MapForm } from '../../../components/atoms/form/MapForm';
 
-export default function New() {
-  const { createNewEvent } = useHostApi();
+export default function New() { 
   const [createdEventId, setCreatedEventId] = useState(0);
   const createEvent = createNewEvent((v) => {
     console.log(v);
@@ -60,6 +59,7 @@ export default function New() {
                 max_member: capacity,
                 detail: detail,
                 location: location,
+                timestamp: Date.now()
               }
             );
           }}

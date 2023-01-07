@@ -6,6 +6,7 @@ import (
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
+	"github.com/Doer-org/google-cloud-challenge-2022/domain/service"
 )
 
 type IParticipantUsecase interface {
@@ -27,16 +28,12 @@ func (uc *ParticipantUsecase) CreateNewParticipant(ctx context.Context, name str
 	if eventId == "" {
 		return nil, fmt.Errorf("ParticipantUsecase: eventId parse failed")
 	}
-
-	// iconはランダム
-	icon := "random"
-
 	if name == "" {
 		return nil, fmt.Errorf("ParticipantUsecase: name is empty")
 	}
 	p := &entity.Participant{
 		Name: name,
-		Icon: icon,
+		Icon: service.GetRandomDefaultIcon(),
 		Comment: &entity.Comment{
 			Body: body,
 		},

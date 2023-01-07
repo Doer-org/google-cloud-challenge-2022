@@ -6,6 +6,7 @@ import (
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
+	"github.com/Doer-org/google-cloud-challenge-2022/domain/service"
 )
 
 type IUserUsecase interface {
@@ -28,9 +29,9 @@ func (uc *UserUsecase) CreateNewUser(ctx context.Context, name string, authentic
 	if name == "" {
 		return nil, fmt.Errorf("UserUsecase: name is empty")
 	}
-	// TODO:　iconはサーバー側でデフォルトを用意すべきかも
+	// iconがなかった場合,defaultのアイコンにする
 	if icon == "" {
-		return nil, fmt.Errorf("UserUsecase: icon is empty")
+		icon = service.GetRandomDefaultIcon()
 	}
 	// TODO: mailが存在するかの確認
 	user := &entity.User{

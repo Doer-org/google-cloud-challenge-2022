@@ -9,10 +9,3 @@ type User struct {
 	Mail          string
 	Icon          string
 }
-
-type Participant struct {
-	Id      UserId
-	Name    string
-	Icon    string
-	Comment *Comment
-}

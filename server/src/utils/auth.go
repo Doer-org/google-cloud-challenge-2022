@@ -17,3 +17,9 @@ var (
 func SetTokenToContext(ctx context.Context, token *oauth2.Token) context.Context {
 	return context.WithValue(ctx, tokenKey, token)
 }
+
+func GetTokenFromContext(ctx context.Context) (*oauth2.Token, bool) {
+	v := ctx.Value(tokenKey)
+	token, ok := v.(*oauth2.Token)
+	return token, ok
+}

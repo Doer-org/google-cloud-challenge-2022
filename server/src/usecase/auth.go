@@ -7,6 +7,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/google"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
+	"github.com/Doer-org/google-cloud-challenge-2022/utils"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/hash"
 	"golang.org/x/oauth2"
 )
@@ -59,8 +60,37 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 		return storedState.RedirectURL, "", fmt.Errorf("exchange and get oauth2 token: %w", err)
 	}
 
+	ctx = utils.SetTokenToContext(ctx, token)
+	userID, err := u.createUserIfNotExists(ctx)
+	if err != nil {
+		return storedState.RedirectURL, "", fmt.Errorf("get or create user: %w", err)
+	}
+
+	
+
 }
 
-func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (string, error) {
+// createUserIfNotExists はユーザが存在していなかったら新規に作成しIDを返します。
+func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (entity.UserId, error) {
+	user, err := u.googleUser.GetMe(ctx)
+	if err != nil {
+		return "", fmt.Errorf("get my info from Google: %w", err)
+	}
 
+	getuser, err := u.userRepo.GetById(ctx, user.Id)
+	if err != nil {
+		return "", fmt.Errorf("get user by id: %w", err)
+	}
+
+	if getuser.Name != "" {
+		userId := getuser.Id
+		return userId, nil
+	}
+
+	err = u.userRepo.Create(ctx, user)
+	if err != nil {
+		return "", fmt.Errorf("create user by id: %w", err)
+	}
+
+	return user.Id, nil
 }

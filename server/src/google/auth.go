@@ -32,6 +32,9 @@ func (c *Client) GetAuthURL(state string) string {
 }
 
 func (c *Client) Refresh(ctx context.Context, token *oauth2.Token) (*oauth2.Token, error) {
-	client := c.auth.Config.Client(ctx, token)
-	
+	newtoken, err := c.auth.Config.TokenSource(ctx, token).Token()
+	if err != nil {
+		return nil, fmt.Errorf("get new token : %w", err)
+	}
+	return newtoken, err
 }

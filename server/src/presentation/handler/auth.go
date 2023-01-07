@@ -21,8 +21,12 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	url, err := h.authUC.GetAuthURL(redirectURL)
 	if err != nil {
-		
+
 	}
 
 	http.Redirect(w, r, url, http.StatusFound)
+}
+
+func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
+	err := r.FormValue("error")
 }

@@ -58,7 +58,8 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 		return storedState.RedirectURL, "", fmt.Errorf("exchange and get oauth2 token: %w", err)
 	}
 
-	
 }
 
-
+func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (string, error) {
+	
+}

@@ -116,6 +116,15 @@ func (u *AuthUsecase) GetUserIDFromSession(sessionID string) (string, error) {
 	return userID, nil
 }
 
+// GetTokenByUserID は対応したユーザのアクセストークンを取得します。
+func (u *AuthUsecase) GetTokenByUserID(userID string) (*oauth2.Token, error) {
+	token, err := u.repo.GetTokenByUserID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("get oauth token userID=%s: %w", userID, err)
+	}
+	return token, nil
+}
+
 // RefreshAccessToken はリフレッシュトークンを使用してアクセストークンを更新し保存します。
 func (u *AuthUsecase) RefreshAccessToken(userID string, token *oauth2.Token) (*oauth2.Token, error) {
 	if token.Valid() {

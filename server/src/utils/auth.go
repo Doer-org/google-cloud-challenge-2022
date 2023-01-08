@@ -23,3 +23,11 @@ func GetTokenFromContext(ctx context.Context) (*oauth2.Token, bool) {
 	token, ok := v.(*oauth2.Token)
 	return token, ok
 }
+
+func SetUserIDToContext(ctx context.Context, userID string) context.Context {
+	if userID != "" {
+		return context.WithValue(ctx, userIDKey, userID)
+	}
+	return ctx
+}
+

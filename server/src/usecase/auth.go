@@ -10,7 +10,6 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/hash"
-	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 )
 
@@ -65,7 +64,7 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 		return storedState.RedirectURL, "", fmt.Errorf("store or update oauth token though repo userID=%s: %w", userID, err)
 	}
 
-	sessionID := uuid.New().String()
+	sessionID := hash.GetUlid()
 	if err := u.repo.StoreSession(sessionID, string(userID)); err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("store session sessionID=%s userID=%s : %w", sessionID, userID, err)
 	}

@@ -11,36 +11,8 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
-func encodeCreateEStateRequest(
-	req *CreateEStateReq,
-	r *http.Request,
-) error {
-	const contentType = "application/json"
-	e := jx.GetEncoder()
-	{
-		req.Encode(e)
-	}
-	encoded := e.Bytes()
-	ht.SetBody(r, bytes.NewReader(encoded), contentType)
-	return nil
-}
-
-func encodeCreateETypeRequest(
-	req *CreateETypeReq,
-	r *http.Request,
-) error {
-	const contentType = "application/json"
-	e := jx.GetEncoder()
-	{
-		req.Encode(e)
-	}
-	encoded := e.Bytes()
-	ht.SetBody(r, bytes.NewReader(encoded), contentType)
-	return nil
-}
-
-func encodeCreateEcommentRequest(
-	req *CreateEcommentReq,
+func encodeCreateCommentRequest(
+	req *CreateCommentReq,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"
@@ -81,36 +53,8 @@ func encodeCreateUserRequest(
 	return nil
 }
 
-func encodeUpdateEStateRequest(
-	req *UpdateEStateReq,
-	r *http.Request,
-) error {
-	const contentType = "application/json"
-	e := jx.GetEncoder()
-	{
-		req.Encode(e)
-	}
-	encoded := e.Bytes()
-	ht.SetBody(r, bytes.NewReader(encoded), contentType)
-	return nil
-}
-
-func encodeUpdateETypeRequest(
-	req *UpdateETypeReq,
-	r *http.Request,
-) error {
-	const contentType = "application/json"
-	e := jx.GetEncoder()
-	{
-		req.Encode(e)
-	}
-	encoded := e.Bytes()
-	ht.SetBody(r, bytes.NewReader(encoded), contentType)
-	return nil
-}
-
-func encodeUpdateEcommentRequest(
-	req *UpdateEcommentReq,
+func encodeUpdateCommentRequest(
+	req *UpdateCommentReq,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

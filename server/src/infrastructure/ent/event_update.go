@@ -10,8 +10,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
@@ -77,42 +75,35 @@ func (eu *EventUpdate) ClearLocation() *EventUpdate {
 	return eu
 }
 
-// SetStateID sets the "state" edge to the EState entity by ID.
-func (eu *EventUpdate) SetStateID(id uuid.UUID) *EventUpdate {
-	eu.mutation.SetStateID(id)
+// SetType sets the "type" field.
+func (eu *EventUpdate) SetType(s string) *EventUpdate {
+	eu.mutation.SetType(s)
 	return eu
 }
 
-// SetNillableStateID sets the "state" edge to the EState entity by ID if the given value is not nil.
-func (eu *EventUpdate) SetNillableStateID(id *uuid.UUID) *EventUpdate {
+// SetState sets the "state" field.
+func (eu *EventUpdate) SetState(s string) *EventUpdate {
+	eu.mutation.SetState(s)
+	return eu
+}
+
+// SetAdminID sets the "admin" edge to the User entity by ID.
+func (eu *EventUpdate) SetAdminID(id uuid.UUID) *EventUpdate {
+	eu.mutation.SetAdminID(id)
+	return eu
+}
+
+// SetNillableAdminID sets the "admin" edge to the User entity by ID if the given value is not nil.
+func (eu *EventUpdate) SetNillableAdminID(id *uuid.UUID) *EventUpdate {
 	if id != nil {
-		eu = eu.SetStateID(*id)
+		eu = eu.SetAdminID(*id)
 	}
 	return eu
 }
 
-// SetState sets the "state" edge to the EState entity.
-func (eu *EventUpdate) SetState(e *EState) *EventUpdate {
-	return eu.SetStateID(e.ID)
-}
-
-// SetTypeID sets the "type" edge to the EType entity by ID.
-func (eu *EventUpdate) SetTypeID(id uuid.UUID) *EventUpdate {
-	eu.mutation.SetTypeID(id)
-	return eu
-}
-
-// SetNillableTypeID sets the "type" edge to the EType entity by ID if the given value is not nil.
-func (eu *EventUpdate) SetNillableTypeID(id *uuid.UUID) *EventUpdate {
-	if id != nil {
-		eu = eu.SetTypeID(*id)
-	}
-	return eu
-}
-
-// SetType sets the "type" edge to the EType entity.
-func (eu *EventUpdate) SetType(e *EType) *EventUpdate {
-	return eu.SetTypeID(e.ID)
+// SetAdmin sets the "admin" edge to the User entity.
+func (eu *EventUpdate) SetAdmin(u *User) *EventUpdate {
+	return eu.SetAdminID(u.ID)
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
@@ -135,15 +126,9 @@ func (eu *EventUpdate) Mutation() *EventMutation {
 	return eu.mutation
 }
 
-// ClearState clears the "state" edge to the EState entity.
-func (eu *EventUpdate) ClearState() *EventUpdate {
-	eu.mutation.ClearState()
-	return eu
-}
-
-// ClearType clears the "type" edge to the EType entity.
-func (eu *EventUpdate) ClearType() *EventUpdate {
-	eu.mutation.ClearType()
+// ClearAdmin clears the "admin" edge to the User entity.
+func (eu *EventUpdate) ClearAdmin() *EventUpdate {
+	eu.mutation.ClearAdmin()
 	return eu
 }
 
@@ -170,40 +155,7 @@ func (eu *EventUpdate) RemoveUsers(u ...*User) *EventUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (eu *EventUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(eu.hooks) == 0 {
-		if err = eu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = eu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = eu.check(); err != nil {
-				return 0, err
-			}
-			eu.mutation = mutation
-			affected, err = eu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(eu.hooks) - 1; i >= 0; i-- {
-			if eu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = eu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, eu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EventMutation](ctx, eu.sqlSave, eu.mutation, eu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -245,10 +197,23 @@ func (eu *EventUpdate) check() error {
 			return &ValidationError{Name: "location", err: fmt.Errorf(`ent: validator failed for field "Event.location": %w`, err)}
 		}
 	}
+	if v, ok := eu.mutation.GetType(); ok {
+		if err := event.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.State(); ok {
+		if err := event.StateValidator(v); err != nil {
+			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "Event.state": %w`, err)}
+		}
+	}
 	return nil
 }
 
 func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := eu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   event.Table,
@@ -281,68 +246,39 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.LocationCleared() {
 		_spec.ClearField(event.FieldLocation, field.TypeString)
 	}
-	if eu.mutation.StateCleared() {
+	if value, ok := eu.mutation.GetType(); ok {
+		_spec.SetField(event.FieldType, field.TypeString, value)
+	}
+	if value, ok := eu.mutation.State(); ok {
+		_spec.SetField(event.FieldState, field.TypeString, value)
+	}
+	if eu.mutation.AdminCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   event.StateTable,
-			Columns: []string{event.StateColumn},
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: estate.FieldID,
+					Column: user.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := eu.mutation.StateIDs(); len(nodes) > 0 {
+	if nodes := eu.mutation.AdminIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   event.StateTable,
-			Columns: []string{event.StateColumn},
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: estate.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if eu.mutation.TypeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   event.TypeTable,
-			Columns: []string{event.TypeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: etype.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := eu.mutation.TypeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   event.TypeTable,
-			Columns: []string{event.TypeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: etype.FieldID,
+					Column: user.FieldID,
 				},
 			},
 		}
@@ -413,6 +349,7 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	eu.mutation.done = true
 	return n, nil
 }
 
@@ -470,42 +407,35 @@ func (euo *EventUpdateOne) ClearLocation() *EventUpdateOne {
 	return euo
 }
 
-// SetStateID sets the "state" edge to the EState entity by ID.
-func (euo *EventUpdateOne) SetStateID(id uuid.UUID) *EventUpdateOne {
-	euo.mutation.SetStateID(id)
+// SetType sets the "type" field.
+func (euo *EventUpdateOne) SetType(s string) *EventUpdateOne {
+	euo.mutation.SetType(s)
 	return euo
 }
 
-// SetNillableStateID sets the "state" edge to the EState entity by ID if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableStateID(id *uuid.UUID) *EventUpdateOne {
+// SetState sets the "state" field.
+func (euo *EventUpdateOne) SetState(s string) *EventUpdateOne {
+	euo.mutation.SetState(s)
+	return euo
+}
+
+// SetAdminID sets the "admin" edge to the User entity by ID.
+func (euo *EventUpdateOne) SetAdminID(id uuid.UUID) *EventUpdateOne {
+	euo.mutation.SetAdminID(id)
+	return euo
+}
+
+// SetNillableAdminID sets the "admin" edge to the User entity by ID if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableAdminID(id *uuid.UUID) *EventUpdateOne {
 	if id != nil {
-		euo = euo.SetStateID(*id)
+		euo = euo.SetAdminID(*id)
 	}
 	return euo
 }
 
-// SetState sets the "state" edge to the EState entity.
-func (euo *EventUpdateOne) SetState(e *EState) *EventUpdateOne {
-	return euo.SetStateID(e.ID)
-}
-
-// SetTypeID sets the "type" edge to the EType entity by ID.
-func (euo *EventUpdateOne) SetTypeID(id uuid.UUID) *EventUpdateOne {
-	euo.mutation.SetTypeID(id)
-	return euo
-}
-
-// SetNillableTypeID sets the "type" edge to the EType entity by ID if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableTypeID(id *uuid.UUID) *EventUpdateOne {
-	if id != nil {
-		euo = euo.SetTypeID(*id)
-	}
-	return euo
-}
-
-// SetType sets the "type" edge to the EType entity.
-func (euo *EventUpdateOne) SetType(e *EType) *EventUpdateOne {
-	return euo.SetTypeID(e.ID)
+// SetAdmin sets the "admin" edge to the User entity.
+func (euo *EventUpdateOne) SetAdmin(u *User) *EventUpdateOne {
+	return euo.SetAdminID(u.ID)
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
@@ -528,15 +458,9 @@ func (euo *EventUpdateOne) Mutation() *EventMutation {
 	return euo.mutation
 }
 
-// ClearState clears the "state" edge to the EState entity.
-func (euo *EventUpdateOne) ClearState() *EventUpdateOne {
-	euo.mutation.ClearState()
-	return euo
-}
-
-// ClearType clears the "type" edge to the EType entity.
-func (euo *EventUpdateOne) ClearType() *EventUpdateOne {
-	euo.mutation.ClearType()
+// ClearAdmin clears the "admin" edge to the User entity.
+func (euo *EventUpdateOne) ClearAdmin() *EventUpdateOne {
+	euo.mutation.ClearAdmin()
 	return euo
 }
 
@@ -570,46 +494,7 @@ func (euo *EventUpdateOne) Select(field string, fields ...string) *EventUpdateOn
 
 // Save executes the query and returns the updated Event entity.
 func (euo *EventUpdateOne) Save(ctx context.Context) (*Event, error) {
-	var (
-		err  error
-		node *Event
-	)
-	if len(euo.hooks) == 0 {
-		if err = euo.check(); err != nil {
-			return nil, err
-		}
-		node, err = euo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = euo.check(); err != nil {
-				return nil, err
-			}
-			euo.mutation = mutation
-			node, err = euo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(euo.hooks) - 1; i >= 0; i-- {
-			if euo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = euo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, euo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Event)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EventMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Event, EventMutation](ctx, euo.sqlSave, euo.mutation, euo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -651,10 +536,23 @@ func (euo *EventUpdateOne) check() error {
 			return &ValidationError{Name: "location", err: fmt.Errorf(`ent: validator failed for field "Event.location": %w`, err)}
 		}
 	}
+	if v, ok := euo.mutation.GetType(); ok {
+		if err := event.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.State(); ok {
+		if err := event.StateValidator(v); err != nil {
+			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "Event.state": %w`, err)}
+		}
+	}
 	return nil
 }
 
 func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error) {
+	if err := euo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   event.Table,
@@ -704,68 +602,39 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if euo.mutation.LocationCleared() {
 		_spec.ClearField(event.FieldLocation, field.TypeString)
 	}
-	if euo.mutation.StateCleared() {
+	if value, ok := euo.mutation.GetType(); ok {
+		_spec.SetField(event.FieldType, field.TypeString, value)
+	}
+	if value, ok := euo.mutation.State(); ok {
+		_spec.SetField(event.FieldState, field.TypeString, value)
+	}
+	if euo.mutation.AdminCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   event.StateTable,
-			Columns: []string{event.StateColumn},
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: estate.FieldID,
+					Column: user.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := euo.mutation.StateIDs(); len(nodes) > 0 {
+	if nodes := euo.mutation.AdminIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   event.StateTable,
-			Columns: []string{event.StateColumn},
+			Table:   event.AdminTable,
+			Columns: []string{event.AdminColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: estate.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if euo.mutation.TypeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   event.TypeTable,
-			Columns: []string{event.TypeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: etype.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := euo.mutation.TypeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   event.TypeTable,
-			Columns: []string{event.TypeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: etype.FieldID,
+					Column: user.FieldID,
 				},
 			},
 		}
@@ -839,5 +708,6 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 		}
 		return nil, err
 	}
+	euo.mutation.done = true
 	return _node, nil
 }

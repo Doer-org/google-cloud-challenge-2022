@@ -23,7 +23,7 @@ down: ## dockerイメージを削除し、docker環境を閉じる
 	-f $(DOCKER_COMPOSE) \
 	-p $(DOCKER_COMPOSE_PJ_NAME) \
 	down \
-	--rmi all --volumes --remove-orphans
+	--volumes --remove-orphans
 
 .PHONY: fclean
 fclean:down ## マウントしたデータを削除、またdockerイメージも削除する

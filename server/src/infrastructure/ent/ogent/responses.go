@@ -4,439 +4,156 @@ package ogent
 
 import "github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 
-func NewEStateCreate(e *ent.EState) *EStateCreate {
+func NewCommentCreate(e *ent.Comment) *CommentCreate {
 	if e == nil {
 		return nil
 	}
-	var ret EStateCreate
+	var ret CommentCreate
 	ret.ID = e.ID
-	ret.Name = e.Name
+	ret.Body = e.Body
 	return &ret
 }
 
-func NewEStateCreates(es []*ent.EState) []EStateCreate {
+func NewCommentCreates(es []*ent.Comment) []CommentCreate {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make([]EStateCreate, len(es))
+	r := make([]CommentCreate, len(es))
 	for i, e := range es {
-		r[i] = NewEStateCreate(e).Elem()
+		r[i] = NewCommentCreate(e).Elem()
 	}
 	return r
 }
 
-func (e *EStateCreate) Elem() EStateCreate {
-	if e == nil {
-		return EStateCreate{}
+func (c *CommentCreate) Elem() CommentCreate {
+	if c == nil {
+		return CommentCreate{}
 	}
-	return *e
+	return *c
 }
 
-func NewEStateList(e *ent.EState) *EStateList {
+func NewCommentList(e *ent.Comment) *CommentList {
 	if e == nil {
 		return nil
 	}
-	var ret EStateList
+	var ret CommentList
 	ret.ID = e.ID
-	ret.Name = e.Name
+	ret.Body = e.Body
 	return &ret
 }
 
-func NewEStateLists(es []*ent.EState) []EStateList {
+func NewCommentLists(es []*ent.Comment) []CommentList {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make([]EStateList, len(es))
+	r := make([]CommentList, len(es))
 	for i, e := range es {
-		r[i] = NewEStateList(e).Elem()
+		r[i] = NewCommentList(e).Elem()
 	}
 	return r
 }
 
-func (e *EStateList) Elem() EStateList {
-	if e == nil {
-		return EStateList{}
+func (c *CommentList) Elem() CommentList {
+	if c == nil {
+		return CommentList{}
 	}
-	return *e
+	return *c
 }
 
-func NewEStateRead(e *ent.EState) *EStateRead {
+func NewCommentRead(e *ent.Comment) *CommentRead {
 	if e == nil {
 		return nil
 	}
-	var ret EStateRead
+	var ret CommentRead
 	ret.ID = e.ID
-	ret.Name = e.Name
+	ret.Body = e.Body
 	return &ret
 }
 
-func NewEStateReads(es []*ent.EState) []EStateRead {
+func NewCommentReads(es []*ent.Comment) []CommentRead {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make([]EStateRead, len(es))
+	r := make([]CommentRead, len(es))
 	for i, e := range es {
-		r[i] = NewEStateRead(e).Elem()
+		r[i] = NewCommentRead(e).Elem()
 	}
 	return r
 }
 
-func (e *EStateRead) Elem() EStateRead {
-	if e == nil {
-		return EStateRead{}
+func (c *CommentRead) Elem() CommentRead {
+	if c == nil {
+		return CommentRead{}
 	}
-	return *e
+	return *c
 }
 
-func NewEStateUpdate(e *ent.EState) *EStateUpdate {
+func NewCommentUpdate(e *ent.Comment) *CommentUpdate {
 	if e == nil {
 		return nil
 	}
-	var ret EStateUpdate
+	var ret CommentUpdate
 	ret.ID = e.ID
-	ret.Name = e.Name
+	ret.Body = e.Body
 	return &ret
 }
 
-func NewEStateUpdates(es []*ent.EState) []EStateUpdate {
+func NewCommentUpdates(es []*ent.Comment) []CommentUpdate {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make([]EStateUpdate, len(es))
+	r := make([]CommentUpdate, len(es))
 	for i, e := range es {
-		r[i] = NewEStateUpdate(e).Elem()
+		r[i] = NewCommentUpdate(e).Elem()
 	}
 	return r
 }
 
-func (e *EStateUpdate) Elem() EStateUpdate {
-	if e == nil {
-		return EStateUpdate{}
+func (c *CommentUpdate) Elem() CommentUpdate {
+	if c == nil {
+		return CommentUpdate{}
 	}
-	return *e
+	return *c
 }
 
-func NewEStateEventRead(e *ent.Event) *EStateEventRead {
+func NewCommentEventRead(e *ent.Event) *CommentEventRead {
 	if e == nil {
 		return nil
 	}
-	var ret EStateEventRead
+	var ret CommentEventRead
 	ret.ID = e.ID
 	ret.Name = e.Name
 	ret.Detail = NewOptString(e.Detail)
 	ret.Location = NewOptString(e.Location)
+	ret.Type = e.Type
+	ret.State = e.State
 	return &ret
 }
 
-func NewEStateEventReads(es []*ent.Event) []EStateEventRead {
+func NewCommentEventReads(es []*ent.Event) []CommentEventRead {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make([]EStateEventRead, len(es))
+	r := make([]CommentEventRead, len(es))
 	for i, e := range es {
-		r[i] = NewEStateEventRead(e).Elem()
+		r[i] = NewCommentEventRead(e).Elem()
 	}
 	return r
 }
 
-func (e *EStateEventRead) Elem() EStateEventRead {
+func (e *CommentEventRead) Elem() CommentEventRead {
 	if e == nil {
-		return EStateEventRead{}
+		return CommentEventRead{}
 	}
 	return *e
 }
 
-func NewETypeCreate(e *ent.EType) *ETypeCreate {
+func NewCommentUserRead(e *ent.User) *CommentUserRead {
 	if e == nil {
 		return nil
 	}
-	var ret ETypeCreate
+	var ret CommentUserRead
 	ret.ID = e.ID
-	ret.Name = e.Name
-	return &ret
-}
-
-func NewETypeCreates(es []*ent.EType) []ETypeCreate {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]ETypeCreate, len(es))
-	for i, e := range es {
-		r[i] = NewETypeCreate(e).Elem()
-	}
-	return r
-}
-
-func (e *ETypeCreate) Elem() ETypeCreate {
-	if e == nil {
-		return ETypeCreate{}
-	}
-	return *e
-}
-
-func NewETypeList(e *ent.EType) *ETypeList {
-	if e == nil {
-		return nil
-	}
-	var ret ETypeList
-	ret.ID = e.ID
-	ret.Name = e.Name
-	return &ret
-}
-
-func NewETypeLists(es []*ent.EType) []ETypeList {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]ETypeList, len(es))
-	for i, e := range es {
-		r[i] = NewETypeList(e).Elem()
-	}
-	return r
-}
-
-func (e *ETypeList) Elem() ETypeList {
-	if e == nil {
-		return ETypeList{}
-	}
-	return *e
-}
-
-func NewETypeRead(e *ent.EType) *ETypeRead {
-	if e == nil {
-		return nil
-	}
-	var ret ETypeRead
-	ret.ID = e.ID
-	ret.Name = e.Name
-	return &ret
-}
-
-func NewETypeReads(es []*ent.EType) []ETypeRead {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]ETypeRead, len(es))
-	for i, e := range es {
-		r[i] = NewETypeRead(e).Elem()
-	}
-	return r
-}
-
-func (e *ETypeRead) Elem() ETypeRead {
-	if e == nil {
-		return ETypeRead{}
-	}
-	return *e
-}
-
-func NewETypeUpdate(e *ent.EType) *ETypeUpdate {
-	if e == nil {
-		return nil
-	}
-	var ret ETypeUpdate
-	ret.ID = e.ID
-	ret.Name = e.Name
-	return &ret
-}
-
-func NewETypeUpdates(es []*ent.EType) []ETypeUpdate {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]ETypeUpdate, len(es))
-	for i, e := range es {
-		r[i] = NewETypeUpdate(e).Elem()
-	}
-	return r
-}
-
-func (e *ETypeUpdate) Elem() ETypeUpdate {
-	if e == nil {
-		return ETypeUpdate{}
-	}
-	return *e
-}
-
-func NewETypeEventRead(e *ent.Event) *ETypeEventRead {
-	if e == nil {
-		return nil
-	}
-	var ret ETypeEventRead
-	ret.ID = e.ID
-	ret.Name = e.Name
-	ret.Detail = NewOptString(e.Detail)
-	ret.Location = NewOptString(e.Location)
-	return &ret
-}
-
-func NewETypeEventReads(es []*ent.Event) []ETypeEventRead {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]ETypeEventRead, len(es))
-	for i, e := range es {
-		r[i] = NewETypeEventRead(e).Elem()
-	}
-	return r
-}
-
-func (e *ETypeEventRead) Elem() ETypeEventRead {
-	if e == nil {
-		return ETypeEventRead{}
-	}
-	return *e
-}
-
-func NewEcommentCreate(e *ent.Ecomment) *EcommentCreate {
-	if e == nil {
-		return nil
-	}
-	var ret EcommentCreate
-	ret.ID = e.ID
-	ret.Body = e.Body
-	return &ret
-}
-
-func NewEcommentCreates(es []*ent.Ecomment) []EcommentCreate {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]EcommentCreate, len(es))
-	for i, e := range es {
-		r[i] = NewEcommentCreate(e).Elem()
-	}
-	return r
-}
-
-func (e *EcommentCreate) Elem() EcommentCreate {
-	if e == nil {
-		return EcommentCreate{}
-	}
-	return *e
-}
-
-func NewEcommentList(e *ent.Ecomment) *EcommentList {
-	if e == nil {
-		return nil
-	}
-	var ret EcommentList
-	ret.ID = e.ID
-	ret.Body = e.Body
-	return &ret
-}
-
-func NewEcommentLists(es []*ent.Ecomment) []EcommentList {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]EcommentList, len(es))
-	for i, e := range es {
-		r[i] = NewEcommentList(e).Elem()
-	}
-	return r
-}
-
-func (e *EcommentList) Elem() EcommentList {
-	if e == nil {
-		return EcommentList{}
-	}
-	return *e
-}
-
-func NewEcommentRead(e *ent.Ecomment) *EcommentRead {
-	if e == nil {
-		return nil
-	}
-	var ret EcommentRead
-	ret.ID = e.ID
-	ret.Body = e.Body
-	return &ret
-}
-
-func NewEcommentReads(es []*ent.Ecomment) []EcommentRead {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]EcommentRead, len(es))
-	for i, e := range es {
-		r[i] = NewEcommentRead(e).Elem()
-	}
-	return r
-}
-
-func (e *EcommentRead) Elem() EcommentRead {
-	if e == nil {
-		return EcommentRead{}
-	}
-	return *e
-}
-
-func NewEcommentUpdate(e *ent.Ecomment) *EcommentUpdate {
-	if e == nil {
-		return nil
-	}
-	var ret EcommentUpdate
-	ret.ID = e.ID
-	ret.Body = e.Body
-	return &ret
-}
-
-func NewEcommentUpdates(es []*ent.Ecomment) []EcommentUpdate {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]EcommentUpdate, len(es))
-	for i, e := range es {
-		r[i] = NewEcommentUpdate(e).Elem()
-	}
-	return r
-}
-
-func (e *EcommentUpdate) Elem() EcommentUpdate {
-	if e == nil {
-		return EcommentUpdate{}
-	}
-	return *e
-}
-
-func NewEcommentEventRead(e *ent.Event) *EcommentEventRead {
-	if e == nil {
-		return nil
-	}
-	var ret EcommentEventRead
-	ret.ID = e.ID
-	ret.Name = e.Name
-	ret.Detail = NewOptString(e.Detail)
-	ret.Location = NewOptString(e.Location)
-	return &ret
-}
-
-func NewEcommentEventReads(es []*ent.Event) []EcommentEventRead {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]EcommentEventRead, len(es))
-	for i, e := range es {
-		r[i] = NewEcommentEventRead(e).Elem()
-	}
-	return r
-}
-
-func (e *EcommentEventRead) Elem() EcommentEventRead {
-	if e == nil {
-		return EcommentEventRead{}
-	}
-	return *e
-}
-
-func NewEcommentUserRead(e *ent.User) *EcommentUserRead {
-	if e == nil {
-		return nil
-	}
-	var ret EcommentUserRead
-	ret.ID = e.ID
-	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
 	ret.Mail = NewOptString(e.Mail)
@@ -444,20 +161,20 @@ func NewEcommentUserRead(e *ent.User) *EcommentUserRead {
 	return &ret
 }
 
-func NewEcommentUserReads(es []*ent.User) []EcommentUserRead {
+func NewCommentUserReads(es []*ent.User) []CommentUserRead {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make([]EcommentUserRead, len(es))
+	r := make([]CommentUserRead, len(es))
 	for i, e := range es {
-		r[i] = NewEcommentUserRead(e).Elem()
+		r[i] = NewCommentUserRead(e).Elem()
 	}
 	return r
 }
 
-func (u *EcommentUserRead) Elem() EcommentUserRead {
+func (u *CommentUserRead) Elem() CommentUserRead {
 	if u == nil {
-		return EcommentUserRead{}
+		return CommentUserRead{}
 	}
 	return *u
 }
@@ -471,6 +188,8 @@ func NewEventCreate(e *ent.Event) *EventCreate {
 	ret.Name = e.Name
 	ret.Detail = NewOptString(e.Detail)
 	ret.Location = NewOptString(e.Location)
+	ret.Type = e.Type
+	ret.State = e.State
 	return &ret
 }
 
@@ -501,6 +220,8 @@ func NewEventList(e *ent.Event) *EventList {
 	ret.Name = e.Name
 	ret.Detail = NewOptString(e.Detail)
 	ret.Location = NewOptString(e.Location)
+	ret.Type = e.Type
+	ret.State = e.State
 	return &ret
 }
 
@@ -531,6 +252,8 @@ func NewEventRead(e *ent.Event) *EventRead {
 	ret.Name = e.Name
 	ret.Detail = NewOptString(e.Detail)
 	ret.Location = NewOptString(e.Location)
+	ret.Type = e.Type
+	ret.State = e.State
 	return &ret
 }
 
@@ -561,6 +284,8 @@ func NewEventUpdate(e *ent.Event) *EventUpdate {
 	ret.Name = e.Name
 	ret.Detail = NewOptString(e.Detail)
 	ret.Location = NewOptString(e.Location)
+	ret.Type = e.Type
+	ret.State = e.State
 	return &ret
 }
 
@@ -582,60 +307,35 @@ func (e *EventUpdate) Elem() EventUpdate {
 	return *e
 }
 
-func NewEventStateRead(e *ent.EState) *EventStateRead {
+func NewEventAdminRead(e *ent.User) *EventAdminRead {
 	if e == nil {
 		return nil
 	}
-	var ret EventStateRead
+	var ret EventAdminRead
 	ret.ID = e.ID
 	ret.Name = e.Name
+	ret.Authenticated = e.Authenticated
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
 	return &ret
 }
 
-func NewEventStateReads(es []*ent.EState) []EventStateRead {
+func NewEventAdminReads(es []*ent.User) []EventAdminRead {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make([]EventStateRead, len(es))
+	r := make([]EventAdminRead, len(es))
 	for i, e := range es {
-		r[i] = NewEventStateRead(e).Elem()
+		r[i] = NewEventAdminRead(e).Elem()
 	}
 	return r
 }
 
-func (e *EventStateRead) Elem() EventStateRead {
-	if e == nil {
-		return EventStateRead{}
+func (u *EventAdminRead) Elem() EventAdminRead {
+	if u == nil {
+		return EventAdminRead{}
 	}
-	return *e
-}
-
-func NewEventTypeRead(e *ent.EType) *EventTypeRead {
-	if e == nil {
-		return nil
-	}
-	var ret EventTypeRead
-	ret.ID = e.ID
-	ret.Name = e.Name
-	return &ret
-}
-
-func NewEventTypeReads(es []*ent.EType) []EventTypeRead {
-	if len(es) == 0 {
-		return nil
-	}
-	r := make([]EventTypeRead, len(es))
-	for i, e := range es {
-		r[i] = NewEventTypeRead(e).Elem()
-	}
-	return r
-}
-
-func (e *EventTypeRead) Elem() EventTypeRead {
-	if e == nil {
-		return EventTypeRead{}
-	}
-	return *e
+	return *u
 }
 
 func NewEventUsersList(e *ent.User) *EventUsersList {
@@ -644,7 +344,6 @@ func NewEventUsersList(e *ent.User) *EventUsersList {
 	}
 	var ret EventUsersList
 	ret.ID = e.ID
-	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
 	ret.Mail = NewOptString(e.Mail)
@@ -676,7 +375,6 @@ func NewUserCreate(e *ent.User) *UserCreate {
 	}
 	var ret UserCreate
 	ret.ID = e.ID
-	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
 	ret.Mail = NewOptString(e.Mail)
@@ -708,7 +406,6 @@ func NewUserList(e *ent.User) *UserList {
 	}
 	var ret UserList
 	ret.ID = e.ID
-	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
 	ret.Mail = NewOptString(e.Mail)
@@ -740,7 +437,6 @@ func NewUserRead(e *ent.User) *UserRead {
 	}
 	var ret UserRead
 	ret.ID = e.ID
-	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
 	ret.Mail = NewOptString(e.Mail)
@@ -772,7 +468,6 @@ func NewUserUpdate(e *ent.User) *UserUpdate {
 	}
 	var ret UserUpdate
 	ret.ID = e.ID
-	ret.Age = NewOptInt(e.Age)
 	ret.Name = e.Name
 	ret.Authenticated = e.Authenticated
 	ret.Mail = NewOptString(e.Mail)
@@ -807,6 +502,8 @@ func NewUserEventsList(e *ent.Event) *UserEventsList {
 	ret.Name = e.Name
 	ret.Detail = NewOptString(e.Detail)
 	ret.Location = NewOptString(e.Location)
+	ret.Type = e.Type
+	ret.State = e.State
 	return &ret
 }
 

@@ -12,63 +12,70 @@ import (
 )
 
 type UserRepository struct {
-	Client *ent.Client
+	client *ent.Client
 }
 
 func NewUserRepository(c *ent.Client) repository.IUserRepository {
 	return &UserRepository{
-		Client: c,
+		client: c,
 	}
 }
 
-func (r *UserRepository) Create(ctx context.Context, u *entity.User) error {
-	_, err := r.Client.User.
+func (r *UserRepository) CreateNewUser(ctx context.Context, u *entity.User) (*entity.User, error) {
+	entUser, err := r.client.User.
 		Create().
-		SetAge(u.Age).
 		SetName(u.Name).
 		SetAuthenticated(u.Authenticated).
 		SetMail(u.Mail).
 		SetIcon(u.Icon).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("UserRepository: query error: %w", err)
+		return nil, fmt.Errorf("UserRepository: user create query error: %w", err)
 	}
-	return nil
+	return EntToEntityUser(entUser), nil
 }
 
-func (r *UserRepository) GetByMail(ctx context.Context, mail string) (*entity.User, error) {
-	eu, err := r.Client.User.
+func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*entity.User, error) {
+	entUser, err := r.client.User.
 		Query().
 		Where(user.Mail(mail)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("UserRepository: query error: %w", err)
+		return nil, fmt.Errorf("UserRepository: user query error: %w", err)
 	}
-	return entToEntity(eu), nil
+	return EntToEntityUser(entUser), nil
 }
 
-func (r *UserRepository) GetById(ctx context.Context, id entity.UserId) (*entity.User, error) {
-	uuid, err := uuid.Parse(string(id))
+func (r *UserRepository) GetUserById(ctx context.Context, id entity.UserId) (*entity.User, error) {
+	userUuid, err := uuid.Parse(string(id))
 	if err != nil {
-		return nil, fmt.Errorf("UserRepository: uuid parse error: %w", err)
+		return nil, fmt.Errorf("UserRepository: userUuid parse error: %w", err)
 	}
-	eu, err := r.Client.User.
+	entUser, err := r.client.User.
 		Query().
-		Where(user.ID(uuid)).
+		Where(user.ID(userUuid)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("UserRepository: query error: %w", err)
+		return nil, fmt.Errorf("UserRepository: get user query error: %w", err)
 	}
-	return entToEntity(eu), nil
+	return EntToEntityUser(entUser), nil
 }
 
-func entToEntity(e *ent.User) *entity.User {
+func EntToEntityUser(e *ent.User) *entity.User {
 	return &entity.User{
 		Id:            entity.UserId(e.ID.String()),
-		Age:           e.Age,
 		Name:          e.Name,
 		Authenticated: e.Authenticated,
 		Mail:          e.Mail,
 		Icon:          e.Icon,
+	}
+}
+
+func EntityToEntUser(u *entity.User) *ent.User {
+	return &ent.User{
+		Name:          u.Name,
+		Authenticated: u.Authenticated,
+		Mail:          u.Mail,
+		Icon:          u.Icon,
 	}
 }

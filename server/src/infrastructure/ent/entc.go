@@ -5,7 +5,7 @@ package main
 import (
 	"log"
 
-	"ariga.io/ogent"
+	// "ariga.io/ogent"
 	"entgo.io/contrib/entoas"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
@@ -14,16 +14,75 @@ import (
 
 func main() {
 	spec := new(ogen.Spec)
-	oas, err := entoas.NewExtension(entoas.Spec(spec))
+	oas, err := entoas.NewExtension(
+		entoas.Spec(spec),
+		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
+			spec.AddPathItem("/events/{id}/comments", ogen.NewPathItem().
+				SetGet(ogen.NewOperation().
+					SetOperationID("getComments").
+					AddTags("Event").
+					AddResponse("200", ogen.NewResponse()),
+				).
+				AddParameters(
+					ogen.NewParameter().
+						InPath().
+						SetName("id").
+						SetRequired(true).
+						SetSchema(ogen.Int()),
+				),
+			)
+			return nil
+		}),
+		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
+			spec.AddPathItem("/events/{id}/state", ogen.NewPathItem().
+				SetPatch(ogen.NewOperation().
+					SetOperationID("patchState").
+					AddTags("Event").
+					AddResponse("200", ogen.NewResponse()),
+				).
+				AddParameters(
+					ogen.NewParameter().
+						InPath().
+						SetName("id").
+						SetRequired(true).
+						SetSchema(ogen.Int()),
+				),
+			)
+			return nil
+		}),
+		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
+			spec.AddPathItem("/events/{id}/type", ogen.NewPathItem().
+				SetPatch(ogen.NewOperation().
+					SetOperationID("patchType").
+					AddTags("Event").
+					AddResponse("200", ogen.NewResponse()),
+				).
+				AddParameters(
+					ogen.NewParameter().
+						InPath().
+						SetName("id").
+						SetRequired(true).
+						SetSchema(ogen.Int()),
+				),
+			)
+			return nil
+		}),
+	)
 	if err != nil {
 		log.Fatalf("creating entoas extension: %v", err)
 	}
-	ogent, err := ogent.NewExtension(spec)
-	if err != nil {
-		log.Fatalf("creating ogent extension: %v", err)
-	}
-	err = entc.Generate("./schema", &gen.Config{}, entc.Extensions(ogent, oas))
+
+	err = entc.Generate("./schema", &gen.Config{}, entc.Extensions(oas))
 	if err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}
+
+	// ogent, err := ogent.NewExtension(spec)
+	// if err != nil {
+	// 	log.Fatalf("creating ogent extension: %v", err)
+	// }
+	// err = entc.Generate("./schema", &gen.Config{}, entc.Extensions(ogent, oas))
+	// if err != nil {
+	// 	log.Fatalf("running ent codegen: %v", err)
+	// }
 }

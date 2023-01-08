@@ -11,9 +11,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/migrate"
 	"github.com/google/uuid"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 
@@ -27,12 +25,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// EState is the client for interacting with the EState builders.
-	EState *EStateClient
-	// EType is the client for interacting with the EType builders.
-	EType *ETypeClient
-	// Ecomment is the client for interacting with the Ecomment builders.
-	Ecomment *EcommentClient
+	// Comment is the client for interacting with the Comment builders.
+	Comment *CommentClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
 	// User is the client for interacting with the User builders.
@@ -41,7 +35,7 @@ type Client struct {
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}}
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
 	cfg.options(opts...)
 	client := &Client{config: cfg}
 	client.init()
@@ -50,9 +44,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.EState = NewEStateClient(c.config)
-	c.EType = NewETypeClient(c.config)
-	c.Ecomment = NewEcommentClient(c.config)
+	c.Comment = NewCommentClient(c.config)
 	c.Event = NewEventClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -86,13 +78,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		EState:   NewEStateClient(cfg),
-		EType:    NewETypeClient(cfg),
-		Ecomment: NewEcommentClient(cfg),
-		Event:    NewEventClient(cfg),
-		User:     NewUserClient(cfg),
+		ctx:     ctx,
+		config:  cfg,
+		Comment: NewCommentClient(cfg),
+		Event:   NewEventClient(cfg),
+		User:    NewUserClient(cfg),
 	}, nil
 }
 
@@ -110,20 +100,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		EState:   NewEStateClient(cfg),
-		EType:    NewETypeClient(cfg),
-		Ecomment: NewEcommentClient(cfg),
-		Event:    NewEventClient(cfg),
-		User:     NewUserClient(cfg),
+		ctx:     ctx,
+		config:  cfg,
+		Comment: NewCommentClient(cfg),
+		Event:   NewEventClient(cfg),
+		User:    NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		EState.
+//		Comment.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -145,91 +133,118 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.EState.Use(hooks...)
-	c.EType.Use(hooks...)
-	c.Ecomment.Use(hooks...)
+	c.Comment.Use(hooks...)
 	c.Event.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
-// EStateClient is a client for the EState schema.
-type EStateClient struct {
-	config
+// Intercept adds the query interceptors to all the entity clients.
+// In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
+func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.Comment.Intercept(interceptors...)
+	c.Event.Intercept(interceptors...)
+	c.User.Intercept(interceptors...)
 }
 
-// NewEStateClient returns a client for the EState from the given config.
-func NewEStateClient(c config) *EStateClient {
-	return &EStateClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `estate.Hooks(f(g(h())))`.
-func (c *EStateClient) Use(hooks ...Hook) {
-	c.hooks.EState = append(c.hooks.EState, hooks...)
-}
-
-// Create returns a builder for creating a EState entity.
-func (c *EStateClient) Create() *EStateCreate {
-	mutation := newEStateMutation(c.config, OpCreate)
-	return &EStateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of EState entities.
-func (c *EStateClient) CreateBulk(builders ...*EStateCreate) *EStateCreateBulk {
-	return &EStateCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for EState.
-func (c *EStateClient) Update() *EStateUpdate {
-	mutation := newEStateMutation(c.config, OpUpdate)
-	return &EStateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *EStateClient) UpdateOne(e *EState) *EStateUpdateOne {
-	mutation := newEStateMutation(c.config, OpUpdateOne, withEState(e))
-	return &EStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *EStateClient) UpdateOneID(id uuid.UUID) *EStateUpdateOne {
-	mutation := newEStateMutation(c.config, OpUpdateOne, withEStateID(id))
-	return &EStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for EState.
-func (c *EStateClient) Delete() *EStateDelete {
-	mutation := newEStateMutation(c.config, OpDelete)
-	return &EStateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *EStateClient) DeleteOne(e *EState) *EStateDeleteOne {
-	return c.DeleteOneID(e.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *EStateClient) DeleteOneID(id uuid.UUID) *EStateDeleteOne {
-	builder := c.Delete().Where(estate.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &EStateDeleteOne{builder}
-}
-
-// Query returns a query builder for EState.
-func (c *EStateClient) Query() *EStateQuery {
-	return &EStateQuery{
-		config: c.config,
+// Mutate implements the ent.Mutator interface.
+func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
+	switch m := m.(type) {
+	case *CommentMutation:
+		return c.Comment.mutate(ctx, m)
+	case *EventMutation:
+		return c.Event.mutate(ctx, m)
+	case *UserMutation:
+		return c.User.mutate(ctx, m)
+	default:
+		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
 }
 
-// Get returns a EState entity by its id.
-func (c *EStateClient) Get(ctx context.Context, id uuid.UUID) (*EState, error) {
-	return c.Query().Where(estate.ID(id)).Only(ctx)
+// CommentClient is a client for the Comment schema.
+type CommentClient struct {
+	config
+}
+
+// NewCommentClient returns a client for the Comment from the given config.
+func NewCommentClient(c config) *CommentClient {
+	return &CommentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `comment.Hooks(f(g(h())))`.
+func (c *CommentClient) Use(hooks ...Hook) {
+	c.hooks.Comment = append(c.hooks.Comment, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `comment.Intercept(f(g(h())))`.
+func (c *CommentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Comment = append(c.inters.Comment, interceptors...)
+}
+
+// Create returns a builder for creating a Comment entity.
+func (c *CommentClient) Create() *CommentCreate {
+	mutation := newCommentMutation(c.config, OpCreate)
+	return &CommentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Comment entities.
+func (c *CommentClient) CreateBulk(builders ...*CommentCreate) *CommentCreateBulk {
+	return &CommentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Comment.
+func (c *CommentClient) Update() *CommentUpdate {
+	mutation := newCommentMutation(c.config, OpUpdate)
+	return &CommentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CommentClient) UpdateOne(co *Comment) *CommentUpdateOne {
+	mutation := newCommentMutation(c.config, OpUpdateOne, withComment(co))
+	return &CommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CommentClient) UpdateOneID(id uuid.UUID) *CommentUpdateOne {
+	mutation := newCommentMutation(c.config, OpUpdateOne, withCommentID(id))
+	return &CommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Comment.
+func (c *CommentClient) Delete() *CommentDelete {
+	mutation := newCommentMutation(c.config, OpDelete)
+	return &CommentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CommentClient) DeleteOne(co *Comment) *CommentDeleteOne {
+	return c.DeleteOneID(co.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CommentClient) DeleteOneID(id uuid.UUID) *CommentDeleteOne {
+	builder := c.Delete().Where(comment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CommentDeleteOne{builder}
+}
+
+// Query returns a query builder for Comment.
+func (c *CommentClient) Query() *CommentQuery {
+	return &CommentQuery{
+		config: c.config,
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Comment entity by its id.
+func (c *CommentClient) Get(ctx context.Context, id uuid.UUID) (*Comment, error) {
+	return c.Query().Where(comment.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *EStateClient) GetX(ctx context.Context, id uuid.UUID) *EState {
+func (c *CommentClient) GetX(ctx context.Context, id uuid.UUID) *Comment {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -237,253 +252,61 @@ func (c *EStateClient) GetX(ctx context.Context, id uuid.UUID) *EState {
 	return obj
 }
 
-// QueryEvent queries the event edge of a EState.
-func (c *EStateClient) QueryEvent(e *EState) *EventQuery {
-	query := &EventQuery{config: c.config}
+// QueryEvent queries the event edge of a Comment.
+func (c *CommentClient) QueryEvent(co *Comment) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
+		id := co.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(estate.Table, estate.FieldID, id),
+			sqlgraph.From(comment.Table, comment.FieldID, id),
 			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, estate.EventTable, estate.EventColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, comment.EventTable, comment.EventColumn),
 		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
-// Hooks returns the client hooks.
-func (c *EStateClient) Hooks() []Hook {
-	return c.hooks.EState
-}
-
-// ETypeClient is a client for the EType schema.
-type ETypeClient struct {
-	config
-}
-
-// NewETypeClient returns a client for the EType from the given config.
-func NewETypeClient(c config) *ETypeClient {
-	return &ETypeClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `etype.Hooks(f(g(h())))`.
-func (c *ETypeClient) Use(hooks ...Hook) {
-	c.hooks.EType = append(c.hooks.EType, hooks...)
-}
-
-// Create returns a builder for creating a EType entity.
-func (c *ETypeClient) Create() *ETypeCreate {
-	mutation := newETypeMutation(c.config, OpCreate)
-	return &ETypeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of EType entities.
-func (c *ETypeClient) CreateBulk(builders ...*ETypeCreate) *ETypeCreateBulk {
-	return &ETypeCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for EType.
-func (c *ETypeClient) Update() *ETypeUpdate {
-	mutation := newETypeMutation(c.config, OpUpdate)
-	return &ETypeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ETypeClient) UpdateOne(e *EType) *ETypeUpdateOne {
-	mutation := newETypeMutation(c.config, OpUpdateOne, withEType(e))
-	return &ETypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ETypeClient) UpdateOneID(id uuid.UUID) *ETypeUpdateOne {
-	mutation := newETypeMutation(c.config, OpUpdateOne, withETypeID(id))
-	return &ETypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for EType.
-func (c *ETypeClient) Delete() *ETypeDelete {
-	mutation := newETypeMutation(c.config, OpDelete)
-	return &ETypeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *ETypeClient) DeleteOne(e *EType) *ETypeDeleteOne {
-	return c.DeleteOneID(e.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ETypeClient) DeleteOneID(id uuid.UUID) *ETypeDeleteOne {
-	builder := c.Delete().Where(etype.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ETypeDeleteOne{builder}
-}
-
-// Query returns a query builder for EType.
-func (c *ETypeClient) Query() *ETypeQuery {
-	return &ETypeQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a EType entity by its id.
-func (c *ETypeClient) Get(ctx context.Context, id uuid.UUID) (*EType, error) {
-	return c.Query().Where(etype.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ETypeClient) GetX(ctx context.Context, id uuid.UUID) *EType {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryEvent queries the event edge of a EType.
-func (c *ETypeClient) QueryEvent(e *EType) *EventQuery {
-	query := &EventQuery{config: c.config}
+// QueryUser queries the user edge of a Comment.
+func (c *CommentClient) QueryUser(co *Comment) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
+		id := co.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(etype.Table, etype.FieldID, id),
-			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, etype.EventTable, etype.EventColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ETypeClient) Hooks() []Hook {
-	return c.hooks.EType
-}
-
-// EcommentClient is a client for the Ecomment schema.
-type EcommentClient struct {
-	config
-}
-
-// NewEcommentClient returns a client for the Ecomment from the given config.
-func NewEcommentClient(c config) *EcommentClient {
-	return &EcommentClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `ecomment.Hooks(f(g(h())))`.
-func (c *EcommentClient) Use(hooks ...Hook) {
-	c.hooks.Ecomment = append(c.hooks.Ecomment, hooks...)
-}
-
-// Create returns a builder for creating a Ecomment entity.
-func (c *EcommentClient) Create() *EcommentCreate {
-	mutation := newEcommentMutation(c.config, OpCreate)
-	return &EcommentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Ecomment entities.
-func (c *EcommentClient) CreateBulk(builders ...*EcommentCreate) *EcommentCreateBulk {
-	return &EcommentCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Ecomment.
-func (c *EcommentClient) Update() *EcommentUpdate {
-	mutation := newEcommentMutation(c.config, OpUpdate)
-	return &EcommentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *EcommentClient) UpdateOne(e *Ecomment) *EcommentUpdateOne {
-	mutation := newEcommentMutation(c.config, OpUpdateOne, withEcomment(e))
-	return &EcommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *EcommentClient) UpdateOneID(id uuid.UUID) *EcommentUpdateOne {
-	mutation := newEcommentMutation(c.config, OpUpdateOne, withEcommentID(id))
-	return &EcommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Ecomment.
-func (c *EcommentClient) Delete() *EcommentDelete {
-	mutation := newEcommentMutation(c.config, OpDelete)
-	return &EcommentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *EcommentClient) DeleteOne(e *Ecomment) *EcommentDeleteOne {
-	return c.DeleteOneID(e.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *EcommentClient) DeleteOneID(id uuid.UUID) *EcommentDeleteOne {
-	builder := c.Delete().Where(ecomment.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &EcommentDeleteOne{builder}
-}
-
-// Query returns a query builder for Ecomment.
-func (c *EcommentClient) Query() *EcommentQuery {
-	return &EcommentQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Ecomment entity by its id.
-func (c *EcommentClient) Get(ctx context.Context, id uuid.UUID) (*Ecomment, error) {
-	return c.Query().Where(ecomment.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *EcommentClient) GetX(ctx context.Context, id uuid.UUID) *Ecomment {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryEvent queries the event edge of a Ecomment.
-func (c *EcommentClient) QueryEvent(e *Ecomment) *EventQuery {
-	query := &EventQuery{config: c.config}
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(ecomment.Table, ecomment.FieldID, id),
-			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ecomment.EventTable, ecomment.EventColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryUser queries the user edge of a Ecomment.
-func (c *EcommentClient) QueryUser(e *Ecomment) *UserQuery {
-	query := &UserQuery{config: c.config}
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(ecomment.Table, ecomment.FieldID, id),
+			sqlgraph.From(comment.Table, comment.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ecomment.UserTable, ecomment.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, comment.UserTable, comment.UserColumn),
 		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *EcommentClient) Hooks() []Hook {
-	return c.hooks.Ecomment
+func (c *CommentClient) Hooks() []Hook {
+	return c.hooks.Comment
+}
+
+// Interceptors returns the client interceptors.
+func (c *CommentClient) Interceptors() []Interceptor {
+	return c.inters.Comment
+}
+
+func (c *CommentClient) mutate(ctx context.Context, m *CommentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CommentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CommentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CommentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Comment mutation op: %q", m.Op())
+	}
 }
 
 // EventClient is a client for the Event schema.
@@ -500,6 +323,12 @@ func NewEventClient(c config) *EventClient {
 // A call to `Use(f, g, h)` equals to `event.Hooks(f(g(h())))`.
 func (c *EventClient) Use(hooks ...Hook) {
 	c.hooks.Event = append(c.hooks.Event, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `event.Intercept(f(g(h())))`.
+func (c *EventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Event = append(c.inters.Event, interceptors...)
 }
 
 // Create returns a builder for creating a Event entity.
@@ -554,6 +383,7 @@ func (c *EventClient) DeleteOneID(id uuid.UUID) *EventDeleteOne {
 func (c *EventClient) Query() *EventQuery {
 	return &EventQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -571,31 +401,15 @@ func (c *EventClient) GetX(ctx context.Context, id uuid.UUID) *Event {
 	return obj
 }
 
-// QueryState queries the state edge of a Event.
-func (c *EventClient) QueryState(e *Event) *EStateQuery {
-	query := &EStateQuery{config: c.config}
+// QueryAdmin queries the admin edge of a Event.
+func (c *EventClient) QueryAdmin(e *Event) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(event.Table, event.FieldID, id),
-			sqlgraph.To(estate.Table, estate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, event.StateTable, event.StateColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryType queries the type edge of a Event.
-func (c *EventClient) QueryType(e *Event) *ETypeQuery {
-	query := &ETypeQuery{config: c.config}
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(event.Table, event.FieldID, id),
-			sqlgraph.To(etype.Table, etype.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, event.TypeTable, event.TypeColumn),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, event.AdminTable, event.AdminColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -605,7 +419,7 @@ func (c *EventClient) QueryType(e *Event) *ETypeQuery {
 
 // QueryUsers queries the users edge of a Event.
 func (c *EventClient) QueryUsers(e *Event) *UserQuery {
-	query := &UserQuery{config: c.config}
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
@@ -624,6 +438,26 @@ func (c *EventClient) Hooks() []Hook {
 	return c.hooks.Event
 }
 
+// Interceptors returns the client interceptors.
+func (c *EventClient) Interceptors() []Interceptor {
+	return c.inters.Event
+}
+
+func (c *EventClient) mutate(ctx context.Context, m *EventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Event mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -638,6 +472,12 @@ func NewUserClient(c config) *UserClient {
 // A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
 func (c *UserClient) Use(hooks ...Hook) {
 	c.hooks.User = append(c.hooks.User, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
+func (c *UserClient) Intercept(interceptors ...Interceptor) {
+	c.inters.User = append(c.inters.User, interceptors...)
 }
 
 // Create returns a builder for creating a User entity.
@@ -692,6 +532,7 @@ func (c *UserClient) DeleteOneID(id uuid.UUID) *UserDeleteOne {
 func (c *UserClient) Query() *UserQuery {
 	return &UserQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -711,7 +552,7 @@ func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 
 // QueryEvents queries the events edge of a User.
 func (c *UserClient) QueryEvents(u *User) *EventQuery {
-	query := &EventQuery{config: c.config}
+	query := (&EventClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
@@ -728,4 +569,24 @@ func (c *UserClient) QueryEvents(u *User) *EventQuery {
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserClient) Interceptors() []Interceptor {
+	return c.inters.User
+}
+
+func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
+	}
 }

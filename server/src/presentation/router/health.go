@@ -6,7 +6,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/handler"
 )
 
-func initHealthRouer(r *chi.Mux) {
+func initHealthRouter(r *chi.Mux) {
 	h := handler.NewHealthHandler()
 	r.Get("/ping", h.Ping)
 }

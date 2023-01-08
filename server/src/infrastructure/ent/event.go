@@ -7,9 +7,8 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -24,54 +23,44 @@ type Event struct {
 	Detail string `json:"detail,omitempty"`
 	// Location holds the value of the "location" field.
 	Location string `json:"location,omitempty"`
+	// Type holds the value of the "type" field.
+	Type string `json:"type,omitempty"`
+	// State holds the value of the "state" field.
+	State string `json:"state,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
-	Edges EventEdges `json:"edges"`
+	Edges       EventEdges `json:"edges"`
+	event_admin *uuid.UUID
 }
 
 // EventEdges holds the relations/edges for other nodes in the graph.
 type EventEdges struct {
-	// State holds the value of the state edge.
-	State *EState `json:"state,omitempty"`
-	// Type holds the value of the type edge.
-	Type *EType `json:"type,omitempty"`
+	// Admin holds the value of the admin edge.
+	Admin *User `json:"admin,omitempty"`
 	// Users holds the value of the users edge.
 	Users []*User `json:"users,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 }
 
-// StateOrErr returns the State value or an error if the edge
+// AdminOrErr returns the Admin value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e EventEdges) StateOrErr() (*EState, error) {
+func (e EventEdges) AdminOrErr() (*User, error) {
 	if e.loadedTypes[0] {
-		if e.State == nil {
+		if e.Admin == nil {
 			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: estate.Label}
+			return nil, &NotFoundError{label: user.Label}
 		}
-		return e.State, nil
+		return e.Admin, nil
 	}
-	return nil, &NotLoadedError{edge: "state"}
-}
-
-// TypeOrErr returns the Type value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e EventEdges) TypeOrErr() (*EType, error) {
-	if e.loadedTypes[1] {
-		if e.Type == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: etype.Label}
-		}
-		return e.Type, nil
-	}
-	return nil, &NotLoadedError{edge: "type"}
+	return nil, &NotLoadedError{edge: "admin"}
 }
 
 // UsersOrErr returns the Users value or an error if the edge
 // was not loaded in eager-loading.
 func (e EventEdges) UsersOrErr() ([]*User, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		return e.Users, nil
 	}
 	return nil, &NotLoadedError{edge: "users"}
@@ -82,10 +71,12 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldName, event.FieldDetail, event.FieldLocation:
+		case event.FieldName, event.FieldDetail, event.FieldLocation, event.FieldType, event.FieldState:
 			values[i] = new(sql.NullString)
 		case event.FieldID:
 			values[i] = new(uuid.UUID)
+		case event.ForeignKeys[0]: // event_admin
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Event", columns[i])
 		}
@@ -125,19 +116,33 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Location = value.String
 			}
+		case event.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				e.Type = value.String
+			}
+		case event.FieldState:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field state", values[i])
+			} else if value.Valid {
+				e.State = value.String
+			}
+		case event.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field event_admin", values[i])
+			} else if value.Valid {
+				e.event_admin = new(uuid.UUID)
+				*e.event_admin = *value.S.(*uuid.UUID)
+			}
 		}
 	}
 	return nil
 }
 
-// QueryState queries the "state" edge of the Event entity.
-func (e *Event) QueryState() *EStateQuery {
-	return (&EventClient{config: e.config}).QueryState(e)
-}
-
-// QueryType queries the "type" edge of the Event entity.
-func (e *Event) QueryType() *ETypeQuery {
-	return (&EventClient{config: e.config}).QueryType(e)
+// QueryAdmin queries the "admin" edge of the Event entity.
+func (e *Event) QueryAdmin() *UserQuery {
+	return (&EventClient{config: e.config}).QueryAdmin(e)
 }
 
 // QueryUsers queries the "users" edge of the Event entity.
@@ -176,6 +181,12 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("location=")
 	builder.WriteString(e.Location)
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(e.Type)
+	builder.WriteString(", ")
+	builder.WriteString("state=")
+	builder.WriteString(e.State)
 	builder.WriteByte(')')
 	return builder.String()
 }

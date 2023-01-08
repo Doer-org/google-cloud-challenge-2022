@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
+	json_res "github.com/Doer-org/google-cloud-challenge-2022/utils/http/json"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/http/response"
 	"github.com/go-chi/chi/v5"
 )
@@ -20,45 +20,72 @@ func NewUserHandler(uc usecase.IUserUsecase) *UserHandler {
 	}
 }
 
-func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
-	uJson := UserJson{}
-	if err := json.NewDecoder(r.Body).Decode(&uJson); err != nil {
-		response.NewErrResponse(w, err)
+func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
+	j := &json_res.UserJson{}
+	if err := json.NewDecoder(r.Body).Decode(j); err != nil {
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
 		return
 	}
 	defer r.Body.Close()
 
-	err := h.uc.Create(
+	user, err := h.uc.CreateNewUser(
 		r.Context(),
-		uJson.Age,
-		uJson.Name,
-		uJson.Authenticated,
-		uJson.Mail,
-		uJson.Icon,
+		j.Name,
+		j.Authenticated,
+		j.Mail,
+		j.Icon,
 	)
 	if err != nil {
-		response.NewErrResponse(w, err)
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
 		return
 	}
-	response.ConvertToJsonResponseAndErrCheck(
-		w, response.NewResponse("user create successful"),
+	response.WriteJsonResponse(
+		w,
+		json_res.EntityToJsonUser(user),
+		http.StatusCreated,
 	)
 }
 
-func (h *UserHandler) GetByMail(w http.ResponseWriter, r *http.Request) {
-	mailParam := chi.URLParam(r, "mail")
-	user, err := h.uc.GetByMail(context.Background(), mailParam)
+func (h *UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+	user, err := h.uc.GetUserById(r.Context(), idParam)
 	if err != nil {
-		response.NewErrResponse(w, err)
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
 		return
 	}
-	response.ConvertToJsonResponseAndErrCheck(w, user)
+	response.WriteJsonResponse(
+		w,
+		json_res.EntityToJsonUser(user),
+		http.StatusOK,
+	)
 }
 
-type UserJson struct {
-	Age           int    `json:"age"`
-	Name          string `json:"name"`
-	Authenticated bool   `json:"authenticated"`
-	Mail          string `json:"mail"`
-	Icon          string `json:"icon"`
+func (h *UserHandler) GetUserByMail(w http.ResponseWriter, r *http.Request) {
+	mailQuery := r.URL.Query().Get("mail")
+	user, err := h.uc.GetUserByMail(r.Context(), mailQuery)
+	if err != nil {
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(err),
+			http.StatusBadRequest,
+		)
+		return
+	}
+	response.WriteJsonResponse(
+		w,
+		json_res.EntityToJsonUser(user),
+		http.StatusOK,
+	)
 }

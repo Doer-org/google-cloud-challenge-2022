@@ -6,1016 +6,7 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/e-states": {
-      "get": {
-        "tags": [
-          "EState"
-        ],
-        "summary": "List EStates",
-        "description": "List EStates.",
-        "operationId": "listEState",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "what page to render",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "itemsPerPage",
-            "in": "query",
-            "description": "item count to render per page",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "result EState list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EStateList"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "EState"
-        ],
-        "summary": "Create a new EState",
-        "description": "Creates a new EState and persists it to storage.",
-        "operationId": "createEState",
-        "requestBody": {
-          "description": "EState to create",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "event": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                },
-                "required": [
-                  "name",
-                  "event"
-                ]
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "EState created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EStateCreate"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/e-states/{id}": {
-      "get": {
-        "tags": [
-          "EState"
-        ],
-        "summary": "Find a EState by ID",
-        "description": "Finds the EState with the requested ID and returns it.",
-        "operationId": "readEState",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the EState",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "EState with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EStateRead"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "EState"
-        ],
-        "summary": "Deletes a EState by ID",
-        "description": "Deletes the EState with the requested ID.",
-        "operationId": "deleteEState",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the EState",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "EState with requested ID was deleted"
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "EState"
-        ],
-        "summary": "Updates a EState",
-        "description": "Updates a EState and persists changes to storage.",
-        "operationId": "updateEState",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the EState",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "EState properties to update",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "event": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "EState updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EStateUpdate"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/e-states/{id}/event": {
-      "get": {
-        "tags": [
-          "EState"
-        ],
-        "summary": "Find the attached Event",
-        "description": "Find the attached Event of the EState with the given ID",
-        "operationId": "readEStateEvent",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the EState",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Event attached to EState with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EState_EventRead"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/e-types": {
-      "get": {
-        "tags": [
-          "EType"
-        ],
-        "summary": "List ETypes",
-        "description": "List ETypes.",
-        "operationId": "listEType",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "what page to render",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "itemsPerPage",
-            "in": "query",
-            "description": "item count to render per page",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "result EType list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ETypeList"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "EType"
-        ],
-        "summary": "Create a new EType",
-        "description": "Creates a new EType and persists it to storage.",
-        "operationId": "createEType",
-        "requestBody": {
-          "description": "EType to create",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "event": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                },
-                "required": [
-                  "name",
-                  "event"
-                ]
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "EType created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ETypeCreate"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/e-types/{id}": {
-      "get": {
-        "tags": [
-          "EType"
-        ],
-        "summary": "Find a EType by ID",
-        "description": "Finds the EType with the requested ID and returns it.",
-        "operationId": "readEType",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the EType",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "EType with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ETypeRead"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "EType"
-        ],
-        "summary": "Deletes a EType by ID",
-        "description": "Deletes the EType with the requested ID.",
-        "operationId": "deleteEType",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the EType",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "EType with requested ID was deleted"
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "EType"
-        ],
-        "summary": "Updates a EType",
-        "description": "Updates a EType and persists changes to storage.",
-        "operationId": "updateEType",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the EType",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "EType properties to update",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "event": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "EType updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ETypeUpdate"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/e-types/{id}/event": {
-      "get": {
-        "tags": [
-          "EType"
-        ],
-        "summary": "Find the attached Event",
-        "description": "Find the attached Event of the EType with the given ID",
-        "operationId": "readETypeEvent",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the EType",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Event attached to EType with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EType_EventRead"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/ecomments": {
-      "get": {
-        "tags": [
-          "Ecomment"
-        ],
-        "summary": "List Ecomments",
-        "description": "List Ecomments.",
-        "operationId": "listEcomment",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "what page to render",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "itemsPerPage",
-            "in": "query",
-            "description": "item count to render per page",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "result Ecomment list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EcommentList"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Ecomment"
-        ],
-        "summary": "Create a new Ecomment",
-        "description": "Creates a new Ecomment and persists it to storage.",
-        "operationId": "createEcomment",
-        "requestBody": {
-          "description": "Ecomment to create",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "body": {
-                    "type": "string"
-                  },
-                  "event": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "user": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                },
-                "required": [
-                  "body"
-                ]
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Ecomment created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EcommentCreate"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/ecomments/{id}": {
-      "get": {
-        "tags": [
-          "Ecomment"
-        ],
-        "summary": "Find a Ecomment by ID",
-        "description": "Finds the Ecomment with the requested ID and returns it.",
-        "operationId": "readEcomment",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Ecomment",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Ecomment with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EcommentRead"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Ecomment"
-        ],
-        "summary": "Deletes a Ecomment by ID",
-        "description": "Deletes the Ecomment with the requested ID.",
-        "operationId": "deleteEcomment",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Ecomment",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Ecomment with requested ID was deleted"
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Ecomment"
-        ],
-        "summary": "Updates a Ecomment",
-        "description": "Updates a Ecomment and persists changes to storage.",
-        "operationId": "updateEcomment",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Ecomment",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Ecomment properties to update",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "body": {
-                    "type": "string"
-                  },
-                  "event": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "user": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Ecomment updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EcommentUpdate"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/ecomments/{id}/event": {
-      "get": {
-        "tags": [
-          "Ecomment"
-        ],
-        "summary": "Find the attached Event",
-        "description": "Find the attached Event of the Ecomment with the given ID",
-        "operationId": "readEcommentEvent",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Ecomment",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Event attached to Ecomment with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Ecomment_EventRead"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/ecomments/{id}/user": {
-      "get": {
-        "tags": [
-          "Ecomment"
-        ],
-        "summary": "Find the attached User",
-        "description": "Find the attached User of the Ecomment with the given ID",
-        "operationId": "readEcommentUser",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Ecomment",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User attached to Ecomment with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Ecomment_UserRead"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
     "/events": {
-      "get": {
-        "tags": [
-          "Event"
-        ],
-        "summary": "List Events",
-        "description": "List Events.",
-        "operationId": "listEvent",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "what page to render",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "itemsPerPage",
-            "in": "query",
-            "description": "item count to render per page",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "result Event list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EventList"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
       "post": {
         "tags": [
           "Event"
@@ -1039,11 +30,13 @@
                   "location": {
                     "type": "string"
                   },
-                  "state": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
                   "type": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "admin": {
                     "type": "string",
                     "format": "uuid"
                   },
@@ -1056,7 +49,9 @@
                   }
                 },
                 "required": [
-                  "name"
+                  "name",
+                  "type",
+                  "state"
                 ]
               }
             }
@@ -1203,11 +198,13 @@
                   "location": {
                     "type": "string"
                   },
-                  "state": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
                   "type": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "admin": {
                     "type": "string",
                     "format": "uuid"
                   },
@@ -1250,14 +247,14 @@
         }
       }
     },
-    "/events/{id}/state": {
+    "/events/{id}/admin": {
       "get": {
         "tags": [
           "Event"
         ],
-        "summary": "Find the attached EState",
-        "description": "Find the attached EState of the Event with the given ID",
-        "operationId": "readEventState",
+        "summary": "Find the attached User",
+        "description": "Find the attached User of the Event with the given ID",
+        "operationId": "readEventAdmin",
         "parameters": [
           {
             "name": "id",
@@ -1272,11 +269,11 @@
         ],
         "responses": {
           "200": {
-            "description": "EState attached to Event with requested ID was found",
+            "description": "User attached to Event with requested ID was found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Event_StateRead"
+                  "$ref": "#/components/schemas/Event_AdminRead"
                 }
               }
             }
@@ -1296,51 +293,68 @@
         }
       }
     },
-    "/events/{id}/type": {
+    "/events/{id}/comments": {
       "get": {
         "tags": [
           "Event"
         ],
-        "summary": "Find the attached EType",
-        "description": "Find the attached EType of the Event with the given ID",
-        "operationId": "readEventType",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Event",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
+        "operationId": "getComments",
         "responses": {
-          "200": {
-            "description": "EType attached to Event with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Event_TypeRead"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
+          "200": {}
+        }
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
           }
         }
-      }
+      ]
+    },
+    "/events/{id}/state": {
+      "patch": {
+        "tags": [
+          "Event"
+        ],
+        "operationId": "patchState",
+        "responses": {
+          "200": {}
+        }
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ]
+    },
+    "/events/{id}/type": {
+      "patch": {
+        "tags": [
+          "Event"
+        ],
+        "operationId": "patchType",
+        "responses": {
+          "200": {}
+        }
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ]
     },
     "/events/{id}/users": {
       "get": {
@@ -1408,59 +422,6 @@
       }
     },
     "/users": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "summary": "List Users",
-        "description": "List Users.",
-        "operationId": "listUser",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "what page to render",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "itemsPerPage",
-            "in": "query",
-            "description": "item count to render per page",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "result User list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserList"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
       "post": {
         "tags": [
           "User"
@@ -1475,9 +436,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "age": {
-                    "type": "integer"
-                  },
                   "name": {
                     "type": "string"
                   },
@@ -1639,9 +597,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "age": {
-                    "type": "integer"
-                  },
                   "name": {
                     "type": "string"
                   },
@@ -1761,219 +716,7 @@
   },
   "components": {
     "schemas": {
-      "EState": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "event": {
-            "$ref": "#/components/schemas/Event"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "event"
-        ]
-      },
-      "EStateCreate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EStateList": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EStateRead": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EStateUpdate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EState_EventRead": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EType": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "event": {
-            "$ref": "#/components/schemas/Event"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "event"
-        ]
-      },
-      "ETypeCreate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "ETypeList": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "ETypeRead": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "ETypeUpdate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EType_EventRead": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "Ecomment": {
+      "Comment": {
         "type": "object",
         "properties": {
           "id": {
@@ -1992,74 +735,12 @@
         },
         "required": [
           "id",
-          "body"
+          "body",
+          "event",
+          "user"
         ]
       },
-      "EcommentCreate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "body": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "body"
-        ]
-      },
-      "EcommentList": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "body": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "body"
-        ]
-      },
-      "EcommentRead": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "body": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "body"
-        ]
-      },
-      "EcommentUpdate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "body": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "body"
-        ]
-      },
-      "Ecomment_EventRead": {
+      "Event": {
         "type": "object",
         "properties": {
           "id": {
@@ -2074,22 +755,126 @@
           },
           "location": {
             "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "admin": {
+            "$ref": "#/components/schemas/User"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
           }
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "type",
+          "state"
         ]
       },
-      "Ecomment_UserRead": {
+      "EventCreate": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
             "format": "uuid"
           },
-          "age": {
-            "type": "integer"
+          "name": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "state"
+        ]
+      },
+      "EventRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "state"
+        ]
+      },
+      "EventUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "state"
+        ]
+      },
+      "Event_AdminRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
           },
           "name": {
             "type": "string"
@@ -2111,169 +896,12 @@
           "icon"
         ]
       },
-      "Event": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          },
-          "state": {
-            "$ref": "#/components/schemas/EState"
-          },
-          "type": {
-            "$ref": "#/components/schemas/EType"
-          },
-          "users": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/User"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EventCreate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EventList": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EventRead": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "EventUpdate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "location": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "Event_StateRead": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "Event_TypeRead": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
       "Event_UsersList": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
             "format": "uuid"
-          },
-          "age": {
-            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -2301,9 +929,6 @@
           "id": {
             "type": "string",
             "format": "uuid"
-          },
-          "age": {
-            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -2338,39 +963,6 @@
             "type": "string",
             "format": "uuid"
           },
-          "age": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "authenticated": {
-            "type": "boolean"
-          },
-          "mail": {
-            "type": "string"
-          },
-          "icon": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "authenticated",
-          "icon"
-        ]
-      },
-      "UserList": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "age": {
-            "type": "integer"
-          },
           "name": {
             "type": "string"
           },
@@ -2398,9 +990,6 @@
             "type": "string",
             "format": "uuid"
           },
-          "age": {
-            "type": "integer"
-          },
           "name": {
             "type": "string"
           },
@@ -2427,9 +1016,6 @@
           "id": {
             "type": "string",
             "format": "uuid"
-          },
-          "age": {
-            "type": "integer"
           },
           "name": {
             "type": "string"
@@ -2466,11 +1052,19 @@
           },
           "location": {
             "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
           }
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "type",
+          "state"
         ]
       }
     },

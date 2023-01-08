@@ -1,11 +1,21 @@
 package response
 
-type Response struct {
-	Message string `json:"message"`
-}
+import (
+	"encoding/json"
+	"net/http"
 
-func NewResponse(message string) *Response {
-	return &Response{
-		Message: message,
+	"github.com/Doer-org/google-cloud-challenge-2022/utils/logger"
+)
+
+func WriteJsonResponse(w http.ResponseWriter, j any, status int) {
+	b, err := json.Marshal(j)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.WriteHeader(status)
+	if _, err := w.Write(b); err != nil {
+		logger.Println(err.Error())
 	}
 }

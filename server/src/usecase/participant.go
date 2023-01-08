@@ -10,7 +10,8 @@ import (
 )
 
 type IParticipantUsecase interface {
-	CreateNewParticipant(ctx context.Context, name string, body string, eventIdString string) (*entity.Participant, error)
+	GetEventParticipants(ctx context.Context, eventIdString string) ([]*entity.Participant, error)
+	AddNewEventParticipants(ctx context.Context, eventIdString ,name,comment string) ([]*entity.Participant, error)
 }
 
 type ParticipantUsecase struct {
@@ -23,7 +24,15 @@ func NewParticipantUsecase(repo repository.IParticipantRepository) IParticipantU
 	}
 }
 
-func (uc *ParticipantUsecase) CreateNewParticipant(ctx context.Context, name string, body string, eventIdString string) (*entity.Participant, error) {
+func (uc *ParticipantUsecase) GetEventParticipants(ctx context.Context, eventIdString string) ([]*entity.Participant, error) {
+	eventId := entity.EventId(eventIdString)
+	if eventId == "" {
+		return nil, fmt.Errorf("ParticipantUsecase: eventId parse failed")
+	}
+	return uc.repo.GetEventParticipants(ctx,eventId)
+}
+
+func (uc *ParticipantUsecase) AddNewEventParticipants(ctx context.Context, eventIdString ,name,comment string) ([]*entity.Participant, error) {
 	eventId := entity.EventId(eventIdString)
 	if eventId == "" {
 		return nil, fmt.Errorf("ParticipantUsecase: eventId parse failed")
@@ -34,9 +43,7 @@ func (uc *ParticipantUsecase) CreateNewParticipant(ctx context.Context, name str
 	p := &entity.Participant{
 		Name: name,
 		Icon: service.GetRandomDefaultIcon(),
-		Comment: &entity.Comment{
-			Body: body,
-		},
+		Comment: comment,
 	}
-	return uc.repo.CreateNewParticipant(ctx, p, eventId)
+	return uc.repo.AddNewEventParticipants(ctx,eventId,p)
 }

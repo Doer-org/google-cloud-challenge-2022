@@ -29,14 +29,14 @@ const tryCreateNewEvent = (
     }
     return pipe (
         {
-            name: "string",
-            detail: "string",
-            location: "string",
-            type: "string",
-            state: "string",
-            admin: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            name: param.event_name,
+            detail: param.detail,
+            location: param.location,
+            type: "??",
+            state: "??",
+            admin: host.user_id,
             users: [
-              "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+              // adminユーザを含める?
             ]
           },
         EventApi.createEvent,

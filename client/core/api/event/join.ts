@@ -64,6 +64,9 @@ export  const joinEvent = (
     (task) => task().then(() => {})
 )
 
+/**
+* 未実装，patch?
+*/
 export default () => {  
 
     return { 

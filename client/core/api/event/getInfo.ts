@@ -54,6 +54,9 @@ const tryGetEventInfo = (event_id: string) => {
     )
 }
 
+/**
+* コメント取得がまだ．
+*/
 export const getEventInfo = (
     okHandler: (event: Event) => void,
     errorHandler: (e: Error) => void,

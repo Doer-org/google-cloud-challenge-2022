@@ -17,9 +17,11 @@ const tryCloseEvent = (event_id : number) : TE.TaskEither<Error,number> => {
         }
     }  
 }
+ 
 
-
-
+/**
+* 未実装，patch?
+*/
 export const closeEvent = (
     okHandler : (event_id: number) => void,
     errorHandler : (e: Error) => void,

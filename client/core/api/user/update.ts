@@ -8,6 +8,9 @@ const tryUpdateUser = (user : components["schemas"]["UserUpdate"]) => pipe (
     fptsHelper.TE.ofApiResponse 
 )  
 
+/**
+* 多分動く
+*/
 export const updateUser = (
     okHandler : (a : any) => void,
     errorHandler : (e: Error) => void,

@@ -8,6 +8,9 @@ const tryGetUserInfo = (user : string ) => pipe (
     fptsHelper.TE.ofApiResponse 
 )  
 
+/**
+* 多分動く
+*/
 export const getUserInfo = (
     okHandler : (a : any) => void,
     errorHandler : (e: Error) => void,

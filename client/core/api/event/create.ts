@@ -58,6 +58,9 @@ const tryCreateNewEvent = (
     )
 }
 
+/**
+* 引数type, stateに，何を与えるといいか分からない．
+*/
 export const createNewEvent = (
     okHandler : (ok: {url:string, created_event : Event}) => void,
     errorHandler : (e: Error) => void,

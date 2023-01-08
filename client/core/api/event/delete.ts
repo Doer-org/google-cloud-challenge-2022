@@ -8,6 +8,9 @@ const tryDeleteEvent = (id : string) => pipe (
     fptsHelper.TE.ofApiResponse 
 )  
 
+/**
+* 多分動く
+*/
 export const deleteEvent = (
     okHandler : (a : any) => void,
     errorHandler : (e: Error) => void,

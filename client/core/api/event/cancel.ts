@@ -18,6 +18,9 @@ const tryCancel = (event_id : string) : TE.TaskEither<Error,string> => {
     }  
 }
 
+/**
+* 未実装，patch?
+*/
 export const cancelEvent = (
     okHandler : (res: any) => void,
     errorHandler : (e: Error) => void,

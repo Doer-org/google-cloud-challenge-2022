@@ -8,6 +8,9 @@ const tryCreateUser = (user : components["schemas"]["UserCreate"]) => pipe (
     fptsHelper.TE.ofApiResponse 
 )  
 
+/**
+* 多分動く
+*/
 export const createUser = (
     okHandler : (a : any) => void,
     errorHandler : (e: Error) => void,

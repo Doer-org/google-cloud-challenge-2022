@@ -36,18 +36,24 @@ import { ApiResponse } from 'openapi-typescript-fetch'
 // ]
  
 
-
-const tryGetEventList = (user : string)  : TE.TaskEither<Error, components["schemas"]["User_EventsList"][]>  => pipe (
-    UserApi.getUsersEvents({id:user}),
-    fptsHelper.TE.ofApiResponse 
-)  
-
 // const tryGetEventList = (user_id : string) : TE.TaskEither<Error, Event[]> => {
 //     // if(user_id===GetEventListInputsExample.causeError) {
 //     //     return TE.left(Error("tryGetEventList > "))
 //     // }
 //     return TE.right(events)
 // } 
+
+
+
+
+const tryGetEventList = (user : string)  : TE.TaskEither<Error, components["schemas"]["User_EventsList"][]>  => pipe (
+    UserApi.getUsersEvents({id:user}),
+    fptsHelper.TE.ofApiResponse 
+)  
+
+/**
+* 多分動く
+*/
 export const getEventList = (
     okHandler : (events : components["schemas"]["User_EventsList"][]) => void,
     errorHandler : (e: Error) => void,

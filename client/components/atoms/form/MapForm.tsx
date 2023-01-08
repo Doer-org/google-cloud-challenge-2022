@@ -1,4 +1,4 @@
-import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, MarkerF } from '@react-google-maps/api';
 import { useEffect, useState } from 'react';
 import {
   ContainerStyle,
@@ -26,24 +26,19 @@ export const MapForm = () => {
   }, []);
 
   return (
-    <LoadScript
-      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API as string}
+    <GoogleMap
+      mapContainerStyle={ContainerStyle}
+      center={current !== null ? current : undefined}
+      zoom={15}
+      onClick={(e) => {
+        setPos({
+          lat: Number(e.latLng?.lat()),
+          lng: Number(e.latLng?.lng()),
+        });
+      }}
+      options={Options}
     >
-      <GoogleMap
-        mapContainerStyle={ContainerStyle}
-        center={current !== null ? current : undefined}
-        zoom={15}
-        onClick={(e) => {
-          console.log(e);
-          setPos({
-            lat: Number(e.latLng?.lat()),
-            lng: Number(e.latLng?.lng()),
-          });
-        }}
-        options={Options}
-      >
-        {pos ? <MarkerF position={pos} /> : <></>}
-      </GoogleMap>
-    </LoadScript>
+      {pos ? <MarkerF position={pos} /> : <></>}
+    </GoogleMap>
   );
 };

@@ -14,7 +14,7 @@ export const EventInfo = () => {
           detail="同志社周りのラーメン行こう！！あくたがわとかが良さげ"
         />
         <div className="lg:m-10 m-3">
-          <Map lat={0} lng={0} />
+          <Map lat={35.6809591} lng={139.7673068} />
         </div>
       </EventWrapper>
     </>

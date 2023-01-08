@@ -7,6 +7,9 @@ import (
 	"github.com/google/uuid"
 )
 
+// AddUserOK is response for AddUser operation.
+type AddUserOK struct{}
+
 // Ref: #/components/schemas/CommentCreate
 type CommentCreate struct {
 	ID   uuid.UUID `json:"id"`

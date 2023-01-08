@@ -275,6 +275,47 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 				}
+			case 'o': // Prefix: "organizations/"
+				if l := len("organizations/"); len(elem) >= l && elem[0:l] == "organizations/" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				// Param: "id"
+				// Match until "/"
+				idx := strings.IndexByte(elem, '/')
+				if idx < 0 {
+					idx = len(elem)
+				}
+				args[0] = elem[:idx]
+				elem = elem[idx:]
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/addUser"
+					if l := len("/addUser"); len(elem) >= l && elem[0:l] == "/addUser" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "PATCH":
+							s.handleAddUserRequest([1]string{
+								args[0],
+							}, w, r)
+						default:
+							s.notAllowed(w, r, "PATCH")
+						}
+
+						return
+					}
+				}
 			case 'u': // Prefix: "users"
 				if l := len("users"); len(elem) >= l && elem[0:l] == "users" {
 					elem = elem[l:]
@@ -668,6 +709,47 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									return
 								}
 							}
+						}
+					}
+				}
+			case 'o': // Prefix: "organizations/"
+				if l := len("organizations/"); len(elem) >= l && elem[0:l] == "organizations/" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				// Param: "id"
+				// Match until "/"
+				idx := strings.IndexByte(elem, '/')
+				if idx < 0 {
+					idx = len(elem)
+				}
+				args[0] = elem[:idx]
+				elem = elem[idx:]
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/addUser"
+					if l := len("/addUser"); len(elem) >= l && elem[0:l] == "/addUser" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "PATCH":
+							// Leaf: AddUser
+							r.name = "AddUser"
+							r.operationID = "addUser"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
 						}
 					}
 				}

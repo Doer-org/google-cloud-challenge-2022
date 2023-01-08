@@ -122,50 +122,8 @@ func (ec *EventCreate) Mutation() *EventMutation {
 
 // Save creates the Event in the database.
 func (ec *EventCreate) Save(ctx context.Context) (*Event, error) {
-	var (
-		err  error
-		node *Event
-	)
 	ec.defaults()
-	if len(ec.hooks) == 0 {
-		if err = ec.check(); err != nil {
-			return nil, err
-		}
-		node, err = ec.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ec.check(); err != nil {
-				return nil, err
-			}
-			ec.mutation = mutation
-			if node, err = ec.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ec.hooks) - 1; i >= 0; i-- {
-			if ec.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ec.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ec.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Event)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from EventMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Event, EventMutation](ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -238,6 +196,9 @@ func (ec *EventCreate) check() error {
 }
 
 func (ec *EventCreate) sqlSave(ctx context.Context) (*Event, error) {
+	if err := ec.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ec.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ec.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -252,6 +213,8 @@ func (ec *EventCreate) sqlSave(ctx context.Context) (*Event, error) {
 			return nil, err
 		}
 	}
+	ec.mutation.id = &_node.ID
+	ec.mutation.done = true
 	return _node, nil
 }
 

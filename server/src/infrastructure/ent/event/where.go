@@ -11,631 +11,417 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Event(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Event(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Event(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Event(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Event(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Event(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Event(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Event(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uuid.UUID) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Event(sql.FieldLTE(FieldID, id))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldName, v))
 }
 
 // Detail applies equality check predicate on the "detail" field. It's identical to DetailEQ.
 func Detail(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldDetail, v))
 }
 
 // Location applies equality check predicate on the "location" field. It's identical to LocationEQ.
 func Location(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldLocation, v))
 }
 
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
 func Type(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldType, v))
 }
 
 // State applies equality check predicate on the "state" field. It's identical to StateEQ.
 func State(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldState, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldName, v))
 }
 
 // NameNEQ applies the NEQ predicate on the "name" field.
 func NameNEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldNEQ(FieldName, v))
 }
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
+	return predicate.Event(sql.FieldIn(FieldName, vs...))
 }
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
+	return predicate.Event(sql.FieldNotIn(FieldName, vs...))
 }
 
 // NameGT applies the GT predicate on the "name" field.
 func NameGT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldGT(FieldName, v))
 }
 
 // NameGTE applies the GTE predicate on the "name" field.
 func NameGTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldGTE(FieldName, v))
 }
 
 // NameLT applies the LT predicate on the "name" field.
 func NameLT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldLT(FieldName, v))
 }
 
 // NameLTE applies the LTE predicate on the "name" field.
 func NameLTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldLTE(FieldName, v))
 }
 
 // NameContains applies the Contains predicate on the "name" field.
 func NameContains(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldContains(FieldName, v))
 }
 
 // NameHasPrefix applies the HasPrefix predicate on the "name" field.
 func NameHasPrefix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldHasPrefix(FieldName, v))
 }
 
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldHasSuffix(FieldName, v))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldEqualFold(FieldName, v))
 }
 
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
+	return predicate.Event(sql.FieldContainsFold(FieldName, v))
 }
 
 // DetailEQ applies the EQ predicate on the "detail" field.
 func DetailEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldDetail, v))
 }
 
 // DetailNEQ applies the NEQ predicate on the "detail" field.
 func DetailNEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldNEQ(FieldDetail, v))
 }
 
 // DetailIn applies the In predicate on the "detail" field.
 func DetailIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldDetail), v...))
-	})
+	return predicate.Event(sql.FieldIn(FieldDetail, vs...))
 }
 
 // DetailNotIn applies the NotIn predicate on the "detail" field.
 func DetailNotIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldDetail), v...))
-	})
+	return predicate.Event(sql.FieldNotIn(FieldDetail, vs...))
 }
 
 // DetailGT applies the GT predicate on the "detail" field.
 func DetailGT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldGT(FieldDetail, v))
 }
 
 // DetailGTE applies the GTE predicate on the "detail" field.
 func DetailGTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldGTE(FieldDetail, v))
 }
 
 // DetailLT applies the LT predicate on the "detail" field.
 func DetailLT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldLT(FieldDetail, v))
 }
 
 // DetailLTE applies the LTE predicate on the "detail" field.
 func DetailLTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldLTE(FieldDetail, v))
 }
 
 // DetailContains applies the Contains predicate on the "detail" field.
 func DetailContains(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldContains(FieldDetail, v))
 }
 
 // DetailHasPrefix applies the HasPrefix predicate on the "detail" field.
 func DetailHasPrefix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldHasPrefix(FieldDetail, v))
 }
 
 // DetailHasSuffix applies the HasSuffix predicate on the "detail" field.
 func DetailHasSuffix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldHasSuffix(FieldDetail, v))
 }
 
 // DetailIsNil applies the IsNil predicate on the "detail" field.
 func DetailIsNil() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDetail)))
-	})
+	return predicate.Event(sql.FieldIsNull(FieldDetail))
 }
 
 // DetailNotNil applies the NotNil predicate on the "detail" field.
 func DetailNotNil() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDetail)))
-	})
+	return predicate.Event(sql.FieldNotNull(FieldDetail))
 }
 
 // DetailEqualFold applies the EqualFold predicate on the "detail" field.
 func DetailEqualFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldEqualFold(FieldDetail, v))
 }
 
 // DetailContainsFold applies the ContainsFold predicate on the "detail" field.
 func DetailContainsFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldDetail), v))
-	})
+	return predicate.Event(sql.FieldContainsFold(FieldDetail, v))
 }
 
 // LocationEQ applies the EQ predicate on the "location" field.
 func LocationEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldLocation, v))
 }
 
 // LocationNEQ applies the NEQ predicate on the "location" field.
 func LocationNEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldNEQ(FieldLocation, v))
 }
 
 // LocationIn applies the In predicate on the "location" field.
 func LocationIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLocation), v...))
-	})
+	return predicate.Event(sql.FieldIn(FieldLocation, vs...))
 }
 
 // LocationNotIn applies the NotIn predicate on the "location" field.
 func LocationNotIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLocation), v...))
-	})
+	return predicate.Event(sql.FieldNotIn(FieldLocation, vs...))
 }
 
 // LocationGT applies the GT predicate on the "location" field.
 func LocationGT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldGT(FieldLocation, v))
 }
 
 // LocationGTE applies the GTE predicate on the "location" field.
 func LocationGTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldGTE(FieldLocation, v))
 }
 
 // LocationLT applies the LT predicate on the "location" field.
 func LocationLT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldLT(FieldLocation, v))
 }
 
 // LocationLTE applies the LTE predicate on the "location" field.
 func LocationLTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldLTE(FieldLocation, v))
 }
 
 // LocationContains applies the Contains predicate on the "location" field.
 func LocationContains(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldContains(FieldLocation, v))
 }
 
 // LocationHasPrefix applies the HasPrefix predicate on the "location" field.
 func LocationHasPrefix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldHasPrefix(FieldLocation, v))
 }
 
 // LocationHasSuffix applies the HasSuffix predicate on the "location" field.
 func LocationHasSuffix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldHasSuffix(FieldLocation, v))
 }
 
 // LocationIsNil applies the IsNil predicate on the "location" field.
 func LocationIsNil() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLocation)))
-	})
+	return predicate.Event(sql.FieldIsNull(FieldLocation))
 }
 
 // LocationNotNil applies the NotNil predicate on the "location" field.
 func LocationNotNil() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLocation)))
-	})
+	return predicate.Event(sql.FieldNotNull(FieldLocation))
 }
 
 // LocationEqualFold applies the EqualFold predicate on the "location" field.
 func LocationEqualFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldEqualFold(FieldLocation, v))
 }
 
 // LocationContainsFold applies the ContainsFold predicate on the "location" field.
 func LocationContainsFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldLocation), v))
-	})
+	return predicate.Event(sql.FieldContainsFold(FieldLocation, v))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
 func TypeNEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldType), v...))
-	})
+	return predicate.Event(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldType), v...))
-	})
+	return predicate.Event(sql.FieldNotIn(FieldType, vs...))
 }
 
 // TypeGT applies the GT predicate on the "type" field.
 func TypeGT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldGT(FieldType, v))
 }
 
 // TypeGTE applies the GTE predicate on the "type" field.
 func TypeGTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldGTE(FieldType, v))
 }
 
 // TypeLT applies the LT predicate on the "type" field.
 func TypeLT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldLT(FieldType, v))
 }
 
 // TypeLTE applies the LTE predicate on the "type" field.
 func TypeLTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldLTE(FieldType, v))
 }
 
 // TypeContains applies the Contains predicate on the "type" field.
 func TypeContains(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldContains(FieldType, v))
 }
 
 // TypeHasPrefix applies the HasPrefix predicate on the "type" field.
 func TypeHasPrefix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldHasPrefix(FieldType, v))
 }
 
 // TypeHasSuffix applies the HasSuffix predicate on the "type" field.
 func TypeHasSuffix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldHasSuffix(FieldType, v))
 }
 
 // TypeEqualFold applies the EqualFold predicate on the "type" field.
 func TypeEqualFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldEqualFold(FieldType, v))
 }
 
 // TypeContainsFold applies the ContainsFold predicate on the "type" field.
 func TypeContainsFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldType), v))
-	})
+	return predicate.Event(sql.FieldContainsFold(FieldType, v))
 }
 
 // StateEQ applies the EQ predicate on the "state" field.
 func StateEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldEQ(FieldState, v))
 }
 
 // StateNEQ applies the NEQ predicate on the "state" field.
 func StateNEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldNEQ(FieldState, v))
 }
 
 // StateIn applies the In predicate on the "state" field.
 func StateIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldState), v...))
-	})
+	return predicate.Event(sql.FieldIn(FieldState, vs...))
 }
 
 // StateNotIn applies the NotIn predicate on the "state" field.
 func StateNotIn(vs ...string) predicate.Event {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldState), v...))
-	})
+	return predicate.Event(sql.FieldNotIn(FieldState, vs...))
 }
 
 // StateGT applies the GT predicate on the "state" field.
 func StateGT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldGT(FieldState, v))
 }
 
 // StateGTE applies the GTE predicate on the "state" field.
 func StateGTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldGTE(FieldState, v))
 }
 
 // StateLT applies the LT predicate on the "state" field.
 func StateLT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldLT(FieldState, v))
 }
 
 // StateLTE applies the LTE predicate on the "state" field.
 func StateLTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldLTE(FieldState, v))
 }
 
 // StateContains applies the Contains predicate on the "state" field.
 func StateContains(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldContains(FieldState, v))
 }
 
 // StateHasPrefix applies the HasPrefix predicate on the "state" field.
 func StateHasPrefix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldHasPrefix(FieldState, v))
 }
 
 // StateHasSuffix applies the HasSuffix predicate on the "state" field.
 func StateHasSuffix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldHasSuffix(FieldState, v))
 }
 
 // StateEqualFold applies the EqualFold predicate on the "state" field.
 func StateEqualFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldEqualFold(FieldState, v))
 }
 
 // StateContainsFold applies the ContainsFold predicate on the "state" field.
 func StateContainsFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldState), v))
-	})
+	return predicate.Event(sql.FieldContainsFold(FieldState, v))
 }
 
 // HasAdmin applies the HasEdge predicate on the "admin" edge.
@@ -643,7 +429,6 @@ func HasAdmin() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AdminTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AdminTable, AdminColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -671,7 +456,6 @@ func HasUsers() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UsersTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, UsersTable, UsersPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)

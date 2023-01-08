@@ -35,7 +35,7 @@ type Client struct {
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}}
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
 	cfg.options(opts...)
 	client := &Client{config: cfg}
 	client.init()
@@ -138,6 +138,28 @@ func (c *Client) Use(hooks ...Hook) {
 	c.User.Use(hooks...)
 }
 
+// Intercept adds the query interceptors to all the entity clients.
+// In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
+func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.Comment.Intercept(interceptors...)
+	c.Event.Intercept(interceptors...)
+	c.User.Intercept(interceptors...)
+}
+
+// Mutate implements the ent.Mutator interface.
+func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
+	switch m := m.(type) {
+	case *CommentMutation:
+		return c.Comment.mutate(ctx, m)
+	case *EventMutation:
+		return c.Event.mutate(ctx, m)
+	case *UserMutation:
+		return c.User.mutate(ctx, m)
+	default:
+		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
 // CommentClient is a client for the Comment schema.
 type CommentClient struct {
 	config
@@ -152,6 +174,12 @@ func NewCommentClient(c config) *CommentClient {
 // A call to `Use(f, g, h)` equals to `comment.Hooks(f(g(h())))`.
 func (c *CommentClient) Use(hooks ...Hook) {
 	c.hooks.Comment = append(c.hooks.Comment, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `comment.Intercept(f(g(h())))`.
+func (c *CommentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Comment = append(c.inters.Comment, interceptors...)
 }
 
 // Create returns a builder for creating a Comment entity.
@@ -206,6 +234,7 @@ func (c *CommentClient) DeleteOneID(id uuid.UUID) *CommentDeleteOne {
 func (c *CommentClient) Query() *CommentQuery {
 	return &CommentQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -225,7 +254,7 @@ func (c *CommentClient) GetX(ctx context.Context, id uuid.UUID) *Comment {
 
 // QueryEvent queries the event edge of a Comment.
 func (c *CommentClient) QueryEvent(co *Comment) *EventQuery {
-	query := &EventQuery{config: c.config}
+	query := (&EventClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
@@ -241,7 +270,7 @@ func (c *CommentClient) QueryEvent(co *Comment) *EventQuery {
 
 // QueryUser queries the user edge of a Comment.
 func (c *CommentClient) QueryUser(co *Comment) *UserQuery {
-	query := &UserQuery{config: c.config}
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
@@ -260,6 +289,26 @@ func (c *CommentClient) Hooks() []Hook {
 	return c.hooks.Comment
 }
 
+// Interceptors returns the client interceptors.
+func (c *CommentClient) Interceptors() []Interceptor {
+	return c.inters.Comment
+}
+
+func (c *CommentClient) mutate(ctx context.Context, m *CommentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CommentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CommentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CommentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Comment mutation op: %q", m.Op())
+	}
+}
+
 // EventClient is a client for the Event schema.
 type EventClient struct {
 	config
@@ -274,6 +323,12 @@ func NewEventClient(c config) *EventClient {
 // A call to `Use(f, g, h)` equals to `event.Hooks(f(g(h())))`.
 func (c *EventClient) Use(hooks ...Hook) {
 	c.hooks.Event = append(c.hooks.Event, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `event.Intercept(f(g(h())))`.
+func (c *EventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Event = append(c.inters.Event, interceptors...)
 }
 
 // Create returns a builder for creating a Event entity.
@@ -328,6 +383,7 @@ func (c *EventClient) DeleteOneID(id uuid.UUID) *EventDeleteOne {
 func (c *EventClient) Query() *EventQuery {
 	return &EventQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -347,7 +403,7 @@ func (c *EventClient) GetX(ctx context.Context, id uuid.UUID) *Event {
 
 // QueryAdmin queries the admin edge of a Event.
 func (c *EventClient) QueryAdmin(e *Event) *UserQuery {
-	query := &UserQuery{config: c.config}
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
@@ -363,7 +419,7 @@ func (c *EventClient) QueryAdmin(e *Event) *UserQuery {
 
 // QueryUsers queries the users edge of a Event.
 func (c *EventClient) QueryUsers(e *Event) *UserQuery {
-	query := &UserQuery{config: c.config}
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
@@ -382,6 +438,26 @@ func (c *EventClient) Hooks() []Hook {
 	return c.hooks.Event
 }
 
+// Interceptors returns the client interceptors.
+func (c *EventClient) Interceptors() []Interceptor {
+	return c.inters.Event
+}
+
+func (c *EventClient) mutate(ctx context.Context, m *EventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Event mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -396,6 +472,12 @@ func NewUserClient(c config) *UserClient {
 // A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
 func (c *UserClient) Use(hooks ...Hook) {
 	c.hooks.User = append(c.hooks.User, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
+func (c *UserClient) Intercept(interceptors ...Interceptor) {
+	c.inters.User = append(c.inters.User, interceptors...)
 }
 
 // Create returns a builder for creating a User entity.
@@ -450,6 +532,7 @@ func (c *UserClient) DeleteOneID(id uuid.UUID) *UserDeleteOne {
 func (c *UserClient) Query() *UserQuery {
 	return &UserQuery{
 		config: c.config,
+		inters: c.Interceptors(),
 	}
 }
 
@@ -469,7 +552,7 @@ func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 
 // QueryEvents queries the events edge of a User.
 func (c *UserClient) QueryEvents(u *User) *EventQuery {
-	query := &EventQuery{config: c.config}
+	query := (&EventClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
@@ -486,4 +569,24 @@ func (c *UserClient) QueryEvents(u *User) *EventQuery {
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserClient) Interceptors() []Interceptor {
+	return c.inters.User
+}
+
+func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
+	}
 }

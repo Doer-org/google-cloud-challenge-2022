@@ -11,6 +11,13 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+func encodeAddUserResponse(response *AddUserOK, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	return nil
+}
+
 func encodeCreateCommentResponse(response CreateCommentRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *CommentCreate:

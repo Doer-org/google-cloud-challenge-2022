@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (ed *EventDelete) Where(ps ...predicate.Event) *EventDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ed *EventDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(ed.hooks) == 0 {
-		affected, err = ed.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*EventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			ed.mutation = mutation
-			affected, err = ed.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ed.hooks) - 1; i >= 0; i-- {
-			if ed.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ed.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ed.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, EventMutation](ctx, ed.sqlExec, ed.mutation, ed.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -88,6 +60,7 @@ func (ed *EventDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	ed.mutation.done = true
 	return affected, err
 }
 

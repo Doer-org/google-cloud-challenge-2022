@@ -14,6 +14,10 @@ DOCKER_COMPOSE_DEV_DIR             := $(DOCKER_COMPOSE_DIR)/dev
 DOCKER_COMPOSE_DEV                 := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.yml
 DOCKER_COMPOSE_DEV_DB              := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.db.yml
 DOCKER_COMPOSE_DEV_SERVER          := $(DOCKER_COMPOSE_DEV_DIR)/docker-compose.server.yml
+
+DOCKER_COMPOSE_ENT_DIR             := $(DOCKER_COMPOSE_DIR)/ent
+DOCKER_COMPOSE_ENT                 := $(DOCKER_COMPOSE_ENT_DIR)/docker-compose.yml
+
 DOCKER_EXEC                        := docker exec -it
 DOCKER_COMPOSE_PJ_NAME             := gc-challenge-2022-api
 SERVER_CONTAINER_NAME              := $(DOCKER_COMPOSE_PJ_NAME)-server
@@ -22,6 +26,7 @@ DOCKER_COMPOSE_DEFAULT_OPTIONS     := -f $(DOCKER_COMPOSE_DEV) \
 									-f $(DOCKER_COMPOSE_DEV_SERVER) \
 									-f $(DOCKER_COMPOSE_DEV_DB) \
 									-p $(DOCKER_COMPOSE_PJ_NAME)
+
 # volume
 DATA_DIR := ./db/data
 
@@ -29,11 +34,14 @@ DATA_DIR := ./db/data
 #ent
 ENT_DIR := $(GO_SRC_DIR)/infrastructure/ent
 
+# openapi
+OPENAPI_DIR := ../openapi
+
 # rm
 RM := rm -rf
 
 .PHONY: up
-up: ent-generate ## docker環境を立ち上げる
+up:ent-gen ## docker環境を立ち上げる
 	docker-compose $(DOCKER_COMPOSE_DEFAULT_OPTIONS) \
 	up -d
 
@@ -78,11 +86,24 @@ log: ## docker compose環境のログを確認する
 	logs -f
 
 #ent
-ent-generate: ## entのファイルを自動生成する
-	cd $(ENT_DIR) && go generate .
+.PHONY: ent-gen
+ent-gen:
+	docker-compose \
+		-f $(DOCKER_COMPOSE_ENT) \
+		-p ent \
+		up --force-recreate --build
+	docker-compose \
+		-f $(DOCKER_COMPOSE_ENT) \
+		down
 
-ent-describe: ## entのスキーマの詳細を表示する
+.PHONY: ent-desc
+ent-desc: ## entのスキーマの詳細を表示する
 	cd $(ENT_DIR) && go run -mod=mod entgo.io/ent/cmd/ent describe ./schema
+
+#openapi
+.PHONY: openapi-gen
+openapi-gen:ent-gen ## entのスキーマからopneapiを自動生成する
+	cp $(ENT_DIR)/openapi.json $(OPENAPI_DIR)/openapi.json
 
 .PHONY: help
 help: ## コマンドの一覧を標示する

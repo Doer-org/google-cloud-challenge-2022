@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  ent-gen:
+    container_name: ent-gen
+    build:
+      context: ../../src
+      dockerfile: Dockerfile.ent
+    volumes:
+      - ../../src/infrastructure/ent/openapi.json:/go/src/github.com/Doer-org/google-cloud-challenge-2022/server/src/infrastructure/ent/openapi.json
+    tty: true

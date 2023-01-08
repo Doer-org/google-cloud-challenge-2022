@@ -14,6 +14,15 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
+func decodeAddUserResponse(resp *http.Response) (res *AddUserOK, err error) {
+	switch resp.StatusCode {
+	case 200:
+		// Code 200.
+		return &AddUserOK{}, nil
+	}
+	return res, validate.UnexpectedStatusCode(resp.StatusCode)
+}
+
 func decodeCreateCommentResponse(resp *http.Response) (res CreateCommentRes, err error) {
 	switch resp.StatusCode {
 	case 200:

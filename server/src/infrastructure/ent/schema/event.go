@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entoas"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
@@ -42,5 +44,12 @@ func (Event) Edges() []ent.Edge {
 			Unique(),
 		edge.From("users", User.Type).
 			Ref("events"),
+	}
+}
+
+// Annotations of the Event.
+func (Event) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entoas.ListOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
 	}
 }

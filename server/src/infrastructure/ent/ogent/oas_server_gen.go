@@ -8,6 +8,10 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// AddUser implements addUser operation.
+	//
+	// PATCH /organizations/{id}/addUser
+	AddUser(ctx context.Context, params AddUserParams) error
 	// CreateComment implements createComment operation.
 	//
 	// Creates a new Comment and persists it to storage.

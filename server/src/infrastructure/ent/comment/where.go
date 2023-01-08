@@ -11,179 +11,117 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Comment(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.Comment(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.Comment(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.Comment(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.Comment(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.Comment(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.Comment(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.Comment(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uuid.UUID) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.Comment(sql.FieldLTE(FieldID, id))
 }
 
 // Body applies equality check predicate on the "body" field. It's identical to BodyEQ.
 func Body(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldEQ(FieldBody, v))
 }
 
 // BodyEQ applies the EQ predicate on the "body" field.
 func BodyEQ(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldEQ(FieldBody, v))
 }
 
 // BodyNEQ applies the NEQ predicate on the "body" field.
 func BodyNEQ(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldNEQ(FieldBody, v))
 }
 
 // BodyIn applies the In predicate on the "body" field.
 func BodyIn(vs ...string) predicate.Comment {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBody), v...))
-	})
+	return predicate.Comment(sql.FieldIn(FieldBody, vs...))
 }
 
 // BodyNotIn applies the NotIn predicate on the "body" field.
 func BodyNotIn(vs ...string) predicate.Comment {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBody), v...))
-	})
+	return predicate.Comment(sql.FieldNotIn(FieldBody, vs...))
 }
 
 // BodyGT applies the GT predicate on the "body" field.
 func BodyGT(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldGT(FieldBody, v))
 }
 
 // BodyGTE applies the GTE predicate on the "body" field.
 func BodyGTE(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldGTE(FieldBody, v))
 }
 
 // BodyLT applies the LT predicate on the "body" field.
 func BodyLT(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldLT(FieldBody, v))
 }
 
 // BodyLTE applies the LTE predicate on the "body" field.
 func BodyLTE(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldLTE(FieldBody, v))
 }
 
 // BodyContains applies the Contains predicate on the "body" field.
 func BodyContains(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldContains(FieldBody, v))
 }
 
 // BodyHasPrefix applies the HasPrefix predicate on the "body" field.
 func BodyHasPrefix(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldHasPrefix(FieldBody, v))
 }
 
 // BodyHasSuffix applies the HasSuffix predicate on the "body" field.
 func BodyHasSuffix(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldHasSuffix(FieldBody, v))
 }
 
 // BodyEqualFold applies the EqualFold predicate on the "body" field.
 func BodyEqualFold(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldEqualFold(FieldBody, v))
 }
 
 // BodyContainsFold applies the ContainsFold predicate on the "body" field.
 func BodyContainsFold(v string) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBody), v))
-	})
+	return predicate.Comment(sql.FieldContainsFold(FieldBody, v))
 }
 
 // HasEvent applies the HasEdge predicate on the "event" edge.
@@ -191,7 +129,6 @@ func HasEvent() predicate.Comment {
 	return predicate.Comment(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EventTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, EventTable, EventColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -219,7 +156,6 @@ func HasUser() predicate.Comment {
 	return predicate.Comment(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UserTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

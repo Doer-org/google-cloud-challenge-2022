@@ -13,7 +13,7 @@ func initUserRouter(r *chi.Mux, c *ent.Client) {
 	uc := usecase.NewUserUsecase(repo)
 	h := handler.NewUserHandler(uc)
 
-	r.Route("/user", func(r chi.Router) {
+	r.Route("/users", func(r chi.Router) {
 		r.Post("/", h.CreateNewUser)
 		r.Get("/", h.GetUserByMail)
 		r.Get("/{id}", h.GetUserById)

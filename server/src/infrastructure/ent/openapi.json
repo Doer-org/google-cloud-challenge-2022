@@ -293,6 +293,69 @@
         }
       }
     },
+    "/events/{id}/comments": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "operationId": "getComments",
+        "responses": {
+          "200": {}
+        }
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ]
+    },
+    "/events/{id}/state": {
+      "patch": {
+        "tags": [
+          "Event"
+        ],
+        "operationId": "patchState",
+        "responses": {
+          "200": {}
+        }
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ]
+    },
+    "/events/{id}/type": {
+      "patch": {
+        "tags": [
+          "Event"
+        ],
+        "operationId": "patchType",
+        "responses": {
+          "200": {}
+        }
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ]
+    },
     "/events/{id}/users": {
       "get": {
         "tags": [
@@ -357,35 +420,6 @@
           }
         }
       }
-    },
-    "/organizations/{id}/addUser": {
-      "patch": {
-        "tags": [
-          "Organization"
-        ],
-        "operationId": "addUser",
-        "responses": {
-          "200": {}
-        }
-      },
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "type": "integer"
-          }
-        },
-        {
-          "name": "user_id",
-          "in": "query",
-          "required": true,
-          "schema": {
-            "type": "integer"
-          }
-        }
-      ]
     },
     "/users": {
       "post": {

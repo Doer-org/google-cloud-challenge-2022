@@ -17,10 +17,10 @@ func main() {
 	oas, err := entoas.NewExtension(
 		entoas.Spec(spec),
 		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
-			spec.AddPathItem("/organizations/{id}/addUser", ogen.NewPathItem().
-				SetPatch(ogen.NewOperation().
-					SetOperationID("addUser").
-					AddTags("Organization").
+			spec.AddPathItem("/events/{id}/comments", ogen.NewPathItem().
+				SetGet(ogen.NewOperation().
+					SetOperationID("getComments").
+					AddTags("Event").
 					AddResponse("200", ogen.NewResponse()),
 				).
 				AddParameters(
@@ -29,9 +29,38 @@ func main() {
 						SetName("id").
 						SetRequired(true).
 						SetSchema(ogen.Int()),
+				),
+			)
+			return nil
+		}),
+		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
+			spec.AddPathItem("/events/{id}/state", ogen.NewPathItem().
+				SetPatch(ogen.NewOperation().
+					SetOperationID("patchState").
+					AddTags("Event").
+					AddResponse("200", ogen.NewResponse()),
+				).
+				AddParameters(
 					ogen.NewParameter().
-						InQuery().
-						SetName("user_id").
+						InPath().
+						SetName("id").
+						SetRequired(true).
+						SetSchema(ogen.Int()),
+				),
+			)
+			return nil
+		}),
+		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
+			spec.AddPathItem("/events/{id}/type", ogen.NewPathItem().
+				SetPatch(ogen.NewOperation().
+					SetOperationID("patchType").
+					AddTags("Event").
+					AddResponse("200", ogen.NewResponse()),
+				).
+				AddParameters(
+					ogen.NewParameter().
+						InPath().
+						SetName("id").
 						SetRequired(true).
 						SetSchema(ogen.Int()),
 				),

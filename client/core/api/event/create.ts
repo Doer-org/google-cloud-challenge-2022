@@ -29,18 +29,24 @@ const tryCreateNewEvent = (
     }
     return pipe (
         {
-            name : param.event_name,
-            detail : param.detail,
-            location : param.location 
-        },
-        EventApi.create,
+            name: param.event_name,
+            detail: param.detail,
+            location: param.location,
+            type: "??",
+            state: "??",
+            admin: host.user_id,
+            users: [
+              // adminユーザを含める?
+            ]
+          },
+        EventApi.createEvent,
         fptsHelper.TE.ofApiResponse,
         TE.map((res) => {
             const e : Event =  {
                 event_id : res.id,
                 event_name : res.name,
-                detail : res.detail,
-                location : res.location,
+                detail : res.detail || "",
+                location : res.location || "",
                 host : host,
                 participants : []
             }
@@ -52,6 +58,9 @@ const tryCreateNewEvent = (
     )
 }
 
+/**
+* 引数type, stateに，何を与えるといいか分からない．
+*/
 export const createNewEvent = (
     okHandler : (ok: {url:string, created_event : Event}) => void,
     errorHandler : (e: Error) => void,

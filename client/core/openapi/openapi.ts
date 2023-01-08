@@ -5,84 +5,7 @@
 
 
 export interface paths {
-  "/e-states": {
-    /**
-     * List EStates 
-     * @description List EStates.
-     */
-    get: operations["listEState"];
-    /**
-     * Create a new EState 
-     * @description Creates a new EState and persists it to storage.
-     */
-    post: operations["createEState"];
-  };
-  "/e-states/{id}": {
-    /**
-     * Find a EState by ID 
-     * @description Finds the EState with the requested ID and returns it.
-     */
-    get: operations["readEState"];
-    /**
-     * Deletes a EState by ID 
-     * @description Deletes the EState with the requested ID.
-     */
-    delete: operations["deleteEState"];
-    /**
-     * Updates a EState 
-     * @description Updates a EState and persists changes to storage.
-     */
-    patch: operations["updateEState"];
-  };
-  "/e-states/{id}/event": {
-    /**
-     * Find the attached Event 
-     * @description Find the attached Event of the EState with the given ID
-     */
-    get: operations["readEStateEvent"];
-  };
-  "/e-types": {
-    /**
-     * List ETypes 
-     * @description List ETypes.
-     */
-    get: operations["listEType"];
-    /**
-     * Create a new EType 
-     * @description Creates a new EType and persists it to storage.
-     */
-    post: operations["createEType"];
-  };
-  "/e-types/{id}": {
-    /**
-     * Find a EType by ID 
-     * @description Finds the EType with the requested ID and returns it.
-     */
-    get: operations["readEType"];
-    /**
-     * Deletes a EType by ID 
-     * @description Deletes the EType with the requested ID.
-     */
-    delete: operations["deleteEType"];
-    /**
-     * Updates a EType 
-     * @description Updates a EType and persists changes to storage.
-     */
-    patch: operations["updateEType"];
-  };
-  "/e-types/{id}/event": {
-    /**
-     * Find the attached Event 
-     * @description Find the attached Event of the EType with the given ID
-     */
-    get: operations["readETypeEvent"];
-  };
   "/events": {
-    /**
-     * List Events 
-     * @description List Events.
-     */
-    get: operations["listEvent"];
     /**
      * Create a new Event 
      * @description Creates a new Event and persists it to storage.
@@ -106,19 +29,36 @@ export interface paths {
      */
     patch: operations["updateEvent"];
   };
-  "/events/{id}/state": {
+  "/events/{id}/admin": {
     /**
-     * Find the attached EState 
-     * @description Find the attached EState of the Event with the given ID
+     * Find the attached User 
+     * @description Find the attached User of the Event with the given ID
      */
-    get: operations["readEventState"];
+    get: operations["readEventAdmin"];
+  };
+  "/events/{id}/comments": {
+    get: operations["getComments"];
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+  };
+  "/events/{id}/state": {
+    patch: operations["patchState"];
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
   };
   "/events/{id}/type": {
-    /**
-     * Find the attached EType 
-     * @description Find the attached EType of the Event with the given ID
-     */
-    get: operations["readEventType"];
+    patch: operations["patchType"];
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
   };
   "/events/{id}/users": {
     /**
@@ -128,11 +68,6 @@ export interface paths {
     get: operations["listEventUsers"];
   };
   "/users": {
-    /**
-     * List Users 
-     * @description List Users.
-     */
-    get: operations["listUser"];
     /**
      * Create a new User 
      * @description Creates a new User and persists it to storage.
@@ -169,155 +104,108 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    EState: {
-      id: number;
-      name: string;
+    Comment: {
+      /** Format: uuid */
+      id: string;
+      body: string;
       event: components["schemas"]["Event"];
-    };
-    EStateCreate: {
-      id: number;
-      name: string;
-    };
-    EStateList: {
-      id: number;
-      name: string;
-    };
-    EStateRead: {
-      id: number;
-      name: string;
-    };
-    EStateUpdate: {
-      id: number;
-      name: string;
-    };
-    EState_EventRead: {
-      id: number;
-      name: string;
-      detail: string;
-      location: string;
-    };
-    EType: {
-      id: number;
-      name: string;
-      event: components["schemas"]["Event"];
-    };
-    ETypeCreate: {
-      id: number;
-      name: string;
-    };
-    ETypeList: {
-      id: number;
-      name: string;
-    };
-    ETypeRead: {
-      id: number;
-      name: string;
-    };
-    ETypeUpdate: {
-      id: number;
-      name: string;
-    };
-    EType_EventRead: {
-      id: number;
-      name: string;
-      detail: string;
-      location: string;
+      user: components["schemas"]["User"];
     };
     Event: {
-      id: number;
+      /** Format: uuid */
+      id: string;
       name: string;
-      detail: string;
-      location: string;
-      state?: components["schemas"]["EState"];
-      type?: components["schemas"]["EType"];
+      detail?: string;
+      location?: string;
+      type: string;
+      state: string;
+      admin?: components["schemas"]["User"];
       users?: (components["schemas"]["User"])[];
     };
     EventCreate: {
-      id: number;
+      /** Format: uuid */
+      id: string;
       name: string;
-      detail: string;
-      location: string;
-    };
-    EventList: {
-      id: number;
-      name: string;
-      detail: string;
-      location: string;
+      detail?: string;
+      location?: string;
+      type: string;
+      state: string;
     };
     EventRead: {
-      id: number;
+      /** Format: uuid */
+      id: string;
       name: string;
-      detail: string;
-      location: string;
+      detail?: string;
+      location?: string;
+      type: string;
+      state: string;
     };
     EventUpdate: {
-      id: number;
+      /** Format: uuid */
+      id: string;
       name: string;
-      detail: string;
-      location: string;
+      detail?: string;
+      location?: string;
+      type: string;
+      state: string;
     };
-    Event_StateRead: {
-      id: number;
+    Event_AdminRead: {
+      /** Format: uuid */
+      id: string;
       name: string;
-    };
-    Event_TypeRead: {
-      id: number;
-      name: string;
+      authenticated: boolean;
+      mail?: string;
+      icon: string;
     };
     Event_UsersList: {
-      id: number;
-      age: number;
+      /** Format: uuid */
+      id: string;
       name: string;
       authenticated: boolean;
-      gmail: string;
-      icon_img: string;
+      mail?: string;
+      icon: string;
     };
     User: {
-      id: number;
-      age: number;
+      /** Format: uuid */
+      id: string;
       name: string;
       authenticated: boolean;
-      gmail: string;
-      icon_img: string;
+      mail?: string;
+      icon: string;
       events?: (components["schemas"]["Event"])[];
     };
     UserCreate: {
-      id: number;
-      age: number;
+      /** Format: uuid */
+      id: string;
       name: string;
       authenticated: boolean;
-      gmail: string;
-      icon_img: string;
-    };
-    UserList: {
-      id: number;
-      age: number;
-      name: string;
-      authenticated: boolean;
-      gmail: string;
-      icon_img: string;
+      mail?: string;
+      icon: string;
     };
     UserRead: {
-      id: number;
-      age: number;
+      /** Format: uuid */
+      id: string;
       name: string;
       authenticated: boolean;
-      gmail: string;
-      icon_img: string;
+      mail?: string;
+      icon: string;
     };
     UserUpdate: {
-      id: number;
-      age: number;
+      /** Format: uuid */
+      id: string;
       name: string;
       authenticated: boolean;
-      gmail: string;
-      icon_img: string;
+      mail?: string;
+      icon: string;
     };
     User_EventsList: {
-      id: number;
+      /** Format: uuid */
+      id: string;
       name: string;
-      detail: string;
-      location: string;
+      detail?: string;
+      location?: string;
+      type: string;
+      state: string;
     };
   };
   responses: {
@@ -382,338 +270,6 @@ export type external = Record<string, never>;
 
 export interface operations {
 
-  listEState: {
-    /**
-     * List EStates 
-     * @description List EStates.
-     */
-    parameters?: {
-        /** @description what page to render */
-        /** @description item count to render per page */
-      query?: {
-        page?: number;
-        itemsPerPage?: number;
-      };
-    };
-    responses: {
-      /** @description result EState list */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["EStateList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  createEState: {
-    /**
-     * Create a new EState 
-     * @description Creates a new EState and persists it to storage.
-     */
-    /** @description EState to create */
-    requestBody: {
-      content: {
-        "application/json": {
-          name: string;
-          event: number;
-        };
-      };
-    };
-    responses: {
-      /** @description EState created */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EStateCreate"];
-        };
-      };
-      400: components["responses"]["400"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readEState: {
-    /**
-     * Find a EState by ID 
-     * @description Finds the EState with the requested ID and returns it.
-     */
-    parameters: {
-        /** @description ID of the EState */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description EState with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EStateRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  deleteEState: {
-    /**
-     * Deletes a EState by ID 
-     * @description Deletes the EState with the requested ID.
-     */
-    parameters: {
-        /** @description ID of the EState */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description EState with requested ID was deleted */
-      204: never;
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  updateEState: {
-    /**
-     * Updates a EState 
-     * @description Updates a EState and persists changes to storage.
-     */
-    parameters: {
-        /** @description ID of the EState */
-      path: {
-        id: number;
-      };
-    };
-    /** @description EState properties to update */
-    requestBody: {
-      content: {
-        "application/json": {
-          name?: string;
-          event?: number;
-        };
-      };
-    };
-    responses: {
-      /** @description EState updated */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EStateUpdate"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readEStateEvent: {
-    /**
-     * Find the attached Event 
-     * @description Find the attached Event of the EState with the given ID
-     */
-    parameters: {
-        /** @description ID of the EState */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description Event attached to EState with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EState_EventRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  listEType: {
-    /**
-     * List ETypes 
-     * @description List ETypes.
-     */
-    parameters?: {
-        /** @description what page to render */
-        /** @description item count to render per page */
-      query?: {
-        page?: number;
-        itemsPerPage?: number;
-      };
-    };
-    responses: {
-      /** @description result EType list */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["ETypeList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  createEType: {
-    /**
-     * Create a new EType 
-     * @description Creates a new EType and persists it to storage.
-     */
-    /** @description EType to create */
-    requestBody: {
-      content: {
-        "application/json": {
-          name: string;
-          event: number;
-        };
-      };
-    };
-    responses: {
-      /** @description EType created */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ETypeCreate"];
-        };
-      };
-      400: components["responses"]["400"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readEType: {
-    /**
-     * Find a EType by ID 
-     * @description Finds the EType with the requested ID and returns it.
-     */
-    parameters: {
-        /** @description ID of the EType */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description EType with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ETypeRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  deleteEType: {
-    /**
-     * Deletes a EType by ID 
-     * @description Deletes the EType with the requested ID.
-     */
-    parameters: {
-        /** @description ID of the EType */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description EType with requested ID was deleted */
-      204: never;
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  updateEType: {
-    /**
-     * Updates a EType 
-     * @description Updates a EType and persists changes to storage.
-     */
-    parameters: {
-        /** @description ID of the EType */
-      path: {
-        id: number;
-      };
-    };
-    /** @description EType properties to update */
-    requestBody: {
-      content: {
-        "application/json": {
-          name?: string;
-          event?: number;
-        };
-      };
-    };
-    responses: {
-      /** @description EType updated */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ETypeUpdate"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readETypeEvent: {
-    /**
-     * Find the attached Event 
-     * @description Find the attached Event of the EType with the given ID
-     */
-    parameters: {
-        /** @description ID of the EType */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description Event attached to EType with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["EType_EventRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  listEvent: {
-    /**
-     * List Events 
-     * @description List Events.
-     */
-    parameters?: {
-        /** @description what page to render */
-        /** @description item count to render per page */
-      query?: {
-        page?: number;
-        itemsPerPage?: number;
-      };
-    };
-    responses: {
-      /** @description result Event list */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["EventList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
   createEvent: {
     /**
      * Create a new Event 
@@ -724,11 +280,13 @@ export interface operations {
       content: {
         "application/json": {
           name: string;
-          detail: string;
-          location: string;
-          state?: number;
-          type?: number;
-          users?: (number)[];
+          detail?: string;
+          location?: string;
+          type: string;
+          state: string;
+          /** Format: uuid */
+          admin?: string;
+          users?: (string)[];
         };
       };
     };
@@ -752,7 +310,7 @@ export interface operations {
     parameters: {
         /** @description ID of the Event */
       path: {
-        id: number;
+        id: string;
       };
     };
     responses: {
@@ -776,7 +334,7 @@ export interface operations {
     parameters: {
         /** @description ID of the Event */
       path: {
-        id: number;
+        id: string;
       };
     };
     responses: {
@@ -796,7 +354,7 @@ export interface operations {
     parameters: {
         /** @description ID of the Event */
       path: {
-        id: number;
+        id: string;
       };
     };
     /** @description Event properties to update */
@@ -806,9 +364,11 @@ export interface operations {
           name?: string;
           detail?: string;
           location?: string;
-          state?: number;
-          type?: number;
-          users?: (number)[];
+          type?: string;
+          state?: string;
+          /** Format: uuid */
+          admin?: string;
+          users?: (string)[];
         };
       };
     };
@@ -825,22 +385,22 @@ export interface operations {
       500: components["responses"]["500"];
     };
   };
-  readEventState: {
+  readEventAdmin: {
     /**
-     * Find the attached EState 
-     * @description Find the attached EState of the Event with the given ID
+     * Find the attached User 
+     * @description Find the attached User of the Event with the given ID
      */
     parameters: {
         /** @description ID of the Event */
       path: {
-        id: number;
+        id: string;
       };
     };
     responses: {
-      /** @description EState attached to Event with requested ID was found */
+      /** @description User attached to Event with requested ID was found */
       200: {
         content: {
-          "application/json": components["schemas"]["Event_StateRead"];
+          "application/json": components["schemas"]["Event_AdminRead"];
         };
       };
       400: components["responses"]["400"];
@@ -849,28 +409,19 @@ export interface operations {
       500: components["responses"]["500"];
     };
   };
-  readEventType: {
-    /**
-     * Find the attached EType 
-     * @description Find the attached EType of the Event with the given ID
-     */
-    parameters: {
-        /** @description ID of the Event */
-      path: {
-        id: number;
-      };
-    };
+  getComments: {
     responses: {
-      /** @description EType attached to Event with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Event_TypeRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
+      200: never;
+    };
+  };
+  patchState: {
+    responses: {
+      200: never;
+    };
+  };
+  patchType: {
+    responses: {
+      200: never;
     };
   };
   listEventUsers: {
@@ -887,7 +438,7 @@ export interface operations {
       };
         /** @description ID of the Event */
       path: {
-        id: number;
+        id: string;
       };
     };
     responses: {
@@ -895,32 +446,6 @@ export interface operations {
       200: {
         content: {
           "application/json": (components["schemas"]["Event_UsersList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  listUser: {
-    /**
-     * List Users 
-     * @description List Users.
-     */
-    parameters?: {
-        /** @description what page to render */
-        /** @description item count to render per page */
-      query?: {
-        page?: number;
-        itemsPerPage?: number;
-      };
-    };
-    responses: {
-      /** @description result User list */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["UserList"])[];
         };
       };
       400: components["responses"]["400"];
@@ -938,12 +463,11 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
-          age: number;
           name: string;
           authenticated: boolean;
-          gmail: string;
-          icon_img: string;
-          events?: (number)[];
+          mail?: string;
+          icon: string;
+          events?: (string)[];
         };
       };
     };
@@ -967,7 +491,7 @@ export interface operations {
     parameters: {
         /** @description ID of the User */
       path: {
-        id: number;
+        id: string;
       };
     };
     responses: {
@@ -991,7 +515,7 @@ export interface operations {
     parameters: {
         /** @description ID of the User */
       path: {
-        id: number;
+        id: string;
       };
     };
     responses: {
@@ -1011,19 +535,18 @@ export interface operations {
     parameters: {
         /** @description ID of the User */
       path: {
-        id: number;
+        id: string;
       };
     };
     /** @description User properties to update */
     requestBody: {
       content: {
         "application/json": {
-          age?: number;
           name?: string;
           authenticated?: boolean;
-          gmail?: string;
-          icon_img?: string;
-          events?: (number)[];
+          mail?: string;
+          icon?: string;
+          events?: (string)[];
         };
       };
     };
@@ -1054,7 +577,7 @@ export interface operations {
       };
         /** @description ID of the User */
       path: {
-        id: number;
+        id: string;
       };
     };
     responses: {

@@ -3,11 +3,11 @@ import {flow} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
  
 export module CancelInputsExample {
-    export const causeError = -1
+    export const causeError = "-1"
 }
 
 
-const tryCancel = (event_id : number) : TE.TaskEither<Error,string> => {
+const tryCancel = (event_id : string) : TE.TaskEither<Error,string> => {
     switch (event_id) {
         case (CancelInputsExample.causeError) : {
             return TE.left(Error("fail > tryCancel"))
@@ -18,6 +18,9 @@ const tryCancel = (event_id : number) : TE.TaskEither<Error,string> => {
     }  
 }
 
+/**
+* 未実装，patch?
+*/
 export const cancelEvent = (
     okHandler : (res: any) => void,
     errorHandler : (e: Error) => void,

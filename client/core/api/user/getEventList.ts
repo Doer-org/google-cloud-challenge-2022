@@ -10,7 +10,7 @@ export module GetEventListInputsExample {
 
 const events : Event[]  =  [ 
     {
-        event_id: 10,
+        event_id: "10",
         event_name: "a" ,
         detail: "a" ,
         location: "a" ,
@@ -20,7 +20,7 @@ const events : Event[]  =  [
         participants: [] 
     },
     {
-        event_id: 20,
+        event_id: "20",
         event_name: "b" ,
         detail: "b" ,
         location: "b" ,

@@ -1,10 +1,11 @@
 import { flow } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
 import { Event } from '../../types/event'
+import { EventApi } from '../../uitls/mockApi'
 
 export module JoinRetExample { 
     export const ok : Event = {
-        event_id: 10,
+        event_id: "10",
         event_name: "string" ,
         detail: "string" ,
         location: "string" ,
@@ -17,7 +18,7 @@ export module JoinRetExample {
 
 export module JoinInputExample {
     export const causeError : Event = {
-        event_id: -1,
+        event_id: "-1",
         event_name: "string" ,
         detail: "string" ,
         location: "string" ,
@@ -27,7 +28,7 @@ export module JoinInputExample {
         participants: [] 
     }
     export const ok : Event = {
-        event_id: 10,
+        event_id: "10",
         event_name: "string" ,
         detail: "string" ,
         location: "string" ,
@@ -37,9 +38,10 @@ export module JoinInputExample {
         participants: [] 
     }
 }
+
 const tryJoinEvent = ( 
     param : {
-        event_id : number, 
+        event_id : string, 
         participant_name: string,
         comment : string,
     },

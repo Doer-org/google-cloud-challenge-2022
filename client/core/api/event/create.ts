@@ -29,18 +29,24 @@ const tryCreateNewEvent = (
     }
     return pipe (
         {
-            name : param.event_name,
-            detail : param.detail,
-            location : param.location 
-        },
-        EventApi.create,
+            name: "string",
+            detail: "string",
+            location: "string",
+            type: "string",
+            state: "string",
+            admin: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            users: [
+              "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            ]
+          },
+        EventApi.createEvent,
         fptsHelper.TE.ofApiResponse,
         TE.map((res) => {
             const e : Event =  {
                 event_id : res.id,
                 event_name : res.name,
-                detail : res.detail,
-                location : res.location,
+                detail : res.detail || "",
+                location : res.location || "",
                 host : host,
                 participants : []
             }

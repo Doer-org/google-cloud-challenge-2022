@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { createNewEvent } from '../../../core/api/event/create';
 import { BasicTemplate } from '../../../components/templates/shared/BasicTemplate';
-import { TypoWrapper } from '../../../components/atoms/TypoWrapper';
+import { TypoWrapper } from '../../../components/atoms/text/TypoWrapper';
 import { Input } from '../../../components/atoms/form/Input';
 import { Textarea } from '../../../components/atoms/form/Textarea';
 import { FormWrapper } from '../../../components/atoms/form/FormWrapper';
-import { Button } from '../../../components/atoms/Button';
+import { Button } from '../../../components/atoms/text/Button';
 import { MapForm } from '../../../components/atoms/form/MapForm';
 
-export default function New() { 
+export default function New() {
   const [createdEventId, setCreatedEventId] = useState(0);
   const createEvent = createNewEvent((v) => {
     console.log(v);
@@ -59,7 +59,7 @@ export default function New() {
                 max_member: capacity,
                 detail: detail,
                 location: location,
-                timestamp: Date.now()
+                timestamp: Date.now(),
               }
             );
           }}

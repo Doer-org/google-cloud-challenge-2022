@@ -1,31 +1,48 @@
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import { useState } from 'react';
+import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
+import { useEffect, useState } from 'react';
+import {
+  ContainerStyle,
+  Options,
+  type TMapPosition,
+} from '../map/MapBasicInfo';
 export const MapForm = () => {
-  const [pos, setPos] = useState<any>();
-  const containerStyle = {
-    width: '100%',
-    height: '300px',
-  };
+  const [pos, setPos] = useState<TMapPosition | null>(null);
+  const [current, setCurrent] = useState<TMapPosition>({
+    lat: 35.6809591,
+    lng: 139.7673068,
+  });
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCurrent({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      (err) => {
+        throw new Error(err.message);
+      }
+    );
+  }, []);
 
-  const center = {
-    lat: 35.69575,
-    lng: 139.77521,
-  };
-  console.log(pos);
   return (
-    <LoadScript googleMapsApiKey={`${process.env.NEXT_PUBLIC_GOOGLE_MAP_API}`}>
+    <LoadScript
+      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API as string}
+    >
       <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={17}
+        mapContainerStyle={ContainerStyle}
+        center={current !== null ? current : undefined}
+        zoom={15}
         onClick={(e) => {
+          console.log(e);
           setPos({
             lat: Number(e.latLng?.lat()),
             lng: Number(e.latLng?.lng()),
           });
         }}
+        options={Options}
       >
-        <Marker position={pos} />
+        {pos ? <MarkerF position={pos} /> : <></>}
       </GoogleMap>
     </LoadScript>
   );

@@ -1,4 +1,4 @@
-import { TypoWrapper } from '../../atoms/TypoWrapper';
+import { TypoWrapper } from '../../atoms/text/TypoWrapper';
 type TProps = {
   userName: string;
 };

@@ -1,5 +1,5 @@
-import { Button } from '../atoms/Button';
-import { LinkTo } from '../atoms/LinkTo';
+import { Button } from '../atoms/text/Button';
+import { LinkTo } from '../atoms/text/LinkTo';
 type TProps = {
   auth: boolean;
   changeAuth: (auth: boolean) => void;

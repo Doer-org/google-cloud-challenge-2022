@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Button } from '../../../../components/atoms/Button';
+import { Button } from '../../../../components/atoms/text/Button';
 import { FormWrapper } from '../../../../components/atoms/form/FormWrapper';
 import { Input } from '../../../../components/atoms/form/Input';
 import { MapForm } from '../../../../components/atoms/form/MapForm';
 import { Textarea } from '../../../../components/atoms/form/Textarea';
-import { TypoWrapper } from '../../../../components/atoms/TypoWrapper';
+import { TypoWrapper } from '../../../../components/atoms/text/TypoWrapper';
 import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
 
 export default function Edit() {

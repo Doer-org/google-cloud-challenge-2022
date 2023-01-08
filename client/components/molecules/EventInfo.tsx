@@ -1,4 +1,4 @@
-import { Map } from '../atoms/Map';
+import { Map } from '../atoms/map/Map';
 import { EventWrapper } from './Event/EventWrapper';
 import { Hanging } from './Event/Hanging';
 import { EventBasicInfo } from './Event/EventBasicInfo';
@@ -14,7 +14,7 @@ export const EventInfo = () => {
           detail="同志社周りのラーメン行こう！！あくたがわとかが良さげ"
         />
         <div className="lg:m-10 m-3">
-          <Map />
+          <Map lat={0} lng={0} />
         </div>
       </EventWrapper>
     </>

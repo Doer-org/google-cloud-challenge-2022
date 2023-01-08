@@ -1,11 +1,15 @@
 package response
 
 type ErrResponse struct {
-	Message string `json:"message"`
+	Code    int    `json:"code"`
+	Status  string `json:"status"`
+	Errors  string `json:"errors"`
 }
 
-func NewErrResponse(err error) *ErrResponse {
+func NewErrResponse(code int,status string,err error) *ErrResponse {
 	return &ErrResponse{
-		Message: err.Error(),
+		Code: code,
+		Status: status,
+		Errors: err.Error(),
 	}
 }

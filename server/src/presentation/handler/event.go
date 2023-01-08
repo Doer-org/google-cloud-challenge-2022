@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
@@ -21,12 +22,23 @@ func NewEventHandler(uc usecase.IEventUsecase) *EventHandler {
 }
 
 func (h *EventHandler) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
+	if r.ContentLength == 0 {
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(
+				http.StatusBadRequest,
+				"StatusBadRequest",
+				fmt.Errorf("request body is empty"),
+			),
+			http.StatusBadRequest,
+		)
+		return
+	}
 	j := &json_res.EventJson{}
-	// TODO: bodyが空だった場合 "EOF"が入っている？
 	if err := json.NewDecoder(r.Body).Decode(j); err != nil {
 		response.WriteJsonResponse(
 			w,
-			response.NewErrResponse(err),
+			response.NewErrResponse(http.StatusBadRequest,"StatusBadRequest",err),
 			http.StatusBadRequest,
 		)
 		return
@@ -38,12 +50,12 @@ func (h *EventHandler) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		j.Name,
 		j.Detail,
 		j.Location,
-		j.Admin.Id,
+		j.Admin,
 	)
 	if err != nil {
 		response.WriteJsonResponse(
 			w,
-			response.NewErrResponse(err),
+			response.NewErrResponse(http.StatusBadRequest,"StatusBadRequest",err),
 			http.StatusBadRequest,
 		)
 		return
@@ -61,7 +73,7 @@ func (h *EventHandler) GetEventById(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response.WriteJsonResponse(
 			w,
-			response.NewErrResponse(err),
+			response.NewErrResponse(http.StatusBadRequest,"StatusBadRequest",err),
 			http.StatusBadRequest,
 		)
 		return
@@ -74,24 +86,35 @@ func (h *EventHandler) GetEventById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *EventHandler) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request) {
-	idParam := chi.URLParam(r, "id")
+	if r.ContentLength == 0 {
+		response.WriteJsonResponse(
+			w,
+			response.NewErrResponse(
+				http.StatusBadRequest,
+				"StatusBadRequest",
+				fmt.Errorf("request body is empty"),
+			),
+			http.StatusBadRequest,
+		)
+		return
+	}
 
 	j := &json_res.EventJson{}
 	if err := json.NewDecoder(r.Body).Decode(j); err != nil {
 		response.WriteJsonResponse(
 			w,
-			response.NewErrResponse(err),
+			response.NewErrResponse(http.StatusBadRequest,"StatusBadRequest",err),
 			http.StatusBadRequest,
 		)
 		return
 	}
 	defer r.Body.Close()
-
+	idParam := chi.URLParam(r, "id")
 	event, err := h.uc.ChangeEventStatusOfId(r.Context(), idParam, j.State)
 	if err != nil {
 		response.WriteJsonResponse(
 			w,
-			response.NewErrResponse(err),
+			response.NewErrResponse(http.StatusBadRequest,"StatusBadRequest",err),
 			http.StatusBadRequest,
 		)
 		return

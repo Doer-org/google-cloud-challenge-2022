@@ -7,10 +7,9 @@ type EventJson struct {
 	Name         string             `json:"name"`
 	Detail       string             `json:"detail"`
 	Location     string             `json:"location"`
-	Admin        *UserJson          `json:"admin"`
+	Admin        string             `json:"admin"`
 	State        string             `json:"state"`
 	Type         string             `json:"type"`
-	Participants []*ParticipantJson `json:"participants"`
 }
 
 func EntityToJsonEvent(e *entity.Event) *EventJson {
@@ -19,9 +18,15 @@ func EntityToJsonEvent(e *entity.Event) *EventJson {
 		Name:         e.Name,
 		Detail:       e.Detail,
 		Location:     e.Location,
-		Admin:        EntityToJsonUser(e.Admin),
 		State:        e.State,
 		Type:         e.Type,
-		Participants: EntityToJsonParticipants(e.Participants),
 	}
+}
+
+func EntityToJsonEvents(es []*entity.Event) []*EventJson {
+	var js []*EventJson
+	for _,e := range es {
+		js = append(js, EntityToJsonEvent(e))
+	}
+	return js
 }

@@ -11,4 +11,5 @@ type IEventRepository interface {
 	GetEventById(ctx context.Context, eventId entity.EventId) (*entity.Event, error)
 	ChangeEventStatusToCloseOfId(ctx context.Context, eventId entity.EventId) (*entity.Event, error)
 	ChangeEventStatusToCancelOfId(ctx context.Context, eventId entity.EventId) (*entity.Event, error)
+	GetUserEvents(ctx context.Context, userId entity.UserId) ([]*entity.Event,error)
 }

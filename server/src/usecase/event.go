@@ -12,6 +12,7 @@ type IEventUsecase interface {
 	CreateNewEvent(ctx context.Context, name, detail, location, adminIdString string) (*entity.Event, error)
 	GetEventById(ctx context.Context, eventIdString string) (*entity.Event, error)
 	ChangeEventStatusOfId(ctx context.Context, eventIdString string, stateString string) (*entity.Event, error)
+	GetUserEvents(ctx context.Context, userIdString string) ([]*entity.Event,error)
 }
 
 type EventUsecase struct {
@@ -70,4 +71,13 @@ func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString
 	default:
 		return nil, fmt.Errorf("EventUsecase: selected state is not matched")
 	}
+}
+
+func (uc *EventUsecase) GetUserEvents(ctx context.Context, userIdString string) ([]*entity.Event, error) {
+	// TODO: serviceとかでcast関数を用意すべき
+	userId := entity.UserId(userIdString)
+	if userId == "" {
+		return nil, fmt.Errorf("EventUsecase: userId parse failed")
+	}
+	return uc.repo.GetUserEvents(ctx,userId)
 }

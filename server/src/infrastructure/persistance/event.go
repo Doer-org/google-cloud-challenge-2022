@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"entgo.io/ent/dialect/sql"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
@@ -99,48 +97,69 @@ func (r *EventRepository) ChangeEventStatusToCancelOfId(ctx context.Context, eve
 	return event, nil
 }
 
+func (r *EventRepository) GetUserEvents(ctx context.Context, userId entity.UserId) ([]*entity.Event,error){
+	userUuid, err := uuid.Parse(string(userId))
+	if err != nil {
+		return nil,fmt.Errorf("EventRepository: userUuid parse error: %w", err)
+	}
+	userEnt,err := r.client.User.
+		Query().
+		Where(user.ID(userUuid)).
+		WithEvents().
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("EventRepository: get user event query error: %w", err)
+	}
+	return EntToEntityEvents(userEnt.Edges.Events),nil
+}
+
 func (r *EventRepository) getEventById(ctx context.Context, eventUuid uuid.UUID) (*entity.Event, error) {
 	entEvent, err := r.client.Event.
 		Query().
 		Where(event.ID(eventUuid)).
-		WithAdmin().
 		Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("EventRepository: get event query error: %w", err)
 	}
-	// 指定したeventUuidのイベントに参加しているユーザーをすべて取得する
-	entParticipants, err := r.client.User.
-		Query().
-		Where(func(s *sql.Selector) {
-			t := sql.Table(user.EventsTable)
-			s.LeftJoin(t).On(s.C(user.FieldID), t.C(user.EventsPrimaryKey[1]))
-		}).
-		Where(user.HasEventsWith(event.ID(eventUuid))).
-		All(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get participants query error: %w", err)
-	}
-	entParticipantsComments, err := r.client.Comment.
-		Query().
-		Where(comment.HasEventWith(event.ID(eventUuid))).
-		WithUser().
-		WithEvent().
-		All(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get participants comments query error: %w", err)
-	}
-	return EntToEntityEvent(entEvent, entParticipants, entParticipantsComments), nil
+	// // 指定したeventUuidのイベントに参加しているユーザーをすべて取得する
+	// entParticipants, err := r.client.User.
+	// 	Query().
+	// 	Where(func(s *sql.Selector) {
+	// 		t := sql.Table(user.EventsTable)
+	// 		s.LeftJoin(t).On(s.C(user.FieldID), t.C(user.EventsPrimaryKey[1]))
+	// 	}).
+	// 	Where(user.HasEventsWith(event.ID(eventUuid))).
+	// 	All(ctx)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("EventRepository: get participants query error: %w", err)
+	// }
+	// entParticipantsComments, err := r.client.Comment.
+	// 	Query().
+	// 	Where(comment.HasEventWith(event.ID(eventUuid))).
+	// 	WithUser().
+	// 	WithEvent().
+	// 	All(ctx)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("EventRepository: get participants comments query error: %w", err)
+	// }
+	return EntToEntityEvent(entEvent), nil
 }
 
-func EntToEntityEvent(ee *ent.Event, eus []*ent.User, ecs []*ent.Comment) *entity.Event {
+func EntToEntityEvent(ee *ent.Event) *entity.Event {
 	return &entity.Event{
 		Id:           entity.EventId(ee.ID.String()),
 		Name:         ee.Name,
 		Detail:       ee.Detail,
 		Location:     ee.Location,
-		Admin:        EntToEntityUser(ee.Edges.Admin),
 		State:        ee.State,
 		Type:         ee.Type,
-		Participants: EntToEntityParticipants(eus, ecs),
 	}
+}
+
+func EntToEntityEvents(ees []*ent.Event) []*entity.Event {
+	var es []*entity.Event
+	for _,ee := range ees {
+		es = append(es, EntToEntityEvent(ee))
+	}
+	return es
 }

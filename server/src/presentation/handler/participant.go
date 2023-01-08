@@ -27,7 +27,7 @@ func (h *ParticipantHandler) CreateNewParticipant(w http.ResponseWriter, r *http
 	if err := json.NewDecoder(r.Body).Decode(j); err != nil {
 		response.WriteJsonResponse(
 			w,
-			response.NewErrResponse(err),
+			response.NewErrResponse(http.StatusBadRequest,"StatusBadRequest",err),
 			http.StatusBadRequest,
 		)
 		return
@@ -44,7 +44,7 @@ func (h *ParticipantHandler) CreateNewParticipant(w http.ResponseWriter, r *http
 	if err != nil {
 		response.WriteJsonResponse(
 			w,
-			response.NewErrResponse(err),
+			response.NewErrResponse(http.StatusBadRequest,"StatusBadRequest",err),
 			http.StatusBadRequest,
 		)
 		return

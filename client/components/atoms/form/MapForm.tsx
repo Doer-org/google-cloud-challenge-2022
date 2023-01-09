@@ -1,11 +1,13 @@
-import { GoogleMap, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import { useEffect, useState } from 'react';
 import {
   ContainerStyle,
   Options,
   type TMapPosition,
 } from '../map/MapBasicInfo';
+import { TypoWrapper } from '../text/TypoWrapper';
 export const MapForm = () => {
+  // TODO:atomsの責務を超えているのでmoleculesに分離するべき
   const [pos, setPos] = useState<TMapPosition | null>(null);
   const [current, setCurrent] = useState<TMapPosition>({
     lat: 35.6809591,
@@ -24,8 +26,12 @@ export const MapForm = () => {
       }
     );
   }, []);
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API as string,
+  });
 
-  return (
+  return isLoaded ? (
     <GoogleMap
       mapContainerStyle={ContainerStyle}
       center={current !== null ? current : undefined}
@@ -40,5 +46,9 @@ export const MapForm = () => {
     >
       {pos ? <MarkerF position={pos} /> : <></>}
     </GoogleMap>
+  ) : (
+    <TypoWrapper>
+      <p>ローディング中</p>
+    </TypoWrapper>
   );
 };

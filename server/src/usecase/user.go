@@ -15,6 +15,7 @@ type IUserUsecase interface {
 	DeleteUserById(ctx context.Context, userIdString string) error
 	UpdateUserById(ctx context.Context, userIdString string, name string, authenticated bool, mail string, icon string) (*entity.User, error)
 	GetUserByMail(ctx context.Context, mail string) (*entity.User, error)
+	GetEventAdminById(ctx context.Context,eventIdString string) (*entity.User,error)
 }
 
 type UserUsecase struct {
@@ -85,4 +86,13 @@ func (uc *UserUsecase) GetUserByMail(ctx context.Context, mail string) (*entity.
 		return nil, fmt.Errorf("UserUsecase: mail is empty")
 	}
 	return uc.repo.GetUserByMail(ctx, mail)
+}
+
+// TODO: これの場所ここで会ってる?
+func (uc *UserUsecase) GetEventAdminById(ctx context.Context,eventIdString string) (*entity.User,error) {
+	eventId := entity.EventId(eventIdString)
+	if eventId == "" {
+		return nil, fmt.Errorf("UserUsecase: eventId parse failed")
+	}
+	return uc.repo.GetEventAdminById(ctx,eventId)
 }

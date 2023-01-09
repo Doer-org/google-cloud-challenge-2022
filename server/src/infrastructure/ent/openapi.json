@@ -6,6 +6,52 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/comments/{id}/user": {
+      "get": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Find the attached User",
+        "description": "Find the attached User of the Comment with the given ID",
+        "operationId": "readCommentUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Comment",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User attached to Comment with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment_UserRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/events": {
       "post": {
         "tags": [
@@ -41,6 +87,13 @@
                     "format": "uuid"
                   },
                   "users": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  },
+                  "comments": {
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -214,6 +267,13 @@
                       "type": "string",
                       "format": "uuid"
                     }
+                  },
+                  "comments": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
                   }
                 }
               }
@@ -293,12 +353,13 @@
         }
       }
     },
-    "/events/{id}/comments": {
-      "get": {
+    "/events/{id}/participants": {
+      "description": "eventに新しく参加者を追加するAPI",
+      "post": {
         "tags": [
           "Event"
         ],
-        "operationId": "getComments",
+        "operationId": "postEventParticipants",
         "responses": {
           "200": {}
         }
@@ -335,92 +396,6 @@
         }
       ]
     },
-    "/events/{id}/type": {
-      "patch": {
-        "tags": [
-          "Event"
-        ],
-        "operationId": "patchType",
-        "responses": {
-          "200": {}
-        }
-      },
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "type": "integer"
-          }
-        }
-      ]
-    },
-    "/events/{id}/users": {
-      "get": {
-        "tags": [
-          "Event"
-        ],
-        "summary": "List attached Users",
-        "description": "List attached Users.",
-        "operationId": "listEventUsers",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Event",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "what page to render",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "itemsPerPage",
-            "in": "query",
-            "description": "item count to render per page",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "result Events list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Event_UsersList"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
     "/users": {
       "post": {
         "tags": [
@@ -449,6 +424,13 @@
                     "type": "string"
                   },
                   "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  },
+                  "comments": {
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -615,6 +597,13 @@
                       "type": "string",
                       "format": "uuid"
                     }
+                  },
+                  "comments": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
                   }
                 }
               }
@@ -740,6 +729,33 @@
           "user"
         ]
       },
+      "Comment_UserRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "authenticated": {
+            "type": "boolean"
+          },
+          "mail": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "authenticated",
+          "icon"
+        ]
+      },
       "Event": {
         "type": "object",
         "properties": {
@@ -769,6 +785,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/User"
+            }
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
             }
           }
         },
@@ -896,33 +918,6 @@
           "icon"
         ]
       },
-      "Event_UsersList": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "authenticated": {
-            "type": "boolean"
-          },
-          "mail": {
-            "type": "string"
-          },
-          "icon": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "authenticated",
-          "icon"
-        ]
-      },
       "User": {
         "type": "object",
         "properties": {
@@ -946,6 +941,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Event"
+            }
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
             }
           }
         },

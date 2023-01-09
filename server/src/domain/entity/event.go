@@ -7,10 +7,8 @@ type Event struct {
 	Name         string
 	Detail       string
 	Location     string
-	Admin        *User
 	State        string
 	Type         string
-	Participants []*Participant
 }
 
 type State string

@@ -7,24 +7,25 @@ import {
 } from '../../core/api/event/create';
 export default function New() {
   const [createdEventId, setCreatedEventId] = useState(-1);
-  const createEvent = createNewEvent(
-    (v) => {
-      console.log(v);
-      setCreatedEventId(v.created_event.event_id);
-    },
-    (v) => {
-      setCreatedEventId(-1);
-      console.log(v);
-    }
-  );
+  // const createEvent = createNewEvent(
+  //   (v) => {
+  //     console.log(v);
+  //     setCreatedEventId(v.created_event.event_id);
+  //   },
+  //   (v) => {
+  //     setCreatedEventId(-1);
+  //     console.log(v);
+  //   }
+  // );
 
   return (
     <BasicTemplate className="text-center">
       eventid : {createdEventId}
       <Button
         className="flex m-auto my-5"
-        onClick={() =>
-          createEvent({ user_id: '' }, CreateParamExample.causeError)
+        onClick={
+          () => {}
+          // createEvent({ user_id: '' }, CreateParamExample.causeError)
         }
       >
         fail
@@ -32,10 +33,10 @@ export default function New() {
       <Button
         className="flex m-auto my-5"
         onClick={() => {
-          createEvent(
-            { user_id: 'abc' },
-            { ...CreateParamExample.causeError, max_member: 1 }
-          );
+          // createEvent(
+          //   { user_id: 'abc' },
+          //   { ...CreateParamExample.causeError, max_member: 1 }
+          // );
         }}
       >
         success

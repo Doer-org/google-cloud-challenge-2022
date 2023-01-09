@@ -14,6 +14,14 @@ export const BasicTemplate = ({ children, className }: TProps) => {
   // 画面幅が変わった時のみ走る
   useEffect(() => {
     const bh = document.documentElement.clientHeight;
+    // TODO:高さが800前後の時に初回レンダリングでうまく高さが判定できてない
+    // 高さが本来の高さよりも低くなっていることからh-screenが適用されてしまっている
+    // iPad Airとかだと大丈夫
+    const elh = Number(el?.current?.getBoundingClientRect().height);
+    setHeight(bh > elh ? 'h-screen' : '');
+  }, []);
+  useEffect(() => {
+    const bh = document.documentElement.clientHeight;
     const elh = Number(el?.current?.getBoundingClientRect().height);
     setbrowseHeight(bh);
     setElementHeight(elh);
@@ -26,7 +34,7 @@ export const BasicTemplate = ({ children, className }: TProps) => {
     };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, [browseHeight, elementHeight]);
+  }, [browseHeight, elementHeight, height]);
 
   return (
     <main

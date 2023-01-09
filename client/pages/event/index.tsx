@@ -6,6 +6,7 @@ import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
 import { MyHead } from '../../components/templates/shared/MyHead';
 
 export default function Index() {
+  // TODO: 自分の作ったevent一覧をとってくるhooks使う
   const [events] = useState([
     { eventName: 'お好み焼きいこ', detail: 'お好み焼き行きたかった' },
     { eventName: 'ラーメンいこ', detail: 'ラーメン行きたかった' },

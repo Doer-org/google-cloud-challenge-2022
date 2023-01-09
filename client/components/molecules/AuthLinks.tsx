@@ -5,6 +5,9 @@ type TProps = {
   changeAuth: (auth: boolean) => void;
 };
 export const AuthLinks = ({ auth, changeAuth }: TProps) => {
+  // TODO:ログインhooksを使ってonClickの中へ
+  // TODO:サインインhooksを使ってonClickの中へ
+  // TODO:ログアウトhooksを使ってonClickの中へ
   return (
     <div className="my-10 grid grid-cols-1 gap-2">
       {!auth ? (

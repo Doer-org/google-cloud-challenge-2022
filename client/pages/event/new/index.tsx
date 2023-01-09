@@ -10,7 +10,7 @@ import { MapForm } from '../../../components/atoms/form/MapForm';
 
 export default function New() {
   const [createdEventId, setCreatedEventId] = useState(0);
-  // TODO:eventの
+  // TODO:event作成hooksを入れる
   const [created, setCreated] = useState(false);
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);

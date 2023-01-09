@@ -6,6 +6,7 @@ type TProps = {
 };
 
 export const BasicTemplate = ({ children, className }: TProps) => {
+  // TODO: globalstateで処理成功時や処理失敗時にUI上にメッセージを表示
   const el = useRef<HTMLInputElement>(null);
   const [browseHeight, setbrowseHeight] = useState(0);
   const [elementHeight, setElementHeight] = useState(0);

@@ -43,18 +43,8 @@ func (Event) Edges() []ent.Edge {
 		edge.To("admin", User.Type).
 			Unique(),
 		edge.From("users", User.Type).
-			Ref("events").
-			Annotations(
-				entoas.ListOperation(
-					entoas.OperationPolicy(entoas.PolicyExclude),
-				),
-			),
-		edge.To("comments", Comment.Type).
-			Annotations(
-				entoas.ListOperation(
-					entoas.OperationPolicy(entoas.PolicyExclude),
-				),
-			),
+			Ref("events"),
+		edge.To("comments", Comment.Type),
 	}
 }
 

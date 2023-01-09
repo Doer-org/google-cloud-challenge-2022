@@ -20,19 +20,16 @@ func InitRouter(c *ent.Client) {
 	setMiddleware(r)
 
 	// repository
-	userRepo  := persistance.NewUserRepository(c)
+	userRepo := persistance.NewUserRepository(c)
 	eventRepo := persistance.NewEventRepository(c)
-	participantRepo := persistance.NewParticipantRepository(c)
 
 	// usecsae
-	userUC  := usecase.NewUserUsecase(userRepo)
+	userUC := usecase.NewUserUsecase(userRepo)
 	eventUC := usecase.NewEventUsecae(eventRepo)
-	participantUC := usecase.NewParticipantUsecase(participantRepo)
 
 	healthH := handler.NewHealthHandler()
-	userH   := handler.NewUserHandler(userUC,eventUC)
-	eventH  := handler.NewEventHandler(eventUC,userUC,participantUC)
-
+	userH := handler.NewUserHandler(userUC)
+	eventH := handler.NewEventHandler(eventUC)
 
 	// health handler
 	r.Get("/ping", healthH.Ping)
@@ -41,9 +38,9 @@ func InitRouter(c *ent.Client) {
 	r.Route("/users", func(r chi.Router) {
 		r.Post("/", userH.CreateNewUser)
 		r.Get("/{id}", userH.GetUserById)
-		r.Delete("/{id}",userH.DeleteUserById)
-		r.Patch("/{id}",userH.UpdateUserById)
-		r.Get("/{id}/events",userH.GetUserEvents)
+		r.Delete("/{id}", userH.DeleteUserById)
+		r.Patch("/{id}", userH.UpdateUserById)
+		r.Get("/{id}/events", userH.GetUserEvents)
 		r.Get("/", userH.GetUserByMail)
 	})
 
@@ -54,10 +51,16 @@ func InitRouter(c *ent.Client) {
 		r.Delete("/{id}", eventH.DeleteEventById)
 		r.Patch("/{id}", eventH.UpdateEventById)
 		r.Get("/{id}/admin", eventH.GetEventAdminById)
-		r.Get("/{id}/participants", eventH.GetEventParticipants)
-		r.Post("/{id}/participants", eventH.AddNewEventParticipants)
+		r.Get("/{id}/comments", eventH.GetEventComments)
+		r.Post("/{id}/participants", eventH.AddNewEventParticipant)
 		r.Patch("/{id}/state", eventH.ChangeEventStatusOfId)
+		r.Get("/{id}/users", eventH.GetEventUsers)
 	})
+
+	// comment handler
+	// r.Route("/comments",func(r chi.Router) {
+	// 	r.Post("/",commentH.CreateNewComment)
+	// })
 
 	http.ListenAndServe(
 		fmt.Sprintf(":%s", helper.GetEnvOrDefault("PORT", "8080")),

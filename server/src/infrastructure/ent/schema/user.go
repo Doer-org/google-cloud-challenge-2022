@@ -1,8 +1,8 @@
 package schema
 
 import (
-	"entgo.io/ent"
 	"entgo.io/contrib/entoas"
+	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -45,7 +45,6 @@ func (User) Edges() []ent.Edge {
 			),
 	}
 }
-
 
 // Annotations of the User.
 func (User) Annotations() []schema.Annotation {

@@ -52,6 +52,9 @@ const tryJoinEvent = (
     const next_event_state : Event = JoinRetExample.ok
     return TE.right(next_event_state) 
 }
+/**
+* 未実装，patch?
+*/
 export  const joinEvent = (
     okHandler : (event :  Event) => void,
     errorHandler : (e: Error) => void,
@@ -61,12 +64,10 @@ export  const joinEvent = (
         errorHandler,
         okHandler
     ),
-    (task) => task().then(() => {})
+    (task) => task().then(() => {}),
+    () => {}
 )
 
-/**
-* 未実装，patch?
-*/
 export default () => {  
 
     return { 

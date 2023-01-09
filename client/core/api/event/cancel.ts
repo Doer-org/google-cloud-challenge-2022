@@ -30,6 +30,7 @@ export const cancelEvent = (
         errorHandler,
         okHandler
     ),
-    (task) => task().then(() => {}).catch(()=>{})
+    (task) => task().then(() => {}).catch(()=>{}),
+    () => {}
 )
  

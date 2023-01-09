@@ -66,5 +66,6 @@ export const getEventInfo = (
         errorHandler,
         okHandler
     ),
-    (task) => task().then(() => { })
+    (task) => task().then(() => { }),
+    () => {}
 )

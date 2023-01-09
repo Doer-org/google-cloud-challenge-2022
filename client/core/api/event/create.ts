@@ -70,5 +70,6 @@ export const createNewEvent = (
         errorHandler,
         okHandler
     ),
-    (task) => task().then(() => {})
+    (task) => task().then(() => {}),
+    () => {}
 )

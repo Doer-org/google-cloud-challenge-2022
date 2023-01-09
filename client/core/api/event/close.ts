@@ -4,10 +4,10 @@ import * as TE from 'fp-ts/TaskEither'
  
 
 export module CloseInputsExample {
-    export const causeError = -1
+    export const causeError = "-1"
 }
 
-const tryCloseEvent = (event_id : number) : TE.TaskEither<Error,number> => {
+const tryCloseEvent = (event_id : string) : TE.TaskEither<Error,string> => {
     switch (event_id) {
         case (CloseInputsExample.causeError) : {
             return TE.left(Error("fail > tryCloseEvent"))
@@ -23,7 +23,7 @@ const tryCloseEvent = (event_id : number) : TE.TaskEither<Error,number> => {
 * 未実装，patch?
 */
 export const closeEvent = (
-    okHandler : (event_id: number) => void,
+    okHandler : (event_id: string) => void,
     errorHandler : (e: Error) => void,
 ) => flow (
     tryCloseEvent,
@@ -31,6 +31,7 @@ export const closeEvent = (
         errorHandler,
         okHandler
     ),
-    (task) => task().then(() => {})
+    (task) => task().then(() => {}),
+    () => {}
 )
  

@@ -1,7 +1,9 @@
 import { TypoWrapper } from '../../atoms/text/TypoWrapper';
 type TProps = {
   userName: string;
+  image?: string;
 };
+// TODO:ユーザー画像を入れる
 export const UserIcon = ({ userName }: TProps) => {
   return (
     <div className="my-5 m-auto">

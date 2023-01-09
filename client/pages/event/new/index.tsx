@@ -10,12 +10,7 @@ import { MapForm } from '../../../components/atoms/form/MapForm';
 
 export default function New() {
   const [createdEventId, setCreatedEventId] = useState(0);
-  // const createEvent = createNewEvent((v) => {
-  //   console.log(v);
-  //   setCreated(true);
-  //   setCreatedEventId(v.created_event.event_id);
-  // }, console.log);
-
+  // TODO:event作成hooksを入れる
   const [created, setCreated] = useState(false);
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);
@@ -49,28 +44,10 @@ export default function New() {
           required={true}
         />
         <MapForm />
-        <Button
-          className="flex m-auto my-5"
-          onClick={() => {
-            // createEvent(
-            //   { user_id: 'abc' },
-            //   {
-            //     event_name: name,
-            //     max_member: capacity,
-            //     detail: detail,
-            //     location: location,
-            //     timestamp: Date.now(),
-            //   }
-            // );
-          }}
-        >
+        <Button className="flex m-auto my-5" onClick={() => {}}>
           募集する
         </Button>
       </FormWrapper>
-
-      {/* {created ?? (
-        <Link href={`/event?id=${createdEventId}`}>募集したイベント</Link>
-      )} */}
     </BasicTemplate>
   );
 }

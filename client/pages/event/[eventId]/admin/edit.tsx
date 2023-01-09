@@ -8,6 +8,7 @@ import { TypoWrapper } from '../../../../components/atoms/text/TypoWrapper';
 import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
 
 export default function Edit() {
+  // TODO:event編集hooksをonClickへ
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);
   const [detail, setDetail] = useState('');
@@ -43,10 +44,6 @@ export default function Edit() {
           編集完了する
         </Button>
       </FormWrapper>
-
-      {/* {created ?? (
-        <Link href={`/event?id=${createdEventId}`}>募集したイベント</Link>
-      )} */}
     </BasicTemplate>
   );
 }

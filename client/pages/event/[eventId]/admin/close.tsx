@@ -6,8 +6,9 @@ import { TypoWrapper } from '../../../../components/atoms/text/TypoWrapper';
 import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
 
-export default function End() {
+export default function Close() {
   // ここは締め切るページ
+  // TODO:event締切hooksをonClickへ
   const [name, setName] = useState('');
   const [word, setWord] = useState('');
   const event_id = useRouter().query.id;

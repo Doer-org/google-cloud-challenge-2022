@@ -91,6 +91,7 @@ func (h *EventHandler) DeleteEventById(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
+	// TODO: responseがダサいので変えたい
 	response.WriteJsonResponse(w, fmt.Sprintf("delete event success"), http.StatusOK)
 }
 

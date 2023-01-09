@@ -1,7 +1,5 @@
-import { Inter } from '@next/font/google';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { GetServerSideProps } from 'next';
 import { MyHead } from '../../../../components/templates/shared/MyHead';
 import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
 import { FormWrapper } from '../../../../components/atoms/form/FormWrapper';
@@ -9,25 +7,22 @@ import { Input } from '../../../../components/atoms/form/Input';
 import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
 import { EventConfirmModal } from '../../../../components/molecules/Event/EventConfirmModal';
+import Head from 'next/head';
 export async function getServerSideProps(context: any) {
-  const req = context.req;
-  const res = context.res;
-  const dummyNewsList = [
-    {
-      id: '1',
-      title: 'test1',
-      content: 'texttext1',
-    },
-    {
-      id: '2',
-      title: 'test2',
-      content: 'texttext2',
-    },
-  ];
+  const eventId = context.query.eventId;
+  // TODO: ここでeventIdを元にevent情報をとってきてpropsで返す
+  // 型も付けといてもらえると助かる！！
+  const dummyEvent = {
+    id: '1',
+    eventName: 'ラーメン',
+    detail: 'ターメン行きたいんや！！！！',
+    position: 'lat:100/lng:200',
+    capacity: 1,
+  };
 
   return {
     props: {
-      news: dummyNewsList,
+      news: dummyEvent,
     },
   };
 }
@@ -43,6 +38,12 @@ export default function Participate(props: any) {
   return (
     <>
       <MyHead title="募集タイトルを入れる" description="" />
+      <Head>
+        <meta property="og:title" content={props.eventName} />
+        <meta property="og:description" content={props.detail} />
+        {/* <meta property="og:image" content={} /> */}
+        <meta name="twitter:card" content="summary_large_image" />
+      </Head>
       <BasicTemplate className="text-center">
         {isConfirm ? (
           <EventConfirmModal

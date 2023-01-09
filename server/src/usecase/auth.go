@@ -104,6 +104,23 @@ func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (entity.UserId,
 }
 
 func (u *AuthUsecase) StoreORUpdateToken(userID entity.UserId, token *oauth2.Token) error {
+	gettoken, err := u.repo.GetTokenByUserID(string(userID))
+	if err != nil {
+		return fmt.Errorf("get token from userId userID=%s: %w", userID, err)
+	}
+
+	if gettoken.AccessToken == "" && gettoken.RefreshToken == "" {
+		err := u.repo.StoreToken(string(userID), token)
+		if err != nil {
+			return fmt.Errorf("create token from userId userID=%s: %w", userID, err)
+		}
+	} else {
+		err := u.repo.UpdateToken(string(userID), token)
+		if err != nil {
+			return fmt.Errorf("update token from userId userID=%s: %w", userID, err)
+		}
+	}
+
 	return nil
 }
 

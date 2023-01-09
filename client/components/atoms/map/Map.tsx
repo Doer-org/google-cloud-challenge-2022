@@ -1,7 +1,12 @@
-import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
+import { TypoWrapper } from '../text/TypoWrapper';
 import { ContainerStyle, Options, type TMapPosition } from './MapBasicInfo';
 export const Map = (mapPosition: TMapPosition | null) => {
-  return (
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API as string,
+  });
+  return isLoaded ? (
     <GoogleMap
       mapContainerStyle={ContainerStyle}
       center={mapPosition !== null ? mapPosition : undefined}
@@ -10,5 +15,9 @@ export const Map = (mapPosition: TMapPosition | null) => {
     >
       {mapPosition ? <MarkerF position={mapPosition} /> : <></>}
     </GoogleMap>
+  ) : (
+    <TypoWrapper>
+      <p>ローディング中</p>
+    </TypoWrapper>
   );
 };

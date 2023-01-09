@@ -32,18 +32,14 @@ func (Comment) Edges() []ent.Edge {
 			Required().
 			Unique().
 			Annotations(
-				entoas.ListOperation(
-					entoas.OperationPolicy(entoas.PolicyExclude),
-				),
+				entoas.ReadOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
 			),
 		edge.From("user", User.Type).
 			Ref("comments").
 			Required().
-			Unique(). //TODO: 同じコメントできない?
+			Unique().
 			Annotations(
-				entoas.ListOperation(
-					entoas.OperationPolicy(entoas.PolicyExclude),
-				),
+				entoas.ReadOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
 			),
 	}
 }

@@ -1,4 +1,4 @@
-package entity
+package constant
 
 var (
 	ICON_CAT string = "http://cat.com"

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
 type TProps = {
   children: ReactNode;
@@ -6,12 +6,38 @@ type TProps = {
 };
 
 export const BasicTemplate = ({ children, className }: TProps) => {
-  // h-screenすると要素が100vh以内でうまく配置されるが100vhを超えてしまうとうまく配置されない（要素がはみ出て見えなくなる）
-  // これを今はレスポンシブで対応しているが、これだと文が長かった時とかに見えない部分が出てくるのかもしれない
-  //  viewの子要素のサイズを見て１００vhするかどうかの判定コードを書きたい
+  const el = useRef<HTMLInputElement>(null);
+  const browseHeight = document.documentElement.clientHeight;
+  const elementHeight = Number(el?.current?.getBoundingClientRect().height);
+  const [height, setHeight] = useState<string>('');
+  // 初回のレンダリングによる判断
+  useEffect(() => {
+    // globalの定義を使うとうまく行かないので再定義
+    const bh = document.documentElement.clientHeight;
+    const elh = Number(el?.current?.getBoundingClientRect().height);
+    setHeight(bh > elh ? 'h-screen' : '');
+  }, []);
+  // リサイズされた際の切り替え
+  // 画面幅が変わった時のみ走る
+  useEffect(() => {
+    const onResize = () => {
+      // ここも再定義しないとスタイルの切り替えがうまく行かない
+      const bh = document.documentElement.clientHeight;
+      const elh = Number(el?.current?.getBoundingClientRect().height);
+      setHeight(bh > elh ? 'h-screen' : '');
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [browseHeight, elementHeight]);
+
   return (
-    <main className={`bg-origin flex lg:h-screen flex-col h-full ${className}`}>
-      <div className="bg-origin border-4 border-white flex md:m-3 m-2 flex-col lg:h-screen justify-center rounded-xl">
+    <main
+      className={`bg-origin flex flex-col justify-center ${className} ${height}`}
+    >
+      <div
+        className={`bg-origin border-4 border-white flex md:m-3 m-2 flex-col justify-center rounded-xl ${height}`}
+        ref={el}
+      >
         {children}
       </div>
     </main>

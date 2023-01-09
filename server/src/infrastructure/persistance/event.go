@@ -27,7 +27,7 @@ func (r *EventRepository) CreateNewEvent(ctx context.Context, e *entity.Event, a
 	if err != nil {
 		return nil, fmt.Errorf("EventRepository: adminUuid parse error: %w", err)
 	}
-	ee, err := r.client.Event.
+	entEvent, err := r.client.Event.
 		Create().
 		SetName(e.Name).
 		SetDetail(e.Detail).
@@ -40,29 +40,52 @@ func (r *EventRepository) CreateNewEvent(ctx context.Context, e *entity.Event, a
 	if err != nil {
 		return nil, fmt.Errorf("EventRepository: create event query error: %w", err)
 	}
-	event, err := r.getEventById(ctx, ee.ID)
-	if err != nil {
-		return nil, fmt.Errorf("EventRepository: getEventById error: %w", err)
-	}
-	return event, nil
+	return r.getEventById(ctx, entEvent.ID)
 }
 
 func (r *EventRepository) GetEventById(ctx context.Context, eventId entity.EventId) (*entity.Event, error) {
 	eventUuid, err := uuid.Parse(string(eventId))
 	if err != nil {
-		return nil, fmt.Errorf("EStateRepository: uuid parse error: %w", err)
+		return nil, fmt.Errorf("EventRepository: uuid parse error: %w", err)
 	}
-	event, err := r.getEventById(ctx, eventUuid)
+	return r.getEventById(ctx, eventUuid)
+}
+
+func (r *EventRepository) DeleteEventById(ctx context.Context, eventId entity.EventId) error {
+	eventUuid, err := uuid.Parse(string(eventId))
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: getEventById error: %w", err)
+		return fmt.Errorf("EventRepository: uuid parse error: %w", err)
 	}
-	return event, nil
+	err = r.client.Event.
+		DeleteOneID(eventUuid).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("EventRepository: delete event query error: %w", err)
+	}
+	return nil
+}
+
+func (r *EventRepository) UpdateEventById(ctx context.Context, eventId entity.EventId, e *entity.Event) (*entity.Event, error) {
+	eventUuid, err := uuid.Parse(string(eventId))
+	if err != nil {
+		return nil,fmt.Errorf("EventRepository: uuid parse error: %w", err)
+	}
+	entEvent,err := r.client.Event.
+		UpdateOneID(eventUuid).
+		SetName(e.Name).
+		SetDetail(e.Detail).
+		SetLocation(e.Location).
+		Save(ctx)
+	if err != nil {
+		return nil,fmt.Errorf("EventRepository: update event query error: %w", err)
+	}
+	return EntToEntityEvent(entEvent),nil
 }
 
 func (r *EventRepository) ChangeEventStatusToCloseOfId(ctx context.Context, eventId entity.EventId) (*entity.Event, error) {
 	eventUuid, err := uuid.Parse(string(eventId))
 	if err != nil {
-		return nil, fmt.Errorf("EStateRepository: uuid parse error: %w", err)
+		return nil, fmt.Errorf("EventRepository: uuid parse error: %w", err)
 	}
 	_, err = r.client.Event.
 		UpdateOneID(eventUuid).
@@ -71,17 +94,13 @@ func (r *EventRepository) ChangeEventStatusToCloseOfId(ctx context.Context, even
 	if err != nil {
 		return nil, fmt.Errorf("EventRepository: update event query error: %w", err)
 	}
-	event, err := r.getEventById(ctx, eventUuid)
-	if err != nil {
-		return nil, fmt.Errorf("EventRepository: getEventById error: %w", err)
-	}
-	return event, nil
+	return r.getEventById(ctx, eventUuid)
 }
 
 func (r *EventRepository) ChangeEventStatusToCancelOfId(ctx context.Context, eventId entity.EventId) (*entity.Event, error) {
 	eventUuid, err := uuid.Parse(string(eventId))
 	if err != nil {
-		return nil, fmt.Errorf("EStateRepository: uuid parse error: %w", err)
+		return nil, fmt.Errorf("EventRepository: uuid parse error: %w", err)
 	}
 	_, err = r.client.Event.
 		UpdateOneID(eventUuid).
@@ -90,11 +109,7 @@ func (r *EventRepository) ChangeEventStatusToCancelOfId(ctx context.Context, eve
 	if err != nil {
 		return nil, fmt.Errorf("EventRepository: update event query error: %w", err)
 	}
-	event, err := r.getEventById(ctx, eventUuid)
-	if err != nil {
-		return nil, fmt.Errorf("EventRepository: getEventById error: %w", err)
-	}
-	return event, nil
+	return r.getEventById(ctx, eventUuid)
 }
 
 func (r *EventRepository) GetUserEvents(ctx context.Context, userId entity.UserId) ([]*entity.Event,error){
@@ -102,7 +117,7 @@ func (r *EventRepository) GetUserEvents(ctx context.Context, userId entity.UserI
 	if err != nil {
 		return nil,fmt.Errorf("EventRepository: userUuid parse error: %w", err)
 	}
-	userEnt,err := r.client.User.
+	entUser,err := r.client.User.
 		Query().
 		Where(user.ID(userUuid)).
 		WithEvents().
@@ -110,7 +125,7 @@ func (r *EventRepository) GetUserEvents(ctx context.Context, userId entity.UserI
 	if err != nil {
 		return nil, fmt.Errorf("EventRepository: get user event query error: %w", err)
 	}
-	return EntToEntityEvents(userEnt.Edges.Events),nil
+	return EntToEntityEvents(entUser.Edges.Events),nil
 }
 
 func (r *EventRepository) getEventById(ctx context.Context, eventUuid uuid.UUID) (*entity.Event, error) {
@@ -121,27 +136,6 @@ func (r *EventRepository) getEventById(ctx context.Context, eventUuid uuid.UUID)
 	if err != nil {
 		return nil, fmt.Errorf("EventRepository: get event query error: %w", err)
 	}
-	// // 指定したeventUuidのイベントに参加しているユーザーをすべて取得する
-	// entParticipants, err := r.client.User.
-	// 	Query().
-	// 	Where(func(s *sql.Selector) {
-	// 		t := sql.Table(user.EventsTable)
-	// 		s.LeftJoin(t).On(s.C(user.FieldID), t.C(user.EventsPrimaryKey[1]))
-	// 	}).
-	// 	Where(user.HasEventsWith(event.ID(eventUuid))).
-	// 	All(ctx)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("EventRepository: get participants query error: %w", err)
-	// }
-	// entParticipantsComments, err := r.client.Comment.
-	// 	Query().
-	// 	Where(comment.HasEventWith(event.ID(eventUuid))).
-	// 	WithUser().
-	// 	WithEvent().
-	// 	All(ctx)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("EventRepository: get participants comments query error: %w", err)
-	// }
 	return EntToEntityEvent(entEvent), nil
 }
 

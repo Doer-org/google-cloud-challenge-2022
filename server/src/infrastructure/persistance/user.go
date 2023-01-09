@@ -7,6 +7,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
 )
@@ -91,6 +92,22 @@ func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*entit
 		return nil, fmt.Errorf("UserRepository: get user query error: %w", err)
 	}
 	return EntToEntityUser(entUser), nil
+}
+
+func (r *UserRepository) GetEventAdminById(ctx context.Context,eventId entity.EventId) (*entity.User, error) {
+	eventUuid, err := uuid.Parse(string(eventId))
+	if err != nil {
+		return nil, fmt.Errorf("UserRepository: uuid parse error: %w", err)
+	}
+	entEvent,err := r.client.Event.
+		Query().
+		Where(event.ID(eventUuid)).
+		WithAdmin().
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("UserRepository: get event query error: %w", err)
+	}
+	return EntToEntityUser(entEvent.Edges.Admin),nil
 }
 
 func EntToEntityUser(e *ent.User) *entity.User {

@@ -4,9 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -20,7 +24,15 @@ func NewParticipantRepository(c *ent.Client) repository.IParticipantRepository {
 	}
 }
 
-func (r *ParticipantRepository) CreateNewParticipant(ctx context.Context, p *entity.Participant, eventId entity.EventId) (*entity.Participant, error) {
+func (r *ParticipantRepository) GetEventParticipants(ctx context.Context,eventId entity.EventId) ([]*entity.Participant, error) {
+	eventUuid, err := uuid.Parse(string(eventId))
+	if err != nil {
+		return nil, fmt.Errorf("ParticipantRepository: eventUuid parse error: %w", err)
+	}
+	return r.getEventParticipants(ctx,eventUuid)
+}
+
+func (r *ParticipantRepository) AddNewEventParticipants(ctx context.Context, eventId entity.EventId,p *entity.Participant) ([]*entity.Participant, error) {
 	eventUuid, err := uuid.Parse(string(eventId))
 	if err != nil {
 		return nil, fmt.Errorf("ParticipantRepository: eventUuid parse error: %w", err)
@@ -34,38 +46,54 @@ func (r *ParticipantRepository) CreateNewParticipant(ctx context.Context, p *ent
 	if err != nil {
 		return nil, fmt.Errorf("ParticipantRepository: user create query error: %w", err)
 	}
-	if p.Comment == nil {
-		return EntToEntityParticipant(entUser, nil), nil
+	if p.Comment != "" {
+		_, err = r.client.Comment.
+			Create().
+			SetBody(p.Comment).
+			SetUserID(entUser.ID).
+			SetEventID(eventUuid).
+			Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("ParticipantRepository: comment create query error: %w", err)
+		}
 	}
-	entComment, err := r.client.Comment.
-		Create().
-		SetBody(p.Comment.Body).
-		SetUserID(entUser.ID).
-		SetEventID(eventUuid).
-		Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("ParticipantRepository: comment create query error: %w", err)
-	}
-	return EntToEntityParticipant(entUser, entComment), nil
+	return r.getEventParticipants(ctx,eventUuid)
 }
 
-func EntToEntityParticipant(eu *ent.User, ec *ent.Comment) *entity.Participant {
-	p := &entity.Participant{
+func (r *ParticipantRepository) getEventParticipants(ctx context.Context,eventUuid uuid.UUID) ([]*entity.Participant,error) {
+	// 指定したeventUuidのイベントに参加しているユーザーをすべて取得する
+	entParticipants, err := r.client.User.
+		Query().
+		Where(func(s *sql.Selector) {
+			t := sql.Table(user.EventsTable)
+			s.LeftJoin(t).On(s.C(user.FieldID), t.C(user.EventsPrimaryKey[1]))
+		}).
+		Where(user.HasEventsWith(event.ID(eventUuid))).
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("ParticipantRepository: get participants query error: %w", err)
+	}
+	entParticipantsComments, err := r.client.Comment.
+		Query().
+		Where(comment.HasEventWith(event.ID(eventUuid))).
+		WithUser().
+		WithEvent().
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("ParticipantRepository: get participants comments query error: %w", err)
+	}
+	return EntToEntityParticipants(entParticipants,entParticipantsComments),nil
+}
+
+func EntToEntityParticipant(eu *ent.User, comment string) *entity.Participant {
+	return &entity.Participant{
 		Id:   entity.UserId(eu.ID.String()),
 		Name: eu.Name,
 		Icon: eu.Icon,
+		Comment: comment,
 	}
-	//コメントがない場合
-	if ec == nil {
-		return p
-	}
-	c := EntToEntityComment(ec)
-	p.Comment = c
-	return p
 }
 
-// TODO entの設計がいけてないかもしれない
-// 本来はeu.Edges.Commentでアクセスできるべき...?
 func EntToEntityParticipants(eus []*ent.User, ecs []*ent.Comment) []*entity.Participant {
 	var ps []*entity.Participant
 	for _, eu := range eus {
@@ -73,13 +101,13 @@ func EntToEntityParticipants(eus []*ent.User, ecs []*ent.Comment) []*entity.Part
 		for _, ec := range ecs {
 			if eu.ID == ec.Edges.User.ID {
 				hasCommentFlg = true
-				ps = append(ps, EntToEntityParticipant(eu, ec))
+				ps = append(ps, EntToEntityParticipant(eu, ec.Body))
 				break
 			}
 		}
 		// もしコメントがなかった場合,nilを渡す
 		if !hasCommentFlg {
-			ps = append(ps, EntToEntityParticipant(eu, nil))
+			ps = append(ps, EntToEntityParticipant(eu, ""))
 		}
 	}
 	return ps

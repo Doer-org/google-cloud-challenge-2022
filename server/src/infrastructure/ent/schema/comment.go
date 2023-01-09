@@ -27,19 +27,21 @@ func (Comment) Fields() []ent.Field {
 // Edges of the Comment.
 func (Comment) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("event", Event.Type).
+		edge.From("event", Event.Type).
+			Ref("comments").
 			Required().
 			Unique().
 			Annotations(
-				entoas.ReadOperation(
+				entoas.ListOperation(
 					entoas.OperationPolicy(entoas.PolicyExclude),
 				),
 			),
-		edge.To("user", User.Type).
+		edge.From("user", User.Type).
+			Ref("comments").
 			Required().
-			Unique().
+			Unique(). //TODO: 同じコメントできない?
 			Annotations(
-				entoas.ReadOperation(
+				entoas.ListOperation(
 					entoas.OperationPolicy(entoas.PolicyExclude),
 				),
 			),

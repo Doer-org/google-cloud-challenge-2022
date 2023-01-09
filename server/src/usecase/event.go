@@ -11,6 +11,8 @@ import (
 type IEventUsecase interface {
 	CreateNewEvent(ctx context.Context, name, detail, location, adminIdString string) (*entity.Event, error)
 	GetEventById(ctx context.Context, eventIdString string) (*entity.Event, error)
+	DeleteEventById(ctx context.Context, eventIdString string) error
+	UpdateEventById(ctx context.Context, eventIdString string, name,detail,location string) (*entity.Event, error)
 	ChangeEventStatusOfId(ctx context.Context, eventIdString string, stateString string) (*entity.Event, error)
 	GetUserEvents(ctx context.Context, userIdString string) ([]*entity.Event,error)
 }
@@ -49,6 +51,33 @@ func (uc *EventUsecase) GetEventById(ctx context.Context, eventIdString string) 
 	}
 	return uc.repo.GetEventById(ctx, eventId)
 }
+
+func (uc *EventUsecase) DeleteEventById(ctx context.Context, eventIdString string) error {
+	eventId := entity.EventId(eventIdString)
+	if eventId == "" {
+		return fmt.Errorf("EventUsecase: eventId parse failed")
+	}
+	// TODO: adminuser か確認
+	return uc.repo.DeleteEventById(ctx,eventId)
+}
+
+func (uc *EventUsecase) UpdateEventById(ctx context.Context, eventIdString string, name,detail,location string) (*entity.Event, error) {	
+	eventId := entity.EventId(eventIdString)
+	if eventId == "" {
+		return nil, fmt.Errorf("EventUsecase: eventId parse failed")
+	}
+	// TODO: adminuser か確認
+	if name == "" {
+		return nil, fmt.Errorf("EventUsecase: name is empty")
+	}
+	e := &entity.Event{
+		Name:     name,
+		Detail:   detail,
+		Location: location,
+	}
+	return uc.repo.UpdateEventById(ctx,eventId,e)
+}
+
 
 func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString string, stateString string) (*entity.Event, error) {
 	eventId := entity.EventId(eventIdString)

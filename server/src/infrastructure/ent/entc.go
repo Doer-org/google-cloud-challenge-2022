@@ -17,23 +17,6 @@ func main() {
 	oas, err := entoas.NewExtension(
 		entoas.Spec(spec),
 		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
-			spec.AddPathItem("/events/{id}/comments", ogen.NewPathItem().
-				SetGet(ogen.NewOperation().
-					SetOperationID("getComments").
-					AddTags("Event").
-					AddResponse("200", ogen.NewResponse()),
-				).
-				AddParameters(
-					ogen.NewParameter().
-						InPath().
-						SetName("id").
-						SetRequired(true).
-						SetSchema(ogen.Int()),
-				),
-			)
-			return nil
-		}),
-		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
 			spec.AddPathItem("/events/{id}/state", ogen.NewPathItem().
 				SetPatch(ogen.NewOperation().
 					SetOperationID("patchState").
@@ -51,9 +34,9 @@ func main() {
 			return nil
 		}),
 		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
-			spec.AddPathItem("/events/{id}/type", ogen.NewPathItem().
-				SetPatch(ogen.NewOperation().
-					SetOperationID("patchType").
+			spec.AddPathItem("/events/{id}/participants", ogen.NewPathItem().
+				SetGet(ogen.NewOperation().
+					SetOperationID("getEventParticipants").
 					AddTags("Event").
 					AddResponse("200", ogen.NewResponse()),
 				).
@@ -63,7 +46,26 @@ func main() {
 						SetName("id").
 						SetRequired(true).
 						SetSchema(ogen.Int()),
-				),
+				).
+				SetDescription("eventの参加者を取得するAPI"),
+			)
+			return nil
+		}),
+		entoas.Mutations(func(_ *gen.Graph, spec *ogen.Spec) error {
+			spec.AddPathItem("/events/{id}/participants", ogen.NewPathItem().
+				SetPost(ogen.NewOperation().
+					SetOperationID("postEventParticipants").
+					AddTags("Event").
+					AddResponse("200", ogen.NewResponse()),
+				).
+				AddParameters(
+					ogen.NewParameter().
+						InPath().
+						SetName("id").
+						SetRequired(true).
+						SetSchema(ogen.Int()),
+				).
+				SetDescription("eventに新しく参加者を追加するAPI"),
 			)
 			return nil
 		}),

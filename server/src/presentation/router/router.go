@@ -22,14 +22,16 @@ func InitRouter(c *ent.Client) {
 	// repository
 	userRepo  := persistance.NewUserRepository(c)
 	eventRepo := persistance.NewEventRepository(c)
+	participantRepo := persistance.NewParticipantRepository(c)
 
 	// usecsae
 	userUC  := usecase.NewUserUsecase(userRepo)
 	eventUC := usecase.NewEventUsecae(eventRepo)
+	participantUC := usecase.NewParticipantUsecase(participantRepo)
 
 	healthH := handler.NewHealthHandler()
 	userH   := handler.NewUserHandler(userUC,eventUC)
-	eventH  := handler.NewEventHandler(eventUC)
+	eventH  := handler.NewEventHandler(eventUC,userUC,participantUC)
 
 
 	// health handler
@@ -46,13 +48,16 @@ func InitRouter(c *ent.Client) {
 	})
 
 	// event handler
-	r.Route("/event", func(r chi.Router) {
+	r.Route("/events", func(r chi.Router) {
 		r.Post("/", eventH.CreateNewEvent)
 		r.Get("/{id}", eventH.GetEventById)
-		r.Patch("/{id}", eventH.ChangeEventStatusOfId)
+		r.Delete("/{id}", eventH.DeleteEventById)
+		r.Patch("/{id}", eventH.UpdateEventById)
+		r.Get("/{id}/admin", eventH.GetEventAdminById)
+		r.Get("/{id}/participants", eventH.GetEventParticipants)
+		r.Post("/{id}/participants", eventH.AddNewEventParticipants)
+		r.Patch("/{id}/state", eventH.ChangeEventStatusOfId)
 	})
-
-	initParticipantHandler(r, c)
 
 	http.ListenAndServe(
 		fmt.Sprintf(":%s", helper.GetEnvOrDefault("PORT", "8080")),

@@ -9,6 +9,7 @@ import { EventInfo } from '../../../components/molecules/EventInfo';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Show() {
+  // event個別取得hooksでevent情報を呼び出す
   const [isHost, setIsHost] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const event_id = useRouter().query.id;

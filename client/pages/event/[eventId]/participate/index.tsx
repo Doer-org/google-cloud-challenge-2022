@@ -29,7 +29,8 @@ export async function getServerSideProps(context: any) {
 
 export default function Participate(props: any) {
   // ここは参加者がみるただの参加フォーム
-  // TODO : SSRで実装してリンクを貼った時にOGPを表示させるようにする
+  // TODO: SSRで実装してリンクを貼った時にOGPを表示させるようにする
+  // TODO: event参加hooksをonClickへ
   const [name, setName] = useState('');
   const [word, setWord] = useState('');
   const [isConfirm, setIsConfirm] = useState(false);

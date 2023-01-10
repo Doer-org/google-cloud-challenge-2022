@@ -7,6 +7,6 @@ import (
 	"time"
 )
 
-func main(){
-	log.Printf("[%v] finish ent-gen",time.Now())
+func main() {
+	log.Printf("[%v] finish ent-gen", time.Now())
 }

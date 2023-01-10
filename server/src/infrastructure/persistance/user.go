@@ -4,10 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
 )
@@ -22,42 +20,34 @@ func NewUserRepository(c *ent.Client) repository.IUserRepository {
 	}
 }
 
-func (r *UserRepository) CreateNewUser(ctx context.Context, u *entity.User) (*entity.User, error) {
-	entUser, err := r.client.User.
+func (r *UserRepository) CreateNewUser(ctx context.Context, eu *ent.User) (*ent.User, error) {
+	user, err := r.client.User.
 		Create().
-		SetName(u.Name).
-		SetAuthenticated(u.Authenticated).
-		SetMail(u.Mail).
-		SetIcon(u.Icon).
+		SetName(eu.Name).
+		SetAuthenticated(eu.Authenticated).
+		SetMail(eu.Mail).
+		SetIcon(eu.Icon).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("UserRepository: create user query error: %w", err)
 	}
-	return EntToEntityUser(entUser), nil
+	return user, nil
 }
 
-func (r *UserRepository) GetUserById(ctx context.Context, userId entity.UserId) (*entity.User, error) {
-	userUuid, err := uuid.Parse(string(userId))
-	if err != nil {
-		return nil, fmt.Errorf("UserRepository: userUuid parse error: %w", err)
-	}
-	entUser, err := r.client.User.
+func (r *UserRepository) GetUserById(ctx context.Context, userId uuid.UUID) (*ent.User, error) {
+	user, err := r.client.User.
 		Query().
-		Where(user.ID(userUuid)).
+		Where(user.ID(userId)).
 		Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("UserRepository: get user query error: %w", err)
 	}
-	return EntToEntityUser(entUser), nil
+	return user, nil
 }
 
-func (r *UserRepository) DeleteUserById(ctx context.Context, userId entity.UserId) error {
-	userUuid, err := uuid.Parse(string(userId))
-	if err != nil {
-		return fmt.Errorf("UserRepository: userUuid parse error: %w", err)
-	}
-	err = r.client.User.
-		DeleteOneID(userUuid).
+func (r *UserRepository) DeleteUserById(ctx context.Context, userId uuid.UUID) error {
+	err := r.client.User.
+		DeleteOneID(userId).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("UserRepository: delete user query error: %w", err)
@@ -65,66 +55,39 @@ func (r *UserRepository) DeleteUserById(ctx context.Context, userId entity.UserI
 	return nil
 }
 
-func (r *UserRepository) UpdateUserById(ctx context.Context, userId entity.UserId, u *entity.User) (*entity.User, error) {
-	userUuid, err := uuid.Parse(string(userId))
-	if err != nil {
-		return nil,fmt.Errorf("UserRepository: userUuid parse error: %w", err)
-	}
-	entUser,err := r.client.User.
-		UpdateOneID(userUuid).
-		SetName(u.Name).
-		SetAuthenticated(u.Authenticated).
-		SetMail(u.Mail).
-		SetIcon(u.Icon).
+func (r *UserRepository) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.User) (*ent.User, error) {
+	user, err := r.client.User.
+		UpdateOneID(userId).
+		SetName(eu.Name).
+		SetAuthenticated(eu.Authenticated).
+		SetMail(eu.Mail).
+		SetIcon(eu.Icon).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("UserRepository: update user query error: %w", err)
 	}
-	return EntToEntityUser(entUser), nil
+	return user, nil
 }
 
-func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*entity.User, error) {
-	entUser, err := r.client.User.
+func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
+	user, err := r.client.User.
 		Query().
 		Where(user.Mail(mail)).
 		Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("UserRepository: get user query error: %w", err)
 	}
-	return EntToEntityUser(entUser), nil
+	return user, nil
 }
 
-func (r *UserRepository) GetEventAdminById(ctx context.Context,eventId entity.EventId) (*entity.User, error) {
-	eventUuid, err := uuid.Parse(string(eventId))
-	if err != nil {
-		return nil, fmt.Errorf("UserRepository: uuid parse error: %w", err)
-	}
-	entEvent,err := r.client.Event.
+func (r *UserRepository) GetUserEvents(ctx context.Context, userId uuid.UUID) ([]*ent.Event, error) {
+	user, err := r.client.User.
 		Query().
-		Where(event.ID(eventUuid)).
-		WithAdmin().
+		Where(user.ID(userId)).
+		WithEvents().
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("UserRepository: get event query error: %w", err)
+		return nil, fmt.Errorf("EventRepository: get user event query error: %w", err)
 	}
-	return EntToEntityUser(entEvent.Edges.Admin),nil
-}
-
-func EntToEntityUser(e *ent.User) *entity.User {
-	return &entity.User{
-		Id:            entity.UserId(e.ID.String()),
-		Name:          e.Name,
-		Authenticated: e.Authenticated,
-		Mail:          e.Mail,
-		Icon:          e.Icon,
-	}
-}
-
-func EntityToEntUser(u *entity.User) *ent.User {
-	return &ent.User{
-		Name:          u.Name,
-		Authenticated: u.Authenticated,
-		Mail:          u.Mail,
-		Icon:          u.Icon,
-	}
+	return user.Edges.Events, nil
 }

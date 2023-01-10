@@ -3,6 +3,12 @@ import { EventWrapper } from './Event/EventWrapper';
 import { Hanging } from './Event/Hanging';
 import { EventBasicInfo } from './Event/EventBasicInfo';
 import { UserIcon } from './User/UserIcon';
+type TProps = {
+  eventName: string;
+  detail: string;
+  location: string;
+};
+// 使う時になったら引数を入れる
 export const EventInfo = () => {
   return (
     <>

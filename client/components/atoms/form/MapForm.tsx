@@ -14,24 +14,18 @@ export const MapForm = () => {
     lng: 139.7673068,
   });
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCurrent({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      },
-      (err) => {
-        throw new Error(err.message);
-      }
-    );
+    navigator.geolocation.getCurrentPosition((position) => {
+      setCurrent({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      });
+    });
   }, []);
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API as string,
   });
-
-  return isLoaded ? (
+  return isLoaded && current ? (
     <GoogleMap
       mapContainerStyle={ContainerStyle}
       center={current !== null ? current : undefined}

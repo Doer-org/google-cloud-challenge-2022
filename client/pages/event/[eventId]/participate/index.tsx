@@ -12,6 +12,7 @@ import { getEventInfo, tryGetEventInfo } from '../../../../core/api/event/getInf
 import { Event } from '../../../../core/types/event';
 import { flow, pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither'
+import { joinEvent } from '../../../../core/api/event/join';
 
 export async function getServerSideProps(context: any) {
   const eventId = context.query.eventId;
@@ -51,9 +52,14 @@ export default function Participate(props: any) {
   // ここは参加者がみるただの参加フォーム
   // TODO: SSRで実装してリンクを貼った時にOGPを表示させるようにする
   // TODO: event参加hooksをonClickへ
+
+  const [isConfirm, setIsConfirm] = useState(false);
+  const joinApi = joinEvent(
+    () => { setIsConfirm(true) },
+    () => {}
+  )
   const [name, setName] = useState('');
   const [word, setWord] = useState('');
-  const [isConfirm, setIsConfirm] = useState(false);
   const eventId = useRouter().query.eventId;
   console.log(props);
   return (
@@ -92,7 +98,14 @@ export default function Participate(props: any) {
               />
               <Button
                 className="flex m-auto my-5"
-                onClick={() => setIsConfirm(true)}
+                onClick={() => {
+                  // setIsConfirm(true) 
+                  joinApi({
+                    event_id: eventId as string,
+                    participant_name: name,
+                    comment:word
+                  })
+                }}
               >
                 参加する
               </Button>

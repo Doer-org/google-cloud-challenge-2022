@@ -30,18 +30,11 @@ const tryCreateNewEvent = (
     return pipe ( 
         {
             name: param.event_name,
+            admin:  "3fa85f64-5717-4562-b3fc-2c963f66afa6",  // admin: host.user_id, 
             detail: param.detail,
             location: param.location,
             type:  "??",
             state:  "??",
-            admin:  "3fa85f64-5717-4562-b3fc-2c963f66afa6",  // admin: host.user_id,
-            users: [
-                // adminユーザを含める?
-                "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-            ],
-            comments: [
-              "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-            ] 
         },
         EventApi.createEvent,
         fptsHelper.TE.ofApiResponse,
@@ -55,7 +48,7 @@ const tryCreateNewEvent = (
                 participants : []
             }
             return {
-                url : `http://localhost/event?id=${res.id}`,
+                url : `http://localhost/event/${res.id}/participate`,
                 created_event : e
             } 
         }) 

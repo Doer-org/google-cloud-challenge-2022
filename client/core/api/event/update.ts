@@ -3,15 +3,13 @@ import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../uitls/fptsHelper'
 import { EventApi } from '../../uitls/mockApi' 
+import { components, operations, paths } from "../../openapi/openapi"
  
-// TODO: axios 
-export const tryCloseEvent = (event_id : string)   => { 
+  
+export const tryUpdateEvent = (param : components["schemas"]["EventUpdate"])   => { 
     return pipe (
-        {
-            // id : param.event_id,
-            // state: "close"
-        },
-        EventApi.updateEventState,
+        param,
+        EventApi.updateEvent,
         fptsHelper.TE.ofApiResponse, 
     )
 }
@@ -20,11 +18,11 @@ export const tryCloseEvent = (event_id : string)   => {
 /**
 * 未実装，patch?
 */
-export const closeEvent = (
+export const updateEvent = (
     okHandler : (ok : any) => void,
     errorHandler : (e: Error) => void,
 ) => flow (
-    tryCloseEvent,
+    tryUpdateEvent,
     TE.match(
         errorHandler,
         okHandler

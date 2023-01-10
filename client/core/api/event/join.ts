@@ -40,7 +40,7 @@ import { EventApi } from '../../uitls/mockApi'
 //     }
 // }
 
-const tryJoinEvent = ( 
+export const tryJoinEvent = ( 
     param : {
         event_id : string, 
         participant_name: string,

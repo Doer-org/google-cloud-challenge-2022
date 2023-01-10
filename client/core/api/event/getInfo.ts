@@ -7,7 +7,7 @@ import { EventApi } from '../../uitls/mockApi'
 import { Event } from '../../types/event'
   
  
-const tryGetEventInfo = (event_id: string) => { 
+export const tryGetEventInfo = (event_id: string) => { 
     const getEventInfo = flow(EventApi.getEvent, fptsHelper.TE.ofApiResponse)
     const getEventHost = flow(EventApi.getEventHost, fptsHelper.TE.ofApiResponse,)
     const getEventMembers = flow(EventApi.getEventMembers, fptsHelper.TE.ofApiResponse,) 

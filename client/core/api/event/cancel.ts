@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../uitls/fptsHelper'
 import { EventApi } from '../../uitls/mockApi'
  
-
+// TODO: axios
 export const tryCancel = (event_id : string)   => { 
     return pipe (
         {

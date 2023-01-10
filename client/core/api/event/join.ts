@@ -1,6 +1,7 @@
-import { flow } from 'fp-ts/lib/function'
+import { flow, pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
 import { Event } from '../../types/event'
+import { fptsHelper } from '../../uitls/fptsHelper'
 import { EventApi } from '../../uitls/mockApi'
 
 export module JoinRetExample { 
@@ -45,18 +46,24 @@ const tryJoinEvent = (
         participant_name: string,
         comment : string,
     },
-) : TE.TaskEither<Error,Event> => { 
-    if (param.event_id === JoinInputExample.causeError.event_id) {
-        return TE.left(Error("tryJoinEvent > fail"))
-    }
-    const next_event_state : Event = JoinRetExample.ok
-    return TE.right(next_event_state) 
+)  => {  
+    return pipe (
+        {
+            // id : param.event_id,
+            // name : param.participant_name,
+            // comment : param.cooment
+        },
+        EventApi.join,
+        fptsHelper.TE.ofApiResponse, 
+    )
+    // const next_event_state : Event = JoinRetExample.ok
+    // return TE.right(next_event_state) 
 }
 /**
 * 未実装，patch?
 */
 export  const joinEvent = (
-    okHandler : (event :  Event) => void,
+    okHandler : (success :  unknown) => void,
     errorHandler : (e: Error) => void,
 ) => flow (
     tryJoinEvent,
@@ -66,11 +73,4 @@ export  const joinEvent = (
     ),
     (task) => task().then(() => {}),
     () => {}
-)
-
-export default () => {  
-
-    return { 
-        joinEvent
-    }
-}
+) 

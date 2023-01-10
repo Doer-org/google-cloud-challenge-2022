@@ -63,6 +63,7 @@ export const getEventList = (
         errorHandler,
         okHandler
     ),
-    (task) => task().then(() => {})
+    (task) => task().then(() => {}),
+    () => {}
 )
  

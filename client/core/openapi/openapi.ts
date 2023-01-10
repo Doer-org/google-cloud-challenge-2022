@@ -37,7 +37,14 @@ export interface paths {
     get: operations["readEventAdmin"];
   };
   "/events/{id}/comments": {
-    get: operations["getComments"];
+    /**
+     * List attached Comments 
+     * @description List attached Comments.
+     */
+    get: operations["listEventComments"];
+  };
+  "/events/{id}/participants": {
+    post: operations["postEventParticipants"];
     parameters: {
       path: {
         id: number;
@@ -46,14 +53,6 @@ export interface paths {
   };
   "/events/{id}/state": {
     patch: operations["patchState"];
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-  };
-  "/events/{id}/type": {
-    patch: operations["patchType"];
     parameters: {
       path: {
         id: number;
@@ -121,6 +120,7 @@ export interface components {
       state: string;
       admin?: components["schemas"]["User"];
       users?: (components["schemas"]["User"])[];
+      comments?: (components["schemas"]["Comment"])[];
     };
     EventCreate: {
       /** Format: uuid */
@@ -157,6 +157,11 @@ export interface components {
       mail?: string;
       icon: string;
     };
+    Event_CommentsList: {
+      /** Format: uuid */
+      id: string;
+      body: string;
+    };
     Event_UsersList: {
       /** Format: uuid */
       id: string;
@@ -173,6 +178,7 @@ export interface components {
       mail?: string;
       icon: string;
       events?: (components["schemas"]["Event"])[];
+      comments?: (components["schemas"]["Comment"])[];
     };
     UserCreate: {
       /** Format: uuid */
@@ -287,6 +293,7 @@ export interface operations {
           /** Format: uuid */
           admin?: string;
           users?: (string)[];
+          comments?: (string)[];
         };
       };
     };
@@ -369,6 +376,7 @@ export interface operations {
           /** Format: uuid */
           admin?: string;
           users?: (string)[];
+          comments?: (string)[];
         };
       };
     };
@@ -409,17 +417,42 @@ export interface operations {
       500: components["responses"]["500"];
     };
   };
-  getComments: {
+  listEventComments: {
+    /**
+     * List attached Comments 
+     * @description List attached Comments.
+     */
+    parameters: {
+        /** @description what page to render */
+        /** @description item count to render per page */
+      query?: {
+        page?: number;
+        itemsPerPage?: number;
+      };
+        /** @description ID of the Event */
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description result Events list */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["Event_CommentsList"])[];
+        };
+      };
+      400: components["responses"]["400"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  postEventParticipants: {
     responses: {
       200: never;
     };
   };
   patchState: {
-    responses: {
-      200: never;
-    };
-  };
-  patchType: {
     responses: {
       200: never;
     };
@@ -468,6 +501,7 @@ export interface operations {
           mail?: string;
           icon: string;
           events?: (string)[];
+          comments?: (string)[];
         };
       };
     };
@@ -547,6 +581,7 @@ export interface operations {
           mail?: string;
           icon?: string;
           events?: (string)[];
+          comments?: (string)[];
         };
       };
     };

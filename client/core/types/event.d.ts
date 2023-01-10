@@ -16,3 +16,6 @@ export type Event = {
     host : Host
     participants : Participant[]
 }
+
+export type EventState = 
+    | 'open' | 'close' | 'cancel' 

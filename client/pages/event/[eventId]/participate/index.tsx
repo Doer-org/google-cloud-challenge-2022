@@ -8,23 +8,43 @@ import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
 import { EventConfirmModal } from '../../../../components/molecules/Event/EventConfirmModal';
 import Head from 'next/head';
+import { getEventInfo, tryGetEventInfo } from '../../../../core/api/event/getInfo';
+import { Event } from '../../../../core/types/event';
+import { flow, pipe } from 'fp-ts/lib/function'
+import * as TE from 'fp-ts/TaskEither'
+
 export async function getServerSideProps(context: any) {
   const eventId = context.query.eventId;
+  //   const dummyEvent = {
+  //     id: '1',
+  //     eventName: 'ラーメン',
+  //     detail: 'ターメン行きたいんや！！！！',
+  //     position: 'lat:100/lng:200',
+  //     capacity: 1,
+  //   }; 
+  //   return {
+  //     props: {
+  //       news: dummyEvent,
+  //     },
+  //   };
   // TODO: ここでeventIdを元にevent情報をとってきてpropsで返す
-  // 型も付けといてもらえると助かる！！
-  const dummyEvent = {
-    id: '1',
-    eventName: 'ラーメン',
-    detail: 'ターメン行きたいんや！！！！',
-    position: 'lat:100/lng:200',
-    capacity: 1,
-  };
-
-  return {
-    props: {
-      news: dummyEvent,
-    },
-  };
+  // 型も付けといてもらえると助かる！！  
+  return pipe(
+    eventId,
+    tryGetEventInfo,
+    TE.match(
+      (err) => { 
+        throw err
+      },
+      (ok) => { 
+        return {
+          props: { 
+            news: ok,
+          },
+        } 
+      }
+      )
+  )() 
 }
 
 export default function Participate(props: any) {

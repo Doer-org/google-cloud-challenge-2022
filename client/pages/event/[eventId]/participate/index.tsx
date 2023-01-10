@@ -55,8 +55,8 @@ export default function Participate(props: any) {
 
   const [isConfirm, setIsConfirm] = useState(false);
   const joinApi = joinEvent(
-    () => { setIsConfirm(true) },
-    () => {}
+    (ok : unknown) => { setIsConfirm(true) },
+    (e) => {}
   )
   const [name, setName] = useState('');
   const [word, setWord] = useState('');

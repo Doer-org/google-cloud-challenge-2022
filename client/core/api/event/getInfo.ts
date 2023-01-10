@@ -5,17 +5,9 @@ import * as R from "fp-ts/lib/Record";
 import * as A from "fp-ts/lib/Array";
 import { EventApi } from '../../uitls/mockApi'
 import { Event } from '../../types/event'
-
-export module GetEventInputsExample {
-    export const causeError = "-1"
-} 
-
-type Comment = string
+  
  
-const tryGetEventInfo = (event_id: string) => {
-    // if (event_id === GetEventInputsExample.causeError) {
-    //     return TE.left(Error("fail > tryGetEventInfo"))
-    // }
+const tryGetEventInfo = (event_id: string) => { 
     const getEventInfo = flow(EventApi.getEvent, fptsHelper.TE.ofApiResponse)
     const getEventHost = flow(EventApi.getEventHost, fptsHelper.TE.ofApiResponse,)
     const getEventMembers = flow(EventApi.getEventMembers, fptsHelper.TE.ofApiResponse,) 
@@ -27,7 +19,7 @@ const tryGetEventInfo = (event_id: string) => {
             getComments({id: eventInfo.id}),
             TE.map(flow(
                 A.map((e) => {
-                    const r : [string, Comment] = [e.id, e.body]
+                    const r : [string, string] = [e.id, e.body]
                     return r
                 }),
                 R.fromEntries, 
@@ -89,10 +81,7 @@ const tryGetEventInfo = (event_id: string) => {
         ))
     )
 }
-
-/**
-* コメント取得がまだ．
-*/
+ 
 export const getEventInfo = (
     okHandler: (event: Event) => void,
     errorHandler: (e: Error) => void,

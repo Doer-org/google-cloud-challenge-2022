@@ -4,10 +4,6 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../uitls/fptsHelper'
 import { EventApi } from '../../uitls/mockApi'
  
-export module CancelInputsExample {
-    export const causeError = "-1"
-}
-
 
 const tryCancel = (event_id : string)   => { 
     return pipe (

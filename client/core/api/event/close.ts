@@ -4,11 +4,7 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../uitls/fptsHelper'
 import { EventApi } from '../../uitls/mockApi' 
  
-
-export module CloseInputsExample {
-    export const causeError = "-1"
-}
-
+  
 const tryCloseEvent = (event_id : string)   => { 
     return pipe (
         {

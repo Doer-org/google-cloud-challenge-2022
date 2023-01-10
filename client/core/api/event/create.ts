@@ -26,19 +26,23 @@ const tryCreateNewEvent = (
 ) : TE.TaskEither<Error, {url:string, created_event : Event}> => { 
     if (param.max_member === -1) {
         return TE.left(Error("fail > tryCreateNewEvent"))
-    }
-    return pipe (
+    } 
+    return pipe ( 
         {
             name: param.event_name,
             detail: param.detail,
             location: param.location,
-            type: "??",
-            state: "??",
-            admin: host.user_id,
+            type:  "??",
+            state:  "??",
+            admin:  "3fa85f64-5717-4562-b3fc-2c963f66afa6",  // admin: host.user_id,
             users: [
-              // adminユーザを含める?
-            ]
-          },
+                // adminユーザを含める?
+                "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            ],
+            comments: [
+              "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            ] 
+        },
         EventApi.createEvent,
         fptsHelper.TE.ofApiResponse,
         TE.map((res) => {

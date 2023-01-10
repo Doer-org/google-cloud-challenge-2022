@@ -5,6 +5,20 @@
 
 
 export interface paths {
+  "/comments/{id}/event": {
+    /**
+     * List attached Events 
+     * @description List attached Events.
+     */
+    get: operations["listCommentEvent"];
+  };
+  "/comments/{id}/user": {
+    /**
+     * List attached Users 
+     * @description List attached Users.
+     */
+    get: operations["listCommentUser"];
+  };
   "/events": {
     /**
      * Create a new Event 
@@ -36,8 +50,8 @@ export interface paths {
      */
     get: operations["readEventAdmin"];
   };
-  "/events/{id}/comments": {
-    get: operations["getComments"];
+  "/events/{id}/participants": {
+    post: operations["postEventParticipants"];
     parameters: {
       path: {
         id: number;
@@ -51,21 +65,6 @@ export interface paths {
         id: number;
       };
     };
-  };
-  "/events/{id}/type": {
-    patch: operations["patchType"];
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-  };
-  "/events/{id}/users": {
-    /**
-     * List attached Users 
-     * @description List attached Users.
-     */
-    get: operations["listEventUsers"];
   };
   "/users": {
     /**
@@ -108,8 +107,25 @@ export interface components {
       /** Format: uuid */
       id: string;
       body: string;
-      event: components["schemas"]["Event"];
-      user: components["schemas"]["User"];
+      event: (components["schemas"]["Event"])[];
+      user: (components["schemas"]["User"])[];
+    };
+    Comment_EventList: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      detail?: string;
+      location?: string;
+      type: string;
+      state: string;
+    };
+    Comment_UserList: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      authenticated: boolean;
+      mail?: string;
+      icon: string;
     };
     Event: {
       /** Format: uuid */
@@ -121,6 +137,7 @@ export interface components {
       state: string;
       admin?: components["schemas"]["User"];
       users?: (components["schemas"]["User"])[];
+      comments?: (components["schemas"]["Comment"])[];
     };
     EventCreate: {
       /** Format: uuid */
@@ -157,14 +174,6 @@ export interface components {
       mail?: string;
       icon: string;
     };
-    Event_UsersList: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      authenticated: boolean;
-      mail?: string;
-      icon: string;
-    };
     User: {
       /** Format: uuid */
       id: string;
@@ -173,6 +182,7 @@ export interface components {
       mail?: string;
       icon: string;
       events?: (components["schemas"]["Event"])[];
+      comments?: (components["schemas"]["Comment"])[];
     };
     UserCreate: {
       /** Format: uuid */
@@ -270,6 +280,66 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  listCommentEvent: {
+    /**
+     * List attached Events 
+     * @description List attached Events.
+     */
+    parameters: {
+        /** @description what page to render */
+        /** @description item count to render per page */
+      query?: {
+        page?: number;
+        itemsPerPage?: number;
+      };
+        /** @description ID of the Comment */
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description result Comments list */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["Comment_EventList"])[];
+        };
+      };
+      400: components["responses"]["400"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
+  listCommentUser: {
+    /**
+     * List attached Users 
+     * @description List attached Users.
+     */
+    parameters: {
+        /** @description what page to render */
+        /** @description item count to render per page */
+      query?: {
+        page?: number;
+        itemsPerPage?: number;
+      };
+        /** @description ID of the Comment */
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description result Comments list */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["Comment_UserList"])[];
+        };
+      };
+      400: components["responses"]["400"];
+      404: components["responses"]["404"];
+      409: components["responses"]["409"];
+      500: components["responses"]["500"];
+    };
+  };
   createEvent: {
     /**
      * Create a new Event 
@@ -287,6 +357,7 @@ export interface operations {
           /** Format: uuid */
           admin?: string;
           users?: (string)[];
+          comments?: (string)[];
         };
       };
     };
@@ -369,6 +440,7 @@ export interface operations {
           /** Format: uuid */
           admin?: string;
           users?: (string)[];
+          comments?: (string)[];
         };
       };
     };
@@ -409,7 +481,7 @@ export interface operations {
       500: components["responses"]["500"];
     };
   };
-  getComments: {
+  postEventParticipants: {
     responses: {
       200: never;
     };
@@ -417,41 +489,6 @@ export interface operations {
   patchState: {
     responses: {
       200: never;
-    };
-  };
-  patchType: {
-    responses: {
-      200: never;
-    };
-  };
-  listEventUsers: {
-    /**
-     * List attached Users 
-     * @description List attached Users.
-     */
-    parameters: {
-        /** @description what page to render */
-        /** @description item count to render per page */
-      query?: {
-        page?: number;
-        itemsPerPage?: number;
-      };
-        /** @description ID of the Event */
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description result Events list */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["Event_UsersList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
     };
   };
   createUser: {
@@ -468,6 +505,7 @@ export interface operations {
           mail?: string;
           icon: string;
           events?: (string)[];
+          comments?: (string)[];
         };
       };
     };
@@ -547,6 +585,7 @@ export interface operations {
           mail?: string;
           icon?: string;
           events?: (string)[];
+          comments?: (string)[];
         };
       };
     };

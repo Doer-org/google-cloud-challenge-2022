@@ -6,10 +6,10 @@ import { Event, Host } from '../../types/event'
 
 export module CreateParamExample {
     export const causeError = {
-        event_name : "err",
+        event_name : "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         max_member : -1,
-        detail : "err",
-        location : "err",
+        detail : "abcde",
+        location : "aaaaaaaaaaaaaaaaaaaaa",
         timestamp : Date.now() 
     }
 }
@@ -24,13 +24,13 @@ const tryCreateNewEvent = (
         timestamp : number
     } 
 ) : TE.TaskEither<Error, {url:string, created_event : Event}> => { 
-    if (param.max_member === -1) {
-        return TE.left(Error("fail > tryCreateNewEvent"))
-    } 
+    // if (param.max_member === -1) {
+    //     return TE.left(Error("fail > tryCreateNewEvent"))
+    // } 
     return pipe ( 
         {
             name: param.event_name,
-            admin:  "3fa85f64-5717-4562-b3fc-2c963f66afa6",  // admin: host.user_id, 
+            admin: host.user_id, 
             detail: param.detail,
             location: param.location,
             type:  "??",

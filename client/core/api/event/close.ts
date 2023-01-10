@@ -1,21 +1,23 @@
   
-import {flow} from 'fp-ts/lib/function'
-import * as TE from 'fp-ts/TaskEither' 
+import {flow, pipe} from 'fp-ts/lib/function'
+import * as TE from 'fp-ts/TaskEither'
+import { fptsHelper } from '../../uitls/fptsHelper'
+import { EventApi } from '../../uitls/mockApi' 
  
 
 export module CloseInputsExample {
     export const causeError = "-1"
 }
 
-const tryCloseEvent = (event_id : string) : TE.TaskEither<Error,string> => {
-    switch (event_id) {
-        case (CloseInputsExample.causeError) : {
-            return TE.left(Error("fail > tryCloseEvent"))
-        }
-        default : {
-            return TE.right(event_id)
-        }
-    }  
+const tryCloseEvent = (event_id : string)   => { 
+    return pipe (
+        {
+            // id : param.event_id,
+            // state: "close"
+        },
+        EventApi.updateEventState,
+        fptsHelper.TE.ofApiResponse, 
+    )
 }
  
 
@@ -23,7 +25,7 @@ const tryCloseEvent = (event_id : string) : TE.TaskEither<Error,string> => {
 * 未実装，patch?
 */
 export const closeEvent = (
-    okHandler : (event_id: string) => void,
+    okHandler : (ok : any) => void,
     errorHandler : (e: Error) => void,
 ) => flow (
     tryCloseEvent,

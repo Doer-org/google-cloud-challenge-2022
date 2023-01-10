@@ -6,7 +6,7 @@ import { EventApi } from '../../uitls/mockApi'
 import { components, operations, paths } from "../../openapi/openapi"
  
   
-const tryUpdateEvent = (param : components["schemas"]["EventUpdate"])   => { 
+export const tryUpdateEvent = (param : components["schemas"]["EventUpdate"])   => { 
     return pipe (
         param,
         EventApi.updateEvent,

@@ -3,7 +3,7 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../uitls/fptsHelper'
 import { EventApi }from '../../uitls/mockApi' 
   
-const tryDeleteEvent = (id : string) => pipe (
+export const tryDeleteEvent = (id : string) => pipe (
     EventApi.deleteEvent({id: id}),
     fptsHelper.TE.ofApiResponse 
 )  

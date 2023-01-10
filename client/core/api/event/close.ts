@@ -5,7 +5,7 @@ import { fptsHelper } from '../../uitls/fptsHelper'
 import { EventApi } from '../../uitls/mockApi' 
  
   
-const tryCloseEvent = (event_id : string)   => { 
+export const tryCloseEvent = (event_id : string)   => { 
     return pipe (
         {
             // id : param.event_id,

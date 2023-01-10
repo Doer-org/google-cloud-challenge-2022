@@ -14,7 +14,7 @@ export module CreateParamExample {
     }
 }
 
-const tryCreateNewEvent = (
+export const tryCreateNewEvent = (
     host : Host,
     param : {
         event_name: string,

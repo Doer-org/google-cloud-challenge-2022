@@ -3,7 +3,7 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../uitls/fptsHelper'
 import { UserApi }from '../../uitls/mockApi' 
 import { components, operations, paths } from "../../openapi/openapi"
-const tryGetUserInfo = (user : string ) => pipe (
+export const tryGetUserInfo = (user : string ) => pipe (
     UserApi.getUser({id:user}),
     fptsHelper.TE.ofApiResponse 
 )  

@@ -3,7 +3,7 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../uitls/fptsHelper'
 import { UserApi }from '../../uitls/mockApi' 
 import { components, operations, paths } from "../../openapi/openapi"
-const tryCreateUser = (user : components["schemas"]["UserCreate"]) => pipe (
+export const tryCreateUser = (user : components["schemas"]["UserCreate"]) => pipe (
     UserApi.createUser(user),
     fptsHelper.TE.ofApiResponse 
 )  

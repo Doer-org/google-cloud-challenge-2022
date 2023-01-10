@@ -46,7 +46,7 @@ import { ApiResponse } from 'openapi-typescript-fetch'
 
 
 
-const tryGetEventList = (user : string)  : TE.TaskEither<Error, components["schemas"]["User_EventsList"][]>  => pipe (
+export const tryGetEventList = (user : string)  : TE.TaskEither<Error, components["schemas"]["User_EventsList"][]>  => pipe (
     UserApi.getUsersEvents({id:user}),
     fptsHelper.TE.ofApiResponse 
 )  

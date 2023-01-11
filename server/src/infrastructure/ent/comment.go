@@ -22,9 +22,9 @@ type Comment struct {
 	Body string `json:"body,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CommentQuery when eager-loading is set.
-	Edges         CommentEdges `json:"edges"`
-	comment_event *uuid.UUID
-	comment_user  *uuid.UUID
+	Edges          CommentEdges `json:"edges"`
+	event_comments *uuid.UUID
+	user_comments  *uuid.UUID
 }
 
 // CommentEdges holds the relations/edges for other nodes in the graph.
@@ -73,9 +73,9 @@ func (*Comment) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case comment.FieldID:
 			values[i] = new(uuid.UUID)
-		case comment.ForeignKeys[0]: // comment_event
+		case comment.ForeignKeys[0]: // event_comments
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
-		case comment.ForeignKeys[1]: // comment_user
+		case comment.ForeignKeys[1]: // user_comments
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Comment", columns[i])
@@ -106,17 +106,17 @@ func (c *Comment) assignValues(columns []string, values []any) error {
 			}
 		case comment.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field comment_event", values[i])
+				return fmt.Errorf("unexpected type %T for field event_comments", values[i])
 			} else if value.Valid {
-				c.comment_event = new(uuid.UUID)
-				*c.comment_event = *value.S.(*uuid.UUID)
+				c.event_comments = new(uuid.UUID)
+				*c.event_comments = *value.S.(*uuid.UUID)
 			}
 		case comment.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field comment_user", values[i])
+				return fmt.Errorf("unexpected type %T for field user_comments", values[i])
 			} else if value.Valid {
-				c.comment_user = new(uuid.UUID)
-				*c.comment_user = *value.S.(*uuid.UUID)
+				c.user_comments = new(uuid.UUID)
+				*c.user_comments = *value.S.(*uuid.UUID)
 			}
 		}
 	}

@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
@@ -121,6 +122,21 @@ func (eu *EventUpdate) AddUsers(u ...*User) *EventUpdate {
 	return eu.AddUserIDs(ids...)
 }
 
+// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
+func (eu *EventUpdate) AddCommentIDs(ids ...uuid.UUID) *EventUpdate {
+	eu.mutation.AddCommentIDs(ids...)
+	return eu
+}
+
+// AddComments adds the "comments" edges to the Comment entity.
+func (eu *EventUpdate) AddComments(c ...*Comment) *EventUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return eu.AddCommentIDs(ids...)
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (eu *EventUpdate) Mutation() *EventMutation {
 	return eu.mutation
@@ -151,6 +167,27 @@ func (eu *EventUpdate) RemoveUsers(u ...*User) *EventUpdate {
 		ids[i] = u[i].ID
 	}
 	return eu.RemoveUserIDs(ids...)
+}
+
+// ClearComments clears all "comments" edges to the Comment entity.
+func (eu *EventUpdate) ClearComments() *EventUpdate {
+	eu.mutation.ClearComments()
+	return eu
+}
+
+// RemoveCommentIDs removes the "comments" edge to Comment entities by IDs.
+func (eu *EventUpdate) RemoveCommentIDs(ids ...uuid.UUID) *EventUpdate {
+	eu.mutation.RemoveCommentIDs(ids...)
+	return eu
+}
+
+// RemoveComments removes "comments" edges to Comment entities.
+func (eu *EventUpdate) RemoveComments(c ...*Comment) *EventUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return eu.RemoveCommentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -341,6 +378,60 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.CommentsTable,
+			Columns: []string{event.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedCommentsIDs(); len(nodes) > 0 && !eu.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.CommentsTable,
+			Columns: []string{event.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.CommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.CommentsTable,
+			Columns: []string{event.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{event.Label}
@@ -453,6 +544,21 @@ func (euo *EventUpdateOne) AddUsers(u ...*User) *EventUpdateOne {
 	return euo.AddUserIDs(ids...)
 }
 
+// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
+func (euo *EventUpdateOne) AddCommentIDs(ids ...uuid.UUID) *EventUpdateOne {
+	euo.mutation.AddCommentIDs(ids...)
+	return euo
+}
+
+// AddComments adds the "comments" edges to the Comment entity.
+func (euo *EventUpdateOne) AddComments(c ...*Comment) *EventUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return euo.AddCommentIDs(ids...)
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (euo *EventUpdateOne) Mutation() *EventMutation {
 	return euo.mutation
@@ -483,6 +589,27 @@ func (euo *EventUpdateOne) RemoveUsers(u ...*User) *EventUpdateOne {
 		ids[i] = u[i].ID
 	}
 	return euo.RemoveUserIDs(ids...)
+}
+
+// ClearComments clears all "comments" edges to the Comment entity.
+func (euo *EventUpdateOne) ClearComments() *EventUpdateOne {
+	euo.mutation.ClearComments()
+	return euo
+}
+
+// RemoveCommentIDs removes the "comments" edge to Comment entities by IDs.
+func (euo *EventUpdateOne) RemoveCommentIDs(ids ...uuid.UUID) *EventUpdateOne {
+	euo.mutation.RemoveCommentIDs(ids...)
+	return euo
+}
+
+// RemoveComments removes "comments" edges to Comment entities.
+func (euo *EventUpdateOne) RemoveComments(c ...*Comment) *EventUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return euo.RemoveCommentIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -689,6 +816,60 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.CommentsTable,
+			Columns: []string{event.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedCommentsIDs(); len(nodes) > 0 && !euo.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.CommentsTable,
+			Columns: []string{event.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: comment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.CommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.CommentsTable,
+			Columns: []string{event.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: comment.FieldID,
 				},
 			},
 		}

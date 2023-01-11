@@ -123,21 +123,7 @@ func init() {
 	// userDescIcon is the schema descriptor for icon field.
 	userDescIcon := userFields[4].Descriptor()
 	// user.IconValidator is a validator for the "icon" field. It is called by the builders before save.
-	user.IconValidator = func() func(string) error {
-		validators := userDescIcon.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(icon string) error {
-			for _, fn := range fns {
-				if err := fn(icon); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	user.IconValidator = userDescIcon.Validators[0].(func(string) error)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.

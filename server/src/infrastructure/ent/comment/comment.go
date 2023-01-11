@@ -25,14 +25,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "event" package.
 	EventInverseTable = "events"
 	// EventColumn is the table column denoting the event relation/edge.
-	EventColumn = "comment_event"
+	EventColumn = "event_comments"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "comments"
 	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
-	UserColumn = "comment_user"
+	UserColumn = "user_comments"
 )
 
 // Columns holds all SQL columns for comment fields.
@@ -44,8 +44,8 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "comments"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"comment_event",
-	"comment_user",
+	"event_comments",
+	"user_comments",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -12,7 +12,7 @@ export const tryDeleteEvent = (id : string) => pipe (
 * 多分動く
 */
 export const deleteEvent = (
-    okHandler : (a : any) => void,
+    okHandler : (a : unknown) => void,
     errorHandler : (e: Error) => void,
 ) => flow (
     tryDeleteEvent,

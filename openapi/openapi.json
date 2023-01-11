@@ -523,8 +523,7 @@
                 },
                 "required": [
                   "name",
-                  "authenticated",
-                  "icon"
+                  "authenticated"
                 ]
               }
             }
@@ -970,8 +969,7 @@
         "required": [
           "id",
           "name",
-          "authenticated",
-          "icon"
+          "authenticated"
         ]
       },
       "Event_CommentsList": {
@@ -1013,8 +1011,7 @@
         "required": [
           "id",
           "name",
-          "authenticated",
-          "icon"
+          "authenticated"
         ]
       },
       "User": {
@@ -1052,8 +1049,7 @@
         "required": [
           "id",
           "name",
-          "authenticated",
-          "icon"
+          "authenticated"
         ]
       },
       "UserCreate": {
@@ -1079,8 +1075,7 @@
         "required": [
           "id",
           "name",
-          "authenticated",
-          "icon"
+          "authenticated"
         ]
       },
       "UserRead": {
@@ -1106,8 +1101,7 @@
         "required": [
           "id",
           "name",
-          "authenticated",
-          "icon"
+          "authenticated"
         ]
       },
       "UserUpdate": {
@@ -1133,8 +1127,7 @@
         "required": [
           "id",
           "name",
-          "authenticated",
-          "icon"
+          "authenticated"
         ]
       },
       "User_EventsList": {

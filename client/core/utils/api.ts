@@ -1,6 +1,6 @@
-import {MockApiClient} from "../lib/ApiClient"
+import {SwaggerApiClient} from "../lib/ApiClient"
 
-const apiClient = MockApiClient()
+const apiClient = SwaggerApiClient()
 
 
 export module EventApi {

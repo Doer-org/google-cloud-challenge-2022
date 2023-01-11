@@ -1,8 +1,8 @@
 import { flow, pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
 import { Event } from '../../types/event'
-import { fptsHelper } from '../../uitls/fptsHelper'
-import { EventApi } from '../../uitls/mockApi'
+import { fptsHelper } from '../../utils/fptsHelper'
+import { EventApi } from '../../utils/api'
 
 // export module JoinRetExample { 
 //     export const ok : Event = {

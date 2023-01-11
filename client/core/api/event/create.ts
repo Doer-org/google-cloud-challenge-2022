@@ -1,7 +1,7 @@
-import { fptsHelper } from '../../uitls/fptsHelper'
+import { fptsHelper } from '../../utils/fptsHelper'
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
-import { EventApi }from '../../uitls/mockApi' 
+import { EventApi }from '../../utils/api' 
 import { Event, Host } from '../../types/event'
 
 export module CreateParamExample {

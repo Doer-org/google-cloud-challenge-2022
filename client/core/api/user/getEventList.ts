@@ -2,8 +2,8 @@
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
 import { Event } from '../../types/event'
-import { fptsHelper } from '../../uitls/fptsHelper'
-import { UserApi } from '../../uitls/mockApi'
+import { fptsHelper } from '../../utils/fptsHelper'
+import { UserApi } from '../../utils/api'
 import { components, operations, paths } from "../../openapi/openapi"
 import { ApiResponse } from 'openapi-typescript-fetch'
  

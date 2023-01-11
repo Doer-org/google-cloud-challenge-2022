@@ -3,8 +3,8 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../utils/fptsHelper'
 import { UserApi }from '../../utils/gcChallengeApi' 
 import { components, operations, paths } from "../../openapi/openapi"
-export const tryUpdateUser = (user : components["schemas"]["UserUpdate"]) => pipe (
-    UserApi.createUser(user),
+export const tryUpdateUser = (user_id : components["schemas"]["UserUpdate"]) => pipe (
+    UserApi.createUser(user_id),
     fptsHelper.TE.ofApiResponse 
 )  
 

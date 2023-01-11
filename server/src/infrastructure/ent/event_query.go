@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
@@ -20,16 +21,17 @@ import (
 // EventQuery is the builder for querying Event entities.
 type EventQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
-	inters     []Interceptor
-	predicates []predicate.Event
-	withAdmin  *UserQuery
-	withUsers  *UserQuery
-	withFKs    bool
+	limit        *int
+	offset       *int
+	unique       *bool
+	order        []OrderFunc
+	fields       []string
+	inters       []Interceptor
+	predicates   []predicate.Event
+	withAdmin    *UserQuery
+	withUsers    *UserQuery
+	withComments *CommentQuery
+	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +105,28 @@ func (eq *EventQuery) QueryUsers() *UserQuery {
 			sqlgraph.From(event.Table, event.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, event.UsersTable, event.UsersPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryComments chains the current query on the "comments" edge.
+func (eq *EventQuery) QueryComments() *CommentQuery {
+	query := (&CommentClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(comment.Table, comment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.CommentsTable, event.CommentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -295,14 +319,15 @@ func (eq *EventQuery) Clone() *EventQuery {
 		return nil
 	}
 	return &EventQuery{
-		config:     eq.config,
-		limit:      eq.limit,
-		offset:     eq.offset,
-		order:      append([]OrderFunc{}, eq.order...),
-		inters:     append([]Interceptor{}, eq.inters...),
-		predicates: append([]predicate.Event{}, eq.predicates...),
-		withAdmin:  eq.withAdmin.Clone(),
-		withUsers:  eq.withUsers.Clone(),
+		config:       eq.config,
+		limit:        eq.limit,
+		offset:       eq.offset,
+		order:        append([]OrderFunc{}, eq.order...),
+		inters:       append([]Interceptor{}, eq.inters...),
+		predicates:   append([]predicate.Event{}, eq.predicates...),
+		withAdmin:    eq.withAdmin.Clone(),
+		withUsers:    eq.withUsers.Clone(),
+		withComments: eq.withComments.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
@@ -329,6 +354,17 @@ func (eq *EventQuery) WithUsers(opts ...func(*UserQuery)) *EventQuery {
 		opt(query)
 	}
 	eq.withUsers = query
+	return eq
+}
+
+// WithComments tells the query-builder to eager-load the nodes that are connected to
+// the "comments" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithComments(opts ...func(*CommentQuery)) *EventQuery {
+	query := (&CommentClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withComments = query
 	return eq
 }
 
@@ -411,9 +447,10 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		nodes       = []*Event{}
 		withFKs     = eq.withFKs
 		_spec       = eq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			eq.withAdmin != nil,
 			eq.withUsers != nil,
+			eq.withComments != nil,
 		}
 	)
 	if eq.withAdmin != nil {
@@ -450,6 +487,13 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		if err := eq.loadUsers(ctx, query, nodes,
 			func(n *Event) { n.Edges.Users = []*User{} },
 			func(n *Event, e *User) { n.Edges.Users = append(n.Edges.Users, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withComments; query != nil {
+		if err := eq.loadComments(ctx, query, nodes,
+			func(n *Event) { n.Edges.Comments = []*Comment{} },
+			func(n *Event, e *Comment) { n.Edges.Comments = append(n.Edges.Comments, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -540,6 +584,37 @@ func (eq *EventQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (eq *EventQuery) loadComments(ctx context.Context, query *CommentQuery, nodes []*Event, init func(*Event), assign func(*Event, *Comment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Comment(func(s *sql.Selector) {
+		s.Where(sql.InValues(event.CommentsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_comments
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_comments" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "event_comments" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

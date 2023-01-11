@@ -11,17 +11,30 @@ export const tryJoinEvent = (
         participant_name: string,
         comment : string,
     },
-)  => {  
-    return pipe (
-        {
-            // id : param.event_id,
-            // name : param.participant_name,
-            // comment : param.cooment
-        },
-        EventApi.join,
-        fptsHelper.TE.ofApiResponse, 
+)  => 
+    EventApi.join(
+        param.event_id,{
+            name : param.participant_name,
+            comment : param.comment
+        }
     )
-}
+
+// {  
+//     return pipe (
+//         // {
+//         //     // id : param.event_id,
+//         //     // name : param.participant_name,
+//         //     // comment : param.cooment
+//         // },
+//         EventApi.join(
+//             param.event_id,{
+//                 name : param.participant_name,
+//                 comment : param.comment
+//             }
+//         ),
+//         fptsHelper.TE.ofApiResponse, 
+//     )
+// }
 /**
 * 未実装，patch?
 */

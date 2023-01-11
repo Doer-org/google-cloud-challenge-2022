@@ -5,16 +5,15 @@ import { fptsHelper } from '../../utils/fptsHelper'
 import { EventApi } from '../../utils/gcChallengeApi'
  
 // TODO: axios
-export const tryCancel = (event_id : string)   => { 
-    return pipe (
-        {
-            // id : param.event_id,
-            // state: "cancel"
-        },
-        EventApi.updateEventState,
-        fptsHelper.TE.ofApiResponse, 
-    )
-}
+export const tryCancel = (event_id : string) => 
+    EventApi.updateEventState({id: event_id},  "cancel")
+
+// { 
+//     return pipe ( 
+//         EventApi.updateEventState({id: event_id},  "cancel"),
+//         fptsHelper.TE.ofApiResponse, 
+//     )
+// }
 
 /**
 * 未実装，patch?

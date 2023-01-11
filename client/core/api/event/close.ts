@@ -5,16 +5,18 @@ import { fptsHelper } from '../../utils/fptsHelper'
 import { EventApi } from '../../utils/gcChallengeApi' 
  
 // TODO: axios 
-export const tryCloseEvent = (event_id : string)   => { 
-    return pipe (
-        {
-            // id : param.event_id,
-            // state: "close"
-        },
-        EventApi.updateEventState,
-        fptsHelper.TE.ofApiResponse, 
-    )
-}
+export const tryCloseEvent = (event_id : string)   => 
+     EventApi.updateEventState({id: event_id},  "close")
+// { 
+//     return pipe (
+//         {
+//             // id : param.event_id,
+//             // state: "close"
+//         },
+//         EventApi.updateEventState,
+//         fptsHelper.TE.ofApiResponse, 
+//     )
+// }
  
 
 /**

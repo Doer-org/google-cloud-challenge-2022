@@ -155,7 +155,7 @@ export interface components {
       name: string;
       authenticated: boolean;
       mail?: string;
-      icon: string;
+      icon?: string;
     };
     Event_CommentsList: {
       /** Format: uuid */
@@ -168,7 +168,7 @@ export interface components {
       name: string;
       authenticated: boolean;
       mail?: string;
-      icon: string;
+      icon?: string;
     };
     User: {
       /** Format: uuid */
@@ -176,7 +176,7 @@ export interface components {
       name: string;
       authenticated: boolean;
       mail?: string;
-      icon: string;
+      icon?: string;
       events?: (components["schemas"]["Event"])[];
       comments?: (components["schemas"]["Comment"])[];
     };
@@ -186,7 +186,7 @@ export interface components {
       name: string;
       authenticated: boolean;
       mail?: string;
-      icon: string;
+      icon?: string;
     };
     UserRead: {
       /** Format: uuid */
@@ -194,7 +194,7 @@ export interface components {
       name: string;
       authenticated: boolean;
       mail?: string;
-      icon: string;
+      icon?: string;
     };
     UserUpdate: {
       /** Format: uuid */
@@ -202,7 +202,7 @@ export interface components {
       name: string;
       authenticated: boolean;
       mail?: string;
-      icon: string;
+      icon?: string;
     };
     User_EventsList: {
       /** Format: uuid */
@@ -499,7 +499,7 @@ export interface operations {
           name: string;
           authenticated: boolean;
           mail?: string;
-          icon: string;
+          icon?: string;
           events?: (string)[];
           comments?: (string)[];
         };

@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { MyHead } from '../../../../components/templates/shared/MyHead';
+import { MyHead } from '../../../../components/templates/shared/Head/MyHead';
 import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
 import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
-import { useCopyToClipboard } from 'usehooks-ts'
+import { useCopyToClipboard } from 'usehooks-ts';
 
 export default function Participate() {
   // ここはイベントを作成したときにリンクをコピーする画面
-  // TODO:URLコピー機能  
-  const [value, copy] = useCopyToClipboard()
-  const router = useRouter()
+  // TODO:URLコピー機能
+  const [value, copy] = useCopyToClipboard();
+  const router = useRouter();
   const [name, setName] = useState('');
   const [word, setWord] = useState('');
   const event_id = useRouter().query.id;
@@ -19,11 +19,12 @@ export default function Participate() {
       <MyHead title="イベントURLコピー" description="" />
       <BasicTemplate className="text-center">
         <EventInfo />
-        <Button 
+        <Button
           className="flex m-auto my-5"
           onClick={() => {
-            copy(router.pathname) // とりあえずcurrenturlをコピー
-        }}>
+            copy(router.pathname); // とりあえずcurrenturlをコピー
+          }}
+        >
           URLをコピー
         </Button>
       </BasicTemplate>

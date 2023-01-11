@@ -3,7 +3,7 @@ import { TypoWrapper } from '../../components/atoms/text/TypoWrapper';
 import { EventBasicInfo } from '../../components/molecules/Event/EventBasicInfo';
 import { EventWrapper } from '../../components/molecules/Event/EventWrapper';
 import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
-import { MyHead } from '../../components/templates/shared/MyHead';
+import { MyHead } from '../../components/templates/shared/Head/MyHead';
 
 export default function Index() {
   // TODO: 自分の作ったevent一覧をとってくるhooks使う

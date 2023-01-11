@@ -28,7 +28,7 @@ func (User) Fields() []ent.Field {
 			Optional().
 			MaxLen(50),
 		field.String("icon").
-			NotEmpty().
+			Optional().
 			MaxLen(200),
 	}
 }

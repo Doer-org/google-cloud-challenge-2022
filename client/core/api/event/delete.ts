@@ -3,10 +3,12 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../utils/fptsHelper'
 import { EventApi }from '../../utils/gcChallengeApi' 
   
-export const tryDeleteEvent = (id : string) => pipe (
-    EventApi.deleteEvent({id: id}),
-    fptsHelper.TE.ofApiResponse 
-)  
+export const tryDeleteEvent = (id : string) =>EventApi.deleteEvent({id: id})
+
+// pipe (
+//     EventApi.deleteEvent({id: id}),
+//     fptsHelper.TE.ofApiResponse 
+// )  
 
 /**
 * 多分動く

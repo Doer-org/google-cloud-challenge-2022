@@ -11,17 +11,76 @@ export module EventApi {
 
     /** idでイベントを取得します。このidが共有するURLに使われます。 */
     export const getEvent = apiClient.path("/events/{id}").method("get").create()
-    export const deleteEvent = apiClient.path("/events/{id}").method("delete").create()
+    export const deleteEvent = (param: {id : string})  => 
+        //apiClient.path("/events/{id}").method("delete").create() // "Unable to find content for application/json",
+        pipe(
+            TE.tryCatch(
+                () => 
+                    fetch(`${baseUrl}/events/${param.id}`, {
+                        method: "DELETE"
+                    }),
+                (e: any) => Error(e),
+            ),
+            TE.chain((resp)=> 
+                (resp.ok)
+                ? TE.right(resp) 
+                : TE.left(Error(`${resp.status} : ${resp.statusText}`))
+            )
+        ) 
+            
     export const updateEvent = apiClient.path("/events/{id}").method("patch").create()
     export const getEventHost = apiClient.path("/events/{id}/admin").method("get").create()
     /**  このAPIを同時にたたいて、コメント一覧も取得してください。 */
     export const getEventComments = apiClient.path("/events/{id}/comments").method("get").create() 
 
     /** nameのみが必須です。commentがある場合は、以下のようにrequest bodyに入れてください。 */
-    export const join = apiClient.path("/events/{id}/participants").method("post").create()
-    export const updateEventState = apiClient.path("/events/{id}/state").method("patch").create()
+    // export const join = apiClient.path("/events/{id}/participants").method("post").create()
+    
+    /** 
+     * No response in the range 200-299 defined
+     * nameのみが必須です。commentがある場合は、以下のようにrequest bodyに入れてください。 
+     * */ 
+    export const join  = (id : string, body: {name : string, comment ?: string})  => 
+        pipe(
+            TE.tryCatch(
+                () => 
+                    fetch(`${baseUrl}/events/${id}/participants`, { 
+                        method : "post"
+                        , body: JSON.stringify(body)
+                    }),
+                (e: any) => Error(e),
+            ),
+            TE.chain((resp)=>
+                (resp.ok)
+                ? TE.right(resp) 
+                : TE.left(Error(`${resp.status} : ${resp.statusText}`))
+            )
+        ) 
 
-    /** このAPIで参加者を取得できますが、同時にコメントは取得できません。*/
+    
+    // export const updateEventState = apiClient.path("/events/{id}/state").method("patch").create()
+    /** No response in the range 200-299 defined */
+    export const updateEventState  = (param: {id : string}, state : "close" | "cancel" | "open")  => 
+        pipe(
+            TE.tryCatch(
+                () => 
+                    fetch(`${baseUrl}/events/${param.id}/state`, { 
+                        method : "patch"
+                        // , body: JSON.stringify({
+                        //     state : state
+                        // })
+                    }),
+                (e: any) => Error(e),
+            ),
+            TE.chain((resp)=>
+                (resp.ok)
+                ? TE.right(resp) 
+                : TE.left(Error(`${resp.status} : ${resp.statusText}`))
+            )
+        ) 
+
+
+    /** このAPIで参加者を取得できますが、同時にコメントは取得できません。ホストを含む*/
     export const getEventMembers = apiClient.path("/events/{id}/users").method("get").create() 
 }
 
@@ -45,6 +104,5 @@ export module UserApi {
             )
         ) 
     export const updateById = apiClient.path("/users/{id}").method("patch").create()
-    
     export const getUsersEvents = apiClient.path("/users/{id}/events").method("get").create()  
 } 

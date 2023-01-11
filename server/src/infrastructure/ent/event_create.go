@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
@@ -113,6 +114,21 @@ func (ec *EventCreate) AddUsers(u ...*User) *EventCreate {
 		ids[i] = u[i].ID
 	}
 	return ec.AddUserIDs(ids...)
+}
+
+// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
+func (ec *EventCreate) AddCommentIDs(ids ...uuid.UUID) *EventCreate {
+	ec.mutation.AddCommentIDs(ids...)
+	return ec
+}
+
+// AddComments adds the "comments" edges to the Comment entity.
+func (ec *EventCreate) AddComments(c ...*Comment) *EventCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ec.AddCommentIDs(ids...)
 }
 
 // Mutation returns the EventMutation object of the builder.
@@ -284,6 +300,25 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.CommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.CommentsTable,
+			Columns: []string{event.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: comment.FieldID,
 				},
 			},
 		}

@@ -493,23 +493,26 @@ func (m *CommentMutation) ResetEdge(name string) error {
 // EventMutation represents an operation that mutates the Event nodes in the graph.
 type EventMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	name          *string
-	detail        *string
-	location      *string
-	_type         *string
-	state         *string
-	clearedFields map[string]struct{}
-	admin         *uuid.UUID
-	clearedadmin  bool
-	users         map[uuid.UUID]struct{}
-	removedusers  map[uuid.UUID]struct{}
-	clearedusers  bool
-	done          bool
-	oldValue      func(context.Context) (*Event, error)
-	predicates    []predicate.Event
+	op              Op
+	typ             string
+	id              *uuid.UUID
+	name            *string
+	detail          *string
+	location        *string
+	_type           *string
+	state           *string
+	clearedFields   map[string]struct{}
+	admin           *uuid.UUID
+	clearedadmin    bool
+	users           map[uuid.UUID]struct{}
+	removedusers    map[uuid.UUID]struct{}
+	clearedusers    bool
+	comments        map[uuid.UUID]struct{}
+	removedcomments map[uuid.UUID]struct{}
+	clearedcomments bool
+	done            bool
+	oldValue        func(context.Context) (*Event, error)
+	predicates      []predicate.Event
 }
 
 var _ ent.Mutation = (*EventMutation)(nil)
@@ -915,6 +918,60 @@ func (m *EventMutation) ResetUsers() {
 	m.removedusers = nil
 }
 
+// AddCommentIDs adds the "comments" edge to the Comment entity by ids.
+func (m *EventMutation) AddCommentIDs(ids ...uuid.UUID) {
+	if m.comments == nil {
+		m.comments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.comments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearComments clears the "comments" edge to the Comment entity.
+func (m *EventMutation) ClearComments() {
+	m.clearedcomments = true
+}
+
+// CommentsCleared reports if the "comments" edge to the Comment entity was cleared.
+func (m *EventMutation) CommentsCleared() bool {
+	return m.clearedcomments
+}
+
+// RemoveCommentIDs removes the "comments" edge to the Comment entity by IDs.
+func (m *EventMutation) RemoveCommentIDs(ids ...uuid.UUID) {
+	if m.removedcomments == nil {
+		m.removedcomments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.comments, ids[i])
+		m.removedcomments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedComments returns the removed IDs of the "comments" edge to the Comment entity.
+func (m *EventMutation) RemovedCommentsIDs() (ids []uuid.UUID) {
+	for id := range m.removedcomments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CommentsIDs returns the "comments" edge IDs in the mutation.
+func (m *EventMutation) CommentsIDs() (ids []uuid.UUID) {
+	for id := range m.comments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetComments resets all changes to the "comments" edge.
+func (m *EventMutation) ResetComments() {
+	m.comments = nil
+	m.clearedcomments = false
+	m.removedcomments = nil
+}
+
 // Where appends a list predicates to the EventMutation builder.
 func (m *EventMutation) Where(ps ...predicate.Event) {
 	m.predicates = append(m.predicates, ps...)
@@ -1131,12 +1188,15 @@ func (m *EventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.admin != nil {
 		edges = append(edges, event.EdgeAdmin)
 	}
 	if m.users != nil {
 		edges = append(edges, event.EdgeUsers)
+	}
+	if m.comments != nil {
+		edges = append(edges, event.EdgeComments)
 	}
 	return edges
 }
@@ -1155,15 +1215,24 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case event.EdgeComments:
+		ids := make([]ent.Value, 0, len(m.comments))
+		for id := range m.comments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedusers != nil {
 		edges = append(edges, event.EdgeUsers)
+	}
+	if m.removedcomments != nil {
+		edges = append(edges, event.EdgeComments)
 	}
 	return edges
 }
@@ -1178,18 +1247,27 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case event.EdgeComments:
+		ids := make([]ent.Value, 0, len(m.removedcomments))
+		for id := range m.removedcomments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedadmin {
 		edges = append(edges, event.EdgeAdmin)
 	}
 	if m.clearedusers {
 		edges = append(edges, event.EdgeUsers)
+	}
+	if m.clearedcomments {
+		edges = append(edges, event.EdgeComments)
 	}
 	return edges
 }
@@ -1202,6 +1280,8 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 		return m.clearedadmin
 	case event.EdgeUsers:
 		return m.clearedusers
+	case event.EdgeComments:
+		return m.clearedcomments
 	}
 	return false
 }
@@ -1227,6 +1307,9 @@ func (m *EventMutation) ResetEdge(name string) error {
 	case event.EdgeUsers:
 		m.ResetUsers()
 		return nil
+	case event.EdgeComments:
+		m.ResetComments()
+		return nil
 	}
 	return fmt.Errorf("unknown Event edge %s", name)
 }
@@ -1234,20 +1317,23 @@ func (m *EventMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	name          *string
-	authenticated *bool
-	mail          *string
-	icon          *string
-	clearedFields map[string]struct{}
-	events        map[uuid.UUID]struct{}
-	removedevents map[uuid.UUID]struct{}
-	clearedevents bool
-	done          bool
-	oldValue      func(context.Context) (*User, error)
-	predicates    []predicate.User
+	op              Op
+	typ             string
+	id              *uuid.UUID
+	name            *string
+	authenticated   *bool
+	mail            *string
+	icon            *string
+	clearedFields   map[string]struct{}
+	events          map[uuid.UUID]struct{}
+	removedevents   map[uuid.UUID]struct{}
+	clearedevents   bool
+	comments        map[uuid.UUID]struct{}
+	removedcomments map[uuid.UUID]struct{}
+	clearedcomments bool
+	done            bool
+	oldValue        func(context.Context) (*User, error)
+	predicates      []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -1506,9 +1592,22 @@ func (m *UserMutation) OldIcon(ctx context.Context) (v string, err error) {
 	return oldValue.Icon, nil
 }
 
+// ClearIcon clears the value of the "icon" field.
+func (m *UserMutation) ClearIcon() {
+	m.icon = nil
+	m.clearedFields[user.FieldIcon] = struct{}{}
+}
+
+// IconCleared returns if the "icon" field was cleared in this mutation.
+func (m *UserMutation) IconCleared() bool {
+	_, ok := m.clearedFields[user.FieldIcon]
+	return ok
+}
+
 // ResetIcon resets all changes to the "icon" field.
 func (m *UserMutation) ResetIcon() {
 	m.icon = nil
+	delete(m.clearedFields, user.FieldIcon)
 }
 
 // AddEventIDs adds the "events" edge to the Event entity by ids.
@@ -1563,6 +1662,60 @@ func (m *UserMutation) ResetEvents() {
 	m.events = nil
 	m.clearedevents = false
 	m.removedevents = nil
+}
+
+// AddCommentIDs adds the "comments" edge to the Comment entity by ids.
+func (m *UserMutation) AddCommentIDs(ids ...uuid.UUID) {
+	if m.comments == nil {
+		m.comments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.comments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearComments clears the "comments" edge to the Comment entity.
+func (m *UserMutation) ClearComments() {
+	m.clearedcomments = true
+}
+
+// CommentsCleared reports if the "comments" edge to the Comment entity was cleared.
+func (m *UserMutation) CommentsCleared() bool {
+	return m.clearedcomments
+}
+
+// RemoveCommentIDs removes the "comments" edge to the Comment entity by IDs.
+func (m *UserMutation) RemoveCommentIDs(ids ...uuid.UUID) {
+	if m.removedcomments == nil {
+		m.removedcomments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.comments, ids[i])
+		m.removedcomments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedComments returns the removed IDs of the "comments" edge to the Comment entity.
+func (m *UserMutation) RemovedCommentsIDs() (ids []uuid.UUID) {
+	for id := range m.removedcomments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CommentsIDs returns the "comments" edge IDs in the mutation.
+func (m *UserMutation) CommentsIDs() (ids []uuid.UUID) {
+	for id := range m.comments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetComments resets all changes to the "comments" edge.
+func (m *UserMutation) ResetComments() {
+	m.comments = nil
+	m.clearedcomments = false
+	m.removedcomments = nil
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -1715,6 +1868,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldMail) {
 		fields = append(fields, user.FieldMail)
 	}
+	if m.FieldCleared(user.FieldIcon) {
+		fields = append(fields, user.FieldIcon)
+	}
 	return fields
 }
 
@@ -1731,6 +1887,9 @@ func (m *UserMutation) ClearField(name string) error {
 	switch name {
 	case user.FieldMail:
 		m.ClearMail()
+		return nil
+	case user.FieldIcon:
+		m.ClearIcon()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -1758,9 +1917,12 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.events != nil {
 		edges = append(edges, user.EdgeEvents)
+	}
+	if m.comments != nil {
+		edges = append(edges, user.EdgeComments)
 	}
 	return edges
 }
@@ -1775,15 +1937,24 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeComments:
+		ids := make([]ent.Value, 0, len(m.comments))
+		for id := range m.comments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedevents != nil {
 		edges = append(edges, user.EdgeEvents)
+	}
+	if m.removedcomments != nil {
+		edges = append(edges, user.EdgeComments)
 	}
 	return edges
 }
@@ -1798,15 +1969,24 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeComments:
+		ids := make([]ent.Value, 0, len(m.removedcomments))
+		for id := range m.removedcomments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedevents {
 		edges = append(edges, user.EdgeEvents)
+	}
+	if m.clearedcomments {
+		edges = append(edges, user.EdgeComments)
 	}
 	return edges
 }
@@ -1817,6 +1997,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
 	case user.EdgeEvents:
 		return m.clearedevents
+	case user.EdgeComments:
+		return m.clearedcomments
 	}
 	return false
 }
@@ -1835,6 +2017,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
 	case user.EdgeEvents:
 		m.ResetEvents()
+		return nil
+	case user.EdgeComments:
+		m.ResetComments()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

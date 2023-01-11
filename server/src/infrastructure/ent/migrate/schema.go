@@ -12,8 +12,8 @@ var (
 	CommentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "body", Type: field.TypeString},
-		{Name: "comment_event", Type: field.TypeUUID},
-		{Name: "comment_user", Type: field.TypeUUID},
+		{Name: "event_comments", Type: field.TypeUUID},
+		{Name: "user_comments", Type: field.TypeUUID},
 	}
 	// CommentsTable holds the schema information for the "comments" table.
 	CommentsTable = &schema.Table{
@@ -22,13 +22,13 @@ var (
 		PrimaryKey: []*schema.Column{CommentsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "comments_events_event",
+				Symbol:     "comments_events_comments",
 				Columns:    []*schema.Column{CommentsColumns[2]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "comments_users_user",
+				Symbol:     "comments_users_comments",
 				Columns:    []*schema.Column{CommentsColumns[3]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
@@ -65,7 +65,7 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 20},
 		{Name: "authenticated", Type: field.TypeBool, Default: false},
 		{Name: "mail", Type: field.TypeString, Nullable: true, Size: 50},
-		{Name: "icon", Type: field.TypeString, Size: 200},
+		{Name: "icon", Type: field.TypeString, Nullable: true, Size: 200},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

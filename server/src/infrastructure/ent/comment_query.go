@@ -80,7 +80,7 @@ func (cq *CommentQuery) QueryEvent() *EventQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(comment.Table, comment.FieldID, selector),
 			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, comment.EventTable, comment.EventColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, comment.EventTable, comment.EventColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -102,7 +102,7 @@ func (cq *CommentQuery) QueryUser() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(comment.Table, comment.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, comment.UserTable, comment.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, comment.UserTable, comment.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -459,10 +459,10 @@ func (cq *CommentQuery) loadEvent(ctx context.Context, query *EventQuery, nodes 
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Comment)
 	for i := range nodes {
-		if nodes[i].comment_event == nil {
+		if nodes[i].event_comments == nil {
 			continue
 		}
-		fk := *nodes[i].comment_event
+		fk := *nodes[i].event_comments
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -476,7 +476,7 @@ func (cq *CommentQuery) loadEvent(ctx context.Context, query *EventQuery, nodes 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "comment_event" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "event_comments" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -488,10 +488,10 @@ func (cq *CommentQuery) loadUser(ctx context.Context, query *UserQuery, nodes []
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Comment)
 	for i := range nodes {
-		if nodes[i].comment_user == nil {
+		if nodes[i].user_comments == nil {
 			continue
 		}
-		fk := *nodes[i].comment_user
+		fk := *nodes[i].user_comments
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -505,7 +505,7 @@ func (cq *CommentQuery) loadUser(ctx context.Context, query *UserQuery, nodes []
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "comment_user" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_comments" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

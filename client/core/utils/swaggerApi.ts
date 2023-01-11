@@ -1,7 +1,6 @@
-import {SwaggerApiClient} from "../lib/ApiClient"
+import {createApiClient} from "../lib/ApiClient"
 
-const apiClient = SwaggerApiClient()
-
+const apiClient = createApiClient("http://localhost:8003") 
 
 export module EventApi {
     /**作成したイベントがresponseとして返ってきます。 注 : adminはこのAPIをたたいたタイミングでイベントに参加したとみなされます。 つまり、他のAPIを用いてadminをeventに参加させる処理を行う必要はありません。 */
@@ -30,4 +29,3 @@ export module UserApi {
     export const updateById = apiClient.path("/users/{id}").method("patch").create()
     export const getUsersEvents = apiClient.path("/users/{id}/events").method("get").create()  
 } 
- 

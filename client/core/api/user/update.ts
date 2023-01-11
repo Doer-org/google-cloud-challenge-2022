@@ -1,7 +1,7 @@
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither'  
 import { fptsHelper } from '../../utils/fptsHelper'
-import { UserApi }from '../../utils/api' 
+import { UserApi }from '../../utils/gcChallengeApi' 
 import { components, operations, paths } from "../../openapi/openapi"
 export const tryUpdateUser = (user : components["schemas"]["UserUpdate"]) => pipe (
     UserApi.createUser(user),

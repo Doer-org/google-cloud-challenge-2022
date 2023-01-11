@@ -1,7 +1,7 @@
 import { fptsHelper } from '../../utils/fptsHelper'
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
-import { EventApi }from '../../utils/api' 
+import { EventApi }from '../../utils/gcChallengeApi' 
 import { Event, Host } from '../../types/event'
 
 export module CreateParamExample {
@@ -24,9 +24,6 @@ export const tryCreateNewEvent = (
         timestamp : number
     } 
 ) : TE.TaskEither<Error, {url:string, created_event : Event}> => { 
-    // if (param.max_member === -1) {
-    //     return TE.left(Error("fail > tryCreateNewEvent"))
-    // } 
     return pipe ( 
         {
             name: param.event_name,

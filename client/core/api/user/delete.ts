@@ -1,7 +1,7 @@
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither'  
 import { fptsHelper } from '../../utils/fptsHelper'
-import { UserApi }from '../../utils/api'  
+import { UserApi }from '../../utils/gcChallengeApi'  
 export const tryCreateUser = (user : string) => pipe (
     UserApi.deleteById({id:user}),
     fptsHelper.TE.ofApiResponse 

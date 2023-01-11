@@ -1,18 +1,16 @@
 import { paths } from "../openapi/openapi"  
 import { Fetcher } from "openapi-typescript-fetch";
-
-export const SwaggerApiClient = () => { 
+/**
+ * 
+ *  http://localhost:8080 => gc api, 
+ *  http://localhost:8003 => swagger api
+ */
+export const createApiClient = (
+    baseUrl : "http://localhost:8080" | "http://localhost:8003"
+) => { 
     const fetcher = Fetcher.for<paths>()
     fetcher.configure({
-        baseUrl: 'http://localhost:8003',  
-    }) 
-    return fetcher
-}
-
-export const ApiClient = () => { 
-    const fetcher = Fetcher.for<paths>()
-    fetcher.configure({
-        baseUrl: 'http://localhost:8080',
+        baseUrl: baseUrl,
     }) 
     return fetcher
 }

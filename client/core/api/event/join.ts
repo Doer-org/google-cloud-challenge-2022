@@ -1,44 +1,9 @@
 import { flow, pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
 import { Event } from '../../types/event'
-import { fptsHelper } from '../../uitls/fptsHelper'
-import { EventApi } from '../../uitls/mockApi'
+import { fptsHelper } from '../../utils/fptsHelper'
+import { EventApi } from '../../utils/gcChallengeApi'
 
-// export module JoinRetExample { 
-//     export const ok : Event = {
-//         event_id: "10",
-//         event_name: "string" ,
-//         detail: "string" ,
-//         location: "string" ,
-//         host: {
-//             user_id : "1"
-//         } ,
-//         participants: [] 
-//     }
-// }
-
-// export module JoinInputExample {
-//     export const causeError : Event = {
-//         event_id: "-1",
-//         event_name: "string" ,
-//         detail: "string" ,
-//         location: "string" ,
-//         host: {
-//             user_id : "1"
-//         } ,
-//         participants: [] 
-//     }
-//     export const ok : Event = {
-//         event_id: "10",
-//         event_name: "string" ,
-//         detail: "string" ,
-//         location: "string" ,
-//         host: {
-//             user_id : "1"
-//         } ,
-//         participants: [] 
-//     }
-// }
 
 export const tryJoinEvent = ( 
     param : {
@@ -56,8 +21,6 @@ export const tryJoinEvent = (
         EventApi.join,
         fptsHelper.TE.ofApiResponse, 
     )
-    // const next_event_state : Event = JoinRetExample.ok
-    // return TE.right(next_event_state) 
 }
 /**
 * 未実装，patch?

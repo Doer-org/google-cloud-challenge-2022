@@ -1,9 +1,9 @@
-import { fptsHelper } from '../../uitls/fptsHelper'
+import { fptsHelper } from '../../utils/fptsHelper'
 import { flow, pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither'
 import * as R from "fp-ts/lib/Record";
 import * as A from "fp-ts/lib/Array";
-import { EventApi } from '../../uitls/mockApi'
+import { EventApi } from '../../utils/gcChallengeApi'
 import { Event } from '../../types/event'
   
  

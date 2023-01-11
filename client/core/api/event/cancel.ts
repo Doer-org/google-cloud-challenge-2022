@@ -1,8 +1,8 @@
   
 import {flow, pipe} from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/TaskEither' 
-import { fptsHelper } from '../../uitls/fptsHelper'
-import { EventApi } from '../../uitls/mockApi'
+import { fptsHelper } from '../../utils/fptsHelper'
+import { EventApi } from '../../utils/gcChallengeApi'
  
 // TODO: axios
 export const tryCancel = (event_id : string)   => { 

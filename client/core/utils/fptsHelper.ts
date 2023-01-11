@@ -9,13 +9,18 @@ export module fptsHelper {
                     () => resp,
                     (e : any) => Error(e)
                 ),
-                FPTE.chain((r) => { // bind
-                    if (r.ok) {
-                        return FPTE.right(r.data)
-                    } else {
-                        return FPTE.left(Error(JSON.stringify(r)))
-                    }
-                }) 
+                FPTE.chain((r) => 
+                    (r.ok)
+                    ? FPTE.right(r.data) 
+                    : FPTE.left(Error(`response: ${r.status} : ${r.headers}`))
+                )
+                // { // bind
+                //     if (r.ok) {
+                //         return FPTE.right(r.data)
+                //     } else {
+                //         return FPTE.left(Error(JSON.stringify(r)))
+                //     }
+                // }) 
             ) 
         }  
     } 

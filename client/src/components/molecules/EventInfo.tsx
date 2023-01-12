@@ -7,19 +7,26 @@ import { Participant } from '../../core/types/event';
 import { ParticipateInfo } from './User/ParticipateInfo';
 import { TypoWrapper } from '../atoms/text/TypoWrapper';
 type TProps = {
-  userId?: string;
   participants?: Participant[];
   eventName: string;
   detail: string;
   location: string;
 };
 export const EventInfo = ({
-  userId,
   eventName,
   participants,
   detail,
   location,
 }: TProps) => {
+  const isJson = (location: string) => {
+    try {
+      JSON.parse(location).lat;
+      JSON.parse(location).lng;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
   return (
     <>
       <Hanging />
@@ -36,9 +43,8 @@ export const EventInfo = ({
             <></>
           )}
         </div>
-
         <EventBasicInfo eventName={eventName} detail={detail} />
-        {location ? (
+        {isJson(location) ? (
           <div className="lg:m-10 m-3">
             <Map
               lat={JSON.parse(location).lat}

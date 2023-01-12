@@ -8,22 +8,27 @@ import { TypoWrapper } from '../../../../components/atoms/text/TypoWrapper';
 import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
 import { updateEvent } from '../../../../core/api/event/update';
 import { useRouter } from 'next/router';
+import { TMapPosition } from '../../../../components/atoms/map/MapBasicInfo';
 
 export default function Edit() {
   // TODO:event編集hooksをonClickへ
-  const [result, setResult] = useState("not closed")
+  const [result, setResult] = useState('not closed');
   const update = updateEvent(
-    (ok) => {setResult("ok!")},
-    (err) => {setResult("error!")}
-  )
+    (ok) => {
+      setResult('ok!');
+    },
+    (err) => {
+      setResult('error!');
+    }
+  );
 
   const tmp = useRouter().query.id;
-  const event_id =
-    (typeof(tmp) === "undefined" || Array.isArray(tmp)) ? "" : tmp
+  const event_id = typeof tmp === 'undefined' || Array.isArray(tmp) ? '' : tmp;
 
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);
   const [detail, setDetail] = useState('');
+  const [location, setLocation] = useState<null | TMapPosition>(null);
   return (
     <BasicTemplate className="text-center">
       <TypoWrapper size="large" line="bold">
@@ -51,24 +56,23 @@ export default function Edit() {
           changeContent={setDetail}
           required={true}
         />
-        <MapForm />
-        <Button 
+        <MapForm location={location} setLocation={setLocation} />
+        <Button
           className="flex m-auto my-5"
-          onClick={() => 
-            update(
-              { id: event_id,
-                name: name,
-                detail: detail,
-                location:"location",
-                type: "???", 
-                state: "???" } 
-            )
-          }>
+          onClick={() =>
+            update({
+              id: event_id,
+              name: name,
+              detail: detail,
+              location: 'location',
+              type: '???',
+              state: '???',
+            })
+          }
+        >
           編集完了する
         </Button>
-        <>
-          {result}
-        </>
+        <>{result}</>
       </FormWrapper>
     </BasicTemplate>
   );

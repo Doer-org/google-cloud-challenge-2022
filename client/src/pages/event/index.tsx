@@ -6,7 +6,7 @@ import { EventWrapper } from '../../components/molecules/Event/EventWrapper';
 import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
 import { MyHead } from '../../components/templates/shared/Head/MyHead';
 import { getEventList } from '../../core/api/user/getEventList';
-import { UserStore } from '../../store/userStore';
+import { useUserInfoStore } from '../../store/userStore';
 import { Event } from '../../core/types/event';
 import { components } from '../../core/openapi/openapi';
 import { EventBasicInfoCard } from '../../components/molecules/Event/EventBasicInfoCard';
@@ -16,7 +16,9 @@ export default function Index() {
   const [events, setEvents] = useState<
     components['schemas']['User_EventsList'][]
   >([]);
-  const { userId } = UserStore();
+  // const { userId } = UserStore();
+  
+  const {userInfo, setUserInfo} = useUserInfoStore()
   useEffect(() => {
     const getEvents = getEventList(
       (response) => {
@@ -24,8 +26,8 @@ export default function Index() {
       },
       (error) => {}
     );
-    getEvents(userId);
-  }, []);
+    getEvents(userInfo.userId);
+  }, [userInfo]);
 
   return (
     <>

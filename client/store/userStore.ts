@@ -27,7 +27,7 @@ type UserInfoStore = {
   setUserId: (id: string) => void;
 };
 export const UserStore = create<UserInfoStore>((set) => ({
-  userId: '5a288c56-09fd-422a-9753-a73216f64f01',
+  userId: 'c698649d-9f54-4bf7-9e0f-5a715fc04909',
   setUserId: (id: string) => {
     return {
       userId: id,

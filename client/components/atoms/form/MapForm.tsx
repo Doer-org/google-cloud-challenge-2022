@@ -32,7 +32,7 @@ export const MapForm = ({ location, setLocation }: TProps) => {
     <GoogleMap
       mapContainerStyle={ContainerStyle}
       center={current !== null ? current : undefined}
-      zoom={15}
+      zoom={13}
       onClick={(e) => {
         setLocation({
           lat: Number(e.latLng?.lat()),

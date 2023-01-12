@@ -31,7 +31,7 @@ export default function Show() {
   );
   useEffect(() => {
     getEvent(eventId as string);
-  }, [eventId, getEvent]);
+  }, []);
   // TODO: commentだけ空文字で返ってくる
   return (
     <>

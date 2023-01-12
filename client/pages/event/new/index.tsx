@@ -7,7 +7,7 @@ import { Textarea } from '../../../components/atoms/form/Textarea';
 import { FormWrapper } from '../../../components/atoms/form/FormWrapper';
 import { Button } from '../../../components/atoms/text/Button';
 import { MapForm } from '../../../components/atoms/form/MapForm';
-import { UserStore } from '../../../store/userStore';
+import { useUserInfoStore } from '../../../store/userStore';
 import { useRouter } from 'next/router';
 import { TMapPosition } from '../../../components/atoms/map/MapBasicInfo';
 
@@ -21,7 +21,9 @@ export default function New() {
     },
     (e) => {}
   );
-  const { userId } = UserStore();
+  // const { userId } = UserStore();
+  const { userInfo, setUserInfo} = useUserInfoStore()
+  
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);
   const [detail, setDetail] = useState('');
@@ -59,7 +61,7 @@ export default function New() {
           className="flex m-auto my-5"
           onClick={() => {
             createEvent(
-              { user_id: userId },
+              { user_id: userInfo.userId },
               {
                 event_name: name,
                 max_member: capacity,

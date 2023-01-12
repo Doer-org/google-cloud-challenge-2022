@@ -2,8 +2,10 @@ import { createApiClient } from '../lib/ApiClient';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 
-const baseUrl = 'http://localhost:8080';
-const apiClient = createApiClient(baseUrl);
+const baseUrl = 
+    // "https://gc-api-qgai5lo5hq-an.a.run.app"
+    "http://localhost:8080" 
+const apiClient = createApiClient(baseUrl)
 
 export module EventApi {
   /**作成したイベントがresponseとして返ってきます。 注 : adminはこのAPIをたたいたタイミングでイベントに参加したとみなされます。 つまり、他のAPIを用いてadminをeventに参加させる処理を行う必要はありません。 */

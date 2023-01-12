@@ -68,7 +68,7 @@ export const tryGetEventInfo = (event_id: string) => {
                             hm.members.map((member) => ( 
                                 {
                                     participant_name: member.name,
-                                    commemt: 
+                                    comment: 
                                         R.has(member.id,info.commentDic) 
                                         ? info.commentDic[member.id]
                                         : ""

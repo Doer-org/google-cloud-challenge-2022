@@ -20,12 +20,17 @@ export const BasicTemplate = ({ children, className }: TProps) => {
     const bh = document.documentElement.clientHeight;
     const elh = Number(el?.current?.getBoundingClientRect().height);
     setHeight(bh > elh ? 'h-screen' : '');
-    console.log(bh, elh);
     window.onload = () => {
       const elh = Number(el?.current?.getBoundingClientRect().height);
       setHeight(bh > elh ? 'h-screen' : '');
     };
   }, []);
+  useEffect(() => {
+    const bh = document.documentElement.clientHeight;
+    const elh = Number(el?.current?.getBoundingClientRect().height);
+    console.log(bh, elh);
+    setHeight(bh > elh ? 'h-screen' : '');
+  }, [children]);
 
   useEffect(() => {
     const bh = document.documentElement.clientHeight;

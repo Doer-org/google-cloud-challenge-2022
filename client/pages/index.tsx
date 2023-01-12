@@ -3,15 +3,15 @@ import { MyHead } from '../components/templates/shared/Head/MyHead';
 import { BasicTemplate } from '../components/templates/shared/BasicTemplate';
 import { TypoWrapper } from '../components/atoms/text/TypoWrapper';
 import { AuthLinks } from '../components/molecules/AuthLinks';
-
+import style from '../styles/title.module.css';
 export default function Home() {
   const [auth, setAuth] = useState(false);
   return (
     <>
-      <MyHead title="サービス名" description="サービスの説明" />
+      <MyHead title="すきーま" description="すきーまの説明" />
       <BasicTemplate className="text-center">
         <TypoWrapper size="large" line="bold">
-          <h1>サービス名</h1>
+          <h1 className={style.title}>すきーま</h1>
         </TypoWrapper>
         <AuthLinks auth={auth} changeAuth={setAuth} />
       </BasicTemplate>

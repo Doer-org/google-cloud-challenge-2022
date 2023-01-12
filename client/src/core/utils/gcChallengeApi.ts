@@ -3,8 +3,8 @@ import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 
 const baseUrl = 
-    // "https://gc-api-qgai5lo5hq-an.a.run.app"
-    "http://localhost:8080" 
+    "https://gc-api-qgai5lo5hq-an.a.run.app"
+    // "http://localhost:8080" 
 const apiClient = createApiClient(baseUrl)
 
 export module EventApi {

@@ -1,0 +1,3 @@
+{
+    "vitest.commandLine": "cd client && yarn test:watch"
+}

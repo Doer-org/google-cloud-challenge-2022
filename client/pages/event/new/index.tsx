@@ -7,21 +7,24 @@ import { Textarea } from '../../../components/atoms/form/Textarea';
 import { FormWrapper } from '../../../components/atoms/form/FormWrapper';
 import { Button } from '../../../components/atoms/text/Button';
 import { MapForm } from '../../../components/atoms/form/MapForm';
-import { useUserInfoStore } from '../../../store/userStore';
+import { UserStore } from '../../../store/userStore';
+import { useRouter } from 'next/router';
+import { TMapPosition } from '../../../components/atoms/map/MapBasicInfo';
 
 export default function New() {
-  const [createdEventId, setCreatedEventId] = useState(0);
-  const [created, setCreated] = useState(false);
-  // TODO:event作成hooksを入れる
+  const router = useRouter();
   const createEvent = createNewEvent(
-    (ok) => {setCreated(true)},
+    (ok) => {
+      router.push('/');
+    },
     (e) => {}
-  )
-  const { userInfo, setUserInfo } = useUserInfoStore()
+  );
+  const { userId } = UserStore();
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);
   const [detail, setDetail] = useState('');
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState<null | TMapPosition>(null);
+
   return (
     <BasicTemplate className="text-center">
       <TypoWrapper size="large" line="bold">
@@ -49,22 +52,22 @@ export default function New() {
           changeContent={setDetail}
           required={true}
         />
-        <MapForm />
-        <Button 
-          className="flex m-auto my-5" 
+        <MapForm location={location} setLocation={setLocation} />
+        <Button
+          className="flex m-auto my-5"
           onClick={() => {
             createEvent(
-              { user_id : userInfo.userId },
+              { user_id: userId },
               {
-                event_name : name,
-                max_member : capacity,
-                detail : detail,
-                location : location,
-                timestamp : Date.now() 
+                event_name: name,
+                max_member: capacity,
+                detail: detail,
+                location: JSON.stringify(location),
+                timestamp: Date.now(),
               }
-            )
-
-        }}>
+            );
+          }}
+        >
           募集する
         </Button>
       </FormWrapper>

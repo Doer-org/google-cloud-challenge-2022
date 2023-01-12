@@ -6,9 +6,12 @@ import {
   type TMapPosition,
 } from '../map/MapBasicInfo';
 import { TypoWrapper } from '../text/TypoWrapper';
-export const MapForm = () => {
+type TProps = {
+  location: TMapPosition | null;
+  setLocation: (position: TMapPosition) => void;
+};
+export const MapForm = ({ location, setLocation }: TProps) => {
   // TODO:atomsの責務を超えているのでmoleculesに分離するべき
-  const [pos, setPos] = useState<TMapPosition | null>(null);
   const [current, setCurrent] = useState<TMapPosition>({
     lat: 35.6809591,
     lng: 139.7673068,
@@ -31,14 +34,14 @@ export const MapForm = () => {
       center={current !== null ? current : undefined}
       zoom={15}
       onClick={(e) => {
-        setPos({
+        setLocation({
           lat: Number(e.latLng?.lat()),
           lng: Number(e.latLng?.lng()),
         });
       }}
       options={Options}
     >
-      {pos ? <MarkerF position={pos} /> : <></>}
+      {location ? <MarkerF position={location} /> : <></>}
     </GoogleMap>
   ) : (
     <TypoWrapper>

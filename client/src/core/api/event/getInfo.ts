@@ -5,6 +5,7 @@ import * as R from "fp-ts/lib/Record";
 import * as A from "fp-ts/lib/Array";
 import { EventApi } from '../../utils/gcChallengeApi'
 import { Event } from '../../types/event'
+import { Retryer } from 'react-query/types/core/retryer';
   
  
 export const tryGetEventInfo = (event_id: string) => { 
@@ -19,16 +20,33 @@ export const tryGetEventInfo = (event_id: string) => {
             getComments({id: eventInfo.id}),
             TE.map(flow(
                 A.map((e) => {
-                    const r : [string, string] = [e.id, e.body]
+                    const v = e as {
+                        id: string,
+                        body : string
+                        edges: {
+                            user : { 
+                                id : string,
+                                name : string,
+                                icon : string
+                            }
+                        }
+                    }  
+                    return v
+                }),
+                A.map((comment) => { 
+                    const r : [string, string] = [comment.edges.user.id, comment.body]
                     return r
                 }),
                 R.fromEntries, 
-                (comment) => (
-                    {
-                        eventInfo : eventInfo,
-                        commentDic : comment
-                    }
-                )
+                (comment) => ({
+                    eventInfo : eventInfo,
+                    commentDic : comment
+                }),
+                (c) => { 
+                    console.log(`========= getComments : ${eventInfo.id} =========`) 
+                    console.log(c)
+                    return c
+                }
             )) 
         ))
     )
@@ -37,7 +55,9 @@ export const tryGetEventInfo = (event_id: string) => {
         getEventHost,
         TE.chain((host) => pipe(
             getEventMembers({ id: event_id }),
-            TE.map((members) => {
+            TE.map((members) => { 
+                console.log(`========= getEventMembers : ${event_id} =========`) 
+                console.log(members)
                 return {
                     host: host,
                     members: members.filter((member) => member.id !== host.id)
@@ -51,7 +71,7 @@ export const tryGetEventInfo = (event_id: string) => {
             getEventInfoAndComments({ id: event_info.id }), 
             TE.chain((info) => pipe(
                 getHostAndMembers({ id: info.eventInfo.id }),
-                TE.map((hm) => { 
+                TE.map((hm) => {
                     const e: Event = {
                         event_id: info.eventInfo.id,
                         event_name: info.eventInfo.name,
@@ -65,15 +85,13 @@ export const tryGetEventInfo = (event_id: string) => {
                             : ""
                          */
                         participants: 
-                            hm.members.map((member) => ( 
-                                {
-                                    participant_name: member.name,
-                                    comment: 
-                                        R.has(member.id,info.commentDic) 
-                                        ? info.commentDic[member.id]
-                                        : ""
-                                }
-                            ))
+                            hm.members.map((member) => ( {
+                                participant_name: member.name,
+                                comment: 
+                                    R.has(member.id,info.commentDic) 
+                                    ? info.commentDic[member.id]
+                                    : ""
+                            }))
                     }
                     return e 
                 }) 

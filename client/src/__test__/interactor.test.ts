@@ -8,6 +8,7 @@ import { tryCreateNewEvent } from '../core/api/event/create'
 import { m } from 'vitest/dist/index-2d10c3fd'
 import { getEventInfo, tryGetEventInfo } from '../core/api/event/getInfo'
 import { joinEvent, tryJoinEvent } from '../core/api/event/join'
+import { right } from 'fp-ts/lib/EitherT'
   
 
 const createUser = () => pipe(
@@ -68,34 +69,34 @@ describe('[core/api/create] create', () => {
 
 describe('[core/api/create] getInfo', () => {
   it('正常系：Event関連情報を取得', async () => { 
-    const event = createNewEvent() 
-    const ret = await pipe( 
-      event, 
-      TE.chain((event) => {
+    const event = await createNewEvent()()
+    const eventid = event._tag === "Right" ? event.right.id : "" 
+    await tryJoinEvent({
+      event_id : eventid,
+      participant_name : "A",
+      comment : "aaaa"
+    })()
+    
+    await tryJoinEvent({
+      event_id : eventid,
+      participant_name : "B",
+      comment : "bbbb"
+    })() 
+    await tryJoinEvent({
+      event_id : eventid,
+      participant_name : "C",
+      comment : "cccc"
+    })()
          
-        tryJoinEvent({
-          event_id : event.id,
-          participant_name : "A",
-          comment : "aaaa"
-        })
-        
-        tryJoinEvent({
-          event_id : event.id,
-          participant_name : "B",
-          comment : "bbbb"
-        })
-        
-        tryJoinEvent({
-          event_id : event.id,
-          participant_name : "C",
-          comment : "cccc"
-        })
- 
-        return tryGetEventInfo(event.id)
-      }), 
-    )()
+    const ret =  await tryGetEventInfo(eventid)()
+    console.log(ret)
+    if(ret._tag === "Right") {
+      ret.right.participants.map((v, i) => {
+        console.log(v)
+      })
+    }
     expect(  
-      E.isRight(ret)
+      E.isRight(event) && E.isRight(ret)
     )
     .toBe(
       true 

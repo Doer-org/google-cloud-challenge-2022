@@ -8,11 +8,13 @@ export const tryJoinEvent = (param: {
   event_id: string;
   participant_name: string;
   comment: string;
-}) =>
-  EventApi.join(param.event_id, {
+}) => {
+  console.log(param)
+  return EventApi.join(param.event_id, {
     name: param.participant_name,
     comment: param.comment,
   });
+}
 
 // {
 //     return pipe (

@@ -41,7 +41,9 @@ export default function Participate(event: Event) {
   const router = useRouter();
   const joinApi = joinEvent(
     (response: unknown) => {
-      router.push(`http://localhost:3000/event/${event.event_id}/`);
+      router.push(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/event/${event.event_id}/`
+      );
     },
     (e) => {}
   );

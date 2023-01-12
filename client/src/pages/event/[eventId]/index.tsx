@@ -1,5 +1,3 @@
-import Head from 'next/head';
-import { Inter } from '@next/font/google';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { MyHead } from '../../../components/templates/shared/Head/MyHead';
@@ -7,7 +5,6 @@ import { BasicTemplate } from '../../../components/templates/shared/BasicTemplat
 import { EventInfo } from '../../../components/molecules/EventInfo';
 import { getEventInfo } from '../../../core/api/event/getInfo';
 import { Event } from '../../../core/types/event';
-const inter = Inter({ subsets: ['latin'] });
 
 export default function Show() {
   // TODO: Comment取れてねーじゃん！

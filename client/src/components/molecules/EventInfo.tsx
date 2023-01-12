@@ -31,14 +31,17 @@ export const EventInfo = ({
     <>
       <Hanging />
       <EventWrapper>
-        <div className="grid md:grid-cols-6 grid-cols-4 items-end">
+        <div className="grid md:grid-cols-6 grid-cols-4 items-start">
           <div>
-            <TypoWrapper line="bold">ホスト</TypoWrapper>
+            <TypoWrapper>ホスト</TypoWrapper>
             <UserIcon userName="miso" />
           </div>
 
           {participants ? (
-            <ParticipateInfo participants={participants} />
+            <div>
+              <TypoWrapper>参加者</TypoWrapper>
+              <ParticipateInfo participants={participants} />
+            </div>
           ) : (
             <></>
           )}

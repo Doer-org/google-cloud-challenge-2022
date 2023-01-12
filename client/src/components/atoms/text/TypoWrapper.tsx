@@ -4,7 +4,7 @@ import { match } from 'ts-pattern';
 type TProps = {
   children: ReactNode;
   line?: 'shin' | 'bold';
-  size?: 'small' | 'large';
+  size?: 'small' | 'large' | 'so-large';
 };
 export const TypoWrapper = ({ line, size, children }: TProps) => {
   const decide_line = ({ line }: Pick<TProps, 'line'>) => {
@@ -18,6 +18,7 @@ export const TypoWrapper = ({ line, size, children }: TProps) => {
     return match(size)
       .with('small', () => 'text-sm')
       .with('large', () => 'text-2xl')
+      .with('so-large', () => 'text-4xl')
       .with(undefined, () => 'text-base')
       .exhaustive();
   };

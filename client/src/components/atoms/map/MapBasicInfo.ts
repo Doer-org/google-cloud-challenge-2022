@@ -146,7 +146,6 @@ const MapStyle = [
 ];
 
 export const Options = {
-  styles: MapStyle,
   disableDefaultUI: true,
   zoomControl: true,
 };

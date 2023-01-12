@@ -45,7 +45,9 @@ export default function Participate() {
         <Button
           className="flex m-auto my-5"
           onClick={() => {
-            copy(`http://localhost:3000/event/${eventId}/participate`); // とりあえずcurrenturlをコピー
+            copy(
+              `${process.env.NEXT_PUBLIC_SERVER_URL}event/${eventId}/participate`
+            );
           }}
         >
           URLをコピー

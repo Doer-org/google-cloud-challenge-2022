@@ -8,6 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// CreateAuthStates implements createAuthStates operation.
+	//
+	// Creates a new AuthStates and persists it to storage.
+	//
+	// POST /auth-states
+	CreateAuthStates(ctx context.Context, req *CreateAuthStatesReq) (CreateAuthStatesRes, error)
 	// CreateEState implements createEState operation.
 	//
 	// Creates a new EState and persists it to storage.
@@ -32,12 +38,30 @@ type Handler interface {
 	//
 	// POST /events
 	CreateEvent(ctx context.Context, req *CreateEventReq) (CreateEventRes, error)
+	// CreateGoogleAuth implements createGoogleAuth operation.
+	//
+	// Creates a new GoogleAuth and persists it to storage.
+	//
+	// POST /google-auths
+	CreateGoogleAuth(ctx context.Context, req *CreateGoogleAuthReq) (CreateGoogleAuthRes, error)
+	// CreateLoginSessions implements createLoginSessions operation.
+	//
+	// Creates a new LoginSessions and persists it to storage.
+	//
+	// POST /login-sessions
+	CreateLoginSessions(ctx context.Context, req *CreateLoginSessionsReq) (CreateLoginSessionsRes, error)
 	// CreateUser implements createUser operation.
 	//
 	// Creates a new User and persists it to storage.
 	//
 	// POST /users
 	CreateUser(ctx context.Context, req *CreateUserReq) (CreateUserRes, error)
+	// DeleteAuthStates implements deleteAuthStates operation.
+	//
+	// Deletes the AuthStates with the requested ID.
+	//
+	// DELETE /auth-states/{id}
+	DeleteAuthStates(ctx context.Context, params DeleteAuthStatesParams) (DeleteAuthStatesRes, error)
 	// DeleteEState implements deleteEState operation.
 	//
 	// Deletes the EState with the requested ID.
@@ -62,12 +86,30 @@ type Handler interface {
 	//
 	// DELETE /events/{id}
 	DeleteEvent(ctx context.Context, params DeleteEventParams) (DeleteEventRes, error)
+	// DeleteGoogleAuth implements deleteGoogleAuth operation.
+	//
+	// Deletes the GoogleAuth with the requested ID.
+	//
+	// DELETE /google-auths/{id}
+	DeleteGoogleAuth(ctx context.Context, params DeleteGoogleAuthParams) (DeleteGoogleAuthRes, error)
+	// DeleteLoginSessions implements deleteLoginSessions operation.
+	//
+	// Deletes the LoginSessions with the requested ID.
+	//
+	// DELETE /login-sessions/{id}
+	DeleteLoginSessions(ctx context.Context, params DeleteLoginSessionsParams) (DeleteLoginSessionsRes, error)
 	// DeleteUser implements deleteUser operation.
 	//
 	// Deletes the User with the requested ID.
 	//
 	// DELETE /users/{id}
 	DeleteUser(ctx context.Context, params DeleteUserParams) (DeleteUserRes, error)
+	// ListAuthStates implements listAuthStates operation.
+	//
+	// List AuthStates.
+	//
+	// GET /auth-states
+	ListAuthStates(ctx context.Context, params ListAuthStatesParams) (ListAuthStatesRes, error)
 	// ListEState implements listEState operation.
 	//
 	// List EStates.
@@ -98,6 +140,18 @@ type Handler interface {
 	//
 	// GET /events/{id}/users
 	ListEventUsers(ctx context.Context, params ListEventUsersParams) (ListEventUsersRes, error)
+	// ListGoogleAuth implements listGoogleAuth operation.
+	//
+	// List GoogleAuths.
+	//
+	// GET /google-auths
+	ListGoogleAuth(ctx context.Context, params ListGoogleAuthParams) (ListGoogleAuthRes, error)
+	// ListLoginSessions implements listLoginSessions operation.
+	//
+	// List LoginSessions.
+	//
+	// GET /login-sessions
+	ListLoginSessions(ctx context.Context, params ListLoginSessionsParams) (ListLoginSessionsRes, error)
 	// ListUser implements listUser operation.
 	//
 	// List Users.
@@ -110,6 +164,12 @@ type Handler interface {
 	//
 	// GET /users/{id}/events
 	ListUserEvents(ctx context.Context, params ListUserEventsParams) (ListUserEventsRes, error)
+	// ReadAuthStates implements readAuthStates operation.
+	//
+	// Finds the AuthStates with the requested ID and returns it.
+	//
+	// GET /auth-states/{id}
+	ReadAuthStates(ctx context.Context, params ReadAuthStatesParams) (ReadAuthStatesRes, error)
 	// ReadEState implements readEState operation.
 	//
 	// Finds the EState with the requested ID and returns it.
@@ -170,12 +230,42 @@ type Handler interface {
 	//
 	// GET /events/{id}/type
 	ReadEventType(ctx context.Context, params ReadEventTypeParams) (ReadEventTypeRes, error)
+	// ReadGoogleAuth implements readGoogleAuth operation.
+	//
+	// Finds the GoogleAuth with the requested ID and returns it.
+	//
+	// GET /google-auths/{id}
+	ReadGoogleAuth(ctx context.Context, params ReadGoogleAuthParams) (ReadGoogleAuthRes, error)
+	// ReadGoogleAuthUser implements readGoogleAuthUser operation.
+	//
+	// Find the attached User of the GoogleAuth with the given ID.
+	//
+	// GET /google-auths/{id}/user
+	ReadGoogleAuthUser(ctx context.Context, params ReadGoogleAuthUserParams) (ReadGoogleAuthUserRes, error)
+	// ReadLoginSessions implements readLoginSessions operation.
+	//
+	// Finds the LoginSessions with the requested ID and returns it.
+	//
+	// GET /login-sessions/{id}
+	ReadLoginSessions(ctx context.Context, params ReadLoginSessionsParams) (ReadLoginSessionsRes, error)
+	// ReadLoginSessionsUser implements readLoginSessionsUser operation.
+	//
+	// Find the attached User of the LoginSessions with the given ID.
+	//
+	// GET /login-sessions/{id}/user
+	ReadLoginSessionsUser(ctx context.Context, params ReadLoginSessionsUserParams) (ReadLoginSessionsUserRes, error)
 	// ReadUser implements readUser operation.
 	//
 	// Finds the User with the requested ID and returns it.
 	//
 	// GET /users/{id}
 	ReadUser(ctx context.Context, params ReadUserParams) (ReadUserRes, error)
+	// UpdateAuthStates implements updateAuthStates operation.
+	//
+	// Updates a AuthStates and persists changes to storage.
+	//
+	// PATCH /auth-states/{id}
+	UpdateAuthStates(ctx context.Context, req *UpdateAuthStatesReq, params UpdateAuthStatesParams) (UpdateAuthStatesRes, error)
 	// UpdateEState implements updateEState operation.
 	//
 	// Updates a EState and persists changes to storage.
@@ -200,6 +290,18 @@ type Handler interface {
 	//
 	// PATCH /events/{id}
 	UpdateEvent(ctx context.Context, req *UpdateEventReq, params UpdateEventParams) (UpdateEventRes, error)
+	// UpdateGoogleAuth implements updateGoogleAuth operation.
+	//
+	// Updates a GoogleAuth and persists changes to storage.
+	//
+	// PATCH /google-auths/{id}
+	UpdateGoogleAuth(ctx context.Context, req *UpdateGoogleAuthReq, params UpdateGoogleAuthParams) (UpdateGoogleAuthRes, error)
+	// UpdateLoginSessions implements updateLoginSessions operation.
+	//
+	// Updates a LoginSessions and persists changes to storage.
+	//
+	// PATCH /login-sessions/{id}
+	UpdateLoginSessions(ctx context.Context, req *UpdateLoginSessionsReq, params UpdateLoginSessionsParams) (UpdateLoginSessionsRes, error)
 	// UpdateUser implements updateUser operation.
 	//
 	// Updates a User and persists changes to storage.

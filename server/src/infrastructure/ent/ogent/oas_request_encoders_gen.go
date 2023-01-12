@@ -11,6 +11,20 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
+func encodeCreateAuthStatesRequest(
+	req *CreateAuthStatesReq,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := jx.GetEncoder()
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
 func encodeCreateEStateRequest(
 	req *CreateEStateReq,
 	r *http.Request,
@@ -67,8 +81,50 @@ func encodeCreateEventRequest(
 	return nil
 }
 
+func encodeCreateGoogleAuthRequest(
+	req *CreateGoogleAuthReq,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := jx.GetEncoder()
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
+func encodeCreateLoginSessionsRequest(
+	req *CreateLoginSessionsReq,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := jx.GetEncoder()
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
 func encodeCreateUserRequest(
 	req *CreateUserReq,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := jx.GetEncoder()
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
+func encodeUpdateAuthStatesRequest(
+	req *UpdateAuthStatesReq,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"
@@ -125,6 +181,34 @@ func encodeUpdateEcommentRequest(
 
 func encodeUpdateEventRequest(
 	req *UpdateEventReq,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := jx.GetEncoder()
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
+func encodeUpdateGoogleAuthRequest(
+	req *UpdateGoogleAuthReq,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := jx.GetEncoder()
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
+func encodeUpdateLoginSessionsRequest(
+	req *UpdateLoginSessionsReq,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

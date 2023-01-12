@@ -6,6 +6,12 @@ import (
 	"github.com/go-faster/errors"
 )
 
+func (s ListAuthStatesOKApplicationJSON) Validate() error {
+	if s == nil {
+		return errors.New("nil is invalid value")
+	}
+	return nil
+}
 func (s ListEStateOKApplicationJSON) Validate() error {
 	if s == nil {
 		return errors.New("nil is invalid value")
@@ -31,6 +37,18 @@ func (s ListEventOKApplicationJSON) Validate() error {
 	return nil
 }
 func (s ListEventUsersOKApplicationJSON) Validate() error {
+	if s == nil {
+		return errors.New("nil is invalid value")
+	}
+	return nil
+}
+func (s ListGoogleAuthOKApplicationJSON) Validate() error {
+	if s == nil {
+		return errors.New("nil is invalid value")
+	}
+	return nil
+}
+func (s ListLoginSessionsOKApplicationJSON) Validate() error {
 	if s == nil {
 		return errors.New("nil is invalid value")
 	}

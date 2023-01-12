@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// CreateAuthStates implements createAuthStates operation.
+//
+// Creates a new AuthStates and persists it to storage.
+//
+// POST /auth-states
+func (UnimplementedHandler) CreateAuthStates(ctx context.Context, req *CreateAuthStatesReq) (r CreateAuthStatesRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // CreateEState implements createEState operation.
 //
 // Creates a new EState and persists it to storage.
@@ -49,12 +58,39 @@ func (UnimplementedHandler) CreateEvent(ctx context.Context, req *CreateEventReq
 	return r, ht.ErrNotImplemented
 }
 
+// CreateGoogleAuth implements createGoogleAuth operation.
+//
+// Creates a new GoogleAuth and persists it to storage.
+//
+// POST /google-auths
+func (UnimplementedHandler) CreateGoogleAuth(ctx context.Context, req *CreateGoogleAuthReq) (r CreateGoogleAuthRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// CreateLoginSessions implements createLoginSessions operation.
+//
+// Creates a new LoginSessions and persists it to storage.
+//
+// POST /login-sessions
+func (UnimplementedHandler) CreateLoginSessions(ctx context.Context, req *CreateLoginSessionsReq) (r CreateLoginSessionsRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // CreateUser implements createUser operation.
 //
 // Creates a new User and persists it to storage.
 //
 // POST /users
 func (UnimplementedHandler) CreateUser(ctx context.Context, req *CreateUserReq) (r CreateUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// DeleteAuthStates implements deleteAuthStates operation.
+//
+// Deletes the AuthStates with the requested ID.
+//
+// DELETE /auth-states/{id}
+func (UnimplementedHandler) DeleteAuthStates(ctx context.Context, params DeleteAuthStatesParams) (r DeleteAuthStatesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -94,12 +130,39 @@ func (UnimplementedHandler) DeleteEvent(ctx context.Context, params DeleteEventP
 	return r, ht.ErrNotImplemented
 }
 
+// DeleteGoogleAuth implements deleteGoogleAuth operation.
+//
+// Deletes the GoogleAuth with the requested ID.
+//
+// DELETE /google-auths/{id}
+func (UnimplementedHandler) DeleteGoogleAuth(ctx context.Context, params DeleteGoogleAuthParams) (r DeleteGoogleAuthRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// DeleteLoginSessions implements deleteLoginSessions operation.
+//
+// Deletes the LoginSessions with the requested ID.
+//
+// DELETE /login-sessions/{id}
+func (UnimplementedHandler) DeleteLoginSessions(ctx context.Context, params DeleteLoginSessionsParams) (r DeleteLoginSessionsRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // DeleteUser implements deleteUser operation.
 //
 // Deletes the User with the requested ID.
 //
 // DELETE /users/{id}
 func (UnimplementedHandler) DeleteUser(ctx context.Context, params DeleteUserParams) (r DeleteUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ListAuthStates implements listAuthStates operation.
+//
+// List AuthStates.
+//
+// GET /auth-states
+func (UnimplementedHandler) ListAuthStates(ctx context.Context, params ListAuthStatesParams) (r ListAuthStatesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -148,6 +211,24 @@ func (UnimplementedHandler) ListEventUsers(ctx context.Context, params ListEvent
 	return r, ht.ErrNotImplemented
 }
 
+// ListGoogleAuth implements listGoogleAuth operation.
+//
+// List GoogleAuths.
+//
+// GET /google-auths
+func (UnimplementedHandler) ListGoogleAuth(ctx context.Context, params ListGoogleAuthParams) (r ListGoogleAuthRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ListLoginSessions implements listLoginSessions operation.
+//
+// List LoginSessions.
+//
+// GET /login-sessions
+func (UnimplementedHandler) ListLoginSessions(ctx context.Context, params ListLoginSessionsParams) (r ListLoginSessionsRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ListUser implements listUser operation.
 //
 // List Users.
@@ -163,6 +244,15 @@ func (UnimplementedHandler) ListUser(ctx context.Context, params ListUserParams)
 //
 // GET /users/{id}/events
 func (UnimplementedHandler) ListUserEvents(ctx context.Context, params ListUserEventsParams) (r ListUserEventsRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ReadAuthStates implements readAuthStates operation.
+//
+// Finds the AuthStates with the requested ID and returns it.
+//
+// GET /auth-states/{id}
+func (UnimplementedHandler) ReadAuthStates(ctx context.Context, params ReadAuthStatesParams) (r ReadAuthStatesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -256,12 +346,57 @@ func (UnimplementedHandler) ReadEventType(ctx context.Context, params ReadEventT
 	return r, ht.ErrNotImplemented
 }
 
+// ReadGoogleAuth implements readGoogleAuth operation.
+//
+// Finds the GoogleAuth with the requested ID and returns it.
+//
+// GET /google-auths/{id}
+func (UnimplementedHandler) ReadGoogleAuth(ctx context.Context, params ReadGoogleAuthParams) (r ReadGoogleAuthRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ReadGoogleAuthUser implements readGoogleAuthUser operation.
+//
+// Find the attached User of the GoogleAuth with the given ID.
+//
+// GET /google-auths/{id}/user
+func (UnimplementedHandler) ReadGoogleAuthUser(ctx context.Context, params ReadGoogleAuthUserParams) (r ReadGoogleAuthUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ReadLoginSessions implements readLoginSessions operation.
+//
+// Finds the LoginSessions with the requested ID and returns it.
+//
+// GET /login-sessions/{id}
+func (UnimplementedHandler) ReadLoginSessions(ctx context.Context, params ReadLoginSessionsParams) (r ReadLoginSessionsRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ReadLoginSessionsUser implements readLoginSessionsUser operation.
+//
+// Find the attached User of the LoginSessions with the given ID.
+//
+// GET /login-sessions/{id}/user
+func (UnimplementedHandler) ReadLoginSessionsUser(ctx context.Context, params ReadLoginSessionsUserParams) (r ReadLoginSessionsUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ReadUser implements readUser operation.
 //
 // Finds the User with the requested ID and returns it.
 //
 // GET /users/{id}
 func (UnimplementedHandler) ReadUser(ctx context.Context, params ReadUserParams) (r ReadUserRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// UpdateAuthStates implements updateAuthStates operation.
+//
+// Updates a AuthStates and persists changes to storage.
+//
+// PATCH /auth-states/{id}
+func (UnimplementedHandler) UpdateAuthStates(ctx context.Context, req *UpdateAuthStatesReq, params UpdateAuthStatesParams) (r UpdateAuthStatesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -298,6 +433,24 @@ func (UnimplementedHandler) UpdateEcomment(ctx context.Context, req *UpdateEcomm
 //
 // PATCH /events/{id}
 func (UnimplementedHandler) UpdateEvent(ctx context.Context, req *UpdateEventReq, params UpdateEventParams) (r UpdateEventRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// UpdateGoogleAuth implements updateGoogleAuth operation.
+//
+// Updates a GoogleAuth and persists changes to storage.
+//
+// PATCH /google-auths/{id}
+func (UnimplementedHandler) UpdateGoogleAuth(ctx context.Context, req *UpdateGoogleAuthReq, params UpdateGoogleAuthParams) (r UpdateGoogleAuthRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// UpdateLoginSessions implements updateLoginSessions operation.
+//
+// Updates a LoginSessions and persists changes to storage.
+//
+// PATCH /login-sessions/{id}
+func (UnimplementedHandler) UpdateLoginSessions(ctx context.Context, req *UpdateLoginSessionsReq, params UpdateLoginSessionsParams) (r UpdateLoginSessionsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

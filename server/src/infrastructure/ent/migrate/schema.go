@@ -8,6 +8,18 @@ import (
 )
 
 var (
+	// AuthStatesColumns holds the columns for the "auth_states" table.
+	AuthStatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "state", Type: field.TypeString, Size: 20},
+		{Name: "redirect_url", Type: field.TypeString, Nullable: true, Size: 50},
+	}
+	// AuthStatesTable holds the schema information for the "auth_states" table.
+	AuthStatesTable = &schema.Table{
+		Name:       "auth_states",
+		Columns:    AuthStatesColumns,
+		PrimaryKey: []*schema.Column{AuthStatesColumns[0]},
+	}
 	// EstatesColumns holds the columns for the "estates" table.
 	EstatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -88,6 +100,47 @@ var (
 		Columns:    EventsColumns,
 		PrimaryKey: []*schema.Column{EventsColumns[0]},
 	}
+	// GoogleAuthsColumns holds the columns for the "google_auths" table.
+	GoogleAuthsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "access_token", Type: field.TypeString},
+		{Name: "refresh_token", Type: field.TypeString},
+		{Name: "expiry", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeUUID},
+	}
+	// GoogleAuthsTable holds the schema information for the "google_auths" table.
+	GoogleAuthsTable = &schema.Table{
+		Name:       "google_auths",
+		Columns:    GoogleAuthsColumns,
+		PrimaryKey: []*schema.Column{GoogleAuthsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "google_auths_users_user",
+				Columns:    []*schema.Column{GoogleAuthsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// LoginSessionsColumns holds the columns for the "login_sessions" table.
+	LoginSessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Size: 20},
+		{Name: "user_id", Type: field.TypeUUID},
+	}
+	// LoginSessionsTable holds the schema information for the "login_sessions" table.
+	LoginSessionsTable = &schema.Table{
+		Name:       "login_sessions",
+		Columns:    LoginSessionsColumns,
+		PrimaryKey: []*schema.Column{LoginSessionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "login_sessions_users_user",
+				Columns:    []*schema.Column{LoginSessionsColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -130,10 +183,13 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AuthStatesTable,
 		EstatesTable,
 		EtypesTable,
 		EcommentsTable,
 		EventsTable,
+		GoogleAuthsTable,
+		LoginSessionsTable,
 		UsersTable,
 		UserEventsTable,
 	}
@@ -144,6 +200,8 @@ func init() {
 	EtypesTable.ForeignKeys[0].RefTable = EventsTable
 	EcommentsTable.ForeignKeys[0].RefTable = EventsTable
 	EcommentsTable.ForeignKeys[1].RefTable = UsersTable
+	GoogleAuthsTable.ForeignKeys[0].RefTable = UsersTable
+	LoginSessionsTable.ForeignKeys[0].RefTable = UsersTable
 	UserEventsTable.ForeignKeys[0].RefTable = UsersTable
 	UserEventsTable.ForeignKeys[1].RefTable = EventsTable
 }

@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// AuthStates is the predicate function for authstates builders.
+type AuthStates func(*sql.Selector)
+
 // EState is the predicate function for estate builders.
 type EState func(*sql.Selector)
 
@@ -17,6 +20,12 @@ type Ecomment func(*sql.Selector)
 
 // Event is the predicate function for event builders.
 type Event func(*sql.Selector)
+
+// GoogleAuth is the predicate function for googleauth builders.
+type GoogleAuth func(*sql.Selector)
+
+// LoginSessions is the predicate function for loginsessions builders.
+type LoginSessions func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

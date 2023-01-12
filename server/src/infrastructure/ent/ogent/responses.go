@@ -4,6 +4,122 @@ package ogent
 
 import "github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 
+func NewAuthStatesCreate(e *ent.AuthStates) *AuthStatesCreate {
+	if e == nil {
+		return nil
+	}
+	var ret AuthStatesCreate
+	ret.ID = e.ID
+	ret.State = e.State
+	ret.RedirectURL = NewOptString(e.RedirectURL)
+	return &ret
+}
+
+func NewAuthStatesCreates(es []*ent.AuthStates) []AuthStatesCreate {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]AuthStatesCreate, len(es))
+	for i, e := range es {
+		r[i] = NewAuthStatesCreate(e).Elem()
+	}
+	return r
+}
+
+func (as *AuthStatesCreate) Elem() AuthStatesCreate {
+	if as == nil {
+		return AuthStatesCreate{}
+	}
+	return *as
+}
+
+func NewAuthStatesList(e *ent.AuthStates) *AuthStatesList {
+	if e == nil {
+		return nil
+	}
+	var ret AuthStatesList
+	ret.ID = e.ID
+	ret.State = e.State
+	ret.RedirectURL = NewOptString(e.RedirectURL)
+	return &ret
+}
+
+func NewAuthStatesLists(es []*ent.AuthStates) []AuthStatesList {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]AuthStatesList, len(es))
+	for i, e := range es {
+		r[i] = NewAuthStatesList(e).Elem()
+	}
+	return r
+}
+
+func (as *AuthStatesList) Elem() AuthStatesList {
+	if as == nil {
+		return AuthStatesList{}
+	}
+	return *as
+}
+
+func NewAuthStatesRead(e *ent.AuthStates) *AuthStatesRead {
+	if e == nil {
+		return nil
+	}
+	var ret AuthStatesRead
+	ret.ID = e.ID
+	ret.State = e.State
+	ret.RedirectURL = NewOptString(e.RedirectURL)
+	return &ret
+}
+
+func NewAuthStatesReads(es []*ent.AuthStates) []AuthStatesRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]AuthStatesRead, len(es))
+	for i, e := range es {
+		r[i] = NewAuthStatesRead(e).Elem()
+	}
+	return r
+}
+
+func (as *AuthStatesRead) Elem() AuthStatesRead {
+	if as == nil {
+		return AuthStatesRead{}
+	}
+	return *as
+}
+
+func NewAuthStatesUpdate(e *ent.AuthStates) *AuthStatesUpdate {
+	if e == nil {
+		return nil
+	}
+	var ret AuthStatesUpdate
+	ret.ID = e.ID
+	ret.State = e.State
+	ret.RedirectURL = NewOptString(e.RedirectURL)
+	return &ret
+}
+
+func NewAuthStatesUpdates(es []*ent.AuthStates) []AuthStatesUpdate {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]AuthStatesUpdate, len(es))
+	for i, e := range es {
+		r[i] = NewAuthStatesUpdate(e).Elem()
+	}
+	return r
+}
+
+func (as *AuthStatesUpdate) Elem() AuthStatesUpdate {
+	if as == nil {
+		return AuthStatesUpdate{}
+	}
+	return *as
+}
+
 func NewEStateCreate(e *ent.EState) *EStateCreate {
 	if e == nil {
 		return nil
@@ -666,6 +782,306 @@ func NewEventUsersLists(es []*ent.User) []EventUsersList {
 func (u *EventUsersList) Elem() EventUsersList {
 	if u == nil {
 		return EventUsersList{}
+	}
+	return *u
+}
+
+func NewGoogleAuthCreate(e *ent.GoogleAuth) *GoogleAuthCreate {
+	if e == nil {
+		return nil
+	}
+	var ret GoogleAuthCreate
+	ret.ID = e.ID
+	ret.UserID = e.UserID
+	ret.AccessToken = e.AccessToken
+	ret.RefreshToken = e.RefreshToken
+	ret.Expiry = e.Expiry
+	return &ret
+}
+
+func NewGoogleAuthCreates(es []*ent.GoogleAuth) []GoogleAuthCreate {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]GoogleAuthCreate, len(es))
+	for i, e := range es {
+		r[i] = NewGoogleAuthCreate(e).Elem()
+	}
+	return r
+}
+
+func (ga *GoogleAuthCreate) Elem() GoogleAuthCreate {
+	if ga == nil {
+		return GoogleAuthCreate{}
+	}
+	return *ga
+}
+
+func NewGoogleAuthList(e *ent.GoogleAuth) *GoogleAuthList {
+	if e == nil {
+		return nil
+	}
+	var ret GoogleAuthList
+	ret.ID = e.ID
+	ret.UserID = e.UserID
+	ret.AccessToken = e.AccessToken
+	ret.RefreshToken = e.RefreshToken
+	ret.Expiry = e.Expiry
+	return &ret
+}
+
+func NewGoogleAuthLists(es []*ent.GoogleAuth) []GoogleAuthList {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]GoogleAuthList, len(es))
+	for i, e := range es {
+		r[i] = NewGoogleAuthList(e).Elem()
+	}
+	return r
+}
+
+func (ga *GoogleAuthList) Elem() GoogleAuthList {
+	if ga == nil {
+		return GoogleAuthList{}
+	}
+	return *ga
+}
+
+func NewGoogleAuthRead(e *ent.GoogleAuth) *GoogleAuthRead {
+	if e == nil {
+		return nil
+	}
+	var ret GoogleAuthRead
+	ret.ID = e.ID
+	ret.UserID = e.UserID
+	ret.AccessToken = e.AccessToken
+	ret.RefreshToken = e.RefreshToken
+	ret.Expiry = e.Expiry
+	return &ret
+}
+
+func NewGoogleAuthReads(es []*ent.GoogleAuth) []GoogleAuthRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]GoogleAuthRead, len(es))
+	for i, e := range es {
+		r[i] = NewGoogleAuthRead(e).Elem()
+	}
+	return r
+}
+
+func (ga *GoogleAuthRead) Elem() GoogleAuthRead {
+	if ga == nil {
+		return GoogleAuthRead{}
+	}
+	return *ga
+}
+
+func NewGoogleAuthUpdate(e *ent.GoogleAuth) *GoogleAuthUpdate {
+	if e == nil {
+		return nil
+	}
+	var ret GoogleAuthUpdate
+	ret.ID = e.ID
+	ret.UserID = e.UserID
+	ret.AccessToken = e.AccessToken
+	ret.RefreshToken = e.RefreshToken
+	ret.Expiry = e.Expiry
+	return &ret
+}
+
+func NewGoogleAuthUpdates(es []*ent.GoogleAuth) []GoogleAuthUpdate {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]GoogleAuthUpdate, len(es))
+	for i, e := range es {
+		r[i] = NewGoogleAuthUpdate(e).Elem()
+	}
+	return r
+}
+
+func (ga *GoogleAuthUpdate) Elem() GoogleAuthUpdate {
+	if ga == nil {
+		return GoogleAuthUpdate{}
+	}
+	return *ga
+}
+
+func NewGoogleAuthUserRead(e *ent.User) *GoogleAuthUserRead {
+	if e == nil {
+		return nil
+	}
+	var ret GoogleAuthUserRead
+	ret.ID = e.ID
+	ret.Age = NewOptInt(e.Age)
+	ret.Name = e.Name
+	ret.Authenticated = e.Authenticated
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
+	return &ret
+}
+
+func NewGoogleAuthUserReads(es []*ent.User) []GoogleAuthUserRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]GoogleAuthUserRead, len(es))
+	for i, e := range es {
+		r[i] = NewGoogleAuthUserRead(e).Elem()
+	}
+	return r
+}
+
+func (u *GoogleAuthUserRead) Elem() GoogleAuthUserRead {
+	if u == nil {
+		return GoogleAuthUserRead{}
+	}
+	return *u
+}
+
+func NewLoginSessionsCreate(e *ent.LoginSessions) *LoginSessionsCreate {
+	if e == nil {
+		return nil
+	}
+	var ret LoginSessionsCreate
+	ret.ID = e.ID
+	ret.UserID = e.UserID
+	return &ret
+}
+
+func NewLoginSessionsCreates(es []*ent.LoginSessions) []LoginSessionsCreate {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]LoginSessionsCreate, len(es))
+	for i, e := range es {
+		r[i] = NewLoginSessionsCreate(e).Elem()
+	}
+	return r
+}
+
+func (ls *LoginSessionsCreate) Elem() LoginSessionsCreate {
+	if ls == nil {
+		return LoginSessionsCreate{}
+	}
+	return *ls
+}
+
+func NewLoginSessionsList(e *ent.LoginSessions) *LoginSessionsList {
+	if e == nil {
+		return nil
+	}
+	var ret LoginSessionsList
+	ret.ID = e.ID
+	ret.UserID = e.UserID
+	return &ret
+}
+
+func NewLoginSessionsLists(es []*ent.LoginSessions) []LoginSessionsList {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]LoginSessionsList, len(es))
+	for i, e := range es {
+		r[i] = NewLoginSessionsList(e).Elem()
+	}
+	return r
+}
+
+func (ls *LoginSessionsList) Elem() LoginSessionsList {
+	if ls == nil {
+		return LoginSessionsList{}
+	}
+	return *ls
+}
+
+func NewLoginSessionsRead(e *ent.LoginSessions) *LoginSessionsRead {
+	if e == nil {
+		return nil
+	}
+	var ret LoginSessionsRead
+	ret.ID = e.ID
+	ret.UserID = e.UserID
+	return &ret
+}
+
+func NewLoginSessionsReads(es []*ent.LoginSessions) []LoginSessionsRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]LoginSessionsRead, len(es))
+	for i, e := range es {
+		r[i] = NewLoginSessionsRead(e).Elem()
+	}
+	return r
+}
+
+func (ls *LoginSessionsRead) Elem() LoginSessionsRead {
+	if ls == nil {
+		return LoginSessionsRead{}
+	}
+	return *ls
+}
+
+func NewLoginSessionsUpdate(e *ent.LoginSessions) *LoginSessionsUpdate {
+	if e == nil {
+		return nil
+	}
+	var ret LoginSessionsUpdate
+	ret.ID = e.ID
+	ret.UserID = e.UserID
+	return &ret
+}
+
+func NewLoginSessionsUpdates(es []*ent.LoginSessions) []LoginSessionsUpdate {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]LoginSessionsUpdate, len(es))
+	for i, e := range es {
+		r[i] = NewLoginSessionsUpdate(e).Elem()
+	}
+	return r
+}
+
+func (ls *LoginSessionsUpdate) Elem() LoginSessionsUpdate {
+	if ls == nil {
+		return LoginSessionsUpdate{}
+	}
+	return *ls
+}
+
+func NewLoginSessionsUserRead(e *ent.User) *LoginSessionsUserRead {
+	if e == nil {
+		return nil
+	}
+	var ret LoginSessionsUserRead
+	ret.ID = e.ID
+	ret.Age = NewOptInt(e.Age)
+	ret.Name = e.Name
+	ret.Authenticated = e.Authenticated
+	ret.Mail = NewOptString(e.Mail)
+	ret.Icon = e.Icon
+	return &ret
+}
+
+func NewLoginSessionsUserReads(es []*ent.User) []LoginSessionsUserRead {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make([]LoginSessionsUserRead, len(es))
+	for i, e := range es {
+		r[i] = NewLoginSessionsUserRead(e).Elem()
+	}
+	return r
+}
+
+func (u *LoginSessionsUserRead) Elem() LoginSessionsUserRead {
+	if u == nil {
+		return LoginSessionsUserRead{}
 	}
 	return *u
 }

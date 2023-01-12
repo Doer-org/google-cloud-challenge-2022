@@ -7,10 +7,13 @@ import (
 	"net/http"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/authstates"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/googleauth"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/loginsessions"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/go-faster/jx"
 )
@@ -28,6 +31,177 @@ func rawError(err error) jx.Raw {
 	var e jx.Encoder
 	e.Str(err.Error())
 	return e.Bytes()
+}
+
+// CreateAuthStates handles POST /auth-states-slice requests.
+func (h *OgentHandler) CreateAuthStates(ctx context.Context, req CreateAuthStatesReq) (CreateAuthStatesRes, error) {
+	b := h.client.AuthStates.Create()
+	// Add all fields.
+	b.SetState(req.State)
+	if v, ok := req.RedirectURL.Get(); ok {
+		b.SetRedirectURL(v)
+	}
+	// Add all edges.
+	// Persist to storage.
+	e, err := b.Save(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	// Reload the entity to attach all eager-loaded edges.
+	q := h.client.AuthStates.Query().Where(authstates.ID(e.ID))
+	e, err = q.Only(ctx)
+	if err != nil {
+		// This should never happen.
+		return nil, err
+	}
+	return NewAuthStatesCreate(e), nil
+}
+
+// ReadAuthStates handles GET /auth-states-slice/{id} requests.
+func (h *OgentHandler) ReadAuthStates(ctx context.Context, params ReadAuthStatesParams) (ReadAuthStatesRes, error) {
+	q := h.client.AuthStates.Query().Where(authstates.IDEQ(params.ID))
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewAuthStatesRead(e), nil
+}
+
+// UpdateAuthStates handles PATCH /auth-states-slice/{id} requests.
+func (h *OgentHandler) UpdateAuthStates(ctx context.Context, req UpdateAuthStatesReq, params UpdateAuthStatesParams) (UpdateAuthStatesRes, error) {
+	b := h.client.AuthStates.UpdateOneID(params.ID)
+	// Add all fields.
+	if v, ok := req.State.Get(); ok {
+		b.SetState(v)
+	}
+	if v, ok := req.RedirectURL.Get(); ok {
+		b.SetRedirectURL(v)
+	}
+	// Add all edges.
+	// Persist to storage.
+	e, err := b.Save(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	// Reload the entity to attach all eager-loaded edges.
+	q := h.client.AuthStates.Query().Where(authstates.ID(e.ID))
+	e, err = q.Only(ctx)
+	if err != nil {
+		// This should never happen.
+		return nil, err
+	}
+	return NewAuthStatesUpdate(e), nil
+}
+
+// DeleteAuthStates handles DELETE /auth-states-slice/{id} requests.
+func (h *OgentHandler) DeleteAuthStates(ctx context.Context, params DeleteAuthStatesParams) (DeleteAuthStatesRes, error) {
+	err := h.client.AuthStates.DeleteOneID(params.ID).Exec(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return new(DeleteAuthStatesNoContent), nil
+
+}
+
+// ListAuthStates handles GET /auth-states-slice requests.
+func (h *OgentHandler) ListAuthStates(ctx context.Context, params ListAuthStatesParams) (ListAuthStatesRes, error) {
+	q := h.client.AuthStates.Query()
+	page := 1
+	if v, ok := params.Page.Get(); ok {
+		page = v
+	}
+	itemsPerPage := 30
+	if v, ok := params.ItemsPerPage.Get(); ok {
+		itemsPerPage = v
+	}
+	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+
+	es, err := q.All(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	r := NewAuthStatesLists(es)
+	return (*ListAuthStatesOKApplicationJSON)(&r), nil
 }
 
 // CreateEState handles POST /e-states requests.
@@ -926,6 +1100,408 @@ func (h *OgentHandler) ListEventUsers(ctx context.Context, params ListEventUsers
 	}
 	r := NewEventUsersLists(es)
 	return (*ListEventUsersOKApplicationJSON)(&r), nil
+}
+
+// CreateGoogleAuth handles POST /google-auths requests.
+func (h *OgentHandler) CreateGoogleAuth(ctx context.Context, req CreateGoogleAuthReq) (CreateGoogleAuthRes, error) {
+	b := h.client.GoogleAuth.Create()
+	// Add all fields.
+	b.SetUserID(req.UserID)
+	b.SetAccessToken(req.AccessToken)
+	b.SetRefreshToken(req.RefreshToken)
+	b.SetExpiry(req.Expiry)
+	// Add all edges.
+	b.SetUserID(req.User)
+	// Persist to storage.
+	e, err := b.Save(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	// Reload the entity to attach all eager-loaded edges.
+	q := h.client.GoogleAuth.Query().Where(googleauth.ID(e.ID))
+	e, err = q.Only(ctx)
+	if err != nil {
+		// This should never happen.
+		return nil, err
+	}
+	return NewGoogleAuthCreate(e), nil
+}
+
+// ReadGoogleAuth handles GET /google-auths/{id} requests.
+func (h *OgentHandler) ReadGoogleAuth(ctx context.Context, params ReadGoogleAuthParams) (ReadGoogleAuthRes, error) {
+	q := h.client.GoogleAuth.Query().Where(googleauth.IDEQ(params.ID))
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewGoogleAuthRead(e), nil
+}
+
+// UpdateGoogleAuth handles PATCH /google-auths/{id} requests.
+func (h *OgentHandler) UpdateGoogleAuth(ctx context.Context, req UpdateGoogleAuthReq, params UpdateGoogleAuthParams) (UpdateGoogleAuthRes, error) {
+	b := h.client.GoogleAuth.UpdateOneID(params.ID)
+	// Add all fields.
+	if v, ok := req.UserID.Get(); ok {
+		b.SetUserID(v)
+	}
+	if v, ok := req.AccessToken.Get(); ok {
+		b.SetAccessToken(v)
+	}
+	if v, ok := req.RefreshToken.Get(); ok {
+		b.SetRefreshToken(v)
+	}
+	if v, ok := req.Expiry.Get(); ok {
+		b.SetExpiry(v)
+	}
+	// Add all edges.
+	if v, ok := req.User.Get(); ok {
+		b.SetUserID(v)
+	}
+	// Persist to storage.
+	e, err := b.Save(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	// Reload the entity to attach all eager-loaded edges.
+	q := h.client.GoogleAuth.Query().Where(googleauth.ID(e.ID))
+	e, err = q.Only(ctx)
+	if err != nil {
+		// This should never happen.
+		return nil, err
+	}
+	return NewGoogleAuthUpdate(e), nil
+}
+
+// DeleteGoogleAuth handles DELETE /google-auths/{id} requests.
+func (h *OgentHandler) DeleteGoogleAuth(ctx context.Context, params DeleteGoogleAuthParams) (DeleteGoogleAuthRes, error) {
+	err := h.client.GoogleAuth.DeleteOneID(params.ID).Exec(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return new(DeleteGoogleAuthNoContent), nil
+
+}
+
+// ListGoogleAuth handles GET /google-auths requests.
+func (h *OgentHandler) ListGoogleAuth(ctx context.Context, params ListGoogleAuthParams) (ListGoogleAuthRes, error) {
+	q := h.client.GoogleAuth.Query()
+	page := 1
+	if v, ok := params.Page.Get(); ok {
+		page = v
+	}
+	itemsPerPage := 30
+	if v, ok := params.ItemsPerPage.Get(); ok {
+		itemsPerPage = v
+	}
+	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+
+	es, err := q.All(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	r := NewGoogleAuthLists(es)
+	return (*ListGoogleAuthOKApplicationJSON)(&r), nil
+}
+
+// ReadGoogleAuthUser handles GET /google-auths/{id}/user requests.
+func (h *OgentHandler) ReadGoogleAuthUser(ctx context.Context, params ReadGoogleAuthUserParams) (ReadGoogleAuthUserRes, error) {
+	q := h.client.GoogleAuth.Query().Where(googleauth.IDEQ(params.ID)).QueryUser()
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewGoogleAuthUserRead(e), nil
+}
+
+// CreateLoginSessions handles POST /login-sessions-slice requests.
+func (h *OgentHandler) CreateLoginSessions(ctx context.Context, req CreateLoginSessionsReq) (CreateLoginSessionsRes, error) {
+	b := h.client.LoginSessions.Create()
+	// Add all fields.
+	b.SetUserID(req.UserID)
+	// Add all edges.
+	b.SetUserID(req.User)
+	// Persist to storage.
+	e, err := b.Save(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	// Reload the entity to attach all eager-loaded edges.
+	q := h.client.LoginSessions.Query().Where(loginsessions.ID(e.ID))
+	e, err = q.Only(ctx)
+	if err != nil {
+		// This should never happen.
+		return nil, err
+	}
+	return NewLoginSessionsCreate(e), nil
+}
+
+// ReadLoginSessions handles GET /login-sessions-slice/{id} requests.
+func (h *OgentHandler) ReadLoginSessions(ctx context.Context, params ReadLoginSessionsParams) (ReadLoginSessionsRes, error) {
+	q := h.client.LoginSessions.Query().Where(loginsessions.IDEQ(params.ID))
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewLoginSessionsRead(e), nil
+}
+
+// UpdateLoginSessions handles PATCH /login-sessions-slice/{id} requests.
+func (h *OgentHandler) UpdateLoginSessions(ctx context.Context, req UpdateLoginSessionsReq, params UpdateLoginSessionsParams) (UpdateLoginSessionsRes, error) {
+	b := h.client.LoginSessions.UpdateOneID(params.ID)
+	// Add all fields.
+	if v, ok := req.UserID.Get(); ok {
+		b.SetUserID(v)
+	}
+	// Add all edges.
+	if v, ok := req.User.Get(); ok {
+		b.SetUserID(v)
+	}
+	// Persist to storage.
+	e, err := b.Save(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	// Reload the entity to attach all eager-loaded edges.
+	q := h.client.LoginSessions.Query().Where(loginsessions.ID(e.ID))
+	e, err = q.Only(ctx)
+	if err != nil {
+		// This should never happen.
+		return nil, err
+	}
+	return NewLoginSessionsUpdate(e), nil
+}
+
+// DeleteLoginSessions handles DELETE /login-sessions-slice/{id} requests.
+func (h *OgentHandler) DeleteLoginSessions(ctx context.Context, params DeleteLoginSessionsParams) (DeleteLoginSessionsRes, error) {
+	err := h.client.LoginSessions.DeleteOneID(params.ID).Exec(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsConstraintError(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return new(DeleteLoginSessionsNoContent), nil
+
+}
+
+// ListLoginSessions handles GET /login-sessions-slice requests.
+func (h *OgentHandler) ListLoginSessions(ctx context.Context, params ListLoginSessionsParams) (ListLoginSessionsRes, error) {
+	q := h.client.LoginSessions.Query()
+	page := 1
+	if v, ok := params.Page.Get(); ok {
+		page = v
+	}
+	itemsPerPage := 30
+	if v, ok := params.ItemsPerPage.Get(); ok {
+		itemsPerPage = v
+	}
+	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+
+	es, err := q.All(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	r := NewLoginSessionsLists(es)
+	return (*ListLoginSessionsOKApplicationJSON)(&r), nil
+}
+
+// ReadLoginSessionsUser handles GET /login-sessions-slice/{id}/user requests.
+func (h *OgentHandler) ReadLoginSessionsUser(ctx context.Context, params ReadLoginSessionsUserParams) (ReadLoginSessionsUserRes, error) {
+	q := h.client.LoginSessions.Query().Where(loginsessions.IDEQ(params.ID)).QueryUser()
+	e, err := q.Only(ctx)
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			return &R404{
+				Code:   http.StatusNotFound,
+				Status: http.StatusText(http.StatusNotFound),
+				Errors: rawError(err),
+			}, nil
+		case ent.IsNotSingular(err):
+			return &R409{
+				Code:   http.StatusConflict,
+				Status: http.StatusText(http.StatusConflict),
+				Errors: rawError(err),
+			}, nil
+		default:
+			// Let the server handle the error.
+			return nil, err
+		}
+	}
+	return NewLoginSessionsUserRead(e), nil
 }
 
 // CreateUser handles POST /users requests.

@@ -3,9 +3,190 @@
 package ogent
 
 import (
+	"time"
+
 	"github.com/go-faster/jx"
 	"github.com/google/uuid"
 )
+
+// Ref: #/components/schemas/AuthStatesCreate
+type AuthStatesCreate struct {
+	ID          int       `json:"id"`
+	State       string    `json:"state"`
+	RedirectURL OptString `json:"redirect_url"`
+}
+
+// GetID returns the value of ID.
+func (s *AuthStatesCreate) GetID() int {
+	return s.ID
+}
+
+// GetState returns the value of State.
+func (s *AuthStatesCreate) GetState() string {
+	return s.State
+}
+
+// GetRedirectURL returns the value of RedirectURL.
+func (s *AuthStatesCreate) GetRedirectURL() OptString {
+	return s.RedirectURL
+}
+
+// SetID sets the value of ID.
+func (s *AuthStatesCreate) SetID(val int) {
+	s.ID = val
+}
+
+// SetState sets the value of State.
+func (s *AuthStatesCreate) SetState(val string) {
+	s.State = val
+}
+
+// SetRedirectURL sets the value of RedirectURL.
+func (s *AuthStatesCreate) SetRedirectURL(val OptString) {
+	s.RedirectURL = val
+}
+
+func (*AuthStatesCreate) createAuthStatesRes() {}
+
+// Ref: #/components/schemas/AuthStatesList
+type AuthStatesList struct {
+	ID          int       `json:"id"`
+	State       string    `json:"state"`
+	RedirectURL OptString `json:"redirect_url"`
+}
+
+// GetID returns the value of ID.
+func (s *AuthStatesList) GetID() int {
+	return s.ID
+}
+
+// GetState returns the value of State.
+func (s *AuthStatesList) GetState() string {
+	return s.State
+}
+
+// GetRedirectURL returns the value of RedirectURL.
+func (s *AuthStatesList) GetRedirectURL() OptString {
+	return s.RedirectURL
+}
+
+// SetID sets the value of ID.
+func (s *AuthStatesList) SetID(val int) {
+	s.ID = val
+}
+
+// SetState sets the value of State.
+func (s *AuthStatesList) SetState(val string) {
+	s.State = val
+}
+
+// SetRedirectURL sets the value of RedirectURL.
+func (s *AuthStatesList) SetRedirectURL(val OptString) {
+	s.RedirectURL = val
+}
+
+// Ref: #/components/schemas/AuthStatesRead
+type AuthStatesRead struct {
+	ID          int       `json:"id"`
+	State       string    `json:"state"`
+	RedirectURL OptString `json:"redirect_url"`
+}
+
+// GetID returns the value of ID.
+func (s *AuthStatesRead) GetID() int {
+	return s.ID
+}
+
+// GetState returns the value of State.
+func (s *AuthStatesRead) GetState() string {
+	return s.State
+}
+
+// GetRedirectURL returns the value of RedirectURL.
+func (s *AuthStatesRead) GetRedirectURL() OptString {
+	return s.RedirectURL
+}
+
+// SetID sets the value of ID.
+func (s *AuthStatesRead) SetID(val int) {
+	s.ID = val
+}
+
+// SetState sets the value of State.
+func (s *AuthStatesRead) SetState(val string) {
+	s.State = val
+}
+
+// SetRedirectURL sets the value of RedirectURL.
+func (s *AuthStatesRead) SetRedirectURL(val OptString) {
+	s.RedirectURL = val
+}
+
+func (*AuthStatesRead) readAuthStatesRes() {}
+
+// Ref: #/components/schemas/AuthStatesUpdate
+type AuthStatesUpdate struct {
+	ID          int       `json:"id"`
+	State       string    `json:"state"`
+	RedirectURL OptString `json:"redirect_url"`
+}
+
+// GetID returns the value of ID.
+func (s *AuthStatesUpdate) GetID() int {
+	return s.ID
+}
+
+// GetState returns the value of State.
+func (s *AuthStatesUpdate) GetState() string {
+	return s.State
+}
+
+// GetRedirectURL returns the value of RedirectURL.
+func (s *AuthStatesUpdate) GetRedirectURL() OptString {
+	return s.RedirectURL
+}
+
+// SetID sets the value of ID.
+func (s *AuthStatesUpdate) SetID(val int) {
+	s.ID = val
+}
+
+// SetState sets the value of State.
+func (s *AuthStatesUpdate) SetState(val string) {
+	s.State = val
+}
+
+// SetRedirectURL sets the value of RedirectURL.
+func (s *AuthStatesUpdate) SetRedirectURL(val OptString) {
+	s.RedirectURL = val
+}
+
+func (*AuthStatesUpdate) updateAuthStatesRes() {}
+
+type CreateAuthStatesReq struct {
+	State       string    `json:"state"`
+	RedirectURL OptString `json:"redirect_url"`
+}
+
+// GetState returns the value of State.
+func (s *CreateAuthStatesReq) GetState() string {
+	return s.State
+}
+
+// GetRedirectURL returns the value of RedirectURL.
+func (s *CreateAuthStatesReq) GetRedirectURL() OptString {
+	return s.RedirectURL
+}
+
+// SetState sets the value of State.
+func (s *CreateAuthStatesReq) SetState(val string) {
+	s.State = val
+}
+
+// SetRedirectURL sets the value of RedirectURL.
+func (s *CreateAuthStatesReq) SetRedirectURL(val OptString) {
+	s.RedirectURL = val
+}
 
 type CreateEStateReq struct {
 	Name  string    `json:"name"`
@@ -162,6 +343,89 @@ func (s *CreateEventReq) SetUsers(val []uuid.UUID) {
 	s.Users = val
 }
 
+type CreateGoogleAuthReq struct {
+	UserID       uuid.UUID `json:"user_id"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	Expiry       time.Time `json:"expiry"`
+	User         uuid.UUID `json:"user"`
+}
+
+// GetUserID returns the value of UserID.
+func (s *CreateGoogleAuthReq) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// GetAccessToken returns the value of AccessToken.
+func (s *CreateGoogleAuthReq) GetAccessToken() string {
+	return s.AccessToken
+}
+
+// GetRefreshToken returns the value of RefreshToken.
+func (s *CreateGoogleAuthReq) GetRefreshToken() string {
+	return s.RefreshToken
+}
+
+// GetExpiry returns the value of Expiry.
+func (s *CreateGoogleAuthReq) GetExpiry() time.Time {
+	return s.Expiry
+}
+
+// GetUser returns the value of User.
+func (s *CreateGoogleAuthReq) GetUser() uuid.UUID {
+	return s.User
+}
+
+// SetUserID sets the value of UserID.
+func (s *CreateGoogleAuthReq) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+// SetAccessToken sets the value of AccessToken.
+func (s *CreateGoogleAuthReq) SetAccessToken(val string) {
+	s.AccessToken = val
+}
+
+// SetRefreshToken sets the value of RefreshToken.
+func (s *CreateGoogleAuthReq) SetRefreshToken(val string) {
+	s.RefreshToken = val
+}
+
+// SetExpiry sets the value of Expiry.
+func (s *CreateGoogleAuthReq) SetExpiry(val time.Time) {
+	s.Expiry = val
+}
+
+// SetUser sets the value of User.
+func (s *CreateGoogleAuthReq) SetUser(val uuid.UUID) {
+	s.User = val
+}
+
+type CreateLoginSessionsReq struct {
+	UserID uuid.UUID `json:"user_id"`
+	User   uuid.UUID `json:"user"`
+}
+
+// GetUserID returns the value of UserID.
+func (s *CreateLoginSessionsReq) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// GetUser returns the value of User.
+func (s *CreateLoginSessionsReq) GetUser() uuid.UUID {
+	return s.User
+}
+
+// SetUserID sets the value of UserID.
+func (s *CreateLoginSessionsReq) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+// SetUser sets the value of User.
+func (s *CreateLoginSessionsReq) SetUser(val uuid.UUID) {
+	s.User = val
+}
+
 type CreateUserReq struct {
 	Age           OptInt      `json:"age"`
 	Name          string      `json:"name"`
@@ -231,6 +495,11 @@ func (s *CreateUserReq) SetEvents(val []uuid.UUID) {
 	s.Events = val
 }
 
+// DeleteAuthStatesNoContent is response for DeleteAuthStates operation.
+type DeleteAuthStatesNoContent struct{}
+
+func (*DeleteAuthStatesNoContent) deleteAuthStatesRes() {}
+
 // DeleteEStateNoContent is response for DeleteEState operation.
 type DeleteEStateNoContent struct{}
 
@@ -250,6 +519,16 @@ func (*DeleteEcommentNoContent) deleteEcommentRes() {}
 type DeleteEventNoContent struct{}
 
 func (*DeleteEventNoContent) deleteEventRes() {}
+
+// DeleteGoogleAuthNoContent is response for DeleteGoogleAuth operation.
+type DeleteGoogleAuthNoContent struct{}
+
+func (*DeleteGoogleAuthNoContent) deleteGoogleAuthRes() {}
+
+// DeleteLoginSessionsNoContent is response for DeleteLoginSessions operation.
+type DeleteLoginSessionsNoContent struct{}
+
+func (*DeleteLoginSessionsNoContent) deleteLoginSessionsRes() {}
 
 // DeleteUserNoContent is response for DeleteUser operation.
 type DeleteUserNoContent struct{}
@@ -1132,6 +1411,324 @@ func (s *EventUsersList) SetIcon(val string) {
 	s.Icon = val
 }
 
+// Ref: #/components/schemas/GoogleAuthCreate
+type GoogleAuthCreate struct {
+	ID           int       `json:"id"`
+	UserID       uuid.UUID `json:"user_id"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	Expiry       time.Time `json:"expiry"`
+}
+
+// GetID returns the value of ID.
+func (s *GoogleAuthCreate) GetID() int {
+	return s.ID
+}
+
+// GetUserID returns the value of UserID.
+func (s *GoogleAuthCreate) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// GetAccessToken returns the value of AccessToken.
+func (s *GoogleAuthCreate) GetAccessToken() string {
+	return s.AccessToken
+}
+
+// GetRefreshToken returns the value of RefreshToken.
+func (s *GoogleAuthCreate) GetRefreshToken() string {
+	return s.RefreshToken
+}
+
+// GetExpiry returns the value of Expiry.
+func (s *GoogleAuthCreate) GetExpiry() time.Time {
+	return s.Expiry
+}
+
+// SetID sets the value of ID.
+func (s *GoogleAuthCreate) SetID(val int) {
+	s.ID = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *GoogleAuthCreate) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+// SetAccessToken sets the value of AccessToken.
+func (s *GoogleAuthCreate) SetAccessToken(val string) {
+	s.AccessToken = val
+}
+
+// SetRefreshToken sets the value of RefreshToken.
+func (s *GoogleAuthCreate) SetRefreshToken(val string) {
+	s.RefreshToken = val
+}
+
+// SetExpiry sets the value of Expiry.
+func (s *GoogleAuthCreate) SetExpiry(val time.Time) {
+	s.Expiry = val
+}
+
+func (*GoogleAuthCreate) createGoogleAuthRes() {}
+
+// Ref: #/components/schemas/GoogleAuthList
+type GoogleAuthList struct {
+	ID           int       `json:"id"`
+	UserID       uuid.UUID `json:"user_id"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	Expiry       time.Time `json:"expiry"`
+}
+
+// GetID returns the value of ID.
+func (s *GoogleAuthList) GetID() int {
+	return s.ID
+}
+
+// GetUserID returns the value of UserID.
+func (s *GoogleAuthList) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// GetAccessToken returns the value of AccessToken.
+func (s *GoogleAuthList) GetAccessToken() string {
+	return s.AccessToken
+}
+
+// GetRefreshToken returns the value of RefreshToken.
+func (s *GoogleAuthList) GetRefreshToken() string {
+	return s.RefreshToken
+}
+
+// GetExpiry returns the value of Expiry.
+func (s *GoogleAuthList) GetExpiry() time.Time {
+	return s.Expiry
+}
+
+// SetID sets the value of ID.
+func (s *GoogleAuthList) SetID(val int) {
+	s.ID = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *GoogleAuthList) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+// SetAccessToken sets the value of AccessToken.
+func (s *GoogleAuthList) SetAccessToken(val string) {
+	s.AccessToken = val
+}
+
+// SetRefreshToken sets the value of RefreshToken.
+func (s *GoogleAuthList) SetRefreshToken(val string) {
+	s.RefreshToken = val
+}
+
+// SetExpiry sets the value of Expiry.
+func (s *GoogleAuthList) SetExpiry(val time.Time) {
+	s.Expiry = val
+}
+
+// Ref: #/components/schemas/GoogleAuthRead
+type GoogleAuthRead struct {
+	ID           int       `json:"id"`
+	UserID       uuid.UUID `json:"user_id"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	Expiry       time.Time `json:"expiry"`
+}
+
+// GetID returns the value of ID.
+func (s *GoogleAuthRead) GetID() int {
+	return s.ID
+}
+
+// GetUserID returns the value of UserID.
+func (s *GoogleAuthRead) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// GetAccessToken returns the value of AccessToken.
+func (s *GoogleAuthRead) GetAccessToken() string {
+	return s.AccessToken
+}
+
+// GetRefreshToken returns the value of RefreshToken.
+func (s *GoogleAuthRead) GetRefreshToken() string {
+	return s.RefreshToken
+}
+
+// GetExpiry returns the value of Expiry.
+func (s *GoogleAuthRead) GetExpiry() time.Time {
+	return s.Expiry
+}
+
+// SetID sets the value of ID.
+func (s *GoogleAuthRead) SetID(val int) {
+	s.ID = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *GoogleAuthRead) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+// SetAccessToken sets the value of AccessToken.
+func (s *GoogleAuthRead) SetAccessToken(val string) {
+	s.AccessToken = val
+}
+
+// SetRefreshToken sets the value of RefreshToken.
+func (s *GoogleAuthRead) SetRefreshToken(val string) {
+	s.RefreshToken = val
+}
+
+// SetExpiry sets the value of Expiry.
+func (s *GoogleAuthRead) SetExpiry(val time.Time) {
+	s.Expiry = val
+}
+
+func (*GoogleAuthRead) readGoogleAuthRes() {}
+
+// Ref: #/components/schemas/GoogleAuthUpdate
+type GoogleAuthUpdate struct {
+	ID           int       `json:"id"`
+	UserID       uuid.UUID `json:"user_id"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	Expiry       time.Time `json:"expiry"`
+}
+
+// GetID returns the value of ID.
+func (s *GoogleAuthUpdate) GetID() int {
+	return s.ID
+}
+
+// GetUserID returns the value of UserID.
+func (s *GoogleAuthUpdate) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// GetAccessToken returns the value of AccessToken.
+func (s *GoogleAuthUpdate) GetAccessToken() string {
+	return s.AccessToken
+}
+
+// GetRefreshToken returns the value of RefreshToken.
+func (s *GoogleAuthUpdate) GetRefreshToken() string {
+	return s.RefreshToken
+}
+
+// GetExpiry returns the value of Expiry.
+func (s *GoogleAuthUpdate) GetExpiry() time.Time {
+	return s.Expiry
+}
+
+// SetID sets the value of ID.
+func (s *GoogleAuthUpdate) SetID(val int) {
+	s.ID = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *GoogleAuthUpdate) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+// SetAccessToken sets the value of AccessToken.
+func (s *GoogleAuthUpdate) SetAccessToken(val string) {
+	s.AccessToken = val
+}
+
+// SetRefreshToken sets the value of RefreshToken.
+func (s *GoogleAuthUpdate) SetRefreshToken(val string) {
+	s.RefreshToken = val
+}
+
+// SetExpiry sets the value of Expiry.
+func (s *GoogleAuthUpdate) SetExpiry(val time.Time) {
+	s.Expiry = val
+}
+
+func (*GoogleAuthUpdate) updateGoogleAuthRes() {}
+
+// Ref: #/components/schemas/GoogleAuth_UserRead
+type GoogleAuthUserRead struct {
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
+}
+
+// GetID returns the value of ID.
+func (s *GoogleAuthUserRead) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetAge returns the value of Age.
+func (s *GoogleAuthUserRead) GetAge() OptInt {
+	return s.Age
+}
+
+// GetName returns the value of Name.
+func (s *GoogleAuthUserRead) GetName() string {
+	return s.Name
+}
+
+// GetAuthenticated returns the value of Authenticated.
+func (s *GoogleAuthUserRead) GetAuthenticated() bool {
+	return s.Authenticated
+}
+
+// GetMail returns the value of Mail.
+func (s *GoogleAuthUserRead) GetMail() OptString {
+	return s.Mail
+}
+
+// GetIcon returns the value of Icon.
+func (s *GoogleAuthUserRead) GetIcon() string {
+	return s.Icon
+}
+
+// SetID sets the value of ID.
+func (s *GoogleAuthUserRead) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetAge sets the value of Age.
+func (s *GoogleAuthUserRead) SetAge(val OptInt) {
+	s.Age = val
+}
+
+// SetName sets the value of Name.
+func (s *GoogleAuthUserRead) SetName(val string) {
+	s.Name = val
+}
+
+// SetAuthenticated sets the value of Authenticated.
+func (s *GoogleAuthUserRead) SetAuthenticated(val bool) {
+	s.Authenticated = val
+}
+
+// SetMail sets the value of Mail.
+func (s *GoogleAuthUserRead) SetMail(val OptString) {
+	s.Mail = val
+}
+
+// SetIcon sets the value of Icon.
+func (s *GoogleAuthUserRead) SetIcon(val string) {
+	s.Icon = val
+}
+
+func (*GoogleAuthUserRead) readGoogleAuthUserRes() {}
+
+type ListAuthStatesOKApplicationJSON []AuthStatesList
+
+func (ListAuthStatesOKApplicationJSON) listAuthStatesRes() {}
+
 type ListEStateOKApplicationJSON []EStateList
 
 func (ListEStateOKApplicationJSON) listEStateRes() {}
@@ -1152,6 +1749,14 @@ type ListEventUsersOKApplicationJSON []EventUsersList
 
 func (ListEventUsersOKApplicationJSON) listEventUsersRes() {}
 
+type ListGoogleAuthOKApplicationJSON []GoogleAuthList
+
+func (ListGoogleAuthOKApplicationJSON) listGoogleAuthRes() {}
+
+type ListLoginSessionsOKApplicationJSON []LoginSessionsList
+
+func (ListLoginSessionsOKApplicationJSON) listLoginSessionsRes() {}
+
 type ListUserEventsOKApplicationJSON []UserEventsList
 
 func (ListUserEventsOKApplicationJSON) listUserEventsRes() {}
@@ -1159,6 +1764,188 @@ func (ListUserEventsOKApplicationJSON) listUserEventsRes() {}
 type ListUserOKApplicationJSON []UserList
 
 func (ListUserOKApplicationJSON) listUserRes() {}
+
+// Ref: #/components/schemas/LoginSessionsCreate
+type LoginSessionsCreate struct {
+	ID     string    `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+// GetID returns the value of ID.
+func (s *LoginSessionsCreate) GetID() string {
+	return s.ID
+}
+
+// GetUserID returns the value of UserID.
+func (s *LoginSessionsCreate) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// SetID sets the value of ID.
+func (s *LoginSessionsCreate) SetID(val string) {
+	s.ID = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *LoginSessionsCreate) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+func (*LoginSessionsCreate) createLoginSessionsRes() {}
+
+// Ref: #/components/schemas/LoginSessionsList
+type LoginSessionsList struct {
+	ID     string    `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+// GetID returns the value of ID.
+func (s *LoginSessionsList) GetID() string {
+	return s.ID
+}
+
+// GetUserID returns the value of UserID.
+func (s *LoginSessionsList) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// SetID sets the value of ID.
+func (s *LoginSessionsList) SetID(val string) {
+	s.ID = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *LoginSessionsList) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+// Ref: #/components/schemas/LoginSessionsRead
+type LoginSessionsRead struct {
+	ID     string    `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+// GetID returns the value of ID.
+func (s *LoginSessionsRead) GetID() string {
+	return s.ID
+}
+
+// GetUserID returns the value of UserID.
+func (s *LoginSessionsRead) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// SetID sets the value of ID.
+func (s *LoginSessionsRead) SetID(val string) {
+	s.ID = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *LoginSessionsRead) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+func (*LoginSessionsRead) readLoginSessionsRes() {}
+
+// Ref: #/components/schemas/LoginSessionsUpdate
+type LoginSessionsUpdate struct {
+	ID     string    `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+// GetID returns the value of ID.
+func (s *LoginSessionsUpdate) GetID() string {
+	return s.ID
+}
+
+// GetUserID returns the value of UserID.
+func (s *LoginSessionsUpdate) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// SetID sets the value of ID.
+func (s *LoginSessionsUpdate) SetID(val string) {
+	s.ID = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *LoginSessionsUpdate) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+func (*LoginSessionsUpdate) updateLoginSessionsRes() {}
+
+// Ref: #/components/schemas/LoginSessions_UserRead
+type LoginSessionsUserRead struct {
+	ID            uuid.UUID `json:"id"`
+	Age           OptInt    `json:"age"`
+	Name          string    `json:"name"`
+	Authenticated bool      `json:"authenticated"`
+	Mail          OptString `json:"mail"`
+	Icon          string    `json:"icon"`
+}
+
+// GetID returns the value of ID.
+func (s *LoginSessionsUserRead) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetAge returns the value of Age.
+func (s *LoginSessionsUserRead) GetAge() OptInt {
+	return s.Age
+}
+
+// GetName returns the value of Name.
+func (s *LoginSessionsUserRead) GetName() string {
+	return s.Name
+}
+
+// GetAuthenticated returns the value of Authenticated.
+func (s *LoginSessionsUserRead) GetAuthenticated() bool {
+	return s.Authenticated
+}
+
+// GetMail returns the value of Mail.
+func (s *LoginSessionsUserRead) GetMail() OptString {
+	return s.Mail
+}
+
+// GetIcon returns the value of Icon.
+func (s *LoginSessionsUserRead) GetIcon() string {
+	return s.Icon
+}
+
+// SetID sets the value of ID.
+func (s *LoginSessionsUserRead) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetAge sets the value of Age.
+func (s *LoginSessionsUserRead) SetAge(val OptInt) {
+	s.Age = val
+}
+
+// SetName sets the value of Name.
+func (s *LoginSessionsUserRead) SetName(val string) {
+	s.Name = val
+}
+
+// SetAuthenticated sets the value of Authenticated.
+func (s *LoginSessionsUserRead) SetAuthenticated(val bool) {
+	s.Authenticated = val
+}
+
+// SetMail sets the value of Mail.
+func (s *LoginSessionsUserRead) SetMail(val OptString) {
+	s.Mail = val
+}
+
+// SetIcon sets the value of Icon.
+func (s *LoginSessionsUserRead) SetIcon(val string) {
+	s.Icon = val
+}
+
+func (*LoginSessionsUserRead) readLoginSessionsUserRes() {}
 
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
@@ -1200,6 +1987,52 @@ func (o OptBool) Get() (v bool, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptDateTime returns new OptDateTime with value set to v.
+func NewOptDateTime(v time.Time) OptDateTime {
+	return OptDateTime{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDateTime is optional time.Time.
+type OptDateTime struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDateTime was set.
+func (o OptDateTime) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDateTime) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDateTime) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDateTime) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDateTime) Or(d time.Time) time.Time {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -1380,39 +2213,56 @@ func (s *R400) SetErrors(val jx.Raw) {
 	s.Errors = val
 }
 
-func (*R400) createEStateRes()      {}
-func (*R400) createETypeRes()       {}
-func (*R400) createEcommentRes()    {}
-func (*R400) createEventRes()       {}
-func (*R400) createUserRes()        {}
-func (*R400) deleteEStateRes()      {}
-func (*R400) deleteETypeRes()       {}
-func (*R400) deleteEcommentRes()    {}
-func (*R400) deleteEventRes()       {}
-func (*R400) deleteUserRes()        {}
-func (*R400) listEStateRes()        {}
-func (*R400) listETypeRes()         {}
-func (*R400) listEcommentRes()      {}
-func (*R400) listEventRes()         {}
-func (*R400) listEventUsersRes()    {}
-func (*R400) listUserEventsRes()    {}
-func (*R400) listUserRes()          {}
-func (*R400) readEStateEventRes()   {}
-func (*R400) readEStateRes()        {}
-func (*R400) readETypeEventRes()    {}
-func (*R400) readETypeRes()         {}
-func (*R400) readEcommentEventRes() {}
-func (*R400) readEcommentRes()      {}
-func (*R400) readEcommentUserRes()  {}
-func (*R400) readEventRes()         {}
-func (*R400) readEventStateRes()    {}
-func (*R400) readEventTypeRes()     {}
-func (*R400) readUserRes()          {}
-func (*R400) updateEStateRes()      {}
-func (*R400) updateETypeRes()       {}
-func (*R400) updateEcommentRes()    {}
-func (*R400) updateEventRes()       {}
-func (*R400) updateUserRes()        {}
+func (*R400) createAuthStatesRes()      {}
+func (*R400) createEStateRes()          {}
+func (*R400) createETypeRes()           {}
+func (*R400) createEcommentRes()        {}
+func (*R400) createEventRes()           {}
+func (*R400) createGoogleAuthRes()      {}
+func (*R400) createLoginSessionsRes()   {}
+func (*R400) createUserRes()            {}
+func (*R400) deleteAuthStatesRes()      {}
+func (*R400) deleteEStateRes()          {}
+func (*R400) deleteETypeRes()           {}
+func (*R400) deleteEcommentRes()        {}
+func (*R400) deleteEventRes()           {}
+func (*R400) deleteGoogleAuthRes()      {}
+func (*R400) deleteLoginSessionsRes()   {}
+func (*R400) deleteUserRes()            {}
+func (*R400) listAuthStatesRes()        {}
+func (*R400) listEStateRes()            {}
+func (*R400) listETypeRes()             {}
+func (*R400) listEcommentRes()          {}
+func (*R400) listEventRes()             {}
+func (*R400) listEventUsersRes()        {}
+func (*R400) listGoogleAuthRes()        {}
+func (*R400) listLoginSessionsRes()     {}
+func (*R400) listUserEventsRes()        {}
+func (*R400) listUserRes()              {}
+func (*R400) readAuthStatesRes()        {}
+func (*R400) readEStateEventRes()       {}
+func (*R400) readEStateRes()            {}
+func (*R400) readETypeEventRes()        {}
+func (*R400) readETypeRes()             {}
+func (*R400) readEcommentEventRes()     {}
+func (*R400) readEcommentRes()          {}
+func (*R400) readEcommentUserRes()      {}
+func (*R400) readEventRes()             {}
+func (*R400) readEventStateRes()        {}
+func (*R400) readEventTypeRes()         {}
+func (*R400) readGoogleAuthRes()        {}
+func (*R400) readGoogleAuthUserRes()    {}
+func (*R400) readLoginSessionsRes()     {}
+func (*R400) readLoginSessionsUserRes() {}
+func (*R400) readUserRes()              {}
+func (*R400) updateAuthStatesRes()      {}
+func (*R400) updateEStateRes()          {}
+func (*R400) updateETypeRes()           {}
+func (*R400) updateEcommentRes()        {}
+func (*R400) updateEventRes()           {}
+func (*R400) updateGoogleAuthRes()      {}
+func (*R400) updateLoginSessionsRes()   {}
+func (*R400) updateUserRes()            {}
 
 type R404 struct {
 	Code   int    `json:"code"`
@@ -1450,34 +2300,48 @@ func (s *R404) SetErrors(val jx.Raw) {
 	s.Errors = val
 }
 
-func (*R404) deleteEStateRes()      {}
-func (*R404) deleteETypeRes()       {}
-func (*R404) deleteEcommentRes()    {}
-func (*R404) deleteEventRes()       {}
-func (*R404) deleteUserRes()        {}
-func (*R404) listEStateRes()        {}
-func (*R404) listETypeRes()         {}
-func (*R404) listEcommentRes()      {}
-func (*R404) listEventRes()         {}
-func (*R404) listEventUsersRes()    {}
-func (*R404) listUserEventsRes()    {}
-func (*R404) listUserRes()          {}
-func (*R404) readEStateEventRes()   {}
-func (*R404) readEStateRes()        {}
-func (*R404) readETypeEventRes()    {}
-func (*R404) readETypeRes()         {}
-func (*R404) readEcommentEventRes() {}
-func (*R404) readEcommentRes()      {}
-func (*R404) readEcommentUserRes()  {}
-func (*R404) readEventRes()         {}
-func (*R404) readEventStateRes()    {}
-func (*R404) readEventTypeRes()     {}
-func (*R404) readUserRes()          {}
-func (*R404) updateEStateRes()      {}
-func (*R404) updateETypeRes()       {}
-func (*R404) updateEcommentRes()    {}
-func (*R404) updateEventRes()       {}
-func (*R404) updateUserRes()        {}
+func (*R404) deleteAuthStatesRes()      {}
+func (*R404) deleteEStateRes()          {}
+func (*R404) deleteETypeRes()           {}
+func (*R404) deleteEcommentRes()        {}
+func (*R404) deleteEventRes()           {}
+func (*R404) deleteGoogleAuthRes()      {}
+func (*R404) deleteLoginSessionsRes()   {}
+func (*R404) deleteUserRes()            {}
+func (*R404) listAuthStatesRes()        {}
+func (*R404) listEStateRes()            {}
+func (*R404) listETypeRes()             {}
+func (*R404) listEcommentRes()          {}
+func (*R404) listEventRes()             {}
+func (*R404) listEventUsersRes()        {}
+func (*R404) listGoogleAuthRes()        {}
+func (*R404) listLoginSessionsRes()     {}
+func (*R404) listUserEventsRes()        {}
+func (*R404) listUserRes()              {}
+func (*R404) readAuthStatesRes()        {}
+func (*R404) readEStateEventRes()       {}
+func (*R404) readEStateRes()            {}
+func (*R404) readETypeEventRes()        {}
+func (*R404) readETypeRes()             {}
+func (*R404) readEcommentEventRes()     {}
+func (*R404) readEcommentRes()          {}
+func (*R404) readEcommentUserRes()      {}
+func (*R404) readEventRes()             {}
+func (*R404) readEventStateRes()        {}
+func (*R404) readEventTypeRes()         {}
+func (*R404) readGoogleAuthRes()        {}
+func (*R404) readGoogleAuthUserRes()    {}
+func (*R404) readLoginSessionsRes()     {}
+func (*R404) readLoginSessionsUserRes() {}
+func (*R404) readUserRes()              {}
+func (*R404) updateAuthStatesRes()      {}
+func (*R404) updateEStateRes()          {}
+func (*R404) updateETypeRes()           {}
+func (*R404) updateEcommentRes()        {}
+func (*R404) updateEventRes()           {}
+func (*R404) updateGoogleAuthRes()      {}
+func (*R404) updateLoginSessionsRes()   {}
+func (*R404) updateUserRes()            {}
 
 type R409 struct {
 	Code   int    `json:"code"`
@@ -1515,39 +2379,56 @@ func (s *R409) SetErrors(val jx.Raw) {
 	s.Errors = val
 }
 
-func (*R409) createEStateRes()      {}
-func (*R409) createETypeRes()       {}
-func (*R409) createEcommentRes()    {}
-func (*R409) createEventRes()       {}
-func (*R409) createUserRes()        {}
-func (*R409) deleteEStateRes()      {}
-func (*R409) deleteETypeRes()       {}
-func (*R409) deleteEcommentRes()    {}
-func (*R409) deleteEventRes()       {}
-func (*R409) deleteUserRes()        {}
-func (*R409) listEStateRes()        {}
-func (*R409) listETypeRes()         {}
-func (*R409) listEcommentRes()      {}
-func (*R409) listEventRes()         {}
-func (*R409) listEventUsersRes()    {}
-func (*R409) listUserEventsRes()    {}
-func (*R409) listUserRes()          {}
-func (*R409) readEStateEventRes()   {}
-func (*R409) readEStateRes()        {}
-func (*R409) readETypeEventRes()    {}
-func (*R409) readETypeRes()         {}
-func (*R409) readEcommentEventRes() {}
-func (*R409) readEcommentRes()      {}
-func (*R409) readEcommentUserRes()  {}
-func (*R409) readEventRes()         {}
-func (*R409) readEventStateRes()    {}
-func (*R409) readEventTypeRes()     {}
-func (*R409) readUserRes()          {}
-func (*R409) updateEStateRes()      {}
-func (*R409) updateETypeRes()       {}
-func (*R409) updateEcommentRes()    {}
-func (*R409) updateEventRes()       {}
-func (*R409) updateUserRes()        {}
+func (*R409) createAuthStatesRes()      {}
+func (*R409) createEStateRes()          {}
+func (*R409) createETypeRes()           {}
+func (*R409) createEcommentRes()        {}
+func (*R409) createEventRes()           {}
+func (*R409) createGoogleAuthRes()      {}
+func (*R409) createLoginSessionsRes()   {}
+func (*R409) createUserRes()            {}
+func (*R409) deleteAuthStatesRes()      {}
+func (*R409) deleteEStateRes()          {}
+func (*R409) deleteETypeRes()           {}
+func (*R409) deleteEcommentRes()        {}
+func (*R409) deleteEventRes()           {}
+func (*R409) deleteGoogleAuthRes()      {}
+func (*R409) deleteLoginSessionsRes()   {}
+func (*R409) deleteUserRes()            {}
+func (*R409) listAuthStatesRes()        {}
+func (*R409) listEStateRes()            {}
+func (*R409) listETypeRes()             {}
+func (*R409) listEcommentRes()          {}
+func (*R409) listEventRes()             {}
+func (*R409) listEventUsersRes()        {}
+func (*R409) listGoogleAuthRes()        {}
+func (*R409) listLoginSessionsRes()     {}
+func (*R409) listUserEventsRes()        {}
+func (*R409) listUserRes()              {}
+func (*R409) readAuthStatesRes()        {}
+func (*R409) readEStateEventRes()       {}
+func (*R409) readEStateRes()            {}
+func (*R409) readETypeEventRes()        {}
+func (*R409) readETypeRes()             {}
+func (*R409) readEcommentEventRes()     {}
+func (*R409) readEcommentRes()          {}
+func (*R409) readEcommentUserRes()      {}
+func (*R409) readEventRes()             {}
+func (*R409) readEventStateRes()        {}
+func (*R409) readEventTypeRes()         {}
+func (*R409) readGoogleAuthRes()        {}
+func (*R409) readGoogleAuthUserRes()    {}
+func (*R409) readLoginSessionsRes()     {}
+func (*R409) readLoginSessionsUserRes() {}
+func (*R409) readUserRes()              {}
+func (*R409) updateAuthStatesRes()      {}
+func (*R409) updateEStateRes()          {}
+func (*R409) updateETypeRes()           {}
+func (*R409) updateEcommentRes()        {}
+func (*R409) updateEventRes()           {}
+func (*R409) updateGoogleAuthRes()      {}
+func (*R409) updateLoginSessionsRes()   {}
+func (*R409) updateUserRes()            {}
 
 type R500 struct {
 	Code   int    `json:"code"`
@@ -1585,39 +2466,81 @@ func (s *R500) SetErrors(val jx.Raw) {
 	s.Errors = val
 }
 
-func (*R500) createEStateRes()      {}
-func (*R500) createETypeRes()       {}
-func (*R500) createEcommentRes()    {}
-func (*R500) createEventRes()       {}
-func (*R500) createUserRes()        {}
-func (*R500) deleteEStateRes()      {}
-func (*R500) deleteETypeRes()       {}
-func (*R500) deleteEcommentRes()    {}
-func (*R500) deleteEventRes()       {}
-func (*R500) deleteUserRes()        {}
-func (*R500) listEStateRes()        {}
-func (*R500) listETypeRes()         {}
-func (*R500) listEcommentRes()      {}
-func (*R500) listEventRes()         {}
-func (*R500) listEventUsersRes()    {}
-func (*R500) listUserEventsRes()    {}
-func (*R500) listUserRes()          {}
-func (*R500) readEStateEventRes()   {}
-func (*R500) readEStateRes()        {}
-func (*R500) readETypeEventRes()    {}
-func (*R500) readETypeRes()         {}
-func (*R500) readEcommentEventRes() {}
-func (*R500) readEcommentRes()      {}
-func (*R500) readEcommentUserRes()  {}
-func (*R500) readEventRes()         {}
-func (*R500) readEventStateRes()    {}
-func (*R500) readEventTypeRes()     {}
-func (*R500) readUserRes()          {}
-func (*R500) updateEStateRes()      {}
-func (*R500) updateETypeRes()       {}
-func (*R500) updateEcommentRes()    {}
-func (*R500) updateEventRes()       {}
-func (*R500) updateUserRes()        {}
+func (*R500) createAuthStatesRes()      {}
+func (*R500) createEStateRes()          {}
+func (*R500) createETypeRes()           {}
+func (*R500) createEcommentRes()        {}
+func (*R500) createEventRes()           {}
+func (*R500) createGoogleAuthRes()      {}
+func (*R500) createLoginSessionsRes()   {}
+func (*R500) createUserRes()            {}
+func (*R500) deleteAuthStatesRes()      {}
+func (*R500) deleteEStateRes()          {}
+func (*R500) deleteETypeRes()           {}
+func (*R500) deleteEcommentRes()        {}
+func (*R500) deleteEventRes()           {}
+func (*R500) deleteGoogleAuthRes()      {}
+func (*R500) deleteLoginSessionsRes()   {}
+func (*R500) deleteUserRes()            {}
+func (*R500) listAuthStatesRes()        {}
+func (*R500) listEStateRes()            {}
+func (*R500) listETypeRes()             {}
+func (*R500) listEcommentRes()          {}
+func (*R500) listEventRes()             {}
+func (*R500) listEventUsersRes()        {}
+func (*R500) listGoogleAuthRes()        {}
+func (*R500) listLoginSessionsRes()     {}
+func (*R500) listUserEventsRes()        {}
+func (*R500) listUserRes()              {}
+func (*R500) readAuthStatesRes()        {}
+func (*R500) readEStateEventRes()       {}
+func (*R500) readEStateRes()            {}
+func (*R500) readETypeEventRes()        {}
+func (*R500) readETypeRes()             {}
+func (*R500) readEcommentEventRes()     {}
+func (*R500) readEcommentRes()          {}
+func (*R500) readEcommentUserRes()      {}
+func (*R500) readEventRes()             {}
+func (*R500) readEventStateRes()        {}
+func (*R500) readEventTypeRes()         {}
+func (*R500) readGoogleAuthRes()        {}
+func (*R500) readGoogleAuthUserRes()    {}
+func (*R500) readLoginSessionsRes()     {}
+func (*R500) readLoginSessionsUserRes() {}
+func (*R500) readUserRes()              {}
+func (*R500) updateAuthStatesRes()      {}
+func (*R500) updateEStateRes()          {}
+func (*R500) updateETypeRes()           {}
+func (*R500) updateEcommentRes()        {}
+func (*R500) updateEventRes()           {}
+func (*R500) updateGoogleAuthRes()      {}
+func (*R500) updateLoginSessionsRes()   {}
+func (*R500) updateUserRes()            {}
+
+type UpdateAuthStatesReq struct {
+	State       OptString `json:"state"`
+	RedirectURL OptString `json:"redirect_url"`
+}
+
+// GetState returns the value of State.
+func (s *UpdateAuthStatesReq) GetState() OptString {
+	return s.State
+}
+
+// GetRedirectURL returns the value of RedirectURL.
+func (s *UpdateAuthStatesReq) GetRedirectURL() OptString {
+	return s.RedirectURL
+}
+
+// SetState sets the value of State.
+func (s *UpdateAuthStatesReq) SetState(val OptString) {
+	s.State = val
+}
+
+// SetRedirectURL sets the value of RedirectURL.
+func (s *UpdateAuthStatesReq) SetRedirectURL(val OptString) {
+	s.RedirectURL = val
+}
 
 type UpdateEStateReq struct {
 	Name  OptString `json:"name"`
@@ -1772,6 +2695,89 @@ func (s *UpdateEventReq) SetType(val OptUUID) {
 // SetUsers sets the value of Users.
 func (s *UpdateEventReq) SetUsers(val []uuid.UUID) {
 	s.Users = val
+}
+
+type UpdateGoogleAuthReq struct {
+	UserID       OptUUID     `json:"user_id"`
+	AccessToken  OptString   `json:"access_token"`
+	RefreshToken OptString   `json:"refresh_token"`
+	Expiry       OptDateTime `json:"expiry"`
+	User         OptUUID     `json:"user"`
+}
+
+// GetUserID returns the value of UserID.
+func (s *UpdateGoogleAuthReq) GetUserID() OptUUID {
+	return s.UserID
+}
+
+// GetAccessToken returns the value of AccessToken.
+func (s *UpdateGoogleAuthReq) GetAccessToken() OptString {
+	return s.AccessToken
+}
+
+// GetRefreshToken returns the value of RefreshToken.
+func (s *UpdateGoogleAuthReq) GetRefreshToken() OptString {
+	return s.RefreshToken
+}
+
+// GetExpiry returns the value of Expiry.
+func (s *UpdateGoogleAuthReq) GetExpiry() OptDateTime {
+	return s.Expiry
+}
+
+// GetUser returns the value of User.
+func (s *UpdateGoogleAuthReq) GetUser() OptUUID {
+	return s.User
+}
+
+// SetUserID sets the value of UserID.
+func (s *UpdateGoogleAuthReq) SetUserID(val OptUUID) {
+	s.UserID = val
+}
+
+// SetAccessToken sets the value of AccessToken.
+func (s *UpdateGoogleAuthReq) SetAccessToken(val OptString) {
+	s.AccessToken = val
+}
+
+// SetRefreshToken sets the value of RefreshToken.
+func (s *UpdateGoogleAuthReq) SetRefreshToken(val OptString) {
+	s.RefreshToken = val
+}
+
+// SetExpiry sets the value of Expiry.
+func (s *UpdateGoogleAuthReq) SetExpiry(val OptDateTime) {
+	s.Expiry = val
+}
+
+// SetUser sets the value of User.
+func (s *UpdateGoogleAuthReq) SetUser(val OptUUID) {
+	s.User = val
+}
+
+type UpdateLoginSessionsReq struct {
+	UserID OptUUID `json:"user_id"`
+	User   OptUUID `json:"user"`
+}
+
+// GetUserID returns the value of UserID.
+func (s *UpdateLoginSessionsReq) GetUserID() OptUUID {
+	return s.UserID
+}
+
+// GetUser returns the value of User.
+func (s *UpdateLoginSessionsReq) GetUser() OptUUID {
+	return s.User
+}
+
+// SetUserID sets the value of UserID.
+func (s *UpdateLoginSessionsReq) SetUserID(val OptUUID) {
+	s.UserID = val
+}
+
+// SetUser sets the value of User.
+func (s *UpdateLoginSessionsReq) SetUser(val OptUUID) {
+	s.User = val
 }
 
 type UpdateUserReq struct {

@@ -10,10 +10,13 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/authstates"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/ecomment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/estate"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/etype"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/googleauth"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/loginsessions"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 )
 
@@ -35,11 +38,14 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		estate.Table:   estate.ValidColumn,
-		etype.Table:    etype.ValidColumn,
-		ecomment.Table: ecomment.ValidColumn,
-		event.Table:    event.ValidColumn,
-		user.Table:     user.ValidColumn,
+		authstates.Table:    authstates.ValidColumn,
+		estate.Table:        estate.ValidColumn,
+		etype.Table:         etype.ValidColumn,
+		ecomment.Table:      ecomment.ValidColumn,
+		event.Table:         event.ValidColumn,
+		googleauth.Table:    googleauth.ValidColumn,
+		loginsessions.Table: loginsessions.ValidColumn,
+		user.Table:          user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

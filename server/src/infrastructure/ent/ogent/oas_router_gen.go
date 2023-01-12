@@ -53,6 +53,60 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
+			case 'a': // Prefix: "auth-states"
+				if l := len("auth-states"); len(elem) >= l && elem[0:l] == "auth-states" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch r.Method {
+					case "GET":
+						s.handleListAuthStatesRequest([0]string{}, w, r)
+					case "POST":
+						s.handleCreateAuthStatesRequest([0]string{}, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "DELETE":
+							s.handleDeleteAuthStatesRequest([1]string{
+								args[0],
+							}, w, r)
+						case "GET":
+							s.handleReadAuthStatesRequest([1]string{
+								args[0],
+							}, w, r)
+						case "PATCH":
+							s.handleUpdateAuthStatesRequest([1]string{
+								args[0],
+							}, w, r)
+						default:
+							s.notAllowed(w, r, "DELETE,GET,PATCH")
+						}
+
+						return
+					}
+				}
 			case 'e': // Prefix: "e"
 				if l := len("e"); len(elem) >= l && elem[0:l] == "e" {
 					elem = elem[l:]
@@ -477,6 +531,164 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 				}
+			case 'g': // Prefix: "google-auths"
+				if l := len("google-auths"); len(elem) >= l && elem[0:l] == "google-auths" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch r.Method {
+					case "GET":
+						s.handleListGoogleAuthRequest([0]string{}, w, r)
+					case "POST":
+						s.handleCreateGoogleAuthRequest([0]string{}, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch r.Method {
+						case "DELETE":
+							s.handleDeleteGoogleAuthRequest([1]string{
+								args[0],
+							}, w, r)
+						case "GET":
+							s.handleReadGoogleAuthRequest([1]string{
+								args[0],
+							}, w, r)
+						case "PATCH":
+							s.handleUpdateGoogleAuthRequest([1]string{
+								args[0],
+							}, w, r)
+						default:
+							s.notAllowed(w, r, "DELETE,GET,PATCH")
+						}
+
+						return
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/user"
+						if l := len("/user"); len(elem) >= l && elem[0:l] == "/user" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleReadGoogleAuthUserRequest([1]string{
+									args[0],
+								}, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+					}
+				}
+			case 'l': // Prefix: "login-sessions"
+				if l := len("login-sessions"); len(elem) >= l && elem[0:l] == "login-sessions" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch r.Method {
+					case "GET":
+						s.handleListLoginSessionsRequest([0]string{}, w, r)
+					case "POST":
+						s.handleCreateLoginSessionsRequest([0]string{}, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch r.Method {
+						case "DELETE":
+							s.handleDeleteLoginSessionsRequest([1]string{
+								args[0],
+							}, w, r)
+						case "GET":
+							s.handleReadLoginSessionsRequest([1]string{
+								args[0],
+							}, w, r)
+						case "PATCH":
+							s.handleUpdateLoginSessionsRequest([1]string{
+								args[0],
+							}, w, r)
+						default:
+							s.notAllowed(w, r, "DELETE,GET,PATCH")
+						}
+
+						return
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/user"
+						if l := len("/user"); len(elem) >= l && elem[0:l] == "/user" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleReadLoginSessionsUserRequest([1]string{
+									args[0],
+								}, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+					}
+				}
 			case 'u': // Prefix: "users"
 				if l := len("users"); len(elem) >= l && elem[0:l] == "users" {
 					elem = elem[l:]
@@ -631,6 +843,72 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
+			case 'a': // Prefix: "auth-states"
+				if l := len("auth-states"); len(elem) >= l && elem[0:l] == "auth-states" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						r.name = "ListAuthStates"
+						r.operationID = "listAuthStates"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = "CreateAuthStates"
+						r.operationID = "createAuthStates"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
+						switch method {
+						case "DELETE":
+							// Leaf: DeleteAuthStates
+							r.name = "DeleteAuthStates"
+							r.operationID = "deleteAuthStates"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "GET":
+							// Leaf: ReadAuthStates
+							r.name = "ReadAuthStates"
+							r.operationID = "readAuthStates"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PATCH":
+							// Leaf: UpdateAuthStates
+							r.name = "UpdateAuthStates"
+							r.operationID = "updateAuthStates"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+				}
 			case 'e': // Prefix: "e"
 				if l := len("e"); len(elem) >= l && elem[0:l] == "e" {
 					elem = elem[l:]
@@ -1091,6 +1369,184 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										return
 									}
 								}
+							}
+						}
+					}
+				}
+			case 'g': // Prefix: "google-auths"
+				if l := len("google-auths"); len(elem) >= l && elem[0:l] == "google-auths" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						r.name = "ListGoogleAuth"
+						r.operationID = "listGoogleAuth"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = "CreateGoogleAuth"
+						r.operationID = "createGoogleAuth"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch method {
+						case "DELETE":
+							r.name = "DeleteGoogleAuth"
+							r.operationID = "deleteGoogleAuth"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "GET":
+							r.name = "ReadGoogleAuth"
+							r.operationID = "readGoogleAuth"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PATCH":
+							r.name = "UpdateGoogleAuth"
+							r.operationID = "updateGoogleAuth"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/user"
+						if l := len("/user"); len(elem) >= l && elem[0:l] == "/user" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: ReadGoogleAuthUser
+								r.name = "ReadGoogleAuthUser"
+								r.operationID = "readGoogleAuthUser"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+					}
+				}
+			case 'l': // Prefix: "login-sessions"
+				if l := len("login-sessions"); len(elem) >= l && elem[0:l] == "login-sessions" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						r.name = "ListLoginSessions"
+						r.operationID = "listLoginSessions"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = "CreateLoginSessions"
+						r.operationID = "createLoginSessions"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "id"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch method {
+						case "DELETE":
+							r.name = "DeleteLoginSessions"
+							r.operationID = "deleteLoginSessions"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "GET":
+							r.name = "ReadLoginSessions"
+							r.operationID = "readLoginSessions"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PATCH":
+							r.name = "UpdateLoginSessions"
+							r.operationID = "updateLoginSessions"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/user"
+						if l := len("/user"); len(elem) >= l && elem[0:l] == "/user" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: ReadLoginSessionsUser
+								r.name = "ReadLoginSessionsUser"
+								r.operationID = "readLoginSessionsUser"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
 							}
 						}
 					}

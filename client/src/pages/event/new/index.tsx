@@ -16,7 +16,7 @@ export default function New() {
   const createEvent = createNewEvent(
     (ok) => {
       router.push(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/event/${ok.created_event.event_id}/completion`
+        `${process.env.NEXT_PUBLIC_FRONT_URL}/event/${ok.created_event.event_id}/completion`
       );
     },
     (e) => {}

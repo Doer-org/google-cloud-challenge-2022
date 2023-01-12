@@ -11,11 +11,10 @@ export const UserInfo = ({ name, comment, image }: TProps) => {
   return (
     <>
       <UserIcon userName={name} />
-      <div className="w-full">
-        <TypoWrapper>
-          <p>{comment}</p>
-        </TypoWrapper>
-      </div>
+
+      <TypoWrapper>
+        <p>{comment}</p>
+      </TypoWrapper>
     </>
   );
 };

@@ -8,11 +8,11 @@ export const EventBasicInfo = ({ eventName, detail }: TProps) => {
   return (
     <>
       <div className="lg:mx-auto lg:w-1/3">
-        <TypoWrapper line="bold">
+        <TypoWrapper line="bold" size="large">
           <h1 className="my-5">{eventName}</h1>
         </TypoWrapper>
         <TypoWrapper size="small" line="shin">
-          <p className="text-left lg:mx-10 mx-2 my-2">{detail}</p>
+          <p className="text-left lg:mx-10 mx-2 mt-2 mb-10">{detail}</p>
         </TypoWrapper>
       </div>
     </>

@@ -22,14 +22,12 @@ export default function Participate() {
   });
   const [value, copy] = useCopyToClipboard();
   const eventId = useRouter().query.eventId;
-  console.log(event);
+
   const getEvent = getEventInfo(
     (response) => {
       setEvent(response);
     },
-    (error) => {
-      console.log(error);
-    }
+    (error) => {}
   );
   useEffect(() => {
     getEvent(eventId as string);

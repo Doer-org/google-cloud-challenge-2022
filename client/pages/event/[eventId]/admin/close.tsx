@@ -25,9 +25,7 @@ export default function Close() {
     (response) => {
       setEvent(response);
     },
-    (error) => {
-      console.log(error);
-    }
+    (error) => {}
   );
   const eventId = useRouter().query.eventId;
 

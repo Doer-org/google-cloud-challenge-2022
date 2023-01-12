@@ -22,9 +22,7 @@ export default function Index() {
       (response) => {
         setEvents(response);
       },
-      (error) => {
-        console.log(error);
-      }
+      (error) => {}
     );
     getEvents(userId);
   }, [userId]);

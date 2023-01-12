@@ -20,19 +20,17 @@ export default function Show() {
     },
     participants: [],
   });
-  console.log(event);
+
   const eventId = useRouter().query.eventId;
   const getEvent = getEventInfo(
     (response) => {
       setEvent(response);
     },
-    (error) => {
-      console.log(error);
-    }
+    (error) => {}
   );
   useEffect(() => {
     getEvent(eventId as string);
-  }, []);
+  }, [eventId, getEvent]);
   return (
     <>
       <MyHead title="募集タイトルを入れる" description="" />

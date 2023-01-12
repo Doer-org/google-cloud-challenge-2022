@@ -43,11 +43,8 @@ export default function Participate(event: Event) {
     (response: unknown) => {
       router.push(`http://localhost:3000/event/${event.event_id}/`);
     },
-    (e) => {
-      console.log(e);
-    }
+    (e) => {}
   );
-  console.log(event);
   const [name, setName] = useState('');
   const [word, setWord] = useState('');
   return (
@@ -55,6 +52,7 @@ export default function Participate(event: Event) {
       <BasicTemplate className="text-center">
         {isConfirm ? (
           <EventConfirmModal
+            participants={event.participants}
             onParticipate={() => {
               joinApi({
                 event_id: event.event_id,
@@ -68,6 +66,8 @@ export default function Participate(event: Event) {
         ) : (
           <>
             <EventInfo
+              userId={event.host.user_id}
+              participants={event.participants}
               eventName={event.event_name}
               detail={event.detail}
               location={event.location}

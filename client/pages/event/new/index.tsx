@@ -17,9 +17,7 @@ export default function New() {
     (ok) => {
       router.push('/');
     },
-    (e) => {
-      console.log(e);
-    }
+    (e) => {}
   );
   const { userId } = UserStore();
   const [name, setName] = useState('');

@@ -1,28 +1,53 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import Router, { useRouter } from 'next/router';
 import { MyHead } from '../../../../components/templates/shared/Head/MyHead';
 import { BasicTemplate } from '../../../../components/templates/shared/BasicTemplate';
 import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
 import { useCopyToClipboard } from 'usehooks-ts';
-
+import { Event } from '../../../../core/types/event';
+import { getEventInfo } from '../../../../core/api/event/getInfo';
 export default function Participate() {
   // ここはイベントを作成したときにリンクをコピーする画面
   // TODO:URLコピー機能
+  const [event, setEvent] = useState<Event>({
+    event_id: '',
+    event_name: '',
+    detail: '',
+    location: '',
+    host: {
+      user_id: '',
+    },
+    participants: [],
+  });
   const [value, copy] = useCopyToClipboard();
-  const router = useRouter();
-  const [name, setName] = useState('');
-  const [word, setWord] = useState('');
-  const event_id = useRouter().query.id;
+  const eventId = useRouter().query.eventId;
+  console.log(event);
+  const getEvent = getEventInfo(
+    (response) => {
+      setEvent(response);
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+  useEffect(() => {
+    getEvent(eventId as string);
+  }, [getEvent, eventId]);
+
   return (
     <>
       <MyHead title="イベントURLコピー" description="" />
       <BasicTemplate className="text-center">
-        <EventInfo />
+        <EventInfo
+          eventName={event.event_name}
+          detail={event.detail}
+          location={event.location}
+        />
         <Button
           className="flex m-auto my-5"
           onClick={() => {
-            copy(router.pathname); // とりあえずcurrenturlをコピー
+            copy(`http://localhost:3000/event/${eventId}/participate`); // とりあえずcurrenturlをコピー
           }}
         >
           URLをコピー

@@ -20,6 +20,7 @@ export default function Show() {
     },
     participants: [],
   });
+  console.log(event);
   const eventId = useRouter().query.eventId;
   const getEvent = getEventInfo(
     (response) => {

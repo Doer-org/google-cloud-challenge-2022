@@ -7,22 +7,21 @@ import { Textarea } from '../../../components/atoms/form/Textarea';
 import { FormWrapper } from '../../../components/atoms/form/FormWrapper';
 import { Button } from '../../../components/atoms/text/Button';
 import { MapForm } from '../../../components/atoms/form/MapForm';
-import { useUserInfoStore } from '../../../store/userStore';
+import { UserStore } from '../../../store/userStore';
 import { useRouter } from 'next/router';
 import { TMapPosition } from '../../../components/atoms/map/MapBasicInfo';
 
 export default function New() {
   const router = useRouter();
-  // TODO: 今はBad Requestが飛んできているのでuser_idとか用意しないといけないっぽい？それかtypeとかstateを埋めてないから？
   const createEvent = createNewEvent(
     (ok) => {
-      router.push(ok.url);
+      router.push('/');
     },
     (e) => {
       console.log(e);
     }
   );
-  const { userInfo } = useUserInfoStore();
+  const { userId } = UserStore();
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);
   const [detail, setDetail] = useState('');
@@ -60,7 +59,7 @@ export default function New() {
           className="flex m-auto my-5"
           onClick={() => {
             createEvent(
-              { user_id: 'a88d4cba-6211-40ee-8a23-3f259d0166d5' },
+              { user_id: userId },
               {
                 event_name: name,
                 max_member: capacity,

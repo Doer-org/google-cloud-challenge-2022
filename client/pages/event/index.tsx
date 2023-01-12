@@ -6,13 +6,17 @@ import { EventWrapper } from '../../components/molecules/Event/EventWrapper';
 import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
 import { MyHead } from '../../components/templates/shared/Head/MyHead';
 import { getEventList } from '../../core/api/user/getEventList';
-import { useUserInfoStore } from '../../store/userStore';
-
+import { UserStore } from '../../store/userStore';
+import { Event } from '../../core/types/event';
+import { components } from '../../core/openapi/openapi';
+import { EventBasicInfoCard } from '../../components/molecules/Event/EventBasicInfoCard';
 export default function Index() {
   // TODO: 自分の作ったevent一覧をとってくるhooks使う
 
-  const [events, setEvents] = useState<any>([]);
-
+  const [events, setEvents] = useState<
+    components['schemas']['User_EventsList'][]
+  >([]);
+  const { userId } = UserStore();
   useEffect(() => {
     const getEvents = getEventList(
       (response) => {
@@ -22,8 +26,8 @@ export default function Index() {
         console.log(error);
       }
     );
-    getEvents('a88d4cba-6211-40ee-8a23-3f259d0166d5');
-  }, []);
+    getEvents(userId);
+  }, [userId]);
 
   return (
     <>
@@ -32,11 +36,15 @@ export default function Index() {
         <TypoWrapper size="large" line="bold">
           <h1 className="my-10">自分のイベント一覧</h1>
         </TypoWrapper>
-        {events.map((event: any) => {
+        {events.map((event: components['schemas']['User_EventsList']) => {
           return (
             <div key={event.name}>
               <EventWrapper>
-                <EventBasicInfo eventName={event.name} detail={event.detail} />
+                <EventBasicInfoCard
+                  id={event.id}
+                  eventName={event.name}
+                  detail={event.detail as string}
+                />
               </EventWrapper>
             </div>
           );

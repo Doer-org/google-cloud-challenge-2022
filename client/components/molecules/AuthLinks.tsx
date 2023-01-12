@@ -24,6 +24,9 @@ export const AuthLinks = ({ auth, changeAuth }: TProps) => {
           <LinkTo href="/event/new" className="m-1">
             イベント募集ページへ
           </LinkTo>
+          <LinkTo href="/event" className="m-1">
+            イベント一覧ページへ
+          </LinkTo>
           <Button onClick={() => changeAuth(false)} className="m-1">
             ログアウト
           </Button>

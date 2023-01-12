@@ -60,7 +60,7 @@ export default function New() {
           className="flex m-auto my-5"
           onClick={() => {
             createEvent(
-              { user_id: userInfo.userId },
+              { user_id: 'a88d4cba-6211-40ee-8a23-3f259d0166d5' },
               {
                 event_name: name,
                 max_member: capacity,

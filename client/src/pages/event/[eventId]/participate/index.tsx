@@ -66,7 +66,6 @@ export default function Participate(event: Event) {
         ) : (
           <>
             <EventInfo
-              userId={event.host.user_id}
               participants={event.participants}
               eventName={event.event_name}
               detail={event.detail}

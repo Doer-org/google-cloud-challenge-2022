@@ -15,7 +15,9 @@ export default function New() {
   const router = useRouter();
   const createEvent = createNewEvent(
     (ok) => {
-      router.push('/');
+      router.push(
+        `http://localhost:3000/event/${ok.created_event.event_id}/completion`
+      );
     },
     (e) => {}
   );

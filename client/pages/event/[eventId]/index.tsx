@@ -36,6 +36,7 @@ export default function Show() {
       <MyHead title="募集タイトルを入れる" description="" />
       <BasicTemplate className="text-center">
         <EventInfo
+          participants={event.participants}
           eventName={event.event_name}
           detail={event.detail}
           location={event.location}

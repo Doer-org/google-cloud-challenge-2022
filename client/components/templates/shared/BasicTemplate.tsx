@@ -18,8 +18,10 @@ export const BasicTemplate = ({ children, className }: TProps) => {
     // TODO:高さが800前後の時に初回レンダリングでうまく高さが判定できてない
     // 高さが本来の高さよりも低くなっていることからh-screenが適用されてしまっている
     // iPad Airとかだと大丈夫
-    const elh = Number(el?.current?.getBoundingClientRect().height);
-    setHeight(bh > elh ? 'h-screen' : '');
+    window.onload = () => {
+      const elh = Number(el?.current?.getBoundingClientRect().height);
+      setHeight(bh > elh ? 'h-screen' : '');
+    };
   }, []);
   useEffect(() => {
     const bh = document.documentElement.clientHeight;

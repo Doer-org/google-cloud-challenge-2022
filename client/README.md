@@ -28,3 +28,20 @@ components
          // headerとかどこでも使うもの
 
 ```
+
+## 環境
+
+docker-compose環境立ち上げ
+
+TODO: なぜか2回目のmake upで動く
+
+```
+make up
+```
+
+コマンドのヘルプについて
+
+```
+make or make help
+```
+

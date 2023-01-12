@@ -10,6 +10,7 @@ import { Event } from '../../../core/types/event';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Show() {
+  // TODO: Comment取れてねーじゃん！
   const [event, setEvent] = useState<Event>({
     event_id: '',
     event_name: '',

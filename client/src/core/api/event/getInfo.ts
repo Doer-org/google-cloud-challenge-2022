@@ -4,8 +4,7 @@ import * as TE from 'fp-ts/TaskEither'
 import * as R from "fp-ts/lib/Record";
 import * as A from "fp-ts/lib/Array";
 import { EventApi } from '../../utils/gcChallengeApi'
-import { Event } from '../../types/event'
-import { Retryer } from 'react-query/types/core/retryer';
+import { Event } from '../../types/event' 
   
  
 export const tryGetEventInfo = (event_id: string) => { 
@@ -42,11 +41,11 @@ export const tryGetEventInfo = (event_id: string) => {
                     eventInfo : eventInfo,
                     commentDic : comment
                 }),
-                (c) => { 
-                    console.log(`========= getComments : ${eventInfo.id} =========`) 
-                    console.log(c)
-                    return c
-                }
+                // (c) => { 
+                //     console.log(`========= getComments : ${eventInfo.id} =========`) 
+                //     console.log(c)
+                //     return c
+                // }
             )) 
         ))
     )
@@ -56,8 +55,8 @@ export const tryGetEventInfo = (event_id: string) => {
         TE.chain((host) => pipe(
             getEventMembers({ id: event_id }),
             TE.map((members) => { 
-                console.log(`========= getEventMembers : ${event_id} =========`) 
-                console.log(members)
+                // console.log(`========= getEventMembers : ${event_id} =========`) 
+                // console.log(members)
                 return {
                     host: host,
                     members: members.filter((member) => member.id !== host.id)

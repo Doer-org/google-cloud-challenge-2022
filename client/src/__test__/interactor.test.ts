@@ -96,7 +96,7 @@ describe('[core/api/create] getInfo', () => {
       })
     }
     expect(  
-      E.isRight(event) && E.isRight(ret)
+      E.isRight(event) && E.isRight(ret)  && ret.right.participants.length === 3
     )
     .toBe(
       true 

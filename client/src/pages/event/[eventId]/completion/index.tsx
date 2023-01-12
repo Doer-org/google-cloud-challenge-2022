@@ -31,7 +31,7 @@ export default function Participate() {
   );
   useEffect(() => {
     getEvent(eventId as string);
-  }, [getEvent, eventId]);
+  }, []);
 
   return (
     <>

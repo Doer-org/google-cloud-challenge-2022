@@ -12,6 +12,7 @@ export const AuthLinks = ({ auth, changeAuth }: TProps) => {
   // TODO:ログアウトhooksを使ってonClickの中へ
   // TODO: User ID 
   const {userInfo, setUserInfo} = useUserInfoStore()
+  console.log(userInfo.userId)
   const signIn = 
     createUser(
       (ok) => {
@@ -28,11 +29,13 @@ export const AuthLinks = ({ auth, changeAuth }: TProps) => {
           <Button  
             className="m-1" 
             onClick={() => {
-              if (userInfo.userId = '') 
+              if (userInfo.userId === ''){
+                
                 signIn({
                   name: "mahiro",
                   authenticated: true,
                 })
+              }
               changeAuth(true)
             }}
             >

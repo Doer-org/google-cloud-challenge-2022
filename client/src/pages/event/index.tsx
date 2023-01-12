@@ -25,7 +25,7 @@ export default function Index() {
       (error) => {}
     );
     getEvents(userId);
-  }, [userId]);
+  }, []);
 
   return (
     <>

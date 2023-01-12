@@ -16,14 +16,14 @@ export default function New() {
   const createEvent = createNewEvent(
     (ok) => {
       router.push(
-        `http://localhost:3000/event/${ok.created_event.event_id}/completion`
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/event/${ok.created_event.event_id}/completion`
       );
     },
     (e) => {}
   );
   // const { userId } = UserStore();
-  const { userInfo, setUserInfo} = useUserInfoStore()
-  
+  const { userInfo, setUserInfo } = useUserInfoStore();
+
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);
   const [detail, setDetail] = useState('');

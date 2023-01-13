@@ -38,5 +38,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: test
+      - name: go-test
         run: cd server/src && go test ./... -v

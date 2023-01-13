@@ -38,5 +38,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: test
+      - name: go-test
         run: cd server/src && go test ./... -v
+      - uses: actions/checkout@v2
+      - name: vitest
+        run: cd client/src && yarn test

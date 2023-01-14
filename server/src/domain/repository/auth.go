@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"context"
-
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"golang.org/x/oauth2"
 )
@@ -17,6 +15,4 @@ type IAuthRepository interface {
 	StoreState(authState *entity.AuthState) error
 	FindStateByState(state string) (*entity.AuthState, error)
 	DeleteState(state string) error
-
-	FindCreatorTokenBySessionID(context.Context, string) (*oauth2.Token, string, error)
 }

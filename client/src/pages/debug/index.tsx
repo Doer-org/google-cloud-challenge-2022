@@ -5,7 +5,7 @@ import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
 export default function New() {
   const [location, setLocation] = useState<null | TMapPosition>(null);  
   return (
-    <BasicTemplate className="text-center" children={undefined}> 
+    <BasicTemplate className="text-center"> 
       <MapForm location={location} setLocation={setLocation} />
     </BasicTemplate>
   );

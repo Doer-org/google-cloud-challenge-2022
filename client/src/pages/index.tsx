@@ -6,6 +6,7 @@ import { AuthLinks } from '../components/molecules/AuthLinks';
 import style from '../styles/title.module.css';
 export default function Home() {
   const [auth, setAuth] = useState(false);
+  console.log("HELLOOOOOOOOO",process.env.NEXT_PUBLIC_GOOGLE_MAP_API,"???")
   return (
     <>
       <MyHead title="すきーま" description="すきーまの説明" />

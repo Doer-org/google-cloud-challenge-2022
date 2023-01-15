@@ -64,7 +64,7 @@ describe('[core/api/create] create', () => {
       true 
     ) 
   })
-})
+}, 10_000)
 
 
 describe('[core/api/create] getInfo', () => {

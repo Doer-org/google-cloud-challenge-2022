@@ -46,7 +46,7 @@ export default function Participate() {
           className="flex m-auto my-5"
           onClick={() => {
             copy(
-              `${process.env.NEXT_PUBLIC_FRONT_URL}event/${eventId}/participate`
+              `${process.env.NEXT_PUBLIC_FRONT_URL}/event/${eventId}/participate`
             );
           }}
         >

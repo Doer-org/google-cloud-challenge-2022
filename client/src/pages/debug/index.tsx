@@ -1,24 +1,12 @@
 import { useState } from 'react';
-import { Button } from '../../components/atoms/text/Button';
-import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
-import {
-  createNewEvent, 
-} from '../../core/api/event/create';
+import { MapForm } from '../../components/atoms/form/MapForm';
+import { TMapPosition } from '../../components/atoms/map/MapBasicInfo'; 
+import { BasicTemplate } from '../../components/templates/shared/BasicTemplate'; 
 export default function New() {
-  const [createdEventId, setCreatedEventId] = useState('1');
-  const createEvent = createNewEvent(
-    (v) => {
-      console.log(v);
-      setCreatedEventId(v.created_event.event_id);
-    },
-    (v) => {
-      setCreatedEventId('1');
-      console.log(v);
-    }
-  );
-
+  const [location, setLocation] = useState<null | TMapPosition>(null);  
   return (
-    <BasicTemplate className="text-center"> 
+    <BasicTemplate className="text-center" children={undefined}> 
+      <MapForm location={location} setLocation={setLocation} />
     </BasicTemplate>
   );
 }

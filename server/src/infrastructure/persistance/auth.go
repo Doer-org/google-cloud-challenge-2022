@@ -8,6 +8,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/googleauth"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/loginsessions"
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 )
@@ -105,12 +106,20 @@ func (r *AuthRepository) StoreSession(sessionID, userID string) error {
 }
 
 func (r *AuthRepository) GetUserIDFromSession(sessionID string) (string, error) {
-	
-	return "", nil
+	session, err := r.Client.LoginSessions.
+		Query().
+		Where(loginsessions.ID(sessionID)).
+		Only(context.Background())
+
+	if err != nil {
+		return "", fmt.Errorf("get usedid by session err : %w", err)
+	}
+
+	return session.UserID.String(), nil
 }
 
 func (r *AuthRepository) StoreState(authState *entity.AuthState) error {
-
+	
 	return nil
 }
 

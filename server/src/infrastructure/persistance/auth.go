@@ -64,17 +64,48 @@ func (r *AuthRepository) UpdateToken(userId string, token *oauth2.Token) error {
 }
 
 func (r *AuthRepository) GetTokenByUserID(userID string) (*oauth2.Token, error) {
+	userUuid, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, fmt.Errorf("uuid parse err : %w", err)
+	}
 
-	return nil, nil
+	token, err := r.Client.GoogleAuth.
+		Query().
+		Where(googleauth.UserID(userUuid)).
+		Only(context.Background())
+
+	if err != nil {
+		return nil, fmt.Errorf("get token by userid err : %w", err)
+	}
+
+	restoken := &oauth2.Token{}
+	restoken.AccessToken = token.AccessToken
+	restoken.RefreshToken = token.RefreshToken
+	restoken.Expiry = token.Expiry
+
+	return restoken, nil
 }
 
 func (r *AuthRepository) StoreSession(sessionID, userID string) error {
+	userUuid, err := uuid.Parse(userID)
+	if err != nil {
+		return fmt.Errorf("uuid parse err : %w", err)
+	}
 
+	_, err = r.Client.LoginSessions.
+		Create().
+		SetUserID(userUuid).
+		SetID(sessionID).
+		Save(context.Background())
+
+	if err != nil {
+		return fmt.Errorf("create session err : %w", err)
+	}
 	return nil
 }
 
 func (r *AuthRepository) GetUserIDFromSession(sessionID string) (string, error) {
-
+	
 	return "", nil
 }
 

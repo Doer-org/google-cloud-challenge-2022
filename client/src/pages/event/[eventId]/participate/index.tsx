@@ -14,6 +14,7 @@ import { Event } from '../../../../core/types/event';
 import { flow, pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import { joinEvent } from '../../../../core/api/event/join';
+import { useEffect } from 'react';
 
 export async function getServerSideProps(context: any) {
   const eventId = context.query.eventId;
@@ -39,16 +40,21 @@ export default function Participate(event: Event) {
   // TODO: SSRで実装してリンクを貼った時にOGPを表示させるようにする
   const [isConfirm, setIsConfirm] = useState(false);
   const router = useRouter();
+  const [origin, setOrigin] = useState("")
+  useEffect(() => { 
+    setOrigin(window.location.origin)
+  }, []);
   const joinApi = joinEvent(
     (response: unknown) => {
       router.push(
-        `${process.env.NEXT_PUBLIC_FRONT_URL}/event/${event.event_id}/`
+        `${origin}/event/${event.event_id}/`
       );
     },
     (e) => {}
   );
   const [name, setName] = useState('');
   const [word, setWord] = useState('');
+  
   return (
     <>
       <BasicTemplate className="text-center">

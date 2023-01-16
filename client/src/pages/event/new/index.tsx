@@ -10,13 +10,18 @@ import { MapForm } from '../../../components/atoms/form/MapForm';
 import { useUserInfoStore } from '../../../store/userStore';
 import { useRouter } from 'next/router';
 import { TMapPosition } from '../../../components/atoms/map/MapBasicInfo';
+import { useEffect } from 'react';
 
 export default function New() {
   const router = useRouter();
+  const [origin, setOrigin] = useState("")
+  useEffect(() => { 
+    setOrigin(window.location.origin)
+  }, []);
   const createEvent = createNewEvent(
     (ok) => {
       router.push(
-        `${process.env.NEXT_PUBLIC_FRONT_URL}/event/${ok.created_event.event_id}/completion`
+        `${origin}/event/${ok.created_event.event_id}/completion`
       );
     },
     (e) => {}

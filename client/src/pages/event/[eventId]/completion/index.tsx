@@ -29,8 +29,10 @@ export default function Participate() {
     },
     (error) => {}
   );
+  const [origin, setOrigin] = useState("")
   useEffect(() => {
     getEvent(eventId as string);
+    setOrigin(window.location.origin)
   }, []);
 
   return (
@@ -46,7 +48,7 @@ export default function Participate() {
           className="flex m-auto my-5"
           onClick={() => {
             copy(
-              `${process.env.NEXT_PUBLIC_FRONT_URL}/event/${eventId}/participate`
+              `${origin}/event/${eventId}/participate`
             );
           }}
         >

@@ -7,6 +7,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/entity"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/authstates"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/googleauth"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/loginsessions"
 	"github.com/google/uuid"
@@ -119,16 +120,45 @@ func (r *AuthRepository) GetUserIDFromSession(sessionID string) (string, error) 
 }
 
 func (r *AuthRepository) StoreState(authState *entity.AuthState) error {
-	
+	_, err := r.Client.AuthStates.
+		Create().
+		SetState(authState.State).
+		SetRedirectURL(authState.RedirectURL).
+		Save(context.Background())
+
+	if err != nil {
+		return fmt.Errorf("create state err : %w", err)
+	}
+
 	return nil
 }
 
 func (r *AuthRepository) FindStateByState(state string) (*entity.AuthState, error) {
+	resstate, err := r.Client.AuthStates.
+		Query().
+		Where(authstates.State(state)).
+		Only(context.Background())
 
-	return nil, nil
+	if err != nil {
+		return nil, fmt.Errorf("get state by state err : %w", err)
+	}
+
+	res := &entity.AuthState{}
+	res.RedirectURL = resstate.RedirectURL
+	res.State = resstate.State
+
+	return res, nil
 }
 
 func (r *AuthRepository) DeleteState(state string) error {
+	_, err := r.Client.AuthStates.
+		Delete().
+		Where(authstates.State(state)).
+		Exec(context.Background())
+
+	if err != nil {
+		return fmt.Errorf("delete state by state err : %w", err)
+	}
 
 	return nil
 }

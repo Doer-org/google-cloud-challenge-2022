@@ -16,15 +16,14 @@ import (
 type AuthUsecase struct {
 	repo       repository.IAuthRepository
 	authGoogle google.IAuth
-	googleUser google.IUser
-	userRepo   repository.IUserRepository
+
+	userRepo repository.IUserRepository
 }
 
-func NewAuthrUsecase(r repository.IAuthRepository, ag google.IAuth, gu google.IUser, ur repository.IUserRepository) *AuthUsecase {
+func NewAuthUsecase(r repository.IAuthRepository, ag google.IAuth, ur repository.IUserRepository) *AuthUsecase {
 	return &AuthUsecase{
 		repo:       r,
 		authGoogle: ag,
-		googleUser: gu,
 		userRepo:   ur,
 	}
 }
@@ -80,7 +79,7 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 
 // createUserIfNotExists はユーザが存在していなかったら新規に作成しIDを返します。
 func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (entity.UserId, error) {
-	user, err := u.googleUser.GetMe(ctx)
+	user, err := u.authGoogle.GetMe(ctx)
 	if err != nil {
 		return "", fmt.Errorf("get my info from Google: %w", err)
 	}

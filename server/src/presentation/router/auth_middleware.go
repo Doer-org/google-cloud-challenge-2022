@@ -7,6 +7,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/http/response"
+	"github.com/go-chi/chi/v5"
 	"golang.org/x/oauth2"
 )
 
@@ -55,4 +56,9 @@ func setToContext(r *http.Request, userID string, token *oauth2.Token) *http.Req
 	ctx = utils.SetTokenToContext(ctx, token)
 	r = r.WithContext(ctx)
 	return r
+}
+
+func setAuthMiddleware(r *chi.Mux, uc *usecase.AuthUsecase) {
+	authmiddle := NewAuthMiddleware(uc)
+	r.Use(authmiddle.Authenticate)
 }

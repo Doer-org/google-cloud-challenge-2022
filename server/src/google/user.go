@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils"
@@ -31,6 +32,8 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 	if err := json.Unmarshal(body, &ResUser); err != nil {
 		return nil, fmt.Errorf("google api json unmarshal error: %w", err)
 	}
+
+	log.Println(ResUser)
 
 	userUuid, err := uuid.Parse(ResUser.Id)
 	if err != nil {

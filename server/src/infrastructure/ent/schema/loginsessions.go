@@ -17,7 +17,7 @@ func (LoginSessions) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
 			NotEmpty().
-			MaxLen(20),
+			MaxLen(200),
 		field.UUID("user_id", uuid.UUID{}).
 			Default(uuid.New),
 	}

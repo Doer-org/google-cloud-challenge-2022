@@ -11,7 +11,7 @@ var (
 	// AuthStatesColumns holds the columns for the "auth_states" table.
 	AuthStatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "state", Type: field.TypeString, Size: 20},
+		{Name: "state", Type: field.TypeString, Size: 2000},
 		{Name: "redirect_url", Type: field.TypeString, Nullable: true, Size: 50},
 	}
 	// AuthStatesTable holds the schema information for the "auth_states" table.
@@ -95,7 +95,7 @@ var (
 	}
 	// LoginSessionsColumns holds the columns for the "login_sessions" table.
 	LoginSessionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, Size: 20},
+		{Name: "id", Type: field.TypeString, Size: 200},
 		{Name: "user_id", Type: field.TypeUUID},
 	}
 	// LoginSessionsTable holds the schema information for the "login_sessions" table.

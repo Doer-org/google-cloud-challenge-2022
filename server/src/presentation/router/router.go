@@ -25,7 +25,7 @@ func InitRouter(c *ent.Client) {
 	eventRepo := persistance.NewEventRepository(c)
 	authRepo := persistance.NewAuthRepository(c)
 
-	googlecli := google.NewClient("")
+	googlecli := google.NewClient("http://localhost:8080/api/callback")
 
 	// usecsae
 	userUC := usecase.NewUserUsecase(userRepo)
@@ -74,7 +74,7 @@ func InitRouter(c *ent.Client) {
 	// 	r.Post("/",commentH.CreateNewComment)
 	// })
 
-	setAuthMiddleware(r, authUC)
+	// setAuthMiddleware(r, authUC)
 	r.Get("/pong", healthH.Pong)
 
 	http.ListenAndServe(

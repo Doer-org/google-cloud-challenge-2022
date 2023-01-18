@@ -11,8 +11,11 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/migrate"
 	"github.com/google/uuid"
 
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/authstates"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/googleauth"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/loginsessions"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -25,10 +28,16 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// AuthStates is the client for interacting with the AuthStates builders.
+	AuthStates *AuthStatesClient
 	// Comment is the client for interacting with the Comment builders.
 	Comment *CommentClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
+	// GoogleAuth is the client for interacting with the GoogleAuth builders.
+	GoogleAuth *GoogleAuthClient
+	// LoginSessions is the client for interacting with the LoginSessions builders.
+	LoginSessions *LoginSessionsClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -44,8 +53,11 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.AuthStates = NewAuthStatesClient(c.config)
 	c.Comment = NewCommentClient(c.config)
 	c.Event = NewEventClient(c.config)
+	c.GoogleAuth = NewGoogleAuthClient(c.config)
+	c.LoginSessions = NewLoginSessionsClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -78,11 +90,14 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Comment: NewCommentClient(cfg),
-		Event:   NewEventClient(cfg),
-		User:    NewUserClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		AuthStates:    NewAuthStatesClient(cfg),
+		Comment:       NewCommentClient(cfg),
+		Event:         NewEventClient(cfg),
+		GoogleAuth:    NewGoogleAuthClient(cfg),
+		LoginSessions: NewLoginSessionsClient(cfg),
+		User:          NewUserClient(cfg),
 	}, nil
 }
 
@@ -100,18 +115,21 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Comment: NewCommentClient(cfg),
-		Event:   NewEventClient(cfg),
-		User:    NewUserClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		AuthStates:    NewAuthStatesClient(cfg),
+		Comment:       NewCommentClient(cfg),
+		Event:         NewEventClient(cfg),
+		GoogleAuth:    NewGoogleAuthClient(cfg),
+		LoginSessions: NewLoginSessionsClient(cfg),
+		User:          NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Comment.
+//		AuthStates.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -133,30 +151,159 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.AuthStates.Use(hooks...)
 	c.Comment.Use(hooks...)
 	c.Event.Use(hooks...)
+	c.GoogleAuth.Use(hooks...)
+	c.LoginSessions.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.AuthStates.Intercept(interceptors...)
 	c.Comment.Intercept(interceptors...)
 	c.Event.Intercept(interceptors...)
+	c.GoogleAuth.Intercept(interceptors...)
+	c.LoginSessions.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AuthStatesMutation:
+		return c.AuthStates.mutate(ctx, m)
 	case *CommentMutation:
 		return c.Comment.mutate(ctx, m)
 	case *EventMutation:
 		return c.Event.mutate(ctx, m)
+	case *GoogleAuthMutation:
+		return c.GoogleAuth.mutate(ctx, m)
+	case *LoginSessionsMutation:
+		return c.LoginSessions.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AuthStatesClient is a client for the AuthStates schema.
+type AuthStatesClient struct {
+	config
+}
+
+// NewAuthStatesClient returns a client for the AuthStates from the given config.
+func NewAuthStatesClient(c config) *AuthStatesClient {
+	return &AuthStatesClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `authstates.Hooks(f(g(h())))`.
+func (c *AuthStatesClient) Use(hooks ...Hook) {
+	c.hooks.AuthStates = append(c.hooks.AuthStates, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `authstates.Intercept(f(g(h())))`.
+func (c *AuthStatesClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AuthStates = append(c.inters.AuthStates, interceptors...)
+}
+
+// Create returns a builder for creating a AuthStates entity.
+func (c *AuthStatesClient) Create() *AuthStatesCreate {
+	mutation := newAuthStatesMutation(c.config, OpCreate)
+	return &AuthStatesCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AuthStates entities.
+func (c *AuthStatesClient) CreateBulk(builders ...*AuthStatesCreate) *AuthStatesCreateBulk {
+	return &AuthStatesCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AuthStates.
+func (c *AuthStatesClient) Update() *AuthStatesUpdate {
+	mutation := newAuthStatesMutation(c.config, OpUpdate)
+	return &AuthStatesUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AuthStatesClient) UpdateOne(as *AuthStates) *AuthStatesUpdateOne {
+	mutation := newAuthStatesMutation(c.config, OpUpdateOne, withAuthStates(as))
+	return &AuthStatesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AuthStatesClient) UpdateOneID(id int) *AuthStatesUpdateOne {
+	mutation := newAuthStatesMutation(c.config, OpUpdateOne, withAuthStatesID(id))
+	return &AuthStatesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AuthStates.
+func (c *AuthStatesClient) Delete() *AuthStatesDelete {
+	mutation := newAuthStatesMutation(c.config, OpDelete)
+	return &AuthStatesDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AuthStatesClient) DeleteOne(as *AuthStates) *AuthStatesDeleteOne {
+	return c.DeleteOneID(as.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AuthStatesClient) DeleteOneID(id int) *AuthStatesDeleteOne {
+	builder := c.Delete().Where(authstates.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AuthStatesDeleteOne{builder}
+}
+
+// Query returns a query builder for AuthStates.
+func (c *AuthStatesClient) Query() *AuthStatesQuery {
+	return &AuthStatesQuery{
+		config: c.config,
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AuthStates entity by its id.
+func (c *AuthStatesClient) Get(ctx context.Context, id int) (*AuthStates, error) {
+	return c.Query().Where(authstates.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AuthStatesClient) GetX(ctx context.Context, id int) *AuthStates {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AuthStatesClient) Hooks() []Hook {
+	return c.hooks.AuthStates
+}
+
+// Interceptors returns the client interceptors.
+func (c *AuthStatesClient) Interceptors() []Interceptor {
+	return c.inters.AuthStates
+}
+
+func (c *AuthStatesClient) mutate(ctx context.Context, m *AuthStatesMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AuthStatesCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AuthStatesUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AuthStatesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AuthStatesDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AuthStates mutation op: %q", m.Op())
 	}
 }
 
@@ -471,6 +618,272 @@ func (c *EventClient) mutate(ctx context.Context, m *EventMutation) (Value, erro
 		return (&EventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Event mutation op: %q", m.Op())
+	}
+}
+
+// GoogleAuthClient is a client for the GoogleAuth schema.
+type GoogleAuthClient struct {
+	config
+}
+
+// NewGoogleAuthClient returns a client for the GoogleAuth from the given config.
+func NewGoogleAuthClient(c config) *GoogleAuthClient {
+	return &GoogleAuthClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `googleauth.Hooks(f(g(h())))`.
+func (c *GoogleAuthClient) Use(hooks ...Hook) {
+	c.hooks.GoogleAuth = append(c.hooks.GoogleAuth, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `googleauth.Intercept(f(g(h())))`.
+func (c *GoogleAuthClient) Intercept(interceptors ...Interceptor) {
+	c.inters.GoogleAuth = append(c.inters.GoogleAuth, interceptors...)
+}
+
+// Create returns a builder for creating a GoogleAuth entity.
+func (c *GoogleAuthClient) Create() *GoogleAuthCreate {
+	mutation := newGoogleAuthMutation(c.config, OpCreate)
+	return &GoogleAuthCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of GoogleAuth entities.
+func (c *GoogleAuthClient) CreateBulk(builders ...*GoogleAuthCreate) *GoogleAuthCreateBulk {
+	return &GoogleAuthCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for GoogleAuth.
+func (c *GoogleAuthClient) Update() *GoogleAuthUpdate {
+	mutation := newGoogleAuthMutation(c.config, OpUpdate)
+	return &GoogleAuthUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *GoogleAuthClient) UpdateOne(ga *GoogleAuth) *GoogleAuthUpdateOne {
+	mutation := newGoogleAuthMutation(c.config, OpUpdateOne, withGoogleAuth(ga))
+	return &GoogleAuthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *GoogleAuthClient) UpdateOneID(id int) *GoogleAuthUpdateOne {
+	mutation := newGoogleAuthMutation(c.config, OpUpdateOne, withGoogleAuthID(id))
+	return &GoogleAuthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for GoogleAuth.
+func (c *GoogleAuthClient) Delete() *GoogleAuthDelete {
+	mutation := newGoogleAuthMutation(c.config, OpDelete)
+	return &GoogleAuthDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *GoogleAuthClient) DeleteOne(ga *GoogleAuth) *GoogleAuthDeleteOne {
+	return c.DeleteOneID(ga.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *GoogleAuthClient) DeleteOneID(id int) *GoogleAuthDeleteOne {
+	builder := c.Delete().Where(googleauth.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &GoogleAuthDeleteOne{builder}
+}
+
+// Query returns a query builder for GoogleAuth.
+func (c *GoogleAuthClient) Query() *GoogleAuthQuery {
+	return &GoogleAuthQuery{
+		config: c.config,
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a GoogleAuth entity by its id.
+func (c *GoogleAuthClient) Get(ctx context.Context, id int) (*GoogleAuth, error) {
+	return c.Query().Where(googleauth.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *GoogleAuthClient) GetX(ctx context.Context, id int) *GoogleAuth {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a GoogleAuth.
+func (c *GoogleAuthClient) QueryUser(ga *GoogleAuth) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ga.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(googleauth.Table, googleauth.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, googleauth.UserTable, googleauth.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ga.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *GoogleAuthClient) Hooks() []Hook {
+	return c.hooks.GoogleAuth
+}
+
+// Interceptors returns the client interceptors.
+func (c *GoogleAuthClient) Interceptors() []Interceptor {
+	return c.inters.GoogleAuth
+}
+
+func (c *GoogleAuthClient) mutate(ctx context.Context, m *GoogleAuthMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&GoogleAuthCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&GoogleAuthUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&GoogleAuthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&GoogleAuthDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown GoogleAuth mutation op: %q", m.Op())
+	}
+}
+
+// LoginSessionsClient is a client for the LoginSessions schema.
+type LoginSessionsClient struct {
+	config
+}
+
+// NewLoginSessionsClient returns a client for the LoginSessions from the given config.
+func NewLoginSessionsClient(c config) *LoginSessionsClient {
+	return &LoginSessionsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `loginsessions.Hooks(f(g(h())))`.
+func (c *LoginSessionsClient) Use(hooks ...Hook) {
+	c.hooks.LoginSessions = append(c.hooks.LoginSessions, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `loginsessions.Intercept(f(g(h())))`.
+func (c *LoginSessionsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.LoginSessions = append(c.inters.LoginSessions, interceptors...)
+}
+
+// Create returns a builder for creating a LoginSessions entity.
+func (c *LoginSessionsClient) Create() *LoginSessionsCreate {
+	mutation := newLoginSessionsMutation(c.config, OpCreate)
+	return &LoginSessionsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of LoginSessions entities.
+func (c *LoginSessionsClient) CreateBulk(builders ...*LoginSessionsCreate) *LoginSessionsCreateBulk {
+	return &LoginSessionsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for LoginSessions.
+func (c *LoginSessionsClient) Update() *LoginSessionsUpdate {
+	mutation := newLoginSessionsMutation(c.config, OpUpdate)
+	return &LoginSessionsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *LoginSessionsClient) UpdateOne(ls *LoginSessions) *LoginSessionsUpdateOne {
+	mutation := newLoginSessionsMutation(c.config, OpUpdateOne, withLoginSessions(ls))
+	return &LoginSessionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *LoginSessionsClient) UpdateOneID(id string) *LoginSessionsUpdateOne {
+	mutation := newLoginSessionsMutation(c.config, OpUpdateOne, withLoginSessionsID(id))
+	return &LoginSessionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for LoginSessions.
+func (c *LoginSessionsClient) Delete() *LoginSessionsDelete {
+	mutation := newLoginSessionsMutation(c.config, OpDelete)
+	return &LoginSessionsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *LoginSessionsClient) DeleteOne(ls *LoginSessions) *LoginSessionsDeleteOne {
+	return c.DeleteOneID(ls.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *LoginSessionsClient) DeleteOneID(id string) *LoginSessionsDeleteOne {
+	builder := c.Delete().Where(loginsessions.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &LoginSessionsDeleteOne{builder}
+}
+
+// Query returns a query builder for LoginSessions.
+func (c *LoginSessionsClient) Query() *LoginSessionsQuery {
+	return &LoginSessionsQuery{
+		config: c.config,
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a LoginSessions entity by its id.
+func (c *LoginSessionsClient) Get(ctx context.Context, id string) (*LoginSessions, error) {
+	return c.Query().Where(loginsessions.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *LoginSessionsClient) GetX(ctx context.Context, id string) *LoginSessions {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a LoginSessions.
+func (c *LoginSessionsClient) QueryUser(ls *LoginSessions) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ls.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(loginsessions.Table, loginsessions.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, loginsessions.UserTable, loginsessions.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ls.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *LoginSessionsClient) Hooks() []Hook {
+	return c.hooks.LoginSessions
+}
+
+// Interceptors returns the client interceptors.
+func (c *LoginSessionsClient) Interceptors() []Interceptor {
+	return c.inters.LoginSessions
+}
+
+func (c *LoginSessionsClient) mutate(ctx context.Context, m *LoginSessionsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&LoginSessionsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&LoginSessionsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&LoginSessionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&LoginSessionsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown LoginSessions mutation op: %q", m.Op())
 	}
 }
 

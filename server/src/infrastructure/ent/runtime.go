@@ -3,8 +3,11 @@
 package ent
 
 import (
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/authstates"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/comment"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/event"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/googleauth"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/loginsessions"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/schema"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
 	"github.com/google/uuid"
@@ -14,6 +17,30 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	authstatesFields := schema.AuthStates{}.Fields()
+	_ = authstatesFields
+	// authstatesDescState is the schema descriptor for state field.
+	authstatesDescState := authstatesFields[0].Descriptor()
+	// authstates.StateValidator is a validator for the "state" field. It is called by the builders before save.
+	authstates.StateValidator = func() func(string) error {
+		validators := authstatesDescState.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(state string) error {
+			for _, fn := range fns {
+				if err := fn(state); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// authstatesDescRedirectURL is the schema descriptor for redirect_url field.
+	authstatesDescRedirectURL := authstatesFields[1].Descriptor()
+	// authstates.RedirectURLValidator is a validator for the "redirect_url" field. It is called by the builders before save.
+	authstates.RedirectURLValidator = authstatesDescRedirectURL.Validators[0].(func(string) error)
 	commentFields := schema.Comment{}.Fields()
 	_ = commentFields
 	// commentDescBody is the schema descriptor for body field.
@@ -92,6 +119,44 @@ func init() {
 	eventDescID := eventFields[0].Descriptor()
 	// event.DefaultID holds the default value on creation for the id field.
 	event.DefaultID = eventDescID.Default.(func() uuid.UUID)
+	googleauthFields := schema.GoogleAuth{}.Fields()
+	_ = googleauthFields
+	// googleauthDescUserID is the schema descriptor for user_id field.
+	googleauthDescUserID := googleauthFields[0].Descriptor()
+	// googleauth.DefaultUserID holds the default value on creation for the user_id field.
+	googleauth.DefaultUserID = googleauthDescUserID.Default.(func() uuid.UUID)
+	// googleauthDescAccessToken is the schema descriptor for access_token field.
+	googleauthDescAccessToken := googleauthFields[1].Descriptor()
+	// googleauth.AccessTokenValidator is a validator for the "access_token" field. It is called by the builders before save.
+	googleauth.AccessTokenValidator = googleauthDescAccessToken.Validators[0].(func(string) error)
+	// googleauthDescRefreshToken is the schema descriptor for refresh_token field.
+	googleauthDescRefreshToken := googleauthFields[2].Descriptor()
+	// googleauth.RefreshTokenValidator is a validator for the "refresh_token" field. It is called by the builders before save.
+	googleauth.RefreshTokenValidator = googleauthDescRefreshToken.Validators[0].(func(string) error)
+	loginsessionsFields := schema.LoginSessions{}.Fields()
+	_ = loginsessionsFields
+	// loginsessionsDescUserID is the schema descriptor for user_id field.
+	loginsessionsDescUserID := loginsessionsFields[1].Descriptor()
+	// loginsessions.DefaultUserID holds the default value on creation for the user_id field.
+	loginsessions.DefaultUserID = loginsessionsDescUserID.Default.(func() uuid.UUID)
+	// loginsessionsDescID is the schema descriptor for id field.
+	loginsessionsDescID := loginsessionsFields[0].Descriptor()
+	// loginsessions.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	loginsessions.IDValidator = func() func(string) error {
+		validators := loginsessionsDescID.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(id string) error {
+			for _, fn := range fns {
+				if err := fn(id); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

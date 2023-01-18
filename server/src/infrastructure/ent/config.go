@@ -27,14 +27,20 @@ type config struct {
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Comment []ent.Hook
-		Event   []ent.Hook
-		User    []ent.Hook
+		AuthStates    []ent.Hook
+		Comment       []ent.Hook
+		Event         []ent.Hook
+		GoogleAuth    []ent.Hook
+		LoginSessions []ent.Hook
+		User          []ent.Hook
 	}
 	inters struct {
-		Comment []ent.Interceptor
-		Event   []ent.Interceptor
-		User    []ent.Interceptor
+		AuthStates    []ent.Interceptor
+		Comment       []ent.Interceptor
+		Event         []ent.Interceptor
+		GoogleAuth    []ent.Interceptor
+		LoginSessions []ent.Interceptor
+		User          []ent.Interceptor
 	}
 )
 

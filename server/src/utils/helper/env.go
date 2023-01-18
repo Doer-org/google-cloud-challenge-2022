@@ -11,3 +11,7 @@ func GetEnvOrDefault(envPath string, defaultEnv string) string {
 	}
 	return env
 }
+
+func IsLocal() bool {
+	return os.Getenv("ENV") == "DEV"
+}

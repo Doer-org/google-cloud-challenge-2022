@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Doer-org/google-cloud-challenge-2022/google"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/handler"
@@ -22,17 +23,28 @@ func InitRouter(c *ent.Client) {
 	// repository
 	userRepo := persistance.NewUserRepository(c)
 	eventRepo := persistance.NewEventRepository(c)
+	authRepo := persistance.NewAuthRepository(c)
+
+	googlecli := google.NewClient("")
 
 	// usecsae
 	userUC := usecase.NewUserUsecase(userRepo)
 	eventUC := usecase.NewEventUsecae(eventRepo)
+	authUC := usecase.NewAuthUsecase(authRepo, googlecli, userRepo)
 
 	healthH := handler.NewHealthHandler()
 	userH := handler.NewUserHandler(userUC)
 	eventH := handler.NewEventHandler(eventUC)
+	authH := handler.NewAuthHandler(authUC, "")
 
 	// health handler
 	r.Get("/ping", healthH.Ping)
+
+	// auth handler
+	r.Route("/api", func(r chi.Router) {
+		r.Get("/login", authH.Login)
+		r.Get("/callback", authH.Callback)
+	})
 
 	// user handler
 	r.Route("/users", func(r chi.Router) {
@@ -61,6 +73,9 @@ func InitRouter(c *ent.Client) {
 	// r.Route("/comments",func(r chi.Router) {
 	// 	r.Post("/",commentH.CreateNewComment)
 	// })
+
+	setAuthMiddleware(r, authUC)
+	r.Get("/pong", healthH.Pong)
 
 	http.ListenAndServe(
 		fmt.Sprintf(":%s", helper.GetEnvOrDefault("PORT", "8080")),

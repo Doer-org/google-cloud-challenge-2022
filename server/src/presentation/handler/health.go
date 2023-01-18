@@ -12,3 +12,8 @@ func (h *HealthHandler) Ping(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("pong"))
 }
+
+func (h *HealthHandler) Pong(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("ping"))
+}

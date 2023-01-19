@@ -35,7 +35,7 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 
 	log.Println(ResUser)
 
-	userUuid, err := uuid.Parse(ResUser.Id)
+	userUuid, err := uuid.NewUUID()
 	if err != nil {
 		return nil, fmt.Errorf("uuid parse err : %w", err)
 	}

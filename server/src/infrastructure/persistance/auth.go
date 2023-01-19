@@ -76,13 +76,14 @@ func (r *AuthRepository) GetTokenByUserID(userID string) (*oauth2.Token, error) 
 		Only(context.Background())
 
 	if err != nil {
-		return nil, fmt.Errorf("get token by userid err : %w", err)
+		return nil, err
 	}
-
 	restoken := &oauth2.Token{}
-	restoken.AccessToken = token.AccessToken
-	restoken.RefreshToken = token.RefreshToken
-	restoken.Expiry = token.Expiry
+	if token != nil {
+		restoken.AccessToken = token.AccessToken
+		restoken.RefreshToken = token.RefreshToken
+		restoken.Expiry = token.Expiry
+	}
 
 	return restoken, nil
 }
@@ -111,7 +112,7 @@ func (r *AuthRepository) GetUserIDFromSession(sessionID string) (string, error) 
 		Where(loginsessions.ID(sessionID)).
 		Only(context.Background())
 
-	if err != nil {
+	if err != nil && !ent.IsNotFound(err) {
 		return "", fmt.Errorf("get usedid by session err : %w", err)
 	}
 
@@ -138,7 +139,7 @@ func (r *AuthRepository) FindStateByState(state string) (*ent.AuthStates, error)
 		Where(authstates.State(state)).
 		Only(context.Background())
 
-	if err != nil {
+	if err != nil && !ent.IsNotFound(err) {
 		return nil, fmt.Errorf("get state by state err : %w", err)
 	}
 

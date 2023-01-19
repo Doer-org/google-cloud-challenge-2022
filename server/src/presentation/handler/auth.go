@@ -38,6 +38,8 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	url += "&approval_prompt=force&access_type=offline"
+
 	http.Redirect(w, r, url, http.StatusFound)
 }
 

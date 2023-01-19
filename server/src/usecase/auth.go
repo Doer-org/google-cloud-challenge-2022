@@ -80,19 +80,19 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 
 // createUserIfNotExists はユーザが存在していなかったら新規に作成しIDを返します。
 func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
+
 	user, err := u.authGoogle.GetMe(ctx)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("get my info from Google: %w", err)
 	}
 
-	getuser, err := u.userRepo.GetUserById(ctx, user.ID)
+	res, err := u.userRepo.GetUserByMail(ctx, user.Mail)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("get user by id: %w", err)
+		return uuid.Nil, fmt.Errorf("get user by mail: %w", err)
 	}
 
-	if getuser.Name != "" {
-		userId := getuser.ID
-		return userId, nil
+	if res != nil {
+		return res.ID, nil
 	}
 
 	_, err = u.userRepo.CreateNewUser(ctx, user)
@@ -105,20 +105,23 @@ func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (uuid.UUID, err
 
 func (u *AuthUsecase) StoreORUpdateToken(userID string, token *oauth2.Token) error {
 	gettoken, err := u.repo.GetTokenByUserID(userID)
-	if err != nil {
+	if err != nil && !ent.IsNotFound(err) {
 		return fmt.Errorf("get token from userId userID=%s: %w", userID, err)
 	}
+	log.Println(gettoken)
 
-	if gettoken.AccessToken == "" && gettoken.RefreshToken == "" {
-		err := u.repo.StoreToken(string(userID), token)
+	if ent.IsNotFound(err) {
+		err := u.repo.StoreToken(userID, token)
 		if err != nil {
 			return fmt.Errorf("create token from userId userID=%s: %w", userID, err)
 		}
+
 	} else {
 		err := u.repo.UpdateToken(string(userID), token)
 		if err != nil {
 			return fmt.Errorf("update token from userId userID=%s: %w", userID, err)
 		}
+
 	}
 
 	return nil

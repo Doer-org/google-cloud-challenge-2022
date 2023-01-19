@@ -23,6 +23,7 @@ func NewUserRepository(c *ent.Client) repository.IUserRepository {
 func (r *UserRepository) CreateNewUser(ctx context.Context, eu *ent.User) (*ent.User, error) {
 	user, err := r.client.User.
 		Create().
+		SetID(eu.ID).
 		SetName(eu.Name).
 		SetAuthenticated(eu.Authenticated).
 		SetMail(eu.Mail).
@@ -74,7 +75,7 @@ func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*ent.U
 		Query().
 		Where(user.Mail(mail)).
 		Only(ctx)
-	if err != nil {
+	if !ent.IsNotFound(err) && err != nil {
 		return nil, fmt.Errorf("UserRepository: get user query error: %w", err)
 	}
 	return user, nil

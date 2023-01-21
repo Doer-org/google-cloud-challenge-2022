@@ -15,7 +15,3 @@ func NewHealthHandler() *HealthHandler {
 func (h *HealthHandler) Ping(w http.ResponseWriter, r *http.Request) {
 	res.WriteJson(w, res.New200SuccessJson("pong"), http.StatusOK)
 }
-
-func (h *HealthHandler) Pong(w http.ResponseWriter, r *http.Request) {
-	res.WriteJson(w, res.New200SuccessJson("ping"), http.StatusOK)
-}

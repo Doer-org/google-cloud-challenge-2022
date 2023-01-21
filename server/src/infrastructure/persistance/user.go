@@ -23,7 +23,6 @@ func NewUser(c *ent.Client) repository.IUser {
 func (repo *User) CreateNewUser(ctx context.Context, eu *ent.User) (*ent.User, error) {
 	user, err := repo.client.User.
 		Create().
-		SetID(eu.ID).
 		SetName(eu.Name).
 		SetAuthenticated(eu.Authenticated).
 		SetMail(eu.Mail).
@@ -68,10 +67,17 @@ func (repo *User) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.
 }
 
 func (repo *User) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
+	// mailが空白の参加者は大勢いるため、mailが空文字の時は検索しない
+	if mail == "" {
+		return nil, nil
+	}
 	user, err := repo.client.User.
 		Query().
 		Where(user.Mail(mail)).
 		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, fmt.Errorf("User.Query: %w", err)
 	}

@@ -33,9 +33,10 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+	adminQuery := r.URL.Query().Get("admin")
 	event, err := h.uc.CreateNewEvent(
 		r.Context(),
-		j.Admin,
+		adminQuery,
 		j.Name,
 		j.Detail,
 		j.Location,

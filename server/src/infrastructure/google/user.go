@@ -9,7 +9,6 @@ import (
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils"
-	"github.com/google/uuid"
 )
 
 func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
@@ -18,6 +17,7 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 		return nil, fmt.Errorf("token not found")
 	}
 	client := c.auth.Config.Client(ctx, token)
+	//TODO:環境変数にする
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
 		return nil, fmt.Errorf("googleapis Get: %w", err)
@@ -34,12 +34,7 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 	}
 	//TODO: 消し忘れない
 	log.Println(ResUser)
-	userUuid, err := uuid.NewUUID()
-	if err != nil {
-		return nil, fmt.Errorf("uuid.NewUUID: %w", err)
-	}
 	user := &ent.User{
-		ID:            userUuid,
 		Name:          ResUser.Name,
 		Mail:          ResUser.Email,
 		Icon:          ResUser.Picture,

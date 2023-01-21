@@ -6,7 +6,7 @@ import (
 
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
-	helper "github.com/Doer-org/google-cloud-challenge-2022/utils/env"
+	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
 // TODO: 1week?
@@ -57,9 +57,8 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: redirect url is empty")), http.StatusBadRequest)
 		return
 	}
-	// TODO: これなに
 	sameSite := http.SameSiteNoneMode
-	if helper.IsLocal() {
+	if env.IsLocal() {
 		sameSite = http.SameSiteLaxMode
 	}
 	http.SetCookie(w, &http.Cookie{
@@ -67,7 +66,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		Value:    sessionID,
 		Path:     "/",
 		MaxAge:   sevenDays,
-		Secure:   !helper.IsLocal(),
+		Secure:   !env.IsLocal(),
 		HttpOnly: true,
 		SameSite: sameSite,
 	})

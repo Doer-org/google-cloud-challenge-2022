@@ -20,7 +20,7 @@ func NewUser(uc usecase.IUser) *User {
 		uc: uc,
 	}
 }
-
+//TODO:Create,delete,updateはloginしているユーザーしか触れないようにするべき
 // POST /users
 func (h *User) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
@@ -36,7 +36,6 @@ func (h *User) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	user, err := h.uc.CreateNewUser(
 		r.Context(),
 		j.Name,
-		j.Authenticated,
 		j.Mail,
 		j.Icon,
 	)
@@ -86,16 +85,12 @@ func (h *User) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 		r.Context(),
 		idParam,
 		j.Name,
-		j.Authenticated,
-		j.Mail,
-		j.Icon,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateUserById: %w", err)), http.StatusBadRequest)
 		return
 	}
-	//TODO: udpateはcreated?
-	res.WriteJson(w, user, http.StatusCreated)
+	res.WriteJson(w, user, http.StatusNoContent)
 }
 
 // GET /users/{id}/events

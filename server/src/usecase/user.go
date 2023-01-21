@@ -11,10 +11,10 @@ import (
 )
 
 type IUser interface {
-	CreateNewUser(ctx context.Context, name string, authenticated bool, mail string, icon string) (*ent.User, error)
+	CreateNewUser(ctx context.Context, name string, mail string, icon string) (*ent.User, error)
 	GetUserById(ctx context.Context, userIdString string) (*ent.User, error)
 	DeleteUserById(ctx context.Context, userIdString string) error
-	UpdateUserById(ctx context.Context, userIdString string, name string, authenticated bool, mail string, icon string) (*ent.User, error)
+	UpdateUserById(ctx context.Context, userIdString string, name string) (*ent.User, error)
 	GetUserByMail(ctx context.Context, mail string) (*ent.User, error)
 	GetUserEvents(ctx context.Context, userIdString string) ([]*ent.Event, error)
 }
@@ -29,7 +29,14 @@ func NewUser(r repository.IUser) IUser {
 	}
 }
 
-func (uc *User) CreateNewUser(ctx context.Context, name string, authenticated bool, mail string, icon string) (*ent.User, error) {
+func (uc *User) CreateNewUser(ctx context.Context, name string, mail string, icon string) (*ent.User, error) {
+	found, err := uc.repo.GetUserByMail(ctx, mail)
+	if err != nil {
+		return nil, fmt.Errorf("GetUserByMail: %w",err)
+	}
+	if found != nil {
+		return nil, fmt.Errorf("this mail user is already exists")
+	}
 	if name == "" {
 		return nil, fmt.Errorf("name is empty")
 	}
@@ -37,10 +44,9 @@ func (uc *User) CreateNewUser(ctx context.Context, name string, authenticated bo
 	if icon == "" {
 		icon = service.GetRandomDefaultIcon()
 	}
-	// TODO: mailが存在するかの確認
 	user := &ent.User{
 		Name:          name,
-		Authenticated: authenticated,
+		Authenticated: true,
 		Mail:          mail,
 		Icon:          icon,
 	}
@@ -63,7 +69,7 @@ func (uc *User) DeleteUserById(ctx context.Context, userIdString string) error {
 	return uc.repo.DeleteUserById(ctx, userId)
 }
 
-func (uc *User) UpdateUserById(ctx context.Context, userIdString string, name string, authenticated bool, mail string, icon string) (*ent.User, error) {
+func (uc *User) UpdateUserById(ctx context.Context, userIdString string, name string) (*ent.User, error) {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
 		return nil, fmt.Errorf("userId Parse: %w", err)
@@ -71,13 +77,9 @@ func (uc *User) UpdateUserById(ctx context.Context, userIdString string, name st
 	if name == "" {
 		return nil, fmt.Errorf("name is empty")
 	}
-	// TODO: iconが空文字のときの処理を追加する
-	// TODO: 更新できるのは本来認証済みユーザーのみ?
+	// 変更できるのはnameのみ
 	u := &ent.User{
-		Name:          name,
-		Authenticated: authenticated,
-		Mail:          mail,
-		Icon:          icon,
+		Name: name,
 	}
 	return uc.repo.UpdateUserById(ctx, userId, u)
 }

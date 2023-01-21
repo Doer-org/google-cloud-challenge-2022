@@ -15,8 +15,6 @@ type Event struct {
 	uc usecase.IEvent
 }
 
-// TODO: handlerとかusecaseつけなくてもいい
-// TODO: domainをけす?
 func NewEvent(uc usecase.IEvent) *Event {
 	return &Event{
 		uc: uc,
@@ -95,7 +93,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateEventById: %w", err)), http.StatusBadRequest)
 		return
 	}
-	res.WriteJson(w, event, http.StatusOK)
+	res.WriteJson(w, event, http.StatusNoContent)
 }
 
 // GET /events/{id}/admin

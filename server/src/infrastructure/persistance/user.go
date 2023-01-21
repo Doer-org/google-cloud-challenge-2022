@@ -60,9 +60,6 @@ func (repo *User) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.
 	user, err := repo.client.User.
 		UpdateOneID(userId).
 		SetName(eu.Name).
-		SetAuthenticated(eu.Authenticated).
-		SetMail(eu.Mail).
-		SetIcon(eu.Icon).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("User.UpdateOneID: %w", err)
@@ -75,7 +72,7 @@ func (repo *User) GetUserByMail(ctx context.Context, mail string) (*ent.User, er
 		Query().
 		Where(user.Mail(mail)).
 		Only(ctx)
-	if !ent.IsNotFound(err) && err != nil {
+	if err != nil {
 		return nil, fmt.Errorf("User.Query: %w", err)
 	}
 	return user, nil

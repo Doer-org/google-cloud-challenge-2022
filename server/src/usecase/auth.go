@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/domain/google"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils"
@@ -15,15 +14,15 @@ import (
 )
 
 type Auth struct {
-	repo       repository.IAuth
-	authGoogle google.IAuth
+	repoAuth   repository.IAuth
+	googleRepo repository.IGoogle
 	userRepo   repository.IUser
 }
 
-func NewAuth(r repository.IAuth, ag google.IAuth, ur repository.IUser) *Auth {
+func NewAuth(ra repository.IAuth, rg repository.IGoogle, ur repository.IUser) *Auth {
 	return &Auth{
-		repo:       r,
-		authGoogle: ag,
+		repoAuth:   ra,
+		googleRepo: rg,
 		userRepo:   ur,
 	}
 }
@@ -34,19 +33,19 @@ func (uc *Auth) GetAuthURL(redirectURL string) (string, error) {
 		State:       state,
 		RedirectURL: redirectURL,
 	}
-	if err := uc.repo.StoreState(st); err != nil {
+	if err := uc.repoAuth.StoreState(st); err != nil {
 		return "", fmt.Errorf("StoreState: %w", err)
 	}
-	return uc.authGoogle.GetAuthURL(state), nil
+	return uc.googleRepo.GetAuthURL(state), nil
 }
 
 func (uc *Auth) Authorization(state, code string) (string, string, error) {
-	storedState, err := uc.repo.FindStateByState(state)
+	storedState, err := uc.repoAuth.FindStateByState(state)
 	if err != nil {
 		return "", "", fmt.Errorf("FindStateByState: %w", err)
 	}
 	ctx := context.Background()
-	token, err := uc.authGoogle.Exchange(ctx, code)
+	token, err := uc.googleRepo.Exchange(ctx, code)
 	if err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("Exchange: %w", err)
 	}
@@ -59,11 +58,11 @@ func (uc *Auth) Authorization(state, code string) (string, string, error) {
 		return storedState.RedirectURL, "", fmt.Errorf("StoreORUpdateToken: %w", err)
 	}
 	sessionID := hash.GetUlid()
-	if err := uc.repo.StoreSession(sessionID, userID.String()); err != nil {
+	if err := uc.repoAuth.StoreSession(sessionID, userID.String()); err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("StoreSession: %w", err)
 	}
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
-	if err := uc.repo.DeleteState(state); err != nil {
+	if err := uc.repoAuth.DeleteState(state); err != nil {
 		log.Printf("DeleteState: %v\n", err)
 		return storedState.RedirectURL, sessionID, nil
 	}
@@ -72,7 +71,7 @@ func (uc *Auth) Authorization(state, code string) (string, string, error) {
 
 // createUserIfNotExists はユーザが存在していなかったら新規に作成しIDを返します。
 func (uc *Auth) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
-	user, err := uc.authGoogle.GetMe(ctx)
+	user, err := uc.googleRepo.GetMe(ctx)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("GetMe: %w", err)
 	}
@@ -92,7 +91,7 @@ func (uc *Auth) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
 }
 
 func (uc *Auth) StoreORUpdateToken(userID string, token *oauth2.Token) error {
-	gettoken, err := uc.repo.GetTokenByUserID(userID)
+	gettoken, err := uc.repoAuth.GetTokenByUserID(userID)
 	if err != nil && !ent.IsNotFound(err) {
 		return fmt.Errorf("GetTokenByUserID: %w", err)
 	}
@@ -100,13 +99,13 @@ func (uc *Auth) StoreORUpdateToken(userID string, token *oauth2.Token) error {
 	log.Println(gettoken)
 
 	if ent.IsNotFound(err) {
-		err := uc.repo.StoreToken(userID, token)
+		err := uc.repoAuth.StoreToken(userID, token)
 		if err != nil {
 			return fmt.Errorf("StoreToken: %w", err)
 		}
 
 	} else {
-		err := uc.repo.UpdateToken(string(userID), token)
+		err := uc.repoAuth.UpdateToken(string(userID), token)
 		if err != nil {
 			return fmt.Errorf("UpdateToken: %w", err)
 		}
@@ -117,7 +116,7 @@ func (uc *Auth) StoreORUpdateToken(userID string, token *oauth2.Token) error {
 
 // GetUserIDFromSession はセッションIDから対応するユーザIDを返します。
 func (uc *Auth) GetUserIDFromSession(sessionID string) (string, error) {
-	userID, err := uc.repo.GetUserIDFromSession(sessionID)
+	userID, err := uc.repoAuth.GetUserIDFromSession(sessionID)
 	if err != nil {
 		return "", fmt.Errorf("GetUserIDFromSession: %w", err)
 	}
@@ -126,7 +125,7 @@ func (uc *Auth) GetUserIDFromSession(sessionID string) (string, error) {
 
 // GetTokenByUserID は対応したユーザのアクセストークンを取得します。
 func (uc *Auth) GetTokenByUserID(userID string) (*oauth2.Token, error) {
-	token, err := uc.repo.GetTokenByUserID(userID)
+	token, err := uc.repoAuth.GetTokenByUserID(userID)
 	if err != nil {
 		return nil, fmt.Errorf("GetTokenByUserID: %w", err)
 	}
@@ -139,7 +138,7 @@ func (uc *Auth) RefreshAccessToken(userID string, token *oauth2.Token) (*oauth2.
 		return token, nil
 	}
 	ctx := context.Background()
-	newToken, err := uc.authGoogle.Refresh(ctx, token)
+	newToken, err := uc.googleRepo.Refresh(ctx, token)
 	if err != nil {
 		return nil, fmt.Errorf("Refresh: %w", err)
 	}

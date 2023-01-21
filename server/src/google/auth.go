@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/patrickmn/go-cache"
 	"golang.org/x/oauth2"
 )
@@ -14,7 +15,7 @@ type Client struct {
 	cache *cache.Cache
 }
 
-func NewClient(redirecturl string) *Client {
+func NewClient(redirecturl string) repository.IGoogle {
 	auth := NewGoogle(redirecturl)
 	return &Client{auth: auth, cache: cache.New(10*time.Minute, 20*time.Minute)}
 }

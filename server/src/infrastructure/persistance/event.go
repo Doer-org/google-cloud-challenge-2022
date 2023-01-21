@@ -30,8 +30,8 @@ func (repo *Event) CreateNewEvent(ctx context.Context, adminId uuid.UUID, ee *en
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
 		SetAdminID(adminId).
-		SetType(string(constant.ONCE_TYPE)).
-		SetState(string(constant.OPEN_STATE)).
+		SetType(string(constant.TYPE_ONCE)).
+		SetState(string(constant.STATE_OPEN)).
 		AddUserIDs(adminId).
 		Save(ctx)
 	if err != nil {
@@ -119,7 +119,7 @@ func (repo *Event) AddNewEventParticipant(ctx context.Context, eventId uuid.UUID
 func (repo *Event) ChangeEventStatusToCloseOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error) {
 	event, err := repo.client.Event.
 		UpdateOneID(eventId).
-		SetState(string(constant.CLOSE_STATE)).
+		SetState(string(constant.STATE_CLOSE)).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)
@@ -130,7 +130,7 @@ func (repo *Event) ChangeEventStatusToCloseOfId(ctx context.Context, eventId uui
 func (repo *Event) ChangeEventStatusToCancelOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error) {
 	event, err := repo.client.Event.
 		UpdateOneID(eventId).
-		SetState(string(constant.CANCEL_STATE)).
+		SetState(string(constant.STATE_CANCEL)).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)

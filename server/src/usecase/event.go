@@ -129,9 +129,9 @@ func (uc *Event) ChangeEventStatusOfId(ctx context.Context, eventIdString string
 	// TODO:すでにclose,cancelだった場合
 	// TODO:また,open以外の時はparticipantできないようにする処理もいる
 	switch state {
-	case constant.CLOSE_STATE:
+	case constant.STATE_CLOSE:
 		return uc.repo.ChangeEventStatusToCloseOfId(ctx, eventId)
-	case constant.CANCEL_STATE:
+	case constant.STATE_CANCEL:
 		return uc.repo.ChangeEventStatusToCancelOfId(ctx, eventId)
 	default:
 		return nil, fmt.Errorf("received state is not matched")

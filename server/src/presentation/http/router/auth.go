@@ -14,9 +14,9 @@ func (r *Router) InitAuth(c *ent.Client) {
 	authRepo := persistance.NewAuth(c)
 	userRepo := persistance.NewUser(c)
 	//TODO: 環境変数にすべき
-	ag := google.NewClient("http://localhost:8080/api/callback")
+	rg := google.NewClient("http://localhost:8080/api/callback")
 	//TODO: 順番が気になる
-	uc := usecase.NewAuth(authRepo, ag, userRepo)
+	uc := usecase.NewAuth(authRepo, rg, userRepo)
 	//TODO: frontendURLが空?
 	h := handler.NewAuth(uc, "")
 	//TODO: /apiにする必要ある? /authとか？

@@ -7,7 +7,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/config"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/router"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/helper"
+	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 
 	_ "github.com/lib/pq"
 )
@@ -28,7 +28,7 @@ func main() {
 		panic(fmt.Sprintf("error: Schema.Create: %v", err))
 	}
 	r := router.NewDefaultRouter(
-		helper.GetEnvOrDefault("PORT","8080"),
+		env.GetEnvOrDefault("PORT","8080"),
 		client,
 	)
 	if err:=r.Serve();err!=nil{

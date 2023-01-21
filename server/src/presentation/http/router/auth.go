@@ -1,12 +1,13 @@
 package router
 
 import (
+	"github.com/go-chi/chi/v5"
+
 	"github.com/Doer-org/google-cloud-challenge-2022/google"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
-	"github.com/go-chi/chi/v5"
 )
 
 func (r *Router) InitAuth(c *ent.Client) {

@@ -6,7 +6,7 @@ import (
 
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/helper"
+	helper "github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
 const sevenDays = 60 * 60 * 24 * 7

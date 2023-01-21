@@ -22,6 +22,7 @@ export default function Show() {
   const eventId = useRouter().query.eventId;
   const getEvent = getEventInfo(
     (response) => {
+      console.log(response);
       setEvent(response);
     },
     (error) => {}

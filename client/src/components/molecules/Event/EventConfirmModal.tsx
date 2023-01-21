@@ -1,8 +1,6 @@
 import { Participant } from '../../../core/types/event';
 import { Button } from '../../atoms/text/Button';
 import { TypoWrapper } from '../../atoms/text/TypoWrapper';
-import { ParticipateInfo } from '../User/ParticipateInfo';
-import { UserIcon } from '../User/UserIcon';
 type TProps = {
   eventId: string;
   participants: Participant[];
@@ -20,10 +18,7 @@ export const EventConfirmModal = ({
       <div className="grid md:grid-cols-6 grid-cols-4 items-end">
         <div>
           <TypoWrapper line="bold">ホスト</TypoWrapper>
-          <UserIcon userName="miso" />
         </div>
-
-        {participants ? <ParticipateInfo participants={participants} /> : <></>}
       </div>
       <TypoWrapper>
         <h1>本当に参加しますか？</h1>

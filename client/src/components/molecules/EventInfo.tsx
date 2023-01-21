@@ -2,10 +2,9 @@ import { Map } from '../atoms/map/Map';
 import { EventWrapper } from './Event/EventWrapper';
 import { Hanging } from './Event/Hanging';
 import { EventBasicInfo } from './Event/EventBasicInfo';
-import { UserIcon } from './User/UserIcon';
 import { Participant } from '../../core/types/event';
-import { ParticipateInfo } from './User/ParticipateInfo';
 import { TypoWrapper } from '../atoms/text/TypoWrapper';
+import { UserInfo } from './User/UserInfo';
 type TProps = {
   participants?: Participant[];
   eventName: string;
@@ -31,21 +30,25 @@ export const EventInfo = ({
     <>
       <Hanging />
       <EventWrapper>
-        <div className="grid md:grid-cols-6 grid-cols-4 items-start">
+        <div className="flex items-end gap-5 overflow-x-scroll md:w-5/6 mx-5 md:mx-auto py-5">
           <div>
-            <TypoWrapper>ホスト</TypoWrapper>
-            <UserIcon userName="miso" />
+            <UserInfo name={'ホストです'} />
           </div>
 
-          {participants ? (
-            <div>
-              <TypoWrapper>参加者</TypoWrapper>
-              <ParticipateInfo participants={participants} />
-            </div>
-          ) : (
-            <></>
-          )}
+          {participants &&
+            participants.map((participate) => {
+              return (
+                <div key={participate.participant_name}>
+                  <UserInfo
+                    name={participate.participant_name}
+                    comment={participate.comment}
+                    participate
+                  />
+                </div>
+              );
+            })}
         </div>
+
         <EventBasicInfo eventName={eventName} detail={detail} />
         {isJson(location) ? (
           <div className="lg:m-10 m-3">

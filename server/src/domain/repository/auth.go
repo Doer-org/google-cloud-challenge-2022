@@ -2,15 +2,16 @@ package repository
 
 import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 )
 
 type IAuth interface {
-	GetTokenByUserID(userID string) (*oauth2.Token, error)
-	StoreSession(sessionID, userID string) error
+	GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error)
+	StoreSession(sessionID string, userID uuid.UUID) error
 	GetUserIDFromSession(sessionID string) (string, error)
-	StoreToken(userId string, token *oauth2.Token) error
-	UpdateToken(userId string, token *oauth2.Token) error
+	StoreToken(userId uuid.UUID, token *oauth2.Token) error
+	UpdateToken(userId uuid.UUID, token *oauth2.Token) error
 	StoreState(authState *ent.AuthStates) error
 	FindStateByState(state string) (*ent.AuthStates, error)
 	DeleteState(state string) error

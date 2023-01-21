@@ -23,17 +23,13 @@ func NewAuth(c *ent.Client) repository.IAuth {
 	}
 }
 
-func (repo *Auth) StoreToken(userId string, token *oauth2.Token) error {
-	userUuid, err := uuid.Parse(userId)
-	if err != nil {
-		return fmt.Errorf("uuid.Parse: %w", err)
-	}
-	_, err = repo.Client.GoogleAuth.
+func (repo *Auth) StoreToken(userId uuid.UUID, token *oauth2.Token) error {
+	_, err := repo.Client.GoogleAuth.
 		Create().
 		SetAccessToken(token.AccessToken).
 		SetRefreshToken(token.RefreshToken).
 		SetExpiry(token.Expiry).
-		SetUserID(userUuid).
+		SetUserID(userId).
 		Save(context.Background())
 	if err != nil {
 		return fmt.Errorf("GoogleAuth.Create: %w", err)
@@ -41,16 +37,12 @@ func (repo *Auth) StoreToken(userId string, token *oauth2.Token) error {
 	return nil
 }
 
-func (repo *Auth) UpdateToken(userId string, token *oauth2.Token) error {
-	userUuid, err := uuid.Parse(userId)
-	if err != nil {
-		return fmt.Errorf("uuid.Parse: %w", err)
-	}
-	_, err = repo.Client.GoogleAuth.Update().
+func (repo *Auth) UpdateToken(userId uuid.UUID, token *oauth2.Token) error {
+	_, err := repo.Client.GoogleAuth.Update().
 		SetAccessToken(token.AccessToken).
 		SetRefreshToken(token.RefreshToken).
 		SetExpiry(token.Expiry).
-		Where(googleauth.UserID(userUuid)).
+		Where(googleauth.UserID(userId)).
 		Save(context.Background())
 	if err != nil {
 		return fmt.Errorf("GoogleAuth.Update: %w", err)
@@ -58,14 +50,10 @@ func (repo *Auth) UpdateToken(userId string, token *oauth2.Token) error {
 	return nil
 }
 
-func (repo *Auth) GetTokenByUserID(userID string) (*oauth2.Token, error) {
-	userUuid, err := uuid.Parse(userID)
-	if err != nil {
-		return nil, fmt.Errorf("uuid.Parse: %w", err)
-	}
+func (repo *Auth) GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error) {
 	token, err := repo.Client.GoogleAuth.
 		Query().
-		Where(googleauth.UserID(userUuid)).
+		Where(googleauth.UserID(userId)).
 		Only(context.Background())
 	if err != nil {
 		return nil, err
@@ -79,14 +67,10 @@ func (repo *Auth) GetTokenByUserID(userID string) (*oauth2.Token, error) {
 	return restoken, nil
 }
 
-func (repo *Auth) StoreSession(sessionID, userID string) error {
-	userUuid, err := uuid.Parse(userID)
-	if err != nil {
-		return fmt.Errorf("uuid.Parse: %w", err)
-	}
-	_, err = repo.Client.LoginSessions.
+func (repo *Auth) StoreSession(sessionID string, userId uuid.UUID) error {
+	_, err := repo.Client.LoginSessions.
 		Create().
-		SetUserID(userUuid).
+		SetUserID(userId).
 		SetID(sessionID).
 		Save(context.Background())
 	if err != nil {

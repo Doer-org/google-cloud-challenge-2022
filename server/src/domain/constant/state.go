@@ -1,7 +1,7 @@
 package constant
 
 var (
-	OPEN_STATE   string = "open"
-	CLOSE_STATE  string = "close"
-	CANCEL_STATE string = "cancel"
+	STATE_OPEN   string = "open"
+	STATE_CLOSE  string = "close"
+	STATE_CANCEL string = "cancel"
 )

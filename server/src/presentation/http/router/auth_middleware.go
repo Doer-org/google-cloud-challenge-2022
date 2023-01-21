@@ -15,7 +15,6 @@ type AuthMiddleware struct {
 	uc *usecase.AuthUsecase
 }
 
-// NewAuthMiddleware web.AuthMiddlewareのポインタを生成します。
 func NewAuthMiddleware(uc *usecase.AuthUsecase) *AuthMiddleware {
 	return &AuthMiddleware{uc: uc}
 }

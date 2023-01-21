@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/request"
+	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/http/request"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/http/response"
 	"github.com/go-chi/chi/v5"
 )
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/Doer-org/google-cloud-challenge-2022/config"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/Doer-org/google-cloud-challenge-2022/presentation/router"
+	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/router"
 
 	_ "github.com/lib/pq"
 )

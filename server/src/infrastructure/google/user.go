@@ -22,20 +22,20 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 		return nil, fmt.Errorf("googleapis Get: %w", err)
 	}
 	defer resp.Body.Close()
-	var gUser googleUser
-	if err := json.NewDecoder(resp.Body).Decode(&gUser); err != nil {
+	var j googleUserJson
+	if err := json.NewDecoder(resp.Body).Decode(&j); err != nil {
 		return nil, fmt.Errorf("decode: %w", err)
 	}
 	user := &ent.User{
-		Name:          gUser.Name,
-		Mail:          gUser.Email,
-		Icon:          gUser.Picture,
+		Name:          j.Name,
+		Mail:          j.Email,
+		Icon:          j.Picture,
 		Authenticated: true,
 	}
 	return user, nil
 }
 
-type googleUser struct {
+type googleUserJson struct {
 	Id      string `json:"id"`
 	Email   string `json:"email"`
 	Name    string `json:"name"`

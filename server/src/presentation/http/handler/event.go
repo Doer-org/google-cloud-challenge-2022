@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/request"
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	"github.com/go-chi/chi/v5"
@@ -27,7 +26,7 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	var j request.EventJson
+	var j eventJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decoder: %w", err)), http.StatusBadRequest)
 		return
@@ -77,7 +76,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	var j request.EventJson
+	var j eventJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decoder: %w", err)), http.StatusBadRequest)
 		return
@@ -127,7 +126,7 @@ func (h *Event) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	var j request.EventJson
+	var j eventJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decoder: %w", err)), http.StatusBadRequest)
 		return
@@ -148,7 +147,7 @@ func (h *Event) AddNewEventParticipant(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	var j request.ParticipantJson
+	var j participantJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decode: %w", err)), http.StatusBadRequest)
 		return
@@ -177,4 +176,18 @@ func (h *Event) GetEventUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res.WriteJson(w, users, http.StatusOK)
+}
+
+type eventJson struct {
+	Name     string `json:"name"`
+	Detail   string `json:"detail"`
+	Location string `json:"location"`
+	Size     int    `json:"size"`
+	State    string `json:"state"`
+	Type     string `json:"type"`
+}
+
+type participantJson struct {
+	Name    string `json:"name"`
+	Comment string `json:"comment"`
 }

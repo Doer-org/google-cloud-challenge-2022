@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/request"
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	"github.com/go-chi/chi/v5"
@@ -28,7 +27,7 @@ func (h *User) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	var j request.UserJson
+	var j userJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decode: %w", err)), http.StatusBadRequest)
 		return
@@ -75,7 +74,7 @@ func (h *User) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	var j request.UserJson
+	var j userJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decode: %w", err)), http.StatusBadRequest)
 		return
@@ -115,4 +114,11 @@ func (h *User) GetUserByMail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res.WriteJson(w, user, http.StatusOK)
+}
+
+type userJson struct {
+	Name          string `json:"name"`
+	Authenticated bool   `json:"authenticated"`
+	Mail          string `json:"mail"`
+	Icon          string `json:"icon"`
 }

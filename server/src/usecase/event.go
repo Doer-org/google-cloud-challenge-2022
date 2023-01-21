@@ -12,10 +12,10 @@ import (
 )
 
 type IEvent interface {
-	CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string) (*ent.Event, error)
+	CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string, size int) (*ent.Event, error)
 	GetEventById(ctx context.Context, eventIdString string) (*ent.Event, error)
 	DeleteEventById(ctx context.Context, eventIdString string) error
-	UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string) (*ent.Event, error)
+	UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string, size int) (*ent.Event, error)
 	GetEventAdminById(ctx context.Context, eventIdString string) (*ent.User, error)
 	GetEventComments(ctx context.Context, eventIdString string) ([]*ent.Comment, error)
 	AddNewEventParticipant(ctx context.Context, eventIdString, name, comment string) error
@@ -33,9 +33,12 @@ func NewEvent(r repository.IEvent) IEvent {
 	}
 }
 
-func (uc *Event) CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string) (*ent.Event, error) {
+func (uc *Event) CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string, size int) (*ent.Event, error) {
 	if name == "" {
 		return nil, fmt.Errorf("name is empty")
+	}
+	if size == 0 {
+		return nil, fmt.Errorf("size is invalid")
 	}
 	adminId, err := uuid.Parse(adminIdString)
 	if err != nil {
@@ -45,6 +48,7 @@ func (uc *Event) CreateNewEvent(ctx context.Context, adminIdString, name, detail
 		Name:     name,
 		Detail:   detail,
 		Location: location,
+		Size: size,
 	}
 	return uc.repo.CreateNewEvent(ctx, adminId, ee)
 }
@@ -66,19 +70,23 @@ func (uc *Event) DeleteEventById(ctx context.Context, eventIdString string) erro
 	return uc.repo.DeleteEventById(ctx, eventId)
 }
 
-func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string) (*ent.Event, error) {
+func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string, size int) (*ent.Event, error) {
+	if name == "" {
+		return nil, fmt.Errorf("name is empty")
+	}
+	if size == 0 {
+		return nil, fmt.Errorf("size is invalid")
+	}
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
-	// TODO: adminuser か確認
-	if name == "" {
-		return nil, fmt.Errorf("name is empty")
-	}
+	// TODO: loginしているadminuser か確認
 	ee := &ent.Event{
 		Name:     name,
 		Detail:   detail,
 		Location: location,
+		Size: size,
 	}
 	return uc.repo.UpdateEventById(ctx, eventId, ee)
 }

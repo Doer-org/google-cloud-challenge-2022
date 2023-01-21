@@ -39,6 +39,7 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		j.Name,
 		j.Detail,
 		j.Location,
+		j.Size,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: CreateNewEvent: %w", err)), http.StatusBadRequest)
@@ -88,6 +89,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		j.Name,
 		j.Detail,
 		j.Location,
+		j.Size,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateEventById: %w", err)), http.StatusBadRequest)

@@ -29,6 +29,7 @@ func (repo *Event) CreateNewEvent(ctx context.Context, adminId uuid.UUID, ee *en
 		SetName(ee.Name).
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
+		SetSize(ee.Size).
 		SetAdminID(adminId).
 		SetType(string(constant.TYPE_ONCE)).
 		SetState(string(constant.STATE_OPEN)).
@@ -60,6 +61,7 @@ func (repo *Event) UpdateEventById(ctx context.Context, eventId uuid.UUID, ee *e
 		SetName(ee.Name).
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
+		SetSize(ee.Size).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)

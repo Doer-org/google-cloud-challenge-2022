@@ -9,7 +9,7 @@ import (
 	helper "github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
-//TODO: 1week?
+// TODO: 1week?
 const sevenDays = 60 * 60 * 24 * 7
 
 type Auth struct {

@@ -35,11 +35,11 @@ func NewEventUsecae(r repository.IEventRepository) IEventUsecase {
 
 func (uc *EventUsecase) CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string) (*ent.Event, error) {
 	if name == "" {
-		return nil, fmt.Errorf("EventUsecase: name is empty")
+		return nil, fmt.Errorf("name is empty")
 	}
 	adminId, err := uuid.Parse(adminIdString)
 	if err != nil {
-		return nil, fmt.Errorf("EventUsecase: adminId parse error: %w", err)
+		return nil, fmt.Errorf("adminId Parse: %w", err)
 	}
 	ee := &ent.Event{
 		Name:     name,
@@ -52,7 +52,7 @@ func (uc *EventUsecase) CreateNewEvent(ctx context.Context, adminIdString, name,
 func (uc *EventUsecase) GetEventById(ctx context.Context, eventIdString string) (*ent.Event, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
-		return nil, fmt.Errorf("EventUsecase: eventId parse error: %w", err)
+		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
 	return uc.repo.GetEventById(ctx, eventId)
 }
@@ -60,7 +60,7 @@ func (uc *EventUsecase) GetEventById(ctx context.Context, eventIdString string) 
 func (uc *EventUsecase) DeleteEventById(ctx context.Context, eventIdString string) error {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
-		return fmt.Errorf("EventUsecase: eventId parse error: %w", err)
+		return fmt.Errorf("eventId Parse: %w", err)
 	}
 	// TODO: adminuser か確認
 	return uc.repo.DeleteEventById(ctx, eventId)
@@ -69,11 +69,11 @@ func (uc *EventUsecase) DeleteEventById(ctx context.Context, eventIdString strin
 func (uc *EventUsecase) UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string) (*ent.Event, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
-		return nil, fmt.Errorf("EventUsecase: eventId parse error: %w", err)
+		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
 	// TODO: adminuser か確認
 	if name == "" {
-		return nil, fmt.Errorf("EventUsecase: name is empty")
+		return nil, fmt.Errorf("name is empty")
 	}
 	ee := &ent.Event{
 		Name:     name,
@@ -86,7 +86,7 @@ func (uc *EventUsecase) UpdateEventById(ctx context.Context, eventIdString strin
 func (uc *EventUsecase) GetEventAdminById(ctx context.Context, eventIdString string) (*ent.User, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
-		return nil, fmt.Errorf("EventUsecase: eventId parse error: %w", err)
+		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
 	return uc.repo.GetEventAdminById(ctx, eventId)
 }
@@ -94,7 +94,7 @@ func (uc *EventUsecase) GetEventAdminById(ctx context.Context, eventIdString str
 func (uc *EventUsecase) GetEventComments(ctx context.Context, eventIdString string) ([]*ent.Comment, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
-		return nil, fmt.Errorf("EventUsecase: eventId parse error: %w", err)
+		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
 	return uc.repo.GetEventComments(ctx, eventId)
 }
@@ -102,10 +102,10 @@ func (uc *EventUsecase) GetEventComments(ctx context.Context, eventIdString stri
 func (uc *EventUsecase) AddNewEventParticipant(ctx context.Context, eventIdString, name, comment string) error {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
-		return fmt.Errorf("EventUsecase: eventId parse error: %w", err)
+		return fmt.Errorf("eventId Parse: %w", err)
 	}
 	if name == "" {
-		return fmt.Errorf("ParticipantUsecase: name is empty")
+		return fmt.Errorf("name is empty")
 	}
 	eu := &ent.User{
 		Name: name,
@@ -113,7 +113,7 @@ func (uc *EventUsecase) AddNewEventParticipant(ctx context.Context, eventIdStrin
 	}
 	err = uc.repo.AddNewEventParticipant(ctx, eventId, eu, comment)
 	if err != nil {
-		return fmt.Errorf("EventUsecase: CreateNewUser error: %w", err)
+		return fmt.Errorf("AddNewEventParticipant: %w", err)
 	}
 	return nil
 }
@@ -121,10 +121,10 @@ func (uc *EventUsecase) AddNewEventParticipant(ctx context.Context, eventIdStrin
 func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString string, state string) (*ent.Event, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
-		return nil, fmt.Errorf("EventUsecase: eventId parse error: %w", err)
+		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
 	if state == "" {
-		return nil, fmt.Errorf("EventUsecase: state parse failed")
+		return nil, fmt.Errorf("state is Empty")
 	}
 	// TODO:すでにclose,cancelだった場合
 	// TODO:また,open以外の時はparticipantできないようにする処理もいる
@@ -134,14 +134,14 @@ func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString
 	case constant.CANCEL_STATE:
 		return uc.repo.ChangeEventStatusToCancelOfId(ctx, eventId)
 	default:
-		return nil, fmt.Errorf("EventUsecase: selected state is not matched")
+		return nil, fmt.Errorf("received state is not matched")
 	}
 }
 
 func (uc *EventUsecase) GetEventUsers(ctx context.Context, eventIdString string) ([]*ent.User, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
-		return nil, fmt.Errorf("EventUsecase: uuid parse error: %w", err)
+		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
 	return uc.repo.GetEventUsers(ctx, eventId)
 }

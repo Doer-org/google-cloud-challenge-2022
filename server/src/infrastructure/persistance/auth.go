@@ -26,7 +26,7 @@ func NewAuthRepository(c *ent.Client) repository.IAuthRepository {
 func (r *AuthRepository) StoreToken(userId string, token *oauth2.Token) error {
 	userUuid, err := uuid.Parse(userId)
 	if err != nil {
-		return fmt.Errorf("uuid parse err : %w", err)
+		return fmt.Errorf("uuid.Parse: %w", err)
 	}
 
 	_, err = r.Client.GoogleAuth.
@@ -38,7 +38,7 @@ func (r *AuthRepository) StoreToken(userId string, token *oauth2.Token) error {
 		Save(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("create token err : %w", err)
+		return fmt.Errorf("GoogleAuth.Create: %w", err)
 	}
 
 	return nil
@@ -47,7 +47,7 @@ func (r *AuthRepository) StoreToken(userId string, token *oauth2.Token) error {
 func (r *AuthRepository) UpdateToken(userId string, token *oauth2.Token) error {
 	userUuid, err := uuid.Parse(userId)
 	if err != nil {
-		return fmt.Errorf("uuid parse err : %w", err)
+		return fmt.Errorf("uuid.Parse: %w", err)
 	}
 
 	_, err = r.Client.GoogleAuth.Update().
@@ -58,7 +58,7 @@ func (r *AuthRepository) UpdateToken(userId string, token *oauth2.Token) error {
 		Save(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("update token err : %w", err)
+		return fmt.Errorf("GoogleAuth.Update: %w", err)
 	}
 
 	return nil
@@ -67,7 +67,7 @@ func (r *AuthRepository) UpdateToken(userId string, token *oauth2.Token) error {
 func (r *AuthRepository) GetTokenByUserID(userID string) (*oauth2.Token, error) {
 	userUuid, err := uuid.Parse(userID)
 	if err != nil {
-		return nil, fmt.Errorf("uuid parse err : %w", err)
+		return nil, fmt.Errorf("uuid.Parse: %w", err)
 	}
 
 	token, err := r.Client.GoogleAuth.
@@ -91,7 +91,7 @@ func (r *AuthRepository) GetTokenByUserID(userID string) (*oauth2.Token, error) 
 func (r *AuthRepository) StoreSession(sessionID, userID string) error {
 	userUuid, err := uuid.Parse(userID)
 	if err != nil {
-		return fmt.Errorf("uuid parse err : %w", err)
+		return fmt.Errorf("uuid.Parse: %w", err)
 	}
 
 	_, err = r.Client.LoginSessions.
@@ -101,7 +101,7 @@ func (r *AuthRepository) StoreSession(sessionID, userID string) error {
 		Save(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("create session err : %w", err)
+		return fmt.Errorf("LoginSessions.Create: %w", err)
 	}
 	return nil
 }
@@ -113,7 +113,7 @@ func (r *AuthRepository) GetUserIDFromSession(sessionID string) (string, error) 
 		Only(context.Background())
 
 	if err != nil && !ent.IsNotFound(err) {
-		return "", fmt.Errorf("get usedid by session err : %w", err)
+		return "", fmt.Errorf("LoginSessions.Query: %w", err)
 	}
 
 	return session.UserID.String(), nil
@@ -127,7 +127,7 @@ func (r *AuthRepository) StoreState(authState *ent.AuthStates) error {
 		Save(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("create state err : %w", err)
+		return fmt.Errorf("AuthStates.Create: %w", err)
 	}
 
 	return nil
@@ -140,7 +140,7 @@ func (r *AuthRepository) FindStateByState(state string) (*ent.AuthStates, error)
 		Only(context.Background())
 
 	if err != nil && !ent.IsNotFound(err) {
-		return nil, fmt.Errorf("get state by state err : %w", err)
+		return nil, fmt.Errorf("AuthStates.Query: %w", err)
 	}
 
 	res := &ent.AuthStates{}
@@ -157,7 +157,7 @@ func (r *AuthRepository) DeleteState(state string) error {
 		Exec(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("delete state by state err : %w", err)
+		return fmt.Errorf("AuthStates.Delete: %w", err)
 	}
 
 	return nil

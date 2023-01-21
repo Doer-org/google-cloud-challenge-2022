@@ -29,7 +29,7 @@ func (h *EventHandler) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("request body is empty"),
+				fmt.Errorf("error: request body is empty"),
 			),
 			http.StatusBadRequest,
 		)
@@ -103,7 +103,7 @@ func (h *EventHandler) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("request body is empty"),
+				fmt.Errorf("error: request body is empty"),
 			),
 			http.StatusBadRequest,
 		)
@@ -176,7 +176,7 @@ func (h *EventHandler) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Requ
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("request body is empty"),
+				fmt.Errorf("error: request body is empty"),
 			),
 			http.StatusBadRequest,
 		)
@@ -213,7 +213,7 @@ func (h *EventHandler) AddNewEventParticipant(w http.ResponseWriter, r *http.Req
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("request body is empty"),
+				fmt.Errorf("error: request body is empty"),
 			),
 			http.StatusBadRequest,
 		)

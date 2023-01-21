@@ -24,6 +24,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	redirectURL := r.FormValue("redirect_url")
 
+	// TODO: writejsonresponseを新しくしたい
 	url, err := h.authUC.GetAuthURL(redirectURL)
 	if err != nil {
 		response.WriteJsonResponse(
@@ -31,7 +32,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("Get auth url faild : %w", err),
+				fmt.Errorf("error: GetAuthURL: %w", err),
 			),
 			http.StatusBadRequest,
 		)
@@ -51,7 +52,7 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("google auth faild : %s", err),
+				fmt.Errorf("error: google auth: %w", err),
 			),
 			http.StatusBadRequest,
 		)
@@ -65,7 +66,7 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("google auth failed: state is empty"),
+				fmt.Errorf("error: state is empty"),
 			),
 			http.StatusBadRequest,
 		)
@@ -79,7 +80,7 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("google auth failed: code is empty"),
+				fmt.Errorf("error: code is empty"),
 			),
 			http.StatusBadRequest,
 		)
@@ -93,7 +94,7 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("authorization error : %w", err),
+				fmt.Errorf("error: Authorization: %w", err),
 			),
 			http.StatusBadRequest,
 		)
@@ -106,7 +107,7 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("redirect url empty"),
+				fmt.Errorf("error: redirect url is empty"),
 			),
 			http.StatusBadRequest,
 		)

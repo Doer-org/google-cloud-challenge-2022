@@ -28,13 +28,16 @@ func setMiddleware(r *chi.Mux) {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	// ContentTypeにjsonを書き込む
-	r.Use(ContentTypeJson)
+	// contentTypeにjsonを書き込む
+	r.Use(contentTypeJson)
 }
 
-func ContentTypeJson(next http.Handler) http.Handler {
+func contentTypeJson(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		next.ServeHTTP(w, r)
 	})
 }
+//TODO: corsも関数に切り出す
+
+//TODO: router構造体を用意する

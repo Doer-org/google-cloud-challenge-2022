@@ -37,7 +37,7 @@ func (u *AuthUsecase) GetAuthURL(redirectURL string) (string, error) {
 	}
 
 	if err := u.repo.StoreState(st); err != nil {
-		return "", fmt.Errorf("store state for authorization: %w", err)
+		return "", fmt.Errorf("StoreState: %w", err)
 	}
 	return u.authGoogle.GetAuthURL(state), nil
 }
@@ -45,33 +45,33 @@ func (u *AuthUsecase) GetAuthURL(redirectURL string) (string, error) {
 func (u *AuthUsecase) Authorization(state, code string) (string, string, error) {
 	storedState, err := u.repo.FindStateByState(state)
 	if err != nil {
-		return "", "", fmt.Errorf("find temp state state=%s: %w", state, err)
+		return "", "", fmt.Errorf("FindStateByState: %w", err)
 	}
 
 	ctx := context.Background()
 	token, err := u.authGoogle.Exchange(ctx, code)
 	if err != nil {
-		return storedState.RedirectURL, "", fmt.Errorf("exchange and get oauth2 token: %w", err)
+		return storedState.RedirectURL, "", fmt.Errorf("Exchange: %w", err)
 	}
 
 	ctx = utils.SetTokenToContext(ctx, token)
 	userID, err := u.createUserIfNotExists(ctx)
 	if err != nil {
-		return storedState.RedirectURL, "", fmt.Errorf("get or create user: %w", err)
+		return storedState.RedirectURL, "", fmt.Errorf("createUserIfNotExists: %w", err)
 	}
 
 	if err := u.StoreORUpdateToken(userID.String(), token); err != nil {
-		return storedState.RedirectURL, "", fmt.Errorf("store or update oauth token though repo userID=%s: %w", userID, err)
+		return storedState.RedirectURL, "", fmt.Errorf("StoreORUpdateToken: %w",err)
 	}
 
 	sessionID := hash.GetUlid()
 	if err := u.repo.StoreSession(sessionID, userID.String()); err != nil {
-		return storedState.RedirectURL, "", fmt.Errorf("store session sessionID=%s userID=%s : %w", sessionID, userID, err)
+		return storedState.RedirectURL, "", fmt.Errorf("StoreSession: %w", err)
 	}
 
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
 	if err := u.repo.DeleteState(state); err != nil {
-		log.Printf("Failed to delete state state=%s: %v\n", state, err)
+		log.Printf("DeleteState: %v\n",err)
 		return storedState.RedirectURL, sessionID, nil
 	}
 
@@ -83,12 +83,12 @@ func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (uuid.UUID, err
 
 	user, err := u.authGoogle.GetMe(ctx)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("get my info from Google: %w", err)
+		return uuid.Nil, fmt.Errorf("GetMe: %w", err)
 	}
 
 	res, err := u.userRepo.GetUserByMail(ctx, user.Mail)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("get user by mail: %w", err)
+		return uuid.Nil, fmt.Errorf("GetUserByMail: %w", err)
 	}
 
 	if res != nil {
@@ -97,7 +97,7 @@ func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (uuid.UUID, err
 
 	_, err = u.userRepo.CreateNewUser(ctx, user)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("create user by id: %w", err)
+		return uuid.Nil, fmt.Errorf("CreateNewUser: %w", err)
 	}
 
 	return user.ID, nil
@@ -106,20 +106,20 @@ func (u *AuthUsecase) createUserIfNotExists(ctx context.Context) (uuid.UUID, err
 func (u *AuthUsecase) StoreORUpdateToken(userID string, token *oauth2.Token) error {
 	gettoken, err := u.repo.GetTokenByUserID(userID)
 	if err != nil && !ent.IsNotFound(err) {
-		return fmt.Errorf("get token from userId userID=%s: %w", userID, err)
+		return fmt.Errorf("GetTokenByUserID: %w", err)
 	}
 	log.Println(gettoken)
 
 	if ent.IsNotFound(err) {
 		err := u.repo.StoreToken(userID, token)
 		if err != nil {
-			return fmt.Errorf("create token from userId userID=%s: %w", userID, err)
+			return fmt.Errorf("StoreToken: %w",err)
 		}
 
 	} else {
 		err := u.repo.UpdateToken(string(userID), token)
 		if err != nil {
-			return fmt.Errorf("update token from userId userID=%s: %w", userID, err)
+			return fmt.Errorf("UpdateToken: %w", err)
 		}
 
 	}
@@ -131,7 +131,7 @@ func (u *AuthUsecase) StoreORUpdateToken(userID string, token *oauth2.Token) err
 func (u *AuthUsecase) GetUserIDFromSession(sessionID string) (string, error) {
 	userID, err := u.repo.GetUserIDFromSession(sessionID)
 	if err != nil {
-		return "", fmt.Errorf("get user from session sessionID=%s: %w", sessionID, err)
+		return "", fmt.Errorf("GetUserIDFromSession: %w", err)
 	}
 	return userID, nil
 }
@@ -140,7 +140,7 @@ func (u *AuthUsecase) GetUserIDFromSession(sessionID string) (string, error) {
 func (u *AuthUsecase) GetTokenByUserID(userID string) (*oauth2.Token, error) {
 	token, err := u.repo.GetTokenByUserID(userID)
 	if err != nil {
-		return nil, fmt.Errorf("get oauth token userID=%s: %w", userID, err)
+		return nil, fmt.Errorf("GetTokenByUserID: %w", err)
 	}
 	return token, nil
 }
@@ -153,11 +153,11 @@ func (u *AuthUsecase) RefreshAccessToken(userID string, token *oauth2.Token) (*o
 	ctx := context.Background()
 	newToken, err := u.authGoogle.Refresh(ctx, token)
 	if err != nil {
-		return nil, fmt.Errorf("refresh access token through spotify client: %w", err)
+		return nil, fmt.Errorf("Refresh: %w", err)
 	}
 
 	if err := u.StoreORUpdateToken(userID, newToken); err != nil {
-		return nil, fmt.Errorf("update new token: %w", err)
+		return nil, fmt.Errorf("StoreORUpdateToken: %w", err)
 	}
 	return newToken, nil
 }

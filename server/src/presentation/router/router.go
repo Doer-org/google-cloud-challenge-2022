@@ -75,8 +75,10 @@ func InitRouter(c *ent.Client) {
 	// })
 
 	// setAuthMiddleware(r, authUC)
+	//TODO: 消す
 	r.Get("/pong", healthH.Pong)
 
+	// TODO: errハンドリング
 	http.ListenAndServe(
 		fmt.Sprintf(":%s", helper.GetEnvOrDefault("PORT", "8080")),
 		r,

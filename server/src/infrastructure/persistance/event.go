@@ -35,7 +35,7 @@ func (r *EventRepository) CreateNewEvent(ctx context.Context, adminId uuid.UUID,
 		AddUserIDs(adminId).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: create event query error: %w", err)
+		return nil, fmt.Errorf("Event.Create: %w", err)
 	}
 	return r.getEventById(ctx, event.ID)
 }
@@ -49,7 +49,7 @@ func (r *EventRepository) DeleteEventById(ctx context.Context, eventId uuid.UUID
 		DeleteOneID(eventId).
 		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("EventRepository: delete event query error: %w", err)
+		return fmt.Errorf("Event.DeleteOneID: %w", err)
 	}
 	return nil
 }
@@ -62,7 +62,7 @@ func (r *EventRepository) UpdateEventById(ctx context.Context, eventId uuid.UUID
 		SetLocation(ee.Location).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: update event query error: %w", err)
+		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
@@ -74,7 +74,7 @@ func (r *EventRepository) GetEventAdminById(ctx context.Context, eventId uuid.UU
 		WithAdmin().
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get event query error: %w", err)
+		return nil, fmt.Errorf("Event.Query: %w", err)
 	}
 	return event.Edges.Admin, nil
 }
@@ -86,7 +86,7 @@ func (r *EventRepository) GetEventComments(ctx context.Context, eventId uuid.UUI
 		WithUser().
 		All(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get comments query error: %w", err)
+		return nil, fmt.Errorf("Comment.Query: %w", err)
 	}
 	return comments, nil
 }
@@ -99,7 +99,7 @@ func (r *EventRepository) AddNewEventParticipant(ctx context.Context, eventId uu
 		AddEventIDs(eventId).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("EventRepository: create user query error: %w", err)
+		return fmt.Errorf("User.Create: %w", err)
 	}
 	if comment == "" {
 		return nil
@@ -111,7 +111,7 @@ func (r *EventRepository) AddNewEventParticipant(ctx context.Context, eventId uu
 		SetUserID(user.ID).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("EventRepository: create comment query error: %w", err)
+		return fmt.Errorf("Comment.Create: %w", err)
 	}
 	return nil
 }
@@ -122,7 +122,7 @@ func (r *EventRepository) ChangeEventStatusToCloseOfId(ctx context.Context, even
 		SetState(string(constant.CLOSE_STATE)).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: update event query error: %w", err)
+		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
@@ -133,7 +133,7 @@ func (r *EventRepository) ChangeEventStatusToCancelOfId(ctx context.Context, eve
 		SetState(string(constant.CANCEL_STATE)).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: update event query error: %w", err)
+		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
@@ -144,7 +144,7 @@ func (r *EventRepository) GetEventUsers(ctx context.Context, eventId uuid.UUID) 
 		Where(user.HasEventsWith(event.ID(eventId))).
 		All(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get participants comments query error: %w", err)
+		return nil, fmt.Errorf("User.Query: %w", err)
 	}
 	return users, nil
 }
@@ -155,7 +155,7 @@ func (r *EventRepository) getEventById(ctx context.Context, eventUuid uuid.UUID)
 		Where(event.ID(eventUuid)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get event query error: %w", err)
+		return nil, fmt.Errorf("Event.Query: %w", err)
 	}
 	return event, nil
 }

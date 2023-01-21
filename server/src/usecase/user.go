@@ -31,7 +31,7 @@ func NewUserUsecase(r repository.IUserRepository) IUserUsecase {
 
 func (uc *UserUsecase) CreateNewUser(ctx context.Context, name string, authenticated bool, mail string, icon string) (*ent.User, error) {
 	if name == "" {
-		return nil, fmt.Errorf("UserUsecase: name is empty")
+		return nil, fmt.Errorf("name is empty")
 	}
 	// iconがなかった場合,defaultのアイコンにする
 	if icon == "" {
@@ -50,7 +50,7 @@ func (uc *UserUsecase) CreateNewUser(ctx context.Context, name string, authentic
 func (uc *UserUsecase) GetUserById(ctx context.Context, userIdString string) (*ent.User, error) {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
-		return nil, fmt.Errorf("UserUsecase: userId parse error: %w", err)
+		return nil, fmt.Errorf("userId Parse: %w", err)
 	}
 	return uc.repo.GetUserById(ctx, userId)
 }
@@ -58,7 +58,7 @@ func (uc *UserUsecase) GetUserById(ctx context.Context, userIdString string) (*e
 func (uc *UserUsecase) DeleteUserById(ctx context.Context, userIdString string) error {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
-		return fmt.Errorf("UserUsecase: userId parse error: %w", err)
+		return fmt.Errorf("userId Parse: %w", err)
 	}
 	return uc.repo.DeleteUserById(ctx, userId)
 }
@@ -66,10 +66,10 @@ func (uc *UserUsecase) DeleteUserById(ctx context.Context, userIdString string) 
 func (uc *UserUsecase) UpdateUserById(ctx context.Context, userIdString string, name string, authenticated bool, mail string, icon string) (*ent.User, error) {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
-		return nil, fmt.Errorf("UserUsecase: userId parse error: %w", err)
+		return nil, fmt.Errorf("userId Parse: %w", err)
 	}
 	if name == "" {
-		return nil, fmt.Errorf("UserUsecase: name is empty")
+		return nil, fmt.Errorf("name is empty")
 	}
 	// TODO: iconが空文字のときの処理を追加する
 	// TODO: 更新できるのは本来認証済みユーザーのみ?
@@ -84,7 +84,7 @@ func (uc *UserUsecase) UpdateUserById(ctx context.Context, userIdString string, 
 
 func (uc *UserUsecase) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
 	if mail == "" {
-		return nil, fmt.Errorf("UserUsecase: mail is empty")
+		return nil, fmt.Errorf("mail is empty")
 	}
 	return uc.repo.GetUserByMail(ctx, mail)
 }
@@ -92,7 +92,7 @@ func (uc *UserUsecase) GetUserByMail(ctx context.Context, mail string) (*ent.Use
 func (uc *UserUsecase) GetUserEvents(ctx context.Context, userIdString string) ([]*ent.Event, error) {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
-		return nil, fmt.Errorf("UserUsecase: userId parse error: %w", err)
+		return nil, fmt.Errorf("userId Parse: %w", err)
 	}
 	return uc.repo.GetUserEvents(ctx, userId)
 }

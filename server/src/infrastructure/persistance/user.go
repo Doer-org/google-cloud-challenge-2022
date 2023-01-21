@@ -30,7 +30,7 @@ func (r *UserRepository) CreateNewUser(ctx context.Context, eu *ent.User) (*ent.
 		SetIcon(eu.Icon).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("UserRepository: create user query error: %w", err)
+		return nil, fmt.Errorf("User.Create: %w", err)
 	}
 	return user, nil
 }
@@ -41,7 +41,7 @@ func (r *UserRepository) GetUserById(ctx context.Context, userId uuid.UUID) (*en
 		Where(user.ID(userId)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("UserRepository: get user query error: %w", err)
+		return nil, fmt.Errorf("User.Query: %w", err)
 	}
 	return user, nil
 }
@@ -51,7 +51,7 @@ func (r *UserRepository) DeleteUserById(ctx context.Context, userId uuid.UUID) e
 		DeleteOneID(userId).
 		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("UserRepository: delete user query error: %w", err)
+		return fmt.Errorf("User.DeleteOneID: %w", err)
 	}
 	return nil
 }
@@ -65,7 +65,7 @@ func (r *UserRepository) UpdateUserById(ctx context.Context, userId uuid.UUID, e
 		SetIcon(eu.Icon).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("UserRepository: update user query error: %w", err)
+		return nil, fmt.Errorf("User.UpdateOneID: %w", err)
 	}
 	return user, nil
 }
@@ -76,7 +76,7 @@ func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*ent.U
 		Where(user.Mail(mail)).
 		Only(ctx)
 	if !ent.IsNotFound(err) && err != nil {
-		return nil, fmt.Errorf("UserRepository: get user query error: %w", err)
+		return nil, fmt.Errorf("User.Query: %w", err)
 	}
 	return user, nil
 }
@@ -88,7 +88,7 @@ func (r *UserRepository) GetUserEvents(ctx context.Context, userId uuid.UUID) ([
 		WithEvents().
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get user event query error: %w", err)
+		return nil, fmt.Errorf("User.Query: %w", err)
 	}
 	return user.Edges.Events, nil
 }

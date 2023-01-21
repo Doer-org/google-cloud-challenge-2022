@@ -20,24 +20,24 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 	client := c.auth.Config.Client(ctx, token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
-		return nil, fmt.Errorf("google api response get error: %w", err)
+		return nil, fmt.Errorf("googleapis Get: %w", err)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("google api response read error: %w", err)
+		return nil, fmt.Errorf("googleapis response ReadAll: %w", err)
 	}
 
 	var ResUser GoogleUser
 	if err := json.Unmarshal(body, &ResUser); err != nil {
-		return nil, fmt.Errorf("google api json unmarshal error: %w", err)
+		return nil, fmt.Errorf("googleapis user Unmarshal: %w", err)
 	}
 
 	log.Println(ResUser)
 
 	userUuid, err := uuid.NewUUID()
 	if err != nil {
-		return nil, fmt.Errorf("uuid parse err : %w", err)
+		return nil, fmt.Errorf("uuid.NewUUID: %w", err)
 	}
 
 	user := &ent.User{

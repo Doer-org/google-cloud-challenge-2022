@@ -29,7 +29,7 @@ func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("request body is empty"),
+				fmt.Errorf("error: request body is empty"),
 			),
 			http.StatusBadRequest,
 		)
@@ -101,7 +101,7 @@ func (h *UserHandler) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 			response.NewErrResponse(
 				http.StatusBadRequest,
 				"StatusBadRequest",
-				fmt.Errorf("request body is empty"),
+				fmt.Errorf("error: request body is empty"),
 			),
 			http.StatusBadRequest,
 		)

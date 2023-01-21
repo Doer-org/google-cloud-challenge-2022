@@ -10,9 +10,9 @@ import (
 )
 
 func (r *Router) InitUser(c *ent.Client) {
-	repo := persistance.NewUserRepository(c)
-	uc := usecase.NewUserUsecase(repo)
-	h := handler.NewUserHandler(uc)
+	repo := persistance.NewUser(c)
+	uc := usecase.NewUser(repo)
+	h := handler.NewUser(uc)
 
 	r.mux.Route("/users", func(r chi.Router) {
 		r.Post("/", h.CreateNewUser)

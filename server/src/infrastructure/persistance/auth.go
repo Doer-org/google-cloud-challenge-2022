@@ -13,23 +13,23 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type AuthRepository struct {
+type Auth struct {
 	Client *ent.Client
 }
 
-func NewAuthRepository(c *ent.Client) repository.IAuthRepository {
-	return &AuthRepository{
+func NewAuth(c *ent.Client) repository.IAuth {
+	return &Auth{
 		Client: c,
 	}
 }
 
-func (r *AuthRepository) StoreToken(userId string, token *oauth2.Token) error {
+func (repo *Auth) StoreToken(userId string, token *oauth2.Token) error {
 	userUuid, err := uuid.Parse(userId)
 	if err != nil {
 		return fmt.Errorf("uuid.Parse: %w", err)
 	}
 
-	_, err = r.Client.GoogleAuth.
+	_, err = repo.Client.GoogleAuth.
 		Create().
 		SetAccessToken(token.AccessToken).
 		SetRefreshToken(token.RefreshToken).
@@ -44,13 +44,13 @@ func (r *AuthRepository) StoreToken(userId string, token *oauth2.Token) error {
 	return nil
 }
 
-func (r *AuthRepository) UpdateToken(userId string, token *oauth2.Token) error {
+func (repo *Auth) UpdateToken(userId string, token *oauth2.Token) error {
 	userUuid, err := uuid.Parse(userId)
 	if err != nil {
 		return fmt.Errorf("uuid.Parse: %w", err)
 	}
 
-	_, err = r.Client.GoogleAuth.Update().
+	_, err = repo.Client.GoogleAuth.Update().
 		SetAccessToken(token.AccessToken).
 		SetRefreshToken(token.RefreshToken).
 		SetExpiry(token.Expiry).
@@ -64,13 +64,13 @@ func (r *AuthRepository) UpdateToken(userId string, token *oauth2.Token) error {
 	return nil
 }
 
-func (r *AuthRepository) GetTokenByUserID(userID string) (*oauth2.Token, error) {
+func (repo *Auth) GetTokenByUserID(userID string) (*oauth2.Token, error) {
 	userUuid, err := uuid.Parse(userID)
 	if err != nil {
 		return nil, fmt.Errorf("uuid.Parse: %w", err)
 	}
 
-	token, err := r.Client.GoogleAuth.
+	token, err := repo.Client.GoogleAuth.
 		Query().
 		Where(googleauth.UserID(userUuid)).
 		Only(context.Background())
@@ -88,13 +88,13 @@ func (r *AuthRepository) GetTokenByUserID(userID string) (*oauth2.Token, error) 
 	return restoken, nil
 }
 
-func (r *AuthRepository) StoreSession(sessionID, userID string) error {
+func (repo *Auth) StoreSession(sessionID, userID string) error {
 	userUuid, err := uuid.Parse(userID)
 	if err != nil {
 		return fmt.Errorf("uuid.Parse: %w", err)
 	}
 
-	_, err = r.Client.LoginSessions.
+	_, err = repo.Client.LoginSessions.
 		Create().
 		SetUserID(userUuid).
 		SetID(sessionID).
@@ -106,8 +106,8 @@ func (r *AuthRepository) StoreSession(sessionID, userID string) error {
 	return nil
 }
 
-func (r *AuthRepository) GetUserIDFromSession(sessionID string) (string, error) {
-	session, err := r.Client.LoginSessions.
+func (repo *Auth) GetUserIDFromSession(sessionID string) (string, error) {
+	session, err := repo.Client.LoginSessions.
 		Query().
 		Where(loginsessions.ID(sessionID)).
 		Only(context.Background())
@@ -119,8 +119,8 @@ func (r *AuthRepository) GetUserIDFromSession(sessionID string) (string, error) 
 	return session.UserID.String(), nil
 }
 
-func (r *AuthRepository) StoreState(authState *ent.AuthStates) error {
-	_, err := r.Client.AuthStates.
+func (repo *Auth) StoreState(authState *ent.AuthStates) error {
+	_, err := repo.Client.AuthStates.
 		Create().
 		SetState(authState.State).
 		SetRedirectURL(authState.RedirectURL).
@@ -133,8 +133,8 @@ func (r *AuthRepository) StoreState(authState *ent.AuthStates) error {
 	return nil
 }
 
-func (r *AuthRepository) FindStateByState(state string) (*ent.AuthStates, error) {
-	resstate, err := r.Client.AuthStates.
+func (repo *Auth) FindStateByState(state string) (*ent.AuthStates, error) {
+	resstate, err := repo.Client.AuthStates.
 		Query().
 		Where(authstates.State(state)).
 		Only(context.Background())
@@ -150,8 +150,8 @@ func (r *AuthRepository) FindStateByState(state string) (*ent.AuthStates, error)
 	return res, nil
 }
 
-func (r *AuthRepository) DeleteState(state string) error {
-	_, err := r.Client.AuthStates.
+func (repo *Auth) DeleteState(state string) error {
+	_, err := repo.Client.AuthStates.
 		Delete().
 		Where(authstates.State(state)).
 		Exec(context.Background())

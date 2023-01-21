@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type IEventUsecase interface {
+type IEvent interface {
 	CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string) (*ent.Event, error)
 	GetEventById(ctx context.Context, eventIdString string) (*ent.Event, error)
 	DeleteEventById(ctx context.Context, eventIdString string) error
@@ -23,17 +23,17 @@ type IEventUsecase interface {
 	GetEventUsers(ctx context.Context, eventIdString string) ([]*ent.User, error)
 }
 
-type EventUsecase struct {
-	repo repository.IEventRepository
+type Event struct {
+	repo repository.IEvent
 }
 
-func NewEventUsecae(r repository.IEventRepository) IEventUsecase {
-	return &EventUsecase{
+func NewEvent(r repository.IEvent) IEvent {
+	return &Event{
 		repo: r,
 	}
 }
 
-func (uc *EventUsecase) CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string) (*ent.Event, error) {
+func (uc *Event) CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string) (*ent.Event, error) {
 	if name == "" {
 		return nil, fmt.Errorf("name is empty")
 	}
@@ -49,7 +49,7 @@ func (uc *EventUsecase) CreateNewEvent(ctx context.Context, adminIdString, name,
 	return uc.repo.CreateNewEvent(ctx, adminId, ee)
 }
 
-func (uc *EventUsecase) GetEventById(ctx context.Context, eventIdString string) (*ent.Event, error) {
+func (uc *Event) GetEventById(ctx context.Context, eventIdString string) (*ent.Event, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
@@ -57,7 +57,7 @@ func (uc *EventUsecase) GetEventById(ctx context.Context, eventIdString string) 
 	return uc.repo.GetEventById(ctx, eventId)
 }
 
-func (uc *EventUsecase) DeleteEventById(ctx context.Context, eventIdString string) error {
+func (uc *Event) DeleteEventById(ctx context.Context, eventIdString string) error {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return fmt.Errorf("eventId Parse: %w", err)
@@ -66,7 +66,7 @@ func (uc *EventUsecase) DeleteEventById(ctx context.Context, eventIdString strin
 	return uc.repo.DeleteEventById(ctx, eventId)
 }
 
-func (uc *EventUsecase) UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string) (*ent.Event, error) {
+func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string) (*ent.Event, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
@@ -83,7 +83,7 @@ func (uc *EventUsecase) UpdateEventById(ctx context.Context, eventIdString strin
 	return uc.repo.UpdateEventById(ctx, eventId, ee)
 }
 
-func (uc *EventUsecase) GetEventAdminById(ctx context.Context, eventIdString string) (*ent.User, error) {
+func (uc *Event) GetEventAdminById(ctx context.Context, eventIdString string) (*ent.User, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
@@ -91,7 +91,7 @@ func (uc *EventUsecase) GetEventAdminById(ctx context.Context, eventIdString str
 	return uc.repo.GetEventAdminById(ctx, eventId)
 }
 
-func (uc *EventUsecase) GetEventComments(ctx context.Context, eventIdString string) ([]*ent.Comment, error) {
+func (uc *Event) GetEventComments(ctx context.Context, eventIdString string) ([]*ent.Comment, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
@@ -99,7 +99,7 @@ func (uc *EventUsecase) GetEventComments(ctx context.Context, eventIdString stri
 	return uc.repo.GetEventComments(ctx, eventId)
 }
 
-func (uc *EventUsecase) AddNewEventParticipant(ctx context.Context, eventIdString, name, comment string) error {
+func (uc *Event) AddNewEventParticipant(ctx context.Context, eventIdString, name, comment string) error {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return fmt.Errorf("eventId Parse: %w", err)
@@ -118,7 +118,7 @@ func (uc *EventUsecase) AddNewEventParticipant(ctx context.Context, eventIdStrin
 	return nil
 }
 
-func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString string, state string) (*ent.Event, error) {
+func (uc *Event) ChangeEventStatusOfId(ctx context.Context, eventIdString string, state string) (*ent.Event, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
@@ -138,7 +138,7 @@ func (uc *EventUsecase) ChangeEventStatusOfId(ctx context.Context, eventIdString
 	}
 }
 
-func (uc *EventUsecase) GetEventUsers(ctx context.Context, eventIdString string) ([]*ent.User, error) {
+func (uc *Event) GetEventUsers(ctx context.Context, eventIdString string) ([]*ent.User, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)

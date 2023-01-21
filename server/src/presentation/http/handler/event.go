@@ -11,20 +11,20 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type EventHandler struct {
-	uc usecase.IEventUsecase
+type Event struct {
+	uc usecase.IEvent
 }
 
 // TODO: handlerとかusecaseつけなくてもいい
 // TODO: domainをけす?
-func NewEventHandler(uc usecase.IEventUsecase) *EventHandler {
-	return &EventHandler{
+func NewEvent(uc usecase.IEvent) *Event {
+	return &Event{
 		uc: uc,
 	}
 }
 
 // POST /events
-func (h *EventHandler) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
+func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
@@ -51,7 +51,7 @@ func (h *EventHandler) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /events/{id}
-func (h *EventHandler) GetEventById(w http.ResponseWriter, r *http.Request) {
+func (h *Event) GetEventById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	event, err := h.uc.GetEventById(r.Context(), idParam)
 	if err != nil {
@@ -62,7 +62,7 @@ func (h *EventHandler) GetEventById(w http.ResponseWriter, r *http.Request) {
 }
 
 // DELETE /events/{id}
-func (h *EventHandler) DeleteEventById(w http.ResponseWriter, r *http.Request) {
+func (h *Event) DeleteEventById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	err := h.uc.DeleteEventById(r.Context(), idParam)
 	if err != nil {
@@ -73,7 +73,7 @@ func (h *EventHandler) DeleteEventById(w http.ResponseWriter, r *http.Request) {
 }
 
 // PATCH /events/{id}
-func (h *EventHandler) UpdateEventById(w http.ResponseWriter, r *http.Request) {
+func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
@@ -101,7 +101,7 @@ func (h *EventHandler) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /events/{id}/admin
-func (h *EventHandler) GetEventAdminById(w http.ResponseWriter, r *http.Request) {
+func (h *Event) GetEventAdminById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	admin, err := h.uc.GetEventAdminById(r.Context(), idParam)
 	if err != nil {
@@ -112,7 +112,7 @@ func (h *EventHandler) GetEventAdminById(w http.ResponseWriter, r *http.Request)
 }
 
 // GET /events/{id}/comments
-func (h *EventHandler) GetEventComments(w http.ResponseWriter, r *http.Request) {
+func (h *Event) GetEventComments(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	comments, err := h.uc.GetEventComments(r.Context(), idParam)
 	if err != nil {
@@ -123,7 +123,7 @@ func (h *EventHandler) GetEventComments(w http.ResponseWriter, r *http.Request) 
 }
 
 // PATCH /events/{id}/state
-func (h *EventHandler) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request) {
+func (h *Event) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
@@ -145,7 +145,7 @@ func (h *EventHandler) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Requ
 }
 
 // POST /events/{id}/participants
-func (h *EventHandler) AddNewEventParticipant(w http.ResponseWriter, r *http.Request) {
+func (h *Event) AddNewEventParticipant(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
@@ -172,7 +172,7 @@ func (h *EventHandler) AddNewEventParticipant(w http.ResponseWriter, r *http.Req
 }
 
 // GET /events/{id}/users
-func (h *EventHandler) GetEventUsers(w http.ResponseWriter, r *http.Request) {
+func (h *Event) GetEventUsers(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	users, err := h.uc.GetEventUsers(r.Context(), idParam)
 	if err != nil {

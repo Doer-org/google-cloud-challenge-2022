@@ -6,12 +6,12 @@ import (
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 )
 
-type HealthHandler struct{}
+type Health struct{}
 
-func NewHealthHandler() *HealthHandler {
-	return &HealthHandler{}
+func NewHealth() *Health {
+	return &Health{}
 }
 
-func (h *HealthHandler) Ping(w http.ResponseWriter, r *http.Request) {
+func (h *Health) Ping(w http.ResponseWriter, r *http.Request) {
 	res.WriteJson(w, res.New200SuccessJson("pong"), http.StatusOK)
 }

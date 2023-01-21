@@ -5,7 +5,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type IAuthRepository interface {
+type IAuth interface {
 	GetTokenByUserID(userID string) (*oauth2.Token, error)
 	StoreSession(sessionID, userID string) error
 	GetUserIDFromSession(sessionID string) (string, error)

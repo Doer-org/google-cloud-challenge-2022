@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type IUserRepository interface {
+type IUser interface {
 	CreateNewUser(ctx context.Context, eu *ent.User) (*ent.User, error)
 	GetUserById(ctx context.Context, userId uuid.UUID) (*ent.User, error)
 	DeleteUserById(ctx context.Context, userId uuid.UUID) error

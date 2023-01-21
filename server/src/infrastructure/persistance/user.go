@@ -10,18 +10,18 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserRepository struct {
+type User struct {
 	client *ent.Client
 }
 
-func NewUserRepository(c *ent.Client) repository.IUserRepository {
-	return &UserRepository{
+func NewUser(c *ent.Client) repository.IUser {
+	return &User{
 		client: c,
 	}
 }
 
-func (r *UserRepository) CreateNewUser(ctx context.Context, eu *ent.User) (*ent.User, error) {
-	user, err := r.client.User.
+func (repo *User) CreateNewUser(ctx context.Context, eu *ent.User) (*ent.User, error) {
+	user, err := repo.client.User.
 		Create().
 		SetID(eu.ID).
 		SetName(eu.Name).
@@ -35,8 +35,8 @@ func (r *UserRepository) CreateNewUser(ctx context.Context, eu *ent.User) (*ent.
 	return user, nil
 }
 
-func (r *UserRepository) GetUserById(ctx context.Context, userId uuid.UUID) (*ent.User, error) {
-	user, err := r.client.User.
+func (repo *User) GetUserById(ctx context.Context, userId uuid.UUID) (*ent.User, error) {
+	user, err := repo.client.User.
 		Query().
 		Where(user.ID(userId)).
 		Only(ctx)
@@ -46,8 +46,8 @@ func (r *UserRepository) GetUserById(ctx context.Context, userId uuid.UUID) (*en
 	return user, nil
 }
 
-func (r *UserRepository) DeleteUserById(ctx context.Context, userId uuid.UUID) error {
-	err := r.client.User.
+func (repo *User) DeleteUserById(ctx context.Context, userId uuid.UUID) error {
+	err := repo.client.User.
 		DeleteOneID(userId).
 		Exec(ctx)
 	if err != nil {
@@ -56,8 +56,8 @@ func (r *UserRepository) DeleteUserById(ctx context.Context, userId uuid.UUID) e
 	return nil
 }
 
-func (r *UserRepository) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.User) (*ent.User, error) {
-	user, err := r.client.User.
+func (repo *User) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.User) (*ent.User, error) {
+	user, err := repo.client.User.
 		UpdateOneID(userId).
 		SetName(eu.Name).
 		SetAuthenticated(eu.Authenticated).
@@ -70,8 +70,8 @@ func (r *UserRepository) UpdateUserById(ctx context.Context, userId uuid.UUID, e
 	return user, nil
 }
 
-func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
-	user, err := r.client.User.
+func (repo *User) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
+	user, err := repo.client.User.
 		Query().
 		Where(user.Mail(mail)).
 		Only(ctx)
@@ -81,8 +81,8 @@ func (r *UserRepository) GetUserByMail(ctx context.Context, mail string) (*ent.U
 	return user, nil
 }
 
-func (r *UserRepository) GetUserEvents(ctx context.Context, userId uuid.UUID) ([]*ent.Event, error) {
-	user, err := r.client.User.
+func (repo *User) GetUserEvents(ctx context.Context, userId uuid.UUID) ([]*ent.Event, error) {
+	user, err := repo.client.User.
 		Query().
 		Where(user.ID(userId)).
 		WithEvents().

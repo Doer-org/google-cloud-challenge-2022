@@ -11,18 +11,18 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type UserHandler struct {
-	uc usecase.IUserUsecase
+type User struct {
+	uc usecase.IUser
 }
 
-func NewUserHandler(uc usecase.IUserUsecase) *UserHandler {
-	return &UserHandler{
+func NewUser(uc usecase.IUser) *User {
+	return &User{
 		uc: uc,
 	}
 }
 
 // POST /users
-func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
+func (h *User) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
@@ -49,7 +49,7 @@ func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /users/{id}
-func (h *UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
+func (h *User) GetUserById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	user, err := h.uc.GetUserById(r.Context(), idParam)
 	if err != nil {
@@ -60,7 +60,7 @@ func (h *UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 // DELETE /users/{id}
-func (h *UserHandler) DeleteUserById(w http.ResponseWriter, r *http.Request) {
+func (h *User) DeleteUserById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	err := h.uc.DeleteUserById(r.Context(), idParam)
 	if err != nil {
@@ -71,7 +71,7 @@ func (h *UserHandler) DeleteUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 // PATCH /users/{id}
-func (h *UserHandler) UpdateUserById(w http.ResponseWriter, r *http.Request) {
+func (h *User) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
@@ -101,7 +101,7 @@ func (h *UserHandler) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /users/{id}/events
-func (h *UserHandler) GetUserEvents(w http.ResponseWriter, r *http.Request) {
+func (h *User) GetUserEvents(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	events, err := h.uc.GetUserEvents(r.Context(), idParam)
 	if err != nil {
@@ -113,7 +113,7 @@ func (h *UserHandler) GetUserEvents(w http.ResponseWriter, r *http.Request) {
 
 // TODO: openapiに追加する
 // GET /users?mail=<user mail>
-func (h *UserHandler) GetUserByMail(w http.ResponseWriter, r *http.Request) {
+func (h *User) GetUserByMail(w http.ResponseWriter, r *http.Request) {
 	mailQuery := r.URL.Query().Get("mail")
 	user, err := h.uc.GetUserByMail(r.Context(), mailQuery)
 	if err != nil {

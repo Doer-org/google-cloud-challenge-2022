@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type IEventRepository interface {
+type IEvent interface {
 	CreateNewEvent(ctx context.Context, adminId uuid.UUID, ee *ent.Event) (*ent.Event, error)
 	GetEventById(ctx context.Context, eventId uuid.UUID) (*ent.Event, error)
 	DeleteEventById(ctx context.Context, eventId uuid.UUID) error

@@ -10,9 +10,9 @@ import (
 )
 
 func (r *Router) InitEvent(c *ent.Client) {
-	repo := persistance.NewEventRepository(c)
-	uc := usecase.NewEventUsecae(repo)
-	h := handler.NewEventHandler(uc)
+	repo := persistance.NewEvent(c)
+	uc := usecase.NewEvent(repo)
+	h := handler.NewEvent(uc)
 
 	r.mux.Route("/events", func(r chi.Router) {
 		r.Post("/", h.CreateNewEvent)

@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type IUserUsecase interface {
+type IUser interface {
 	CreateNewUser(ctx context.Context, name string, authenticated bool, mail string, icon string) (*ent.User, error)
 	GetUserById(ctx context.Context, userIdString string) (*ent.User, error)
 	DeleteUserById(ctx context.Context, userIdString string) error
@@ -19,17 +19,17 @@ type IUserUsecase interface {
 	GetUserEvents(ctx context.Context, userIdString string) ([]*ent.Event, error)
 }
 
-type UserUsecase struct {
-	repo repository.IUserRepository
+type User struct {
+	repo repository.IUser
 }
 
-func NewUserUsecase(r repository.IUserRepository) IUserUsecase {
-	return &UserUsecase{
+func NewUser(r repository.IUser) IUser {
+	return &User{
 		repo: r,
 	}
 }
 
-func (uc *UserUsecase) CreateNewUser(ctx context.Context, name string, authenticated bool, mail string, icon string) (*ent.User, error) {
+func (uc *User) CreateNewUser(ctx context.Context, name string, authenticated bool, mail string, icon string) (*ent.User, error) {
 	if name == "" {
 		return nil, fmt.Errorf("name is empty")
 	}
@@ -47,7 +47,7 @@ func (uc *UserUsecase) CreateNewUser(ctx context.Context, name string, authentic
 	return uc.repo.CreateNewUser(ctx, user)
 }
 
-func (uc *UserUsecase) GetUserById(ctx context.Context, userIdString string) (*ent.User, error) {
+func (uc *User) GetUserById(ctx context.Context, userIdString string) (*ent.User, error) {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
 		return nil, fmt.Errorf("userId Parse: %w", err)
@@ -55,7 +55,7 @@ func (uc *UserUsecase) GetUserById(ctx context.Context, userIdString string) (*e
 	return uc.repo.GetUserById(ctx, userId)
 }
 
-func (uc *UserUsecase) DeleteUserById(ctx context.Context, userIdString string) error {
+func (uc *User) DeleteUserById(ctx context.Context, userIdString string) error {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
 		return fmt.Errorf("userId Parse: %w", err)
@@ -63,7 +63,7 @@ func (uc *UserUsecase) DeleteUserById(ctx context.Context, userIdString string) 
 	return uc.repo.DeleteUserById(ctx, userId)
 }
 
-func (uc *UserUsecase) UpdateUserById(ctx context.Context, userIdString string, name string, authenticated bool, mail string, icon string) (*ent.User, error) {
+func (uc *User) UpdateUserById(ctx context.Context, userIdString string, name string, authenticated bool, mail string, icon string) (*ent.User, error) {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
 		return nil, fmt.Errorf("userId Parse: %w", err)
@@ -82,14 +82,14 @@ func (uc *UserUsecase) UpdateUserById(ctx context.Context, userIdString string, 
 	return uc.repo.UpdateUserById(ctx, userId, u)
 }
 
-func (uc *UserUsecase) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
+func (uc *User) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
 	if mail == "" {
 		return nil, fmt.Errorf("mail is empty")
 	}
 	return uc.repo.GetUserByMail(ctx, mail)
 }
 
-func (uc *UserUsecase) GetUserEvents(ctx context.Context, userIdString string) ([]*ent.Event, error) {
+func (uc *User) GetUserEvents(ctx context.Context, userIdString string) ([]*ent.Event, error) {
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
 		return nil, fmt.Errorf("userId Parse: %w", err)

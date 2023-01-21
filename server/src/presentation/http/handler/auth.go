@@ -11,16 +11,16 @@ import (
 
 const sevenDays = 60 * 60 * 24 * 7
 
-type AuthHandler struct {
-	authUC      *usecase.AuthUsecase
+type Auth struct {
+	authUC      *usecase.Auth
 	frontendURL string
 }
 
-func NewAuthHandler(authUC *usecase.AuthUsecase, frontendURL string) *AuthHandler {
-	return &AuthHandler{authUC: authUC, frontendURL: frontendURL}
+func NewAuth(authUC *usecase.Auth, frontendURL string) *Auth {
+	return &Auth{authUC: authUC, frontendURL: frontendURL}
 }
 
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	redirectURL := r.FormValue("redirect_url")
 	url, err := h.authUC.GetAuthURL(redirectURL)
 	if err != nil {
@@ -31,7 +31,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
-func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
+func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 	// TODO: usecase?
 	if errFormValue := r.FormValue("error"); errFormValue != "" {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: error is empty")), http.StatusBadRequest)

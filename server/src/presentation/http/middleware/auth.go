@@ -12,10 +12,10 @@ import (
 )
 
 type AuthMiddleware struct {
-	uc *usecase.AuthUsecase
+	uc *usecase.Auth
 }
 
-func NewAuthMiddleware(uc *usecase.AuthUsecase) *AuthMiddleware {
+func NewAuthMiddleware(uc *usecase.Auth) *AuthMiddleware {
 	return &AuthMiddleware{uc: uc}
 }
 
@@ -57,7 +57,7 @@ func setToContext(r *http.Request, userID string, token *oauth2.Token) *http.Req
 }
 
 // TODO: 使われていない
-func setAuthMiddleware(r *chi.Mux, uc *usecase.AuthUsecase) {
+func setAuthMiddleware(r *chi.Mux, uc *usecase.Auth) {
 	authmiddle := NewAuthMiddleware(uc)
 	r.Use(authmiddle.Authenticate)
 }

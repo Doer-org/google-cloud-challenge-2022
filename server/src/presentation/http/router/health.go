@@ -5,6 +5,6 @@ import (
 )
 
 func (r *Router) InitHealth() {
-	h := handler.NewHealthHandler()
+	h := handler.NewHealth()
 	r.mux.Get("/ping", h.Ping)
 }

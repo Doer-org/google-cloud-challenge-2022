@@ -56,6 +56,12 @@ func (ec *EventCreate) SetNillableLocation(s *string) *EventCreate {
 	return ec
 }
 
+// SetSize sets the "size" field.
+func (ec *EventCreate) SetSize(i int) *EventCreate {
+	ec.mutation.SetSize(i)
+	return ec
+}
+
 // SetType sets the "type" field.
 func (ec *EventCreate) SetType(s string) *EventCreate {
 	ec.mutation.SetType(s)
@@ -192,6 +198,14 @@ func (ec *EventCreate) check() error {
 			return &ValidationError{Name: "location", err: fmt.Errorf(`ent: validator failed for field "Event.location": %w`, err)}
 		}
 	}
+	if _, ok := ec.mutation.Size(); !ok {
+		return &ValidationError{Name: "size", err: errors.New(`ent: missing required field "Event.size"`)}
+	}
+	if v, ok := ec.mutation.Size(); ok {
+		if err := event.SizeValidator(v); err != nil {
+			return &ValidationError{Name: "size", err: fmt.Errorf(`ent: validator failed for field "Event.size": %w`, err)}
+		}
+	}
 	if _, ok := ec.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Event.type"`)}
 	}
@@ -260,6 +274,10 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.Location(); ok {
 		_spec.SetField(event.FieldLocation, field.TypeString, value)
 		_node.Location = value
+	}
+	if value, ok := ec.mutation.Size(); ok {
+		_spec.SetField(event.FieldSize, field.TypeInt, value)
+		_node.Size = value
 	}
 	if value, ok := ec.mutation.GetType(); ok {
 		_spec.SetField(event.FieldType, field.TypeString, value)

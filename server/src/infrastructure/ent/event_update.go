@@ -76,6 +76,19 @@ func (eu *EventUpdate) ClearLocation() *EventUpdate {
 	return eu
 }
 
+// SetSize sets the "size" field.
+func (eu *EventUpdate) SetSize(i int) *EventUpdate {
+	eu.mutation.ResetSize()
+	eu.mutation.SetSize(i)
+	return eu
+}
+
+// AddSize adds i to the "size" field.
+func (eu *EventUpdate) AddSize(i int) *EventUpdate {
+	eu.mutation.AddSize(i)
+	return eu
+}
+
 // SetType sets the "type" field.
 func (eu *EventUpdate) SetType(s string) *EventUpdate {
 	eu.mutation.SetType(s)
@@ -234,6 +247,11 @@ func (eu *EventUpdate) check() error {
 			return &ValidationError{Name: "location", err: fmt.Errorf(`ent: validator failed for field "Event.location": %w`, err)}
 		}
 	}
+	if v, ok := eu.mutation.Size(); ok {
+		if err := event.SizeValidator(v); err != nil {
+			return &ValidationError{Name: "size", err: fmt.Errorf(`ent: validator failed for field "Event.size": %w`, err)}
+		}
+	}
 	if v, ok := eu.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
@@ -282,6 +300,12 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.LocationCleared() {
 		_spec.ClearField(event.FieldLocation, field.TypeString)
+	}
+	if value, ok := eu.mutation.Size(); ok {
+		_spec.SetField(event.FieldSize, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedSize(); ok {
+		_spec.AddField(event.FieldSize, field.TypeInt, value)
 	}
 	if value, ok := eu.mutation.GetType(); ok {
 		_spec.SetField(event.FieldType, field.TypeString, value)
@@ -498,6 +522,19 @@ func (euo *EventUpdateOne) ClearLocation() *EventUpdateOne {
 	return euo
 }
 
+// SetSize sets the "size" field.
+func (euo *EventUpdateOne) SetSize(i int) *EventUpdateOne {
+	euo.mutation.ResetSize()
+	euo.mutation.SetSize(i)
+	return euo
+}
+
+// AddSize adds i to the "size" field.
+func (euo *EventUpdateOne) AddSize(i int) *EventUpdateOne {
+	euo.mutation.AddSize(i)
+	return euo
+}
+
 // SetType sets the "type" field.
 func (euo *EventUpdateOne) SetType(s string) *EventUpdateOne {
 	euo.mutation.SetType(s)
@@ -663,6 +700,11 @@ func (euo *EventUpdateOne) check() error {
 			return &ValidationError{Name: "location", err: fmt.Errorf(`ent: validator failed for field "Event.location": %w`, err)}
 		}
 	}
+	if v, ok := euo.mutation.Size(); ok {
+		if err := event.SizeValidator(v); err != nil {
+			return &ValidationError{Name: "size", err: fmt.Errorf(`ent: validator failed for field "Event.size": %w`, err)}
+		}
+	}
 	if v, ok := euo.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
@@ -728,6 +770,12 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if euo.mutation.LocationCleared() {
 		_spec.ClearField(event.FieldLocation, field.TypeString)
+	}
+	if value, ok := euo.mutation.Size(); ok {
+		_spec.SetField(event.FieldSize, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedSize(); ok {
+		_spec.AddField(event.FieldSize, field.TypeInt, value)
 	}
 	if value, ok := euo.mutation.GetType(); ok {
 		_spec.SetField(event.FieldType, field.TypeString, value)

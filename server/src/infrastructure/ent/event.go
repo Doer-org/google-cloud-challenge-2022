@@ -23,6 +23,8 @@ type Event struct {
 	Detail string `json:"detail,omitempty"`
 	// Location holds the value of the "location" field.
 	Location string `json:"location,omitempty"`
+	// Size holds the value of the "size" field.
+	Size int `json:"size,omitempty"`
 	// Type holds the value of the "type" field.
 	Type string `json:"type,omitempty"`
 	// State holds the value of the "state" field.
@@ -82,6 +84,8 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case event.FieldSize:
+			values[i] = new(sql.NullInt64)
 		case event.FieldName, event.FieldDetail, event.FieldLocation, event.FieldType, event.FieldState:
 			values[i] = new(sql.NullString)
 		case event.FieldID:
@@ -126,6 +130,12 @@ func (e *Event) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field location", values[i])
 			} else if value.Valid {
 				e.Location = value.String
+			}
+		case event.FieldSize:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field size", values[i])
+			} else if value.Valid {
+				e.Size = int(value.Int64)
 			}
 		case event.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -197,6 +207,9 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("location=")
 	builder.WriteString(e.Location)
+	builder.WriteString(", ")
+	builder.WriteString("size=")
+	builder.WriteString(fmt.Sprintf("%v", e.Size))
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(e.Type)

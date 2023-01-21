@@ -17,6 +17,8 @@ const (
 	FieldDetail = "detail"
 	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
+	// FieldSize holds the string denoting the size field in the database.
+	FieldSize = "size"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldState holds the string denoting the state field in the database.
@@ -56,6 +58,7 @@ var Columns = []string{
 	FieldName,
 	FieldDetail,
 	FieldLocation,
+	FieldSize,
 	FieldType,
 	FieldState,
 }
@@ -94,6 +97,8 @@ var (
 	DetailValidator func(string) error
 	// LocationValidator is a validator for the "location" field. It is called by the builders before save.
 	LocationValidator func(string) error
+	// SizeValidator is a validator for the "size" field. It is called by the builders before save.
+	SizeValidator func(int) error
 	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	TypeValidator func(string) error
 	// StateValidator is a validator for the "state" field. It is called by the builders before save.

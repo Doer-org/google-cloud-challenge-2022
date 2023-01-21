@@ -79,8 +79,26 @@ func init() {
 	eventDescLocation := eventFields[3].Descriptor()
 	// event.LocationValidator is a validator for the "location" field. It is called by the builders before save.
 	event.LocationValidator = eventDescLocation.Validators[0].(func(string) error)
+	// eventDescSize is the schema descriptor for size field.
+	eventDescSize := eventFields[4].Descriptor()
+	// event.SizeValidator is a validator for the "size" field. It is called by the builders before save.
+	event.SizeValidator = func() func(int) error {
+		validators := eventDescSize.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(size int) error {
+			for _, fn := range fns {
+				if err := fn(size); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// eventDescType is the schema descriptor for type field.
-	eventDescType := eventFields[4].Descriptor()
+	eventDescType := eventFields[5].Descriptor()
 	// event.TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	event.TypeValidator = func() func(string) error {
 		validators := eventDescType.Validators
@@ -98,7 +116,7 @@ func init() {
 		}
 	}()
 	// eventDescState is the schema descriptor for state field.
-	eventDescState := eventFields[5].Descriptor()
+	eventDescState := eventFields[6].Descriptor()
 	// event.StateValidator is a validator for the "state" field. It is called by the builders before save.
 	event.StateValidator = func() func(string) error {
 		validators := eventDescState.Validators

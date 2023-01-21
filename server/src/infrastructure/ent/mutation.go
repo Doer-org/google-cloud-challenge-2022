@@ -908,6 +908,8 @@ type EventMutation struct {
 	name            *string
 	detail          *string
 	location        *string
+	size            *int
+	addsize         *int
 	_type           *string
 	state           *string
 	clearedFields   map[string]struct{}
@@ -1160,6 +1162,62 @@ func (m *EventMutation) LocationCleared() bool {
 func (m *EventMutation) ResetLocation() {
 	m.location = nil
 	delete(m.clearedFields, event.FieldLocation)
+}
+
+// SetSize sets the "size" field.
+func (m *EventMutation) SetSize(i int) {
+	m.size = &i
+	m.addsize = nil
+}
+
+// Size returns the value of the "size" field in the mutation.
+func (m *EventMutation) Size() (r int, exists bool) {
+	v := m.size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSize returns the old "size" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSize(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSize: %w", err)
+	}
+	return oldValue.Size, nil
+}
+
+// AddSize adds i to the "size" field.
+func (m *EventMutation) AddSize(i int) {
+	if m.addsize != nil {
+		*m.addsize += i
+	} else {
+		m.addsize = &i
+	}
+}
+
+// AddedSize returns the value that was added to the "size" field in this mutation.
+func (m *EventMutation) AddedSize() (r int, exists bool) {
+	v := m.addsize
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSize resets all changes to the "size" field.
+func (m *EventMutation) ResetSize() {
+	m.size = nil
+	m.addsize = nil
 }
 
 // SetType sets the "type" field.
@@ -1415,7 +1473,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.name != nil {
 		fields = append(fields, event.FieldName)
 	}
@@ -1424,6 +1482,9 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.location != nil {
 		fields = append(fields, event.FieldLocation)
+	}
+	if m.size != nil {
+		fields = append(fields, event.FieldSize)
 	}
 	if m._type != nil {
 		fields = append(fields, event.FieldType)
@@ -1445,6 +1506,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.Detail()
 	case event.FieldLocation:
 		return m.Location()
+	case event.FieldSize:
+		return m.Size()
 	case event.FieldType:
 		return m.GetType()
 	case event.FieldState:
@@ -1464,6 +1527,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldDetail(ctx)
 	case event.FieldLocation:
 		return m.OldLocation(ctx)
+	case event.FieldSize:
+		return m.OldSize(ctx)
 	case event.FieldType:
 		return m.OldType(ctx)
 	case event.FieldState:
@@ -1498,6 +1563,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLocation(v)
 		return nil
+	case event.FieldSize:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSize(v)
+		return nil
 	case event.FieldType:
 		v, ok := value.(string)
 		if !ok {
@@ -1519,13 +1591,21 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *EventMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addsize != nil {
+		fields = append(fields, event.FieldSize)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case event.FieldSize:
+		return m.AddedSize()
+	}
 	return nil, false
 }
 
@@ -1534,6 +1614,13 @@ func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EventMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case event.FieldSize:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSize(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Event numeric field %s", name)
 }
@@ -1584,6 +1671,9 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldLocation:
 		m.ResetLocation()
+		return nil
+	case event.FieldSize:
+		m.ResetSize()
 		return nil
 	case event.FieldType:
 		m.ResetType()

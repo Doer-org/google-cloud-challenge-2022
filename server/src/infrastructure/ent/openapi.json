@@ -282,6 +282,9 @@
                   "location": {
                     "type": "string"
                   },
+                  "size": {
+                    "type": "integer"
+                  },
                   "type": {
                     "type": "string"
                   },
@@ -309,6 +312,7 @@
                 },
                 "required": [
                   "name",
+                  "size",
                   "type",
                   "state"
                 ]
@@ -456,6 +460,9 @@
                   },
                   "location": {
                     "type": "string"
+                  },
+                  "size": {
+                    "type": "integer"
                   },
                   "type": {
                     "type": "string"
@@ -1796,6 +1803,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -1821,6 +1831,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]
@@ -1841,6 +1852,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -1851,6 +1865,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]
@@ -1871,6 +1886,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -1881,6 +1899,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]
@@ -1901,6 +1920,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -1911,6 +1933,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]
@@ -2400,6 +2423,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -2410,6 +2436,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]

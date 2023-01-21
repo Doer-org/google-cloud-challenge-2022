@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
+	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/helper"
 )
@@ -21,104 +21,46 @@ func NewAuthHandler(authUC *usecase.AuthUsecase, frontendURL string) *AuthHandle
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-
 	redirectURL := r.FormValue("redirect_url")
-
-	// TODO: writejsonresponseを新しくしたい
 	url, err := h.authUC.GetAuthURL(redirectURL)
 	if err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(
-				http.StatusBadRequest,
-				"StatusBadRequest",
-				fmt.Errorf("error: GetAuthURL: %w", err),
-			),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetAuthURL: %w", err)), http.StatusBadRequest)
 		return
 	}
-
 	url += "&approval_prompt=force&access_type=offline"
-
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
 func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
-
-	if err := r.FormValue("error"); err != "" {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(
-				http.StatusBadRequest,
-				"StatusBadRequest",
-				fmt.Errorf("error: google auth: %w", err),
-			),
-			http.StatusBadRequest,
-		)
+	// TODO: usecase?
+	if errFormValue := r.FormValue("error"); errFormValue != "" {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: error is empty")), http.StatusBadRequest)
 		return
 	}
-
 	state := r.FormValue("state")
 	if state == "" {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(
-				http.StatusBadRequest,
-				"StatusBadRequest",
-				fmt.Errorf("error: state is empty"),
-			),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: state is empty")), http.StatusBadRequest)
 		return
 	}
-
 	code := r.FormValue("code")
 	if code == "" {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(
-				http.StatusBadRequest,
-				"StatusBadRequest",
-				fmt.Errorf("error: code is empty"),
-			),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: code is empty")), http.StatusBadRequest)
 		return
 	}
-
 	redirectURL, sessionID, err := h.authUC.Authorization(state, code)
 	if err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(
-				http.StatusBadRequest,
-				"StatusBadRequest",
-				fmt.Errorf("error: Authorization: %w", err),
-			),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Authorization: %w", err)), http.StatusBadRequest)
 		return
 	}
-
 	if redirectURL == "" {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(
-				http.StatusBadRequest,
-				"StatusBadRequest",
-				fmt.Errorf("error: redirect url is empty"),
-			),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: redirect url is empty")), http.StatusBadRequest)
 		return
 	}
-
+	// TODO: これなに
 	sameSite := http.SameSiteNoneMode
 	if helper.IsLocal() {
 		sameSite = http.SameSiteLaxMode
 	}
-
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    sessionID,
@@ -128,6 +70,5 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		SameSite: sameSite,
 	})
-
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }

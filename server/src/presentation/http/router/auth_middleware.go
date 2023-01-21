@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
+	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils"
 	"github.com/go-chi/chi/v5"
@@ -24,9 +24,9 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sessCookie, err := r.Cookie("session")
 		if err != nil {
-			response.WriteJsonResponse(
+			res.WriteJson(
 				w,
-				response.NewErrResponse(
+				res.NewErrJson(
 					http.StatusBadRequest,
 					"StatusBadRequest",
 					fmt.Errorf("falid to get session err : %w", err),
@@ -37,9 +37,9 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 		}
 		userID, err := m.uc.GetUserIDFromSession(sessCookie.Value)
 		if err != nil {
-			response.WriteJsonResponse(
+			res.WriteJson(
 				w,
-				response.NewErrResponse(
+				res.NewErrJson(
 					http.StatusBadRequest,
 					"StatusBadRequest",
 					fmt.Errorf("faild to get userId from sessinId: %s , error :  %w", sessCookie.Value, err),
@@ -50,9 +50,9 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 		}
 		token, err := m.uc.GetTokenByUserID(userID)
 		if err != nil {
-			response.WriteJsonResponse(
+			res.WriteJson(
 				w,
-				response.NewErrResponse(
+				res.NewErrJson(
 					http.StatusBadRequest,
 					"StatusBadRequest",
 					fmt.Errorf("falid to get token err : %w", err),
@@ -64,9 +64,9 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 
 		newToken, err := m.uc.RefreshAccessToken(userID, token)
 		if err != nil {
-			response.WriteJsonResponse(
+			res.WriteJson(
 				w,
-				response.NewErrResponse(
+				res.NewErrJson(
 					http.StatusBadRequest,
 					"StatusBadRequest",
 					fmt.Errorf("falid to get token err : %w", err),

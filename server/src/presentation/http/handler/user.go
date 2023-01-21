@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/request"
-	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
+	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	"github.com/go-chi/chi/v5"
 )
@@ -24,27 +24,16 @@ func NewUserHandler(uc usecase.IUserUsecase) *UserHandler {
 // POST /users
 func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(
-				http.StatusBadRequest,
-				"StatusBadRequest",
-				fmt.Errorf("error: request body is empty"),
-			),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
 	var j request.UserJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(http.StatusBadRequest, "StatusBadRequest", err),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decode: %w", err)), http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
+
 	user, err := h.uc.CreateNewUser(
 		r.Context(),
 		j.Name,
@@ -53,14 +42,10 @@ func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		j.Icon,
 	)
 	if err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(http.StatusBadRequest, "StatusBadRequest", err),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: CreateNewUser: %w", err)), http.StatusBadRequest)
 		return
 	}
-	response.WriteJsonResponse(w, user, http.StatusCreated)
+	res.WriteJson(w, user, http.StatusCreated)
 }
 
 // GET /users/{id}
@@ -68,14 +53,10 @@ func (h *UserHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	user, err := h.uc.GetUserById(r.Context(), idParam)
 	if err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(http.StatusBadRequest, "StatusBadRequest", err),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserById: %w", err)), http.StatusBadRequest)
 		return
 	}
-	response.WriteJsonResponse(w, user, http.StatusOK)
+	res.WriteJson(w, user, http.StatusOK)
 }
 
 // DELETE /users/{id}
@@ -83,40 +64,25 @@ func (h *UserHandler) DeleteUserById(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	err := h.uc.DeleteUserById(r.Context(), idParam)
 	if err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(http.StatusBadRequest, "StatusBadRequest", err),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: DeleteUserById: %w", err)), http.StatusBadRequest)
 		return
 	}
-	response.WriteJsonResponse(w, fmt.Sprintf("delete user success"), http.StatusOK)
+	res.WriteJson(w, res.New200SuccessJson("delete user success"), http.StatusOK)
 }
 
 // PATCH /users/{id}
 func (h *UserHandler) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(
-				http.StatusBadRequest,
-				"StatusBadRequest",
-				fmt.Errorf("error: request body is empty"),
-			),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
 	var j request.UserJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(http.StatusBadRequest, "StatusBadRequest", err),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decode: %w", err)), http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
+
 	idParam := chi.URLParam(r, "id")
 	user, err := h.uc.UpdateUserById(
 		r.Context(),
@@ -127,14 +93,11 @@ func (h *UserHandler) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 		j.Icon,
 	)
 	if err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(http.StatusBadRequest, "StatusBadRequest", err),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateUserById: %w", err)), http.StatusBadRequest)
 		return
 	}
-	response.WriteJsonResponse(w, user, http.StatusCreated)
+	//TODO: udpateはcreated?
+	res.WriteJson(w, user, http.StatusCreated)
 }
 
 // GET /users/{id}/events
@@ -142,14 +105,10 @@ func (h *UserHandler) GetUserEvents(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	events, err := h.uc.GetUserEvents(r.Context(), idParam)
 	if err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(http.StatusBadRequest, "StatusBadRequest", err),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserEvents: %w", err)), http.StatusBadRequest)
 		return
 	}
-	response.WriteJsonResponse(w, events, http.StatusOK)
+	res.WriteJson(w, events, http.StatusOK)
 }
 
 // TODO: openapiに追加する
@@ -158,12 +117,8 @@ func (h *UserHandler) GetUserByMail(w http.ResponseWriter, r *http.Request) {
 	mailQuery := r.URL.Query().Get("mail")
 	user, err := h.uc.GetUserByMail(r.Context(), mailQuery)
 	if err != nil {
-		response.WriteJsonResponse(
-			w,
-			response.NewErrResponse(http.StatusBadRequest, "StatusBadRequest", err),
-			http.StatusBadRequest,
-		)
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserByMail: %w", err)), http.StatusBadRequest)
 		return
 	}
-	response.WriteJsonResponse(w, user, http.StatusOK)
+	res.WriteJson(w, user, http.StatusOK)
 }

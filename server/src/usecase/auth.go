@@ -97,19 +97,16 @@ func (uc *Auth) StoreORUpdateToken(userID string, token *oauth2.Token) error {
 	}
 	//TODO:消すの忘れない
 	log.Println(gettoken)
-
 	if ent.IsNotFound(err) {
 		err := uc.repoAuth.StoreToken(userID, token)
 		if err != nil {
 			return fmt.Errorf("StoreToken: %w", err)
 		}
-
 	} else {
 		err := uc.repoAuth.UpdateToken(string(userID), token)
 		if err != nil {
 			return fmt.Errorf("UpdateToken: %w", err)
 		}
-
 	}
 	return nil
 }

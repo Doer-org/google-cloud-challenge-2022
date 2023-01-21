@@ -16,7 +16,6 @@ func NewGoogle(redirecturl string) *Google {
 }
 
 func newGoogle(redirecturl string) *Google {
-
 	google := &Google{
 		Config: &oauth2.Config{
 			ClientID:     os.Getenv("Google_ID"),
@@ -26,6 +25,5 @@ func newGoogle(redirecturl string) *Google {
 			RedirectURL:  redirecturl,
 		},
 	}
-
 	return google
 }

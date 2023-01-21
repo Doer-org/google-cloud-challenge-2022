@@ -32,14 +32,12 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 	if err := json.Unmarshal(body, &ResUser); err != nil {
 		return nil, fmt.Errorf("googleapis user Unmarshal: %w", err)
 	}
-
+	//TODO: 消し忘れない
 	log.Println(ResUser)
-
 	userUuid, err := uuid.NewUUID()
 	if err != nil {
 		return nil, fmt.Errorf("uuid.NewUUID: %w", err)
 	}
-
 	user := &ent.User{
 		ID:            userUuid,
 		Name:          ResUser.Name,

@@ -28,7 +28,6 @@ func (repo *Auth) StoreToken(userId string, token *oauth2.Token) error {
 	if err != nil {
 		return fmt.Errorf("uuid.Parse: %w", err)
 	}
-
 	_, err = repo.Client.GoogleAuth.
 		Create().
 		SetAccessToken(token.AccessToken).
@@ -36,11 +35,9 @@ func (repo *Auth) StoreToken(userId string, token *oauth2.Token) error {
 		SetExpiry(token.Expiry).
 		SetUserID(userUuid).
 		Save(context.Background())
-
 	if err != nil {
 		return fmt.Errorf("GoogleAuth.Create: %w", err)
 	}
-
 	return nil
 }
 
@@ -49,18 +46,15 @@ func (repo *Auth) UpdateToken(userId string, token *oauth2.Token) error {
 	if err != nil {
 		return fmt.Errorf("uuid.Parse: %w", err)
 	}
-
 	_, err = repo.Client.GoogleAuth.Update().
 		SetAccessToken(token.AccessToken).
 		SetRefreshToken(token.RefreshToken).
 		SetExpiry(token.Expiry).
 		Where(googleauth.UserID(userUuid)).
 		Save(context.Background())
-
 	if err != nil {
 		return fmt.Errorf("GoogleAuth.Update: %w", err)
 	}
-
 	return nil
 }
 
@@ -69,12 +63,10 @@ func (repo *Auth) GetTokenByUserID(userID string) (*oauth2.Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("uuid.Parse: %w", err)
 	}
-
 	token, err := repo.Client.GoogleAuth.
 		Query().
 		Where(googleauth.UserID(userUuid)).
 		Only(context.Background())
-
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +76,6 @@ func (repo *Auth) GetTokenByUserID(userID string) (*oauth2.Token, error) {
 		restoken.RefreshToken = token.RefreshToken
 		restoken.Expiry = token.Expiry
 	}
-
 	return restoken, nil
 }
 
@@ -93,13 +84,11 @@ func (repo *Auth) StoreSession(sessionID, userID string) error {
 	if err != nil {
 		return fmt.Errorf("uuid.Parse: %w", err)
 	}
-
 	_, err = repo.Client.LoginSessions.
 		Create().
 		SetUserID(userUuid).
 		SetID(sessionID).
 		Save(context.Background())
-
 	if err != nil {
 		return fmt.Errorf("LoginSessions.Create: %w", err)
 	}
@@ -111,11 +100,9 @@ func (repo *Auth) GetUserIDFromSession(sessionID string) (string, error) {
 		Query().
 		Where(loginsessions.ID(sessionID)).
 		Only(context.Background())
-
 	if err != nil && !ent.IsNotFound(err) {
 		return "", fmt.Errorf("LoginSessions.Query: %w", err)
 	}
-
 	return session.UserID.String(), nil
 }
 
@@ -125,11 +112,9 @@ func (repo *Auth) StoreState(authState *ent.AuthStates) error {
 		SetState(authState.State).
 		SetRedirectURL(authState.RedirectURL).
 		Save(context.Background())
-
 	if err != nil {
 		return fmt.Errorf("AuthStates.Create: %w", err)
 	}
-
 	return nil
 }
 
@@ -138,15 +123,12 @@ func (repo *Auth) FindStateByState(state string) (*ent.AuthStates, error) {
 		Query().
 		Where(authstates.State(state)).
 		Only(context.Background())
-
 	if err != nil && !ent.IsNotFound(err) {
 		return nil, fmt.Errorf("AuthStates.Query: %w", err)
 	}
-
 	res := &ent.AuthStates{}
 	res.RedirectURL = resstate.RedirectURL
 	res.State = resstate.State
-
 	return res, nil
 }
 
@@ -155,10 +137,8 @@ func (repo *Auth) DeleteState(state string) error {
 		Delete().
 		Where(authstates.State(state)).
 		Exec(context.Background())
-
 	if err != nil {
 		return fmt.Errorf("AuthStates.Delete: %w", err)
 	}
-
 	return nil
 }

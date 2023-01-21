@@ -48,7 +48,7 @@ func (uc *Event) CreateNewEvent(ctx context.Context, adminIdString, name, detail
 		Name:     name,
 		Detail:   detail,
 		Location: location,
-		Size: size,
+		Size:     size,
 	}
 	return uc.repo.CreateNewEvent(ctx, adminId, ee)
 }
@@ -86,7 +86,7 @@ func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name
 		Name:     name,
 		Detail:   detail,
 		Location: location,
-		Size: size,
+		Size:     size,
 	}
 	return uc.repo.UpdateEventById(ctx, eventId, ee)
 }

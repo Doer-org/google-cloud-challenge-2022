@@ -1,8 +1,8 @@
 package env
 
 import (
-	"os"
 	"log"
+	"os"
 )
 
 // GetEnvOrDefaultはenvPathに指定された環境変数を取得する

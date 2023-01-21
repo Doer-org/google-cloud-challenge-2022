@@ -17,13 +17,13 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 	}
 	// tokenを使用して、clientを返す
 	client := c.auth.Config.Client(ctx, token)
-	resp, err := client.Get(env.GetEnvOrDefault("GOOGLE_API_CLIENT",""))
+	resp, err := client.Get(env.GetEnvOrDefault("GOOGLE_API_CLIENT", ""))
 	if err != nil {
 		return nil, fmt.Errorf("googleapis Get: %w", err)
 	}
 	defer resp.Body.Close()
 	var gUser googleUser
-	if err:=json.NewDecoder(resp.Body).Decode(&gUser);err!=nil{
+	if err := json.NewDecoder(resp.Body).Decode(&gUser); err != nil {
 		return nil, fmt.Errorf("decode: %w", err)
 	}
 	user := &ent.User{

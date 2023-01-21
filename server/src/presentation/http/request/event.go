@@ -1,6 +1,6 @@
 package request
 
-type EventRequestJson struct {
+type EventJson struct {
 	Name     string `json:"name"`
 	Detail   string `json:"detail"`
 	Location string `json:"location"`

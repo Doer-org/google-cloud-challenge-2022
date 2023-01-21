@@ -35,7 +35,7 @@ func (h *UserHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	var j request.UserRequestJson
+	var j request.UserJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		response.WriteJsonResponse(
 			w,
@@ -107,7 +107,7 @@ func (h *UserHandler) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	var j request.UserRequestJson
+	var j request.UserJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		response.WriteJsonResponse(
 			w,

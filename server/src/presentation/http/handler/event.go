@@ -35,7 +35,7 @@ func (h *EventHandler) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	var j request.EventRequestJson
+	var j request.EventJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		response.WriteJsonResponse(
 			w,
@@ -109,7 +109,7 @@ func (h *EventHandler) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	var j request.EventRequestJson
+	var j request.EventJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		response.WriteJsonResponse(
 			w,
@@ -182,7 +182,7 @@ func (h *EventHandler) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Requ
 		)
 		return
 	}
-	var j request.EventRequestJson
+	var j request.EventJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		response.WriteJsonResponse(
 			w,
@@ -219,7 +219,7 @@ func (h *EventHandler) AddNewEventParticipant(w http.ResponseWriter, r *http.Req
 		)
 		return
 	}
-	var j request.ParticipantRequestJson
+	var j request.ParticipantJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		response.WriteJsonResponse(
 			w,

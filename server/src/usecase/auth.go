@@ -61,7 +61,7 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 	}
 
 	if err := u.StoreORUpdateToken(userID.String(), token); err != nil {
-		return storedState.RedirectURL, "", fmt.Errorf("StoreORUpdateToken: %w",err)
+		return storedState.RedirectURL, "", fmt.Errorf("StoreORUpdateToken: %w", err)
 	}
 
 	sessionID := hash.GetUlid()
@@ -71,7 +71,7 @@ func (u *AuthUsecase) Authorization(state, code string) (string, string, error) 
 
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
 	if err := u.repo.DeleteState(state); err != nil {
-		log.Printf("DeleteState: %v\n",err)
+		log.Printf("DeleteState: %v\n", err)
 		return storedState.RedirectURL, sessionID, nil
 	}
 
@@ -113,7 +113,7 @@ func (u *AuthUsecase) StoreORUpdateToken(userID string, token *oauth2.Token) err
 	if ent.IsNotFound(err) {
 		err := u.repo.StoreToken(userID, token)
 		if err != nil {
-			return fmt.Errorf("StoreToken: %w",err)
+			return fmt.Errorf("StoreToken: %w", err)
 		}
 
 	} else {

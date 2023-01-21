@@ -38,6 +38,7 @@ func contentTypeJson(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
 //TODO: corsも関数に切り出す
 
 //TODO: router構造体を用意する

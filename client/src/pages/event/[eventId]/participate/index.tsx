@@ -40,21 +40,19 @@ export default function Participate(event: Event) {
   // TODO: SSRで実装してリンクを貼った時にOGPを表示させるようにする
   const [isConfirm, setIsConfirm] = useState(false);
   const router = useRouter();
-  const [origin, setOrigin] = useState("")
-  useEffect(() => { 
-    setOrigin(window.location.origin)
+  const [origin, setOrigin] = useState('');
+  useEffect(() => {
+    setOrigin(window.location.origin);
   }, []);
   const joinApi = joinEvent(
     (response: unknown) => {
-      router.push(
-        `${origin}/event/${event.event_id}/`
-      );
+      router.push(`${origin}/event/${event.event_id}/`);
     },
     (e) => {}
   );
   const [name, setName] = useState('');
   const [word, setWord] = useState('');
-  
+
   return (
     <>
       <BasicTemplate className="text-center">

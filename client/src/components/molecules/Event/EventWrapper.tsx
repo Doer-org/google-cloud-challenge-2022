@@ -4,7 +4,7 @@ type TProps = {
 };
 export const EventWrapper = ({ children }: TProps) => {
   return (
-    <div className="m-5 border-accent_border border-8 shadow-2xl bg-origin_depth rounded-md">
+    <div className="m-5 border-accent_border border-8 shadow-2xl bg-origin_depth rounded-md md:w-1/2 md:mx-auto">
       <div className="lg:m-3 m-1 lg:p-3 p-1 border-white border rounded-md">
         {children}
       </div>

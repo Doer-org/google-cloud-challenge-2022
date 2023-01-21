@@ -76,18 +76,17 @@ func (uc *Auth) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
 		return uuid.Nil, fmt.Errorf("GetMe: %w", err)
 	}
 	// uc.CreateNewUserに同じような処理があるが、ログイン時にこの関数が呼び出されるため必要
-	res, err := uc.userRepo.GetUserByMail(ctx, user.Mail)
+	found, err := uc.userRepo.GetUserByMail(ctx, user.Mail)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("GetUserByMail: %w", err)
 	}
-	if res != nil {
-		return res.ID, nil
+	if found != nil {
+		return found.ID, nil
 	}
 	_, err = uc.userRepo.CreateNewUser(ctx, user)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("CreateNewUser: %w", err)
 	}
-
 	return user.ID, nil
 }
 

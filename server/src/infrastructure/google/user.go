@@ -16,6 +16,7 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 	if !ok {
 		return nil, fmt.Errorf("token not found")
 	}
+	// tokenを使用して、clientを返す
 	client := c.auth.Config.Client(ctx, token)
 	//TODO:環境変数にする
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")

@@ -35,7 +35,6 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-
 	event, err := h.uc.CreateNewEvent(
 		r.Context(),
 		j.Admin,
@@ -84,7 +83,6 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-
 	idParam := chi.URLParam(r, "id")
 	event, err := h.uc.UpdateEventById(
 		r.Context(),
@@ -134,7 +132,6 @@ func (h *Event) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-
 	idParam := chi.URLParam(r, "id")
 	event, err := h.uc.ChangeEventStatusOfId(r.Context(), idParam, j.State)
 	if err != nil {
@@ -156,7 +153,6 @@ func (h *Event) AddNewEventParticipant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-
 	idParam := chi.URLParam(r, "id")
 	err := h.uc.AddNewEventParticipant(
 		r.Context(),

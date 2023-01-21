@@ -33,7 +33,6 @@ func (h *User) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-
 	user, err := h.uc.CreateNewUser(
 		r.Context(),
 		j.Name,
@@ -82,7 +81,6 @@ func (h *User) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-
 	idParam := chi.URLParam(r, "id")
 	user, err := h.uc.UpdateUserById(
 		r.Context(),

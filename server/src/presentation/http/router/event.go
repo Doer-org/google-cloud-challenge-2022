@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/go-chi/chi/v5"
-	
+
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
@@ -11,8 +11,8 @@ import (
 
 func (r *Router) InitEvent(c *ent.Client) {
 	repo := persistance.NewEventRepository(c)
-	uc   := usecase.NewEventUsecae(repo)
-	h    := handler.NewEventHandler(uc)
+	uc := usecase.NewEventUsecae(repo)
+	h := handler.NewEventHandler(uc)
 
 	r.mux.Route("/events", func(r chi.Router) {
 		r.Post("/", h.CreateNewEvent)

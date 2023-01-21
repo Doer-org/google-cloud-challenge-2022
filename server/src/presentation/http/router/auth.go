@@ -14,11 +14,11 @@ func (r *Router) InitAuth(c *ent.Client) {
 	authRepo := persistance.NewAuthRepository(c)
 	userRepo := persistance.NewUserRepository(c)
 	//TODO: 環境変数にすべき
-	ag       := google.NewClient("http://localhost:8080/api/callback")
+	ag := google.NewClient("http://localhost:8080/api/callback")
 	//TODO: 順番が気になる
-	uc       := usecase.NewAuthUsecase(authRepo, ag, userRepo)
+	uc := usecase.NewAuthUsecase(authRepo, ag, userRepo)
 	//TODO: frontendURLが空?
-	h        := handler.NewAuthHandler(uc, "")
+	h := handler.NewAuthHandler(uc, "")
 	//TODO: /apiにする必要ある? /authとか？
 	r.mux.Route("/api", func(r chi.Router) {
 		r.Get("/login", h.Login)

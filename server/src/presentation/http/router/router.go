@@ -12,18 +12,18 @@ import (
 )
 
 type Router struct {
-	mux *chi.Mux
+	mux  *chi.Mux
 	port string
 }
 
 func NewRouter(port string) *Router {
 	return &Router{
-		mux: chi.NewRouter(),
-		port:port,
+		mux:  chi.NewRouter(),
+		port: port,
 	}
 }
 
-func NewDefaultRouter(port string,c *ent.Client) *Router {
+func NewDefaultRouter(port string, c *ent.Client) *Router {
 	r := NewRouter(port)
 	// middleware
 	r.SetMiddleware()
@@ -53,14 +53,14 @@ func (r *Router) SetMiddleware() {
 
 	// auth
 	// TODO: setAuth?
-	
+
 }
 
 //TODO: uc?or u
 
 func (r *Router) Serve() error {
 	return http.ListenAndServe(
-		fmt.Sprintf(":%s",r.port),
+		fmt.Sprintf(":%s", r.port),
 		r.mux,
 	)
 }

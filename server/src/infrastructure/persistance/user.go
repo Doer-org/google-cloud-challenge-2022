@@ -3,7 +3,6 @@ package persistance
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"

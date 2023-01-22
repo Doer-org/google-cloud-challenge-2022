@@ -8,7 +8,7 @@ type TProps = {
 export const EventBasicInfoCard = ({ id, eventName, detail }: TProps) => {
   return (
     <>
-      <div className="lg:mx-auto lg:w-1/3">
+      <div className="lg:mx-auto">
         <TypoWrapper line="bold" size="so-large">
           <h1 className="my-5">{eventName}</h1>
         </TypoWrapper>

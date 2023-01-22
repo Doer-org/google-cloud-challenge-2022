@@ -66,7 +66,6 @@ func (uc *Event) DeleteEventById(ctx context.Context, eventIdString string) erro
 	if err != nil {
 		return fmt.Errorf("eventId Parse: %w", err)
 	}
-	// TODO: adminuser か確認
 	return uc.repo.DeleteEventById(ctx, eventId)
 }
 

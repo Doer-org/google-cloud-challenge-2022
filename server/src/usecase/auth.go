@@ -13,7 +13,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// TODO:APIの制限かける
 type Auth struct {
 	repoAuth   repository.IAuth
 	googleRepo repository.IGoogle

@@ -3,7 +3,6 @@ package persistance
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
@@ -33,7 +32,7 @@ func (repo *Auth) StoreToken(userId uuid.UUID, token *oauth2.Token) error {
 		SetUserID(userId).
 		Save(context.Background())
 	if err != nil {
-		return fmt.Errorf("GoogleAuth.Create: %w", err)
+		return fmt.Errorf("googleAuth.Create: %w", err)
 	}
 	return nil
 }
@@ -46,7 +45,7 @@ func (repo *Auth) UpdateToken(userId uuid.UUID, token *oauth2.Token) error {
 		Where(googleauth.UserID(userId)).
 		Save(context.Background())
 	if err != nil {
-		return fmt.Errorf("GoogleAuth.Update: %w", err)
+		return fmt.Errorf("googleAuth.Update: %w", err)
 	}
 	return nil
 }
@@ -55,17 +54,17 @@ func (repo *Auth) UpdateToken(userId uuid.UUID, token *oauth2.Token) error {
 func (repo *Auth) StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) error {
 	found, err := repo.GetTokenByUserID(userId)
 	if err != nil && !ent.IsNotFound(err) {
-		return fmt.Errorf("GetTokenByUserID: %w", err)
+		return fmt.Errorf("getTokenByUserID: %w", err)
 	}
 	if found != nil{
 		if err := repo.UpdateToken(userId, token);err != nil {
-			return fmt.Errorf("UpdateToken: %w", err)
+			return fmt.Errorf("updateToken: %w", err)
 		}
 		return nil
 	}
 	if ent.IsNotFound(err) {
 		if err := repo.StoreToken(userId, token); err != nil {
-			return fmt.Errorf("StoreToken: %w", err)
+			return fmt.Errorf("storeToken: %w", err)
 		}
 	}
 	return nil
@@ -95,7 +94,7 @@ func (repo *Auth) StoreSession(sessionID string, userId uuid.UUID) error {
 		SetID(sessionID).
 		Save(context.Background())
 	if err != nil {
-		return fmt.Errorf("LoginSessions.Create: %w", err)
+		return fmt.Errorf("loginSessions.Create: %w", err)
 	}
 	return nil
 }
@@ -106,7 +105,7 @@ func (repo *Auth) GetUserIDFromSession(sessionID string) (uuid.UUID, error) {
 		Where(loginsessions.ID(sessionID)).
 		Only(context.Background())
 	if err != nil && !ent.IsNotFound(err) {
-		return uuid.Nil, fmt.Errorf("LoginSessions.Query: %w", err)
+		return uuid.Nil, fmt.Errorf("loginSessions.Query: %w", err)
 	}
 	return session.UserID, nil
 }
@@ -118,7 +117,7 @@ func (repo *Auth) StoreState(authState *ent.AuthStates) error {
 		SetRedirectURL(authState.RedirectURL).
 		Save(context.Background())
 	if err != nil {
-		return fmt.Errorf("AuthStates.Create: %w", err)
+		return fmt.Errorf("authStates.Create: %w", err)
 	}
 	return nil
 }
@@ -129,7 +128,7 @@ func (repo *Auth) FindStateByState(state string) (*ent.AuthStates, error) {
 		Where(authstates.State(state)).
 		Only(context.Background())
 	if err != nil && !ent.IsNotFound(err) {
-		return nil, fmt.Errorf("AuthStates.Query: %w", err)
+		return nil, fmt.Errorf("authStates.Query: %w", err)
 	}
 	res := &ent.AuthStates{}
 	res.RedirectURL = resstate.RedirectURL
@@ -143,7 +142,7 @@ func (repo *Auth) DeleteState(state string) error {
 		Where(authstates.State(state)).
 		Exec(context.Background())
 	if err != nil {
-		return fmt.Errorf("AuthStates.Delete: %w", err)
+		return fmt.Errorf("authStates.Delete: %w", err)
 	}
 	return nil
 }

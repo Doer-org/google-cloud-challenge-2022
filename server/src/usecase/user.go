@@ -32,7 +32,7 @@ func NewUser(r repository.IUser) IUser {
 func (uc *User) CreateNewUser(ctx context.Context, name string, mail string, icon string) (*ent.User, error) {
 	found, err := uc.repo.GetUserByMail(ctx, mail)
 	if err != nil {
-		return nil, fmt.Errorf("GetUserByMail: %w", err)
+		return nil, fmt.Errorf("getUserByMail: %w", err)
 	}
 	if found != nil {
 		return nil, fmt.Errorf("this mail user is already exists")

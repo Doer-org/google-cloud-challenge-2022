@@ -29,7 +29,7 @@ func (repo *User) CreateNewUser(ctx context.Context, eu *ent.User) (*ent.User, e
 		SetIcon(eu.Icon).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("User.Create: %w", err)
+		return nil, fmt.Errorf("user.Create: %w", err)
 	}
 	return user, nil
 }
@@ -40,7 +40,7 @@ func (repo *User) GetUserById(ctx context.Context, userId uuid.UUID) (*ent.User,
 		Where(user.ID(userId)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("User.Query: %w", err)
+		return nil, fmt.Errorf("user.Query: %w", err)
 	}
 	return user, nil
 }
@@ -50,7 +50,7 @@ func (repo *User) DeleteUserById(ctx context.Context, userId uuid.UUID) error {
 		DeleteOneID(userId).
 		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("User.DeleteOneID: %w", err)
+		return fmt.Errorf("user.DeleteOneID: %w", err)
 	}
 	return nil
 }
@@ -61,7 +61,7 @@ func (repo *User) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.
 		SetName(eu.Name).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("User.UpdateOneID: %w", err)
+		return nil, fmt.Errorf("user.UpdateOneID: %w", err)
 	}
 	return user, nil
 }
@@ -79,7 +79,7 @@ func (repo *User) GetUserByMail(ctx context.Context, mail string) (*ent.User, er
 		return nil, nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("User.Query: %w", err)
+		return nil, fmt.Errorf("user.Query: %w", err)
 	}
 	return user, nil
 }
@@ -91,7 +91,7 @@ func (repo *User) GetUserEvents(ctx context.Context, userId uuid.UUID) ([]*ent.E
 		WithEvents().
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("User.Query: %w", err)
+		return nil, fmt.Errorf("user.Query: %w", err)
 	}
 	return user.Edges.Events, nil
 }

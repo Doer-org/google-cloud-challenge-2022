@@ -121,7 +121,7 @@ func (uc *Event) AddNewEventParticipant(ctx context.Context, eventIdString, name
 	}
 	err = uc.repo.AddNewEventParticipant(ctx, eventId, eu, comment)
 	if err != nil {
-		return fmt.Errorf("AddNewEventParticipant: %w", err)
+		return fmt.Errorf("addNewEventParticipant: %w", err)
 	}
 	return nil
 }

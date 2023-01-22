@@ -36,7 +36,7 @@ func (repo *Event) CreateNewEvent(ctx context.Context, adminId uuid.UUID, ee *en
 		AddUserIDs(adminId).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Event.Create: %w", err)
+		return nil, fmt.Errorf("event.Create: %w", err)
 	}
 	return repo.getEventById(ctx, event.ID)
 }
@@ -50,7 +50,7 @@ func (repo *Event) DeleteEventById(ctx context.Context, eventId uuid.UUID) error
 		DeleteOneID(eventId).
 		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("Event.DeleteOneID: %w", err)
+		return fmt.Errorf("event.DeleteOneID: %w", err)
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func (repo *Event) UpdateEventById(ctx context.Context, eventId uuid.UUID, ee *e
 		SetSize(ee.Size).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)
+		return nil, fmt.Errorf("event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
@@ -76,7 +76,7 @@ func (repo *Event) GetEventAdminById(ctx context.Context, eventId uuid.UUID) (*e
 		WithAdmin().
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Event.Query: %w", err)
+		return nil, fmt.Errorf("event.Query: %w", err)
 	}
 	return event.Edges.Admin, nil
 }
@@ -88,7 +88,7 @@ func (repo *Event) GetEventComments(ctx context.Context, eventId uuid.UUID) ([]*
 		WithUser().
 		All(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Comment.Query: %w", err)
+		return nil, fmt.Errorf("comment.Query: %w", err)
 	}
 	return comments, nil
 }
@@ -101,7 +101,7 @@ func (repo *Event) AddNewEventParticipant(ctx context.Context, eventId uuid.UUID
 		AddEventIDs(eventId).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("Userepo.Create: %w", err)
+		return fmt.Errorf("userepo.Create: %w", err)
 	}
 	if comment == "" {
 		return nil
@@ -113,7 +113,7 @@ func (repo *Event) AddNewEventParticipant(ctx context.Context, eventId uuid.UUID
 		SetUserID(user.ID).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("Comment.Create: %w", err)
+		return fmt.Errorf("comment.Create: %w", err)
 	}
 	return nil
 }
@@ -124,7 +124,7 @@ func (repo *Event) ChangeEventStatusToCloseOfId(ctx context.Context, eventId uui
 		SetState(string(constant.STATE_CLOSE)).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)
+		return nil, fmt.Errorf("event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
@@ -135,7 +135,7 @@ func (repo *Event) ChangeEventStatusToCancelOfId(ctx context.Context, eventId uu
 		SetState(string(constant.STATE_CANCEL)).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Event.UpdateOneID: %w", err)
+		return nil, fmt.Errorf("event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
@@ -146,7 +146,7 @@ func (repo *Event) GetEventUsers(ctx context.Context, eventId uuid.UUID) ([]*ent
 		Where(user.HasEventsWith(event.ID(eventId))).
 		All(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Userepo.Query: %w", err)
+		return nil, fmt.Errorf("userepo.Query: %w", err)
 	}
 	return users, nil
 }
@@ -157,7 +157,7 @@ func (repo *Event) getEventById(ctx context.Context, eventUuid uuid.UUID) (*ent.
 		Where(event.ID(eventUuid)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Event.Query: %w", err)
+		return nil, fmt.Errorf("event.Query: %w", err)
 	}
 	return event, nil
 }

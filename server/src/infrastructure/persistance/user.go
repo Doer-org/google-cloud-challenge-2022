@@ -3,6 +3,7 @@ package persistance
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
@@ -68,7 +69,9 @@ func (repo *User) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.
 
 func (repo *User) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
 	// mailが空白の参加者は大勢いるため、mailが空文字の時は検索しない
+	log.Println("1calllllll",mail)
 	if mail == "" {
+		log.Println("check!??")
 		return nil, nil
 	}
 	user, err := repo.client.User.

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
@@ -29,7 +28,6 @@ func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url += "&approval_prompt=force&access_type=offline"
-	log.Println("$$$$$$$$$$",url)
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
@@ -39,15 +37,10 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	state := r.FormValue("state")
-	log.Println("Hello???????????1")
-	//callbackが2回よばれている！？？
-	//TODO: おそらくgcpで複数設定しているのが原因な気がする
 	if state == "" {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: state is empty")), http.StatusBadRequest)
 		return
 	}
-	// return後もうごいてる。なぜ
-	log.Println("Hello???????????2")
 	code := r.FormValue("code")
 	if code == "" {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: code is empty")), http.StatusBadRequest)

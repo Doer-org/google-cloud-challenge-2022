@@ -33,7 +33,6 @@ func (uc *Auth) GetAuthURL(redirectURL string) (string, error) {
 		State:       state,
 		RedirectURL: redirectURL,
 	}
-	log.Println("&&&&&&&&&&&state",state)
 	if err := uc.repoAuth.StoreState(st); err != nil {
 		return "", fmt.Errorf("storeState: %w", err)
 	}
@@ -41,8 +40,7 @@ func (uc *Auth) GetAuthURL(redirectURL string) (string, error) {
 }
 
 // TODO: interfaceで統一すべき
-// TODO: 同じユーザーが２度ログインしたら、loginsession Tableに２つはいる
-// TODO: stateが2回つくられている？ 最初に作られたstateは残り、後半に作られたstateは残っている
+// memo: 複数のブラウザを立ち上げた場合、sessionが複数作られる
 func (uc *Auth) Authorization(state, code string) (string, string, error) {
 	storedState, err := uc.repoAuth.FindStateByState(state)
 	if err != nil {
@@ -63,15 +61,14 @@ func (uc *Auth) Authorization(state, code string) (string, string, error) {
 		return storedState.RedirectURL, "", fmt.Errorf("storeORUpdateToken: %w", err)
 	}
 	sessionID := hash.GetUlid()
-	//TODO: ctx add
+	//TODO: contextを引数に追加
 	if err := uc.repoAuth.StoreSession(sessionID, userId); err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("storeSession: %w", err)
 	}
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
 	//TODO: stateはなんのために使われるんだろう..
-	//TODO: というかstate消せてない気が
 	if err := uc.repoAuth.DeleteState(state); err != nil {
-		log.Printf("DeleteState: %v\n", err)
+		log.Println("DeleteState: %v", err)
 		return storedState.RedirectURL, sessionID, nil
 	}
 	return storedState.RedirectURL, sessionID, nil
@@ -83,19 +80,23 @@ func (uc *Auth) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("getMe: %w", err)
 	}
-	// uc.CreateNewUserに同じような処理があるが、ログイン時にこの関数が呼び出されるため必要
-	found, err := uc.userRepo.GetUserByMail(ctx, user.Mail)
-	if err != nil {
-		return uuid.Nil, fmt.Errorf("getUserByMail: %w", err)
+	userId,found := uc.checkUserExistsByMail(ctx,user.Mail)
+	if found {
+		return userId,nil
 	}
-	if found != nil {
-		return found.ID, nil
-	}
-	_, err = uc.userRepo.CreateNewUser(ctx, user)
+	newUser,err := uc.userRepo.CreateNewUser(ctx, user)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("createNewUser: %w", err)
 	}
-	return user.ID, nil
+	return newUser.ID,nil
+}
+
+func (uc *Auth) checkUserExistsByMail(ctx context.Context, mail string) (uuid.UUID,bool) {
+	found, _ := uc.userRepo.GetUserByMail(ctx,  mail)
+	if found != nil {
+		return found.ID,true
+	}
+	return uuid.Nil,false
 }
 
 // GetUserIDFromSession はセッションIDから対応するユーザIDを返します。
@@ -107,7 +108,6 @@ func (uc *Auth) GetUserIdFromSession(sessionId string) (uuid.UUID, error) {
 	return userId, nil
 }
 
-// TODO: sessionからユーザーを取得して権限があるかを確認したら良いのか！？
 // GetTokenByUserID は対応したユーザのアクセストークンを取得します。
 func (uc *Auth) GetTokenByUserId(userId uuid.UUID) (*oauth2.Token, error) {
 	token, err := uc.repoAuth.GetTokenByUserID(userId)

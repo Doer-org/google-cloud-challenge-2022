@@ -3,7 +3,6 @@ package persistance
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
@@ -57,21 +56,17 @@ func (repo *Auth) StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) erro
 	if err != nil && !ent.IsNotFound(err) {
 		return fmt.Errorf("getTokenByUserID: %w", err)
 	}
-	log.Println("ID@@@@@@",userId)
-	log.Println("FOUDNN@@@@",found)
-	//1回目はなぞのuseridがはいる //00000000-0000-0000-0000-000000000000
-	//2回目は正常だが、foundがnil
-	// 3回目でようやくuseridが正常でかつfoundにuserがはいる
 	if found != nil {
 		if err := repo.UpdateToken(userId, token); err != nil {
 			return fmt.Errorf("updateToken: %w", err)
 		}
 		return nil
-	}
-	if ent.IsNotFound(err) {
+	} else if ent.IsNotFound(err) {
 		if err := repo.StoreToken(userId, token); err != nil {
 			return fmt.Errorf("storeToken: %w", err)
 		}
+	} else {
+		return fmt.Errorf("found is empty, and ent is not found")
 	}
 	return nil
 }

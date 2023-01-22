@@ -20,7 +20,15 @@ type Auth struct {
 	userRepo   repository.IUser
 }
 
-func NewAuth(ra repository.IAuth, rg repository.IGoogle, ur repository.IUser) *Auth {
+type IAuth interface {
+	GetAuthURL(redirectURL string) (string, error)
+	Authorization(state, code string) (string, string, error)
+	GetUserIdFromSession(sessionId string) (uuid.UUID, error)
+	GetTokenByUserId(userId uuid.UUID) (*oauth2.Token, error)
+	RefreshAccessToken(userId uuid.UUID, token *oauth2.Token) (*oauth2.Token, error)
+}
+
+func NewAuth(ra repository.IAuth, rg repository.IGoogle, ur repository.IUser) IAuth {
 	return &Auth{
 		repoAuth:   ra,
 		googleRepo: rg,
@@ -40,7 +48,6 @@ func (uc *Auth) GetAuthURL(redirectURL string) (string, error) {
 	return uc.googleRepo.GetAuthURL(state), nil
 }
 
-// TODO: interfaceで統一すべき
 // memo: 複数のブラウザを立ち上げた場合、sessionが複数作られる
 func (uc *Auth) Authorization(state, code string) (string, string, error) {
 	storedState, err := uc.repoAuth.FindStateByState(state)
@@ -67,7 +74,7 @@ func (uc *Auth) Authorization(state, code string) (string, string, error) {
 		return storedState.RedirectURL, "", fmt.Errorf("storeSession: %w", err)
 	}
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
-	//TODO: stateはなんのために使われるんだろう..
+	//TODO: stateはなんのために使われてるのか?
 	if err := uc.repoAuth.DeleteState(state); err != nil {
 		log.Println("DeleteState: %v", err)
 		return storedState.RedirectURL, sessionID, nil

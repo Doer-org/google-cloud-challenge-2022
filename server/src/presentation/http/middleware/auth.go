@@ -11,10 +11,10 @@ import (
 )
 
 type Auth struct {
-	uc *usecase.Auth
+	uc usecase.IAuth
 }
 
-func NewAuth(uc *usecase.Auth) *Auth {
+func NewAuth(uc usecase.IAuth) *Auth {
 	return &Auth{uc: uc}
 }
 

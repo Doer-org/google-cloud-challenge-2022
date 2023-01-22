@@ -57,8 +57,6 @@ func (r *Router) SetMiddleware() {
 	r.mux.Use(mymiddleware.ContentTypeJson)
 }
 
-//TODO: uc?or u
-
 func (r *Router) Serve() error {
 	return http.ListenAndServe(
 		fmt.Sprintf(":%s", r.port),

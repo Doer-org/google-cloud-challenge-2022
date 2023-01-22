@@ -4,7 +4,8 @@ import { Hanging } from './Event/Hanging';
 import { EventBasicInfo } from './Event/EventBasicInfo';
 import { Participant } from '../../core/types/event';
 import { TypoWrapper } from '../atoms/text/TypoWrapper';
-import { UserInfo } from './User/UserInfo';
+import { UserInfo } from '../organisms/User/UserInfo';
+
 type TProps = {
   participants?: Participant[];
   eventName: string;
@@ -30,21 +31,17 @@ export const EventInfo = ({
     <>
       <Hanging />
       <EventWrapper>
-        <div className="flex items-end gap-5 overflow-x-scroll md:w-5/6 mx-5 md:mx-auto py-5">
-          <div>
-            <UserInfo name={'ホストです'} />
-          </div>
-
+        <div className="flex items-end gap-5 mx-5 overflow-x-scroll md:w-5/6 md:mx-auto py-5">
+          <UserInfo name={'ホストです'} />
           {participants &&
             participants.map((participate) => {
               return (
-                <div key={participate.participant_name}>
-                  <UserInfo
-                    name={participate.participant_name}
-                    comment={participate.comment}
-                    participate
-                  />
-                </div>
+                <UserInfo
+                  key={participate.participant_name}
+                  name={participate.participant_name}
+                  comment={participate.comment}
+                  isParticipate
+                />
               );
             })}
         </div>

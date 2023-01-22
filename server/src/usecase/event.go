@@ -80,7 +80,6 @@ func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
-	// TODO: loginしているadminuser か確認
 	ee := &ent.Event{
 		Name:     name,
 		Detail:   detail,

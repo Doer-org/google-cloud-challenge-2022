@@ -11,42 +11,32 @@ export const BasicTemplate = ({ children, className }: TProps) => {
   const [browseHeight, setbrowseHeight] = useState(0);
   const [elementHeight, setElementHeight] = useState(0);
   const [height, setHeight] = useState<string>('');
-  // リサイズされた際の切り替え
-  // 画面幅が変わった時のみ走る
-  useEffect(() => {
-    // TODO:高さが800前後の時に初回レンダリングでうまく高さが判定できてない
-    // 高さが本来の高さよりも低くなっていることからh-screenが適用されてしまっている
-    // iPad Airとかだと大丈夫
-    const bh = document.documentElement.clientHeight;
-    const elh = Number(el?.current?.getBoundingClientRect().height);
-    setHeight(bh > elh ? 'h-screen' : '');
-    window.onload = () => {
-      const elh = Number(el?.current?.getBoundingClientRect().height);
-      setHeight(bh > elh ? 'h-screen' : '');
-    };
-  }, []);
-  useEffect(() => {
-    const bh = document.documentElement.clientHeight;
-    const elh = Number(el?.current?.getBoundingClientRect().height);
-    console.log(bh, elh);
-    setHeight(bh > elh ? 'h-screen' : '');
-  }, [children]);
 
   useEffect(() => {
     const bh = document.documentElement.clientHeight;
-    const elh = Number(el?.current?.getBoundingClientRect().height);
+    const elh = Number(el.current?.getBoundingClientRect().height);
     setbrowseHeight(bh);
     setElementHeight(elh);
-    setHeight(browseHeight > elementHeight ? 'h-screen' : '');
-    const onResize = () => {
-      // ここも再定義しないとスタイルの切り替えがうまく行かない
+    setHeight(bh > elh ? 'h-screen' : '');
+    setTimeout(() => {
       const bh = document.documentElement.clientHeight;
+      const elh = Number(el.current?.getBoundingClientRect().height);
+      setHeight(bh > elh ? 'h-screen' : '');
+    }, 100);
+  }, [children, browseHeight, elementHeight]);
+
+  // リサイズされた際の切り替え
+  useEffect(() => {
+    const onResize = () => {
+      const bh = document.documentElement.clientHeight;
+      setbrowseHeight(bh);
       const elh = Number(el?.current?.getBoundingClientRect().height);
+      setElementHeight(elh);
       setHeight(bh > elh ? 'h-screen' : '');
     };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, [browseHeight, elementHeight]);
+  }, [browseHeight]);
 
   return (
     <main

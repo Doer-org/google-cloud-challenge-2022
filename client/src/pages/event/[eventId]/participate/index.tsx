@@ -5,7 +5,6 @@ import { FormWrapper } from '../../../../components/atoms/form/FormWrapper';
 import { Input } from '../../../../components/atoms/form/Input';
 import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
-import { EventConfirmModal } from '../../../../components/molecules/Event/EventConfirmModal';
 import {
   getEventInfo,
   tryGetEventInfo,
@@ -15,6 +14,7 @@ import { flow, pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import { joinEvent } from '../../../../core/api/event/join';
 import { useEffect } from 'react';
+import { EventConfirmModal } from '../../../../components/templates/shared/Modal/EventConfirmModal';
 
 export async function getServerSideProps(context: any) {
   const eventId = context.query.eventId;
@@ -40,39 +40,38 @@ export default function Participate(event: Event) {
   // TODO: SSRで実装してリンクを貼った時にOGPを表示させるようにする
   const [isConfirm, setIsConfirm] = useState(false);
   const router = useRouter();
-  const [origin, setOrigin] = useState("")
-  useEffect(() => { 
-    setOrigin(window.location.origin)
+  const [origin, setOrigin] = useState('');
+  useEffect(() => {
+    setOrigin(window.location.origin);
   }, []);
   const joinApi = joinEvent(
     (response: unknown) => {
-      router.push(
-        `${origin}/event/${event.event_id}/`
-      );
+      router.push(`${origin}/event/${event.event_id}/`);
     },
     (e) => {}
   );
   const [name, setName] = useState('');
-  const [word, setWord] = useState('');
-  
+  const [comment, setComment] = useState('');
+
   return (
     <>
       <BasicTemplate className="text-center">
-        {isConfirm ? (
-          <EventConfirmModal
-            participants={event.participants}
-            onParticipate={() => {
-              joinApi({
-                event_id: event.event_id,
-                participant_name: name,
-                comment: word,
-              });
-            }}
-            onCancel={() => setIsConfirm(false)}
-            eventId={event.event_id}
-          />
-        ) : (
-          <>
+        <EventConfirmModal
+          isShow={isConfirm}
+          onClose={setIsConfirm}
+          onParticipate={() =>
+            joinApi({
+              event_id: event.event_id,
+              participant_name: name,
+              comment: comment,
+            })
+          }
+          currentUser={{ name, comment }}
+          participant={event.participants.map((participant) => {
+            return { name: participant.participant_name, image: '' };
+          })}
+        >
+          <div className="tt">
             <EventInfo
               participants={event.participants}
               eventName={event.event_name}
@@ -90,9 +89,8 @@ export default function Participate(event: Event) {
               <Input
                 type="text"
                 label="ひとこと"
-                content={word}
-                changeContent={setWord}
-                required={true}
+                content={comment}
+                changeContent={setComment}
               />
               <Button
                 className="flex m-auto my-5"
@@ -101,8 +99,8 @@ export default function Participate(event: Event) {
                 参加する
               </Button>
             </FormWrapper>
-          </>
-        )}
+          </div>
+        </EventConfirmModal>
       </BasicTemplate>
     </>
   );

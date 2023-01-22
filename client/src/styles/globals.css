@@ -6,3 +6,23 @@ body {
   font-family: 'Zen Maru Gothic', sans-serif;
   color: white;
 }
+.comment ::-webkit-scrollbar-thumb {
+  background: black;
+  border-radius: 3px;
+  border-width: 1;
+  box-shadow: 1%;
+}
+.comment ::-webkit-scrollbar {
+  width: 1px;
+  height: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background: #33f2d0;
+  border-radius: 3px;
+  border-width: 1;
+  box-shadow: 1%;
+}
+::-webkit-scrollbar {
+  width: 1px;
+  height: 3px;
+}

@@ -29,10 +29,10 @@ export default function Participate() {
     },
     (error) => {}
   );
-  const [origin, setOrigin] = useState("")
+  const [origin, setOrigin] = useState('');
   useEffect(() => {
     getEvent(eventId as string);
-    setOrigin(window.location.origin)
+    setOrigin(window.location.origin);
   }, []);
 
   return (
@@ -47,9 +47,7 @@ export default function Participate() {
         <Button
           className="flex m-auto my-5"
           onClick={() => {
-            copy(
-              `${origin}/event/${eventId}/participate`
-            );
+            copy(`${origin}/event/${eventId}/participate`);
           }}
         >
           URLをコピー

@@ -14,21 +14,17 @@ import { useEffect } from 'react';
 
 export default function New() {
   const router = useRouter();
-  const [origin, setOrigin] = useState("")
-  useEffect(() => { 
-    setOrigin(window.location.origin)
+  const [origin, setOrigin] = useState('');
+  useEffect(() => {
+    setOrigin(window.location.origin);
   }, []);
   const createEvent = createNewEvent(
     (ok) => {
-      router.push(
-        `${origin}/event/${ok.created_event.event_id}/completion`
-      );
+      router.push(`${origin}/event/${ok.created_event.event_id}/completion`);
     },
     (e) => {}
   );
-  // const { userId } = UserStore();
   const { userInfo, setUserInfo } = useUserInfoStore();
-
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState(1);
   const [detail, setDetail] = useState('');

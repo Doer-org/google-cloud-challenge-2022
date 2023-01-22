@@ -110,6 +110,7 @@ func (uc *Event) AddNewEventParticipant(ctx context.Context, eventIdString, name
 	if err != nil {
 		return fmt.Errorf("eventId Parse: %w", err)
 	}
+	//TODO:参加者の制限を超えないか確認
 	if name == "" {
 		return fmt.Errorf("name is empty")
 	}

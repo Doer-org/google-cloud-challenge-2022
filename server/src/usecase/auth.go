@@ -20,7 +20,7 @@ type Auth struct {
 }
 
 type IAuth interface {
-	GetAuthURL(redirectURL string) (string, error)
+	GetAuthURL(redirectURL string) (url string, state string, err error)
 	Authorization(state, code string) (string, string, error)
 	GetUserIdFromSession(sessionId string) (uuid.UUID, error)
 	GetTokenByUserId(userId uuid.UUID) (*oauth2.Token, error)
@@ -35,16 +35,17 @@ func NewAuth(ra repository.IAuth, rg repository.IGoogle, ur repository.IUser) IA
 	}
 }
 
-func (uc *Auth) GetAuthURL(redirectURL string) (string, error) {
+func (uc *Auth) GetAuthURL(redirectURL string) (url string, resstate string, err error) {
 	state := hash.GetUlid()
 	st := &ent.AuthStates{
 		State:       state,
 		RedirectURL: redirectURL,
 	}
 	if err := uc.repoAuth.StoreState(st); err != nil {
-		return "", fmt.Errorf("storeState: %w", err)
+		return "", "", fmt.Errorf("storeState: %w", err)
 	}
-	return uc.googleRepo.GetAuthURL(state), nil
+
+	return uc.googleRepo.GetAuthURL(state), state, nil
 }
 
 // memo: 複数のブラウザを立ち上げた場合、sessionが複数作られる

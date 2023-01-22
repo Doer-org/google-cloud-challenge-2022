@@ -22,12 +22,21 @@ func NewAuth(authUC usecase.IAuth, frontendURL string) *Auth {
 
 func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	redirectURL := r.FormValue("redirect_url")
-	url, err := h.authUC.GetAuthURL(redirectURL)
+	url, state, err := h.authUC.GetAuthURL(redirectURL)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetAuthURL: %w", err)), http.StatusBadRequest)
 		return
 	}
 	url += "&approval_prompt=force&access_type=offline"
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session",
+		Value:    state,
+		Path:     "/",
+		Secure:   !env.IsLocal(),
+		HttpOnly: true,
+	})
+
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
@@ -41,6 +50,14 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: state is empty")), http.StatusBadRequest)
 		return
 	}
+
+	sessCookie, err := r.Cookie("session")
+
+	if sessCookie.Value != state {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: state is not correct")), http.StatusBadRequest)
+		return
+	}
+
 	code := r.FormValue("code")
 	if code == "" {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: code is empty")), http.StatusBadRequest)

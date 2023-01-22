@@ -23,24 +23,24 @@ func NewRouter(port string) *Router {
 	}
 }
 
-func NewDefaultRouter(port string, c *ent.Client) (*Router,error) {
+func NewDefaultRouter(port string, c *ent.Client) (*Router, error) {
 	r := NewRouter(port)
 	// middleware
 	r.SetMiddleware()
 	// init all router
-	if err := r.InitHealth();err != nil {
-		return nil,err
+	if err := r.InitHealth(); err != nil {
+		return nil, err
 	}
-	if err := r.InitAuth(c);err != nil {
-		return nil,err
+	if err := r.InitAuth(c); err != nil {
+		return nil, err
 	}
-	if err := r.InitEvent(c);err != nil {
-		return nil,err
+	if err := r.InitEvent(c); err != nil {
+		return nil, err
 	}
-	if err := r.InitUser(c);err != nil {
-		return nil,err
+	if err := r.InitUser(c); err != nil {
+		return nil, err
 	}
-	return r,nil
+	return r, nil
 }
 
 func (r *Router) SetMiddleware() {

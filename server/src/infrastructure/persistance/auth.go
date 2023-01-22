@@ -80,10 +80,10 @@ func (repo *Auth) GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error) {
 		return nil, err
 	}
 	return &oauth2.Token{
-		AccessToken: token.AccessToken,
+		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
-		Expiry: token.Expiry,
-	},nil
+		Expiry:       token.Expiry,
+	}, nil
 }
 
 func (repo *Auth) StoreSession(sessionID string, userId uuid.UUID) error {

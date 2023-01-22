@@ -12,7 +12,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 )
-//TODO:APIの制限かける
+
+// TODO:APIの制限かける
 type Auth struct {
 	repoAuth   repository.IAuth
 	googleRepo repository.IGoogle
@@ -80,23 +81,23 @@ func (uc *Auth) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("getMe: %w", err)
 	}
-	userId,found := uc.checkUserExistsByMail(ctx,user.Mail)
+	userId, found := uc.checkUserExistsByMail(ctx, user.Mail)
 	if found {
-		return userId,nil
+		return userId, nil
 	}
-	newUser,err := uc.userRepo.CreateNewUser(ctx, user)
+	newUser, err := uc.userRepo.CreateNewUser(ctx, user)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("createNewUser: %w", err)
 	}
-	return newUser.ID,nil
+	return newUser.ID, nil
 }
 
-func (uc *Auth) checkUserExistsByMail(ctx context.Context, mail string) (uuid.UUID,bool) {
-	found, _ := uc.userRepo.GetUserByMail(ctx,  mail)
+func (uc *Auth) checkUserExistsByMail(ctx context.Context, mail string) (uuid.UUID, bool) {
+	found, _ := uc.userRepo.GetUserByMail(ctx, mail)
 	if found != nil {
-		return found.ID,true
+		return found.ID, true
 	}
-	return uuid.Nil,false
+	return uuid.Nil, false
 }
 
 // GetUserIDFromSession はセッションIDから対応するユーザIDを返します。

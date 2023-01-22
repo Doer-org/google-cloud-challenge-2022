@@ -13,15 +13,15 @@ import (
 
 func (r *Router) InitEvent(c *ent.Client) error {
 	evenRepo := persistance.NewEvent(c)
-	eventUC  := usecase.NewEvent(evenRepo)
-	eventH   := handler.NewEvent(eventUC)
+	eventUC := usecase.NewEvent(evenRepo)
+	eventH := handler.NewEvent(eventUC)
 
 	// auth middleware
 	authRepo := persistance.NewAuth(c)
 	userRepo := persistance.NewUser(c)
-	rg       := google.NewClient("http://localhost:8080/auth/callback")
-	authUC   := usecase.NewAuth(authRepo, rg, userRepo)
-	m        := middleware.NewAuth(authUC)
+	rg := google.NewClient("http://localhost:8080/auth/callback")
+	authUC := usecase.NewAuth(authRepo, rg, userRepo)
+	m := middleware.NewAuth(authUC)
 
 	r.mux.Route("/events", func(r chi.Router) {
 		r.Get("/{id}", eventH.GetEventById)
@@ -31,7 +31,7 @@ func (r *Router) InitEvent(c *ent.Client) error {
 		r.Get("/{id}/users", eventH.GetEventUsers)
 
 		// authentication required
-		r.Route("/",func(r chi.Router) {
+		r.Route("/", func(r chi.Router) {
 			r.Use(m.Authenticate)
 			r.Post("/", eventH.CreateNewEvent)
 			r.Delete("/{id}", eventH.DeleteEventById)

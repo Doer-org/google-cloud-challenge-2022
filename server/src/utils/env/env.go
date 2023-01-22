@@ -15,12 +15,12 @@ func GetEnvOrDefault(envPath string, defaultEnv string) string {
 	return env
 }
 
-func GetEssentialEnv(envPath string) (string,error) {
+func GetEssentialEnv(envPath string) (string, error) {
 	env := os.Getenv(envPath)
 	if env == "" {
-		return "",fmt.Errorf("essential env not found")
+		return "", fmt.Errorf("essential env not found")
 	}
-	return env,nil
+	return env, nil
 }
 
 func IsLocal() bool {

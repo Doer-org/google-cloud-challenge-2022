@@ -17,9 +17,9 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 	}
 	// tokenを使用して、clientを返す
 	client := c.auth.Config.Client(ctx, token)
-	googleApi,err := env.GetEssentialEnv("GOOGLE_API_CLIENT")
+	googleApi, err := env.GetEssentialEnv("GOOGLE_API_CLIENT")
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	resp, err := client.Get(googleApi)
 	if err != nil {

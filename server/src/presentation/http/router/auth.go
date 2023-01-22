@@ -15,7 +15,7 @@ func (r *Router) InitAuth(c *ent.Client) error {
 	authRepo := persistance.NewAuth(c)
 	userRepo := persistance.NewUser(c)
 
-	callbackApi,err := env.GetEssentialEnv("GOOGLE_CALLBACK_API")
+	callbackApi, err := env.GetEssentialEnv("GOOGLE_CALLBACK_API")
 	if err != nil {
 		return err
 	}

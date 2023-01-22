@@ -69,7 +69,7 @@ func (repo *User) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.
 
 func (repo *User) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
 	// mailが空白の参加者は大勢いるため、mailが空文字の時は検索しない
-	log.Println("1calllllll",mail)
+	log.Println("1calllllll", mail)
 	if mail == "" {
 		log.Println("check!??")
 		return nil, nil

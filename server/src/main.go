@@ -27,7 +27,7 @@ func main() {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		panic(fmt.Sprintf("error: Schema.Create: %v", err))
 	}
-	r,err := router.NewDefaultRouter(
+	r, err := router.NewDefaultRouter(
 		env.GetEnvOrDefault("PORT", "8080"),
 		client,
 	)

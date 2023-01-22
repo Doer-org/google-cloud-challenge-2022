@@ -7,7 +7,7 @@ import (
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils"
+	mycontext "github.com/Doer-org/google-cloud-challenge-2022/utils/context"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/hash"
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
@@ -33,6 +33,7 @@ func (uc *Auth) GetAuthURL(redirectURL string) (string, error) {
 		State:       state,
 		RedirectURL: redirectURL,
 	}
+	log.Println("&&&&&&&&&&&state",state)
 	if err := uc.repoAuth.StoreState(st); err != nil {
 		return "", fmt.Errorf("storeState: %w", err)
 	}
@@ -40,7 +41,8 @@ func (uc *Auth) GetAuthURL(redirectURL string) (string, error) {
 }
 
 // TODO: interfaceで統一すべき
-// TODO: エラーは全て小文字に変える
+// TODO: 同じユーザーが２度ログインしたら、loginsession Tableに２つはいる
+// TODO: stateが2回つくられている？ 最初に作られたstateは残り、後半に作られたstateは残っている
 func (uc *Auth) Authorization(state, code string) (string, string, error) {
 	storedState, err := uc.repoAuth.FindStateByState(state)
 	if err != nil {
@@ -51,23 +53,23 @@ func (uc *Auth) Authorization(state, code string) (string, string, error) {
 	if err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("exchange: %w", err)
 	}
-	ctx = utils.SetTokenToContext(ctx, token)
+	ctx = mycontext.SetToken(ctx, token)
 	userId, err := uc.createUserIfNotExists(ctx)
 	if err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("createUserIfNotExists: %w", err)
 	}
 	// TODO: contextを引数に追加
-	if err := uc.StoreORUpdateToken(userId, token); err != nil {
+	if err := uc.repoAuth.StoreORUpdateToken(userId, token); err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("storeORUpdateToken: %w", err)
 	}
 	sessionID := hash.GetUlid()
 	//TODO: ctx add
-	//TODO: Idで統一
 	if err := uc.repoAuth.StoreSession(sessionID, userId); err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("storeSession: %w", err)
 	}
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
 	//TODO: stateはなんのために使われるんだろう..
+	//TODO: というかstate消せてない気が
 	if err := uc.repoAuth.DeleteState(state); err != nil {
 		log.Printf("DeleteState: %v\n", err)
 		return storedState.RedirectURL, sessionID, nil
@@ -96,22 +98,18 @@ func (uc *Auth) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
 	return user.ID, nil
 }
 
-func (uc *Auth) StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) error {
-	return uc.repoAuth.StoreORUpdateToken(userId, token)
-}
-
 // GetUserIDFromSession はセッションIDから対応するユーザIDを返します。
-func (uc *Auth) GetUserIDFromSession(sessionID string) (uuid.UUID, error) {
-	userID, err := uc.repoAuth.GetUserIDFromSession(sessionID)
+func (uc *Auth) GetUserIdFromSession(sessionId string) (uuid.UUID, error) {
+	userId, err := uc.repoAuth.GetUserIdFromSession(sessionId)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("getUserIDFromSession: %w", err)
 	}
-	return userID, nil
+	return userId, nil
 }
 
 // TODO: sessionからユーザーを取得して権限があるかを確認したら良いのか！？
 // GetTokenByUserID は対応したユーザのアクセストークンを取得します。
-func (uc *Auth) GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error) {
+func (uc *Auth) GetTokenByUserId(userId uuid.UUID) (*oauth2.Token, error) {
 	token, err := uc.repoAuth.GetTokenByUserID(userId)
 	if err != nil {
 		return nil, fmt.Errorf("getTokenByUserID: %w", err)
@@ -129,7 +127,7 @@ func (uc *Auth) RefreshAccessToken(userId uuid.UUID, token *oauth2.Token) (*oaut
 	if err != nil {
 		return nil, fmt.Errorf("refresh: %w", err)
 	}
-	if err := uc.StoreORUpdateToken(userId, newToken); err != nil {
+	if err := uc.repoAuth.StoreORUpdateToken(userId, newToken); err != nil {
 		return nil, fmt.Errorf("storeORUpdateToken: %w", err)
 	}
 	return newToken, nil

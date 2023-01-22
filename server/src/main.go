@@ -27,10 +27,13 @@ func main() {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		panic(fmt.Sprintf("error: Schema.Create: %v", err))
 	}
-	r := router.NewDefaultRouter(
+	r,err := router.NewDefaultRouter(
 		env.GetEnvOrDefault("PORT", "8080"),
 		client,
 	)
+	if err != nil {
+		panic(fmt.Sprint("error: NewDefaultRouter: %w", err))
+	}
 	if err := r.Serve(); err != nil {
 		panic(fmt.Sprint("error: Serve: %w", err))
 	}

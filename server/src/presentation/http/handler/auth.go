@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
@@ -9,8 +10,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
-// TODO: 1week?
-const sevenDays = 60 * 60 * 24 * 7
+const oneWeek = 60 * 60 * 24 * 7
 
 type Auth struct {
 	authUC      *usecase.Auth
@@ -29,20 +29,25 @@ func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url += "&approval_prompt=force&access_type=offline"
+	log.Println("$$$$$$$$$$",url)
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
 func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
-	// TODO: usecase?
 	if errFormValue := r.FormValue("error"); errFormValue != "" {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: error is empty")), http.StatusBadRequest)
 		return
 	}
 	state := r.FormValue("state")
+	log.Println("Hello???????????1")
+	//callbackが2回よばれている！？？
+	//TODO: おそらくgcpで複数設定しているのが原因な気がする
 	if state == "" {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: state is empty")), http.StatusBadRequest)
 		return
 	}
+	// return後もうごいてる。なぜ
+	log.Println("Hello???????????2")
 	code := r.FormValue("code")
 	if code == "" {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: code is empty")), http.StatusBadRequest)
@@ -65,7 +70,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		Name:     "session",
 		Value:    sessionID,
 		Path:     "/",
-		MaxAge:   sevenDays,
+		MaxAge:   oneWeek,
 		Secure:   !env.IsLocal(),
 		HttpOnly: true,
 		SameSite: sameSite,

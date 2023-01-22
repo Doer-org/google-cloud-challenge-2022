@@ -6,18 +6,22 @@ import (
 	"fmt"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils"
+	mycontext "github.com/Doer-org/google-cloud-challenge-2022/utils/context"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
 func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
-	token, ok := utils.GetTokenFromContext(ctx)
+	token, ok := mycontext.GetToken(ctx)
 	if !ok {
 		return nil, fmt.Errorf("token not found")
 	}
 	// tokenを使用して、clientを返す
 	client := c.auth.Config.Client(ctx, token)
-	resp, err := client.Get(env.GetEnvOrDefault("GOOGLE_API_CLIENT", ""))
+	googleApi,err := env.GetEssentialEnv("GOOGLE_API_CLIENT")
+	if err != nil {
+		return nil,err
+	}
+	resp, err := client.Get(googleApi)
 	if err != nil {
 		return nil, fmt.Errorf("googleapis Get: %w", err)
 	}

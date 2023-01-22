@@ -9,7 +9,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 )
 
-func (r *Router) InitUser(c *ent.Client) {
+func (r *Router) InitUser(c *ent.Client)error {
 	repo := persistance.NewUser(c)
 	uc := usecase.NewUser(repo)
 	h := handler.NewUser(uc)
@@ -22,4 +22,5 @@ func (r *Router) InitUser(c *ent.Client) {
 		r.Get("/{id}/events", h.GetUserEvents)
 		r.Get("/", h.GetUserByMail)
 	})
+	return nil
 }

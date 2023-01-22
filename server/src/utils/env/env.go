@@ -1,7 +1,7 @@
 package env
 
 import (
-	"log"
+	"fmt"
 	"os"
 )
 
@@ -10,12 +10,17 @@ import (
 func GetEnvOrDefault(envPath string, defaultEnv string) string {
 	env := os.Getenv(envPath)
 	if env == "" {
-		if defaultEnv == "" {
-			log.Println("error: env not found and default env is empty too")
-		}
 		return defaultEnv
 	}
 	return env
+}
+
+func GetEssentialEnv(envPath string) (string,error) {
+	env := os.Getenv(envPath)
+	if env == "" {
+		return "",fmt.Errorf("essential env not found")
+	}
+	return env,nil
 }
 
 func IsLocal() bool {

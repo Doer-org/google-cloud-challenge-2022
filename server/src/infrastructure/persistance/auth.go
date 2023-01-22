@@ -3,6 +3,7 @@ package persistance
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
@@ -56,6 +57,11 @@ func (repo *Auth) StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) erro
 	if err != nil && !ent.IsNotFound(err) {
 		return fmt.Errorf("getTokenByUserID: %w", err)
 	}
+	log.Println("ID@@@@@@",userId)
+	log.Println("FOUDNN@@@@",found)
+	//1回目はなぞのuseridがはいる //00000000-0000-0000-0000-000000000000
+	//2回目は正常だが、foundがnil
+	// 3回目でようやくuseridが正常でかつfoundにuserがはいる
 	if found != nil {
 		if err := repo.UpdateToken(userId, token); err != nil {
 			return fmt.Errorf("updateToken: %w", err)
@@ -78,13 +84,11 @@ func (repo *Auth) GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	restoken := &oauth2.Token{}
-	if token != nil {
-		restoken.AccessToken = token.AccessToken
-		restoken.RefreshToken = token.RefreshToken
-		restoken.Expiry = token.Expiry
-	}
-	return restoken, nil
+	return &oauth2.Token{
+		AccessToken: token.AccessToken,
+		RefreshToken: token.RefreshToken,
+		Expiry: token.Expiry,
+	},nil
 }
 
 func (repo *Auth) StoreSession(sessionID string, userId uuid.UUID) error {
@@ -99,10 +103,10 @@ func (repo *Auth) StoreSession(sessionID string, userId uuid.UUID) error {
 	return nil
 }
 
-func (repo *Auth) GetUserIDFromSession(sessionID string) (uuid.UUID, error) {
+func (repo *Auth) GetUserIdFromSession(sessionId string) (uuid.UUID, error) {
 	session, err := repo.Client.LoginSessions.
 		Query().
-		Where(loginsessions.ID(sessionID)).
+		Where(loginsessions.ID(sessionId)).
 		Only(context.Background())
 	if err != nil && !ent.IsNotFound(err) {
 		return uuid.Nil, fmt.Errorf("loginSessions.Query: %w", err)

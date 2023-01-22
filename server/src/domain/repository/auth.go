@@ -8,8 +8,8 @@ import (
 
 type IAuth interface {
 	GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error)
-	StoreSession(sessionID string, userID uuid.UUID) error
-	GetUserIDFromSession(sessionID string) (uuid.UUID, error)
+	StoreSession(sessionId string, userId uuid.UUID) error
+	GetUserIdFromSession(sessionId string) (uuid.UUID, error)
 	StoreToken(userId uuid.UUID, token *oauth2.Token) error
 	UpdateToken(userId uuid.UUID, token *oauth2.Token) error
 	StoreState(authState *ent.AuthStates) error

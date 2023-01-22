@@ -8,14 +8,18 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
+	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
-func (r *Router) InitAuth(c *ent.Client) {
+func (r *Router) InitAuth(c *ent.Client) error {
 	authRepo := persistance.NewAuth(c)
 	userRepo := persistance.NewUser(c)
-	//TODO: 環境変数にすべき
-	rg := google.NewClient("http://localhost:8080/auth/callback")
-	//TODO: 順番が気になる
+
+	callbackApi,err := env.GetEssentialEnv("GOOGLE_CALLBACK_API")
+	if err != nil {
+		return err
+	}
+	rg := google.NewClient(callbackApi)
 	uc := usecase.NewAuth(authRepo, rg, userRepo)
 	//TODO: frontendURLが空?
 	h := handler.NewAuth(uc, "")
@@ -23,4 +27,5 @@ func (r *Router) InitAuth(c *ent.Client) {
 		r.Get("/login", h.Login)
 		r.Get("/callback", h.Callback)
 	})
+	return nil
 }

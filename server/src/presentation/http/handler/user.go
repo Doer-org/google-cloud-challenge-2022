@@ -20,7 +20,6 @@ func NewUser(uc usecase.IUser) *User {
 	}
 }
 
-// TODO:Create,delete,updateはloginしているユーザーしか触れないようにするべき
 // POST /users
 func (h *User) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	if r.ContentLength == 0 {

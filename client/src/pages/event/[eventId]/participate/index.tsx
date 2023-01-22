@@ -91,7 +91,6 @@ export default function Participate(event: Event) {
                 label="ひとこと"
                 content={comment}
                 changeContent={setComment}
-                required={true}
               />
               <Button
                 className="flex m-auto my-5"

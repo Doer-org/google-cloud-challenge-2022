@@ -12,12 +12,11 @@ import (
 const oneWeek = 60 * 60 * 24 * 7
 
 type Auth struct {
-	authUC      usecase.IAuth
-	frontendURL string
+	authUC usecase.IAuth
 }
 
-func NewAuth(authUC usecase.IAuth, frontendURL string) *Auth {
-	return &Auth{authUC: authUC, frontendURL: frontendURL}
+func NewAuth(authUC usecase.IAuth) *Auth {
+	return &Auth{authUC: authUC}
 }
 
 func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {

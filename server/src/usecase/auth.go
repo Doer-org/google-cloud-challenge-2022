@@ -39,8 +39,8 @@ func (uc *Auth) GetAuthURL(redirectURL string) (string, error) {
 	return uc.googleRepo.GetAuthURL(state), nil
 }
 
-//TODO: interfaceで統一すべき
-//TODO: エラーは全て小文字に変える
+// TODO: interfaceで統一すべき
+// TODO: エラーは全て小文字に変える
 func (uc *Auth) Authorization(state, code string) (string, string, error) {
 	storedState, err := uc.repoAuth.FindStateByState(state)
 	if err != nil {
@@ -97,7 +97,7 @@ func (uc *Auth) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
 }
 
 func (uc *Auth) StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) error {
-	return uc.repoAuth.StoreORUpdateToken(userId,token)
+	return uc.repoAuth.StoreORUpdateToken(userId, token)
 }
 
 // GetUserIDFromSession はセッションIDから対応するユーザIDを返します。
@@ -108,7 +108,8 @@ func (uc *Auth) GetUserIDFromSession(sessionID string) (uuid.UUID, error) {
 	}
 	return userID, nil
 }
-//TODO: sessionからユーザーを取得して権限があるかを確認したら良いのか！？
+
+// TODO: sessionからユーザーを取得して権限があるかを確認したら良いのか！？
 // GetTokenByUserID は対応したユーザのアクセストークンを取得します。
 func (uc *Auth) GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error) {
 	token, err := uc.repoAuth.GetTokenByUserID(userId)

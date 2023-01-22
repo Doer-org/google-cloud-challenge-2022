@@ -56,8 +56,8 @@ func (repo *Auth) StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) erro
 	if err != nil && !ent.IsNotFound(err) {
 		return fmt.Errorf("getTokenByUserID: %w", err)
 	}
-	if found != nil{
-		if err := repo.UpdateToken(userId, token);err != nil {
+	if found != nil {
+		if err := repo.UpdateToken(userId, token); err != nil {
 			return fmt.Errorf("updateToken: %w", err)
 		}
 		return nil

@@ -16,10 +16,10 @@ export const UserFullInfo = ({
   isParticipate,
 }: TProps) => {
   return (
-    <>
+    <div className="w-screen">
       {isParticipate ? <UserComment comment={comment} full /> : <></>}
       <UserIcon isParticipate={isParticipate} />
-      <UserName name={name} isParticipate={isParticipate} full />
-    </>
+      <UserName name={name} full />
+    </div>
   );
 };

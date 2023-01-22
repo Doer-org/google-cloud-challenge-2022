@@ -25,7 +25,7 @@ export const UserInfo = ({ name, comment, image, isParticipate }: TProps) => {
       >
         {isParticipate ? <UserComment comment={comment} /> : <></>}
         <UserIcon isParticipate={isParticipate} />
-        <UserName name={name} isParticipate={isParticipate} />
+        <UserName name={name} />
       </div>
     </UserModal>
   );

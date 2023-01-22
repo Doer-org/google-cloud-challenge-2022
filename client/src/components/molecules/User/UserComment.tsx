@@ -16,7 +16,7 @@ export const UserComment = ({ comment, full }: TProps) => {
           )}
         </>
       ) : (
-        <Comment text="..." />
+        <> {full ? <Comment text="..." full /> : <Comment text="..." />}</>
       )}
     </>
   );

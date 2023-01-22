@@ -55,13 +55,6 @@ func (r *Router) SetMiddleware() {
 
 	// content type json
 	r.mux.Use(mymiddleware.ContentTypeJson)
-
-	//TODO: middlewareにusecaseを渡してもいいのか...
-	// setAuthMiddleware(r, authUC)
-
-	// auth
-	// TODO: setAuth?
-
 }
 
 //TODO: uc?or u

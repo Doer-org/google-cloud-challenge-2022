@@ -13,14 +13,14 @@ import (
 
 func (r *Router) InitUser(c *ent.Client) error {
 	userRepo := persistance.NewUser(c)
-	userUC   := usecase.NewUser(userRepo)
-	userH    := handler.NewUser(userUC)
+	userUC := usecase.NewUser(userRepo)
+	userH := handler.NewUser(userUC)
 
 	// auth middleware
 	authRepo := persistance.NewAuth(c)
-	rg       := google.NewClient("http://localhost:8080/auth/callback")
-	authUC   := usecase.NewAuth(authRepo, rg, userRepo)
-	m        := middleware.NewAuth(authUC)
+	rg := google.NewClient("http://localhost:8080/auth/callback")
+	authUC := usecase.NewAuth(authRepo, rg, userRepo)
+	m := middleware.NewAuth(authUC)
 
 	r.mux.Route("/users", func(r chi.Router) {
 		// r.Post("/", userH.CreateNewUser) // /auth/loginからたたくのでコメントに

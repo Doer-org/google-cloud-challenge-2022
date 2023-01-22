@@ -3,6 +3,7 @@ package persistance
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
@@ -50,6 +51,26 @@ func (repo *Auth) UpdateToken(userId uuid.UUID, token *oauth2.Token) error {
 	return nil
 }
 
+// もしtokenが存在した場合,更新し, 存在しなかった場合新たにstoreする
+func (repo *Auth) StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) error {
+	found, err := repo.GetTokenByUserID(userId)
+	if err != nil && !ent.IsNotFound(err) {
+		return fmt.Errorf("GetTokenByUserID: %w", err)
+	}
+	if found != nil{
+		if err := repo.UpdateToken(userId, token);err != nil {
+			return fmt.Errorf("UpdateToken: %w", err)
+		}
+		return nil
+	}
+	if ent.IsNotFound(err) {
+		if err := repo.StoreToken(userId, token); err != nil {
+			return fmt.Errorf("StoreToken: %w", err)
+		}
+	}
+	return nil
+}
+
 func (repo *Auth) GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error) {
 	token, err := repo.Client.GoogleAuth.
 		Query().
@@ -79,15 +100,15 @@ func (repo *Auth) StoreSession(sessionID string, userId uuid.UUID) error {
 	return nil
 }
 
-func (repo *Auth) GetUserIDFromSession(sessionID string) (string, error) {
+func (repo *Auth) GetUserIDFromSession(sessionID string) (uuid.UUID, error) {
 	session, err := repo.Client.LoginSessions.
 		Query().
 		Where(loginsessions.ID(sessionID)).
 		Only(context.Background())
 	if err != nil && !ent.IsNotFound(err) {
-		return "", fmt.Errorf("LoginSessions.Query: %w", err)
+		return uuid.Nil, fmt.Errorf("LoginSessions.Query: %w", err)
 	}
-	return session.UserID.String(), nil
+	return session.UserID, nil
 }
 
 func (repo *Auth) StoreState(authState *ent.AuthStates) error {

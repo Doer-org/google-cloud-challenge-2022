@@ -43,7 +43,7 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 		}
 		// TODO: なぜ
 		token = newToken
-		r = setToContext(r, userID, token)
+		r = setToContext(r, userID.String(), token)
 		next.ServeHTTP(w, r)
 	})
 }

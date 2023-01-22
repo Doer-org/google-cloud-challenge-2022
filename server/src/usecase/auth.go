@@ -56,14 +56,18 @@ func (uc *Auth) Authorization(state, code string) (string, string, error) {
 	if err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("createUserIfNotExists: %w", err)
 	}
+	// TODO: contextを引数に追加
 	if err := uc.StoreORUpdateToken(userId, token); err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("StoreORUpdateToken: %w", err)
 	}
 	sessionID := hash.GetUlid()
+	//TODO: ctx add
+	//TODO: Idで統一
 	if err := uc.repoAuth.StoreSession(sessionID, userId); err != nil {
 		return storedState.RedirectURL, "", fmt.Errorf("StoreSession: %w", err)
 	}
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
+	//TODO: stateはなんのために使われるんだろう..
 	if err := uc.repoAuth.DeleteState(state); err != nil {
 		log.Printf("DeleteState: %v\n", err)
 		return storedState.RedirectURL, sessionID, nil
@@ -93,35 +97,18 @@ func (uc *Auth) createUserIfNotExists(ctx context.Context) (uuid.UUID, error) {
 }
 
 func (uc *Auth) StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) error {
-	gettoken, err := uc.repoAuth.GetTokenByUserID(userId)
-	if err != nil && !ent.IsNotFound(err) {
-		return fmt.Errorf("GetTokenByUserID: %w", err)
-	}
-	//TODO:消すの忘れない
-	log.Println(gettoken)
-	if ent.IsNotFound(err) {
-		err := uc.repoAuth.StoreToken(userId, token)
-		if err != nil {
-			return fmt.Errorf("StoreToken: %w", err)
-		}
-	} else {
-		err := uc.repoAuth.UpdateToken(userId, token)
-		if err != nil {
-			return fmt.Errorf("UpdateToken: %w", err)
-		}
-	}
-	return nil
+	return uc.repoAuth.StoreORUpdateToken(userId,token)
 }
 
 // GetUserIDFromSession はセッションIDから対応するユーザIDを返します。
-func (uc *Auth) GetUserIDFromSession(sessionID string) (string, error) {
+func (uc *Auth) GetUserIDFromSession(sessionID string) (uuid.UUID, error) {
 	userID, err := uc.repoAuth.GetUserIDFromSession(sessionID)
 	if err != nil {
-		return "", fmt.Errorf("GetUserIDFromSession: %w", err)
+		return uuid.Nil, fmt.Errorf("GetUserIDFromSession: %w", err)
 	}
 	return userID, nil
 }
-
+//TODO: sessionからユーザーを取得して権限があるかを確認したら良いのか！？
 // GetTokenByUserID は対応したユーザのアクセストークンを取得します。
 func (uc *Auth) GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error) {
 	token, err := uc.repoAuth.GetTokenByUserID(userId)

@@ -34,7 +34,7 @@ func (r *Router) InitAuth(c *ent.Client) error {
 		r.Get("/callback", h.Callback)
 
 		// authentication required
-		r.Route("/",func(r chi.Router) {
+		r.Route("/", func(r chi.Router) {
 			r.Use(m.Authenticate)
 			r.Get("/validate", h.Validate)
 		})

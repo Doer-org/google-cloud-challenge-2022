@@ -13,7 +13,10 @@ func Cors(next http.Handler) http.Handler {
 		cors.Handler(cors.Options{
 			// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 			// TODO: なおす
-			AllowedOrigins: []string{"https://*", "http://*"},
+			AllowedOrigins: []string{
+				"http://localhost:3000",
+				"https://gc-shema-app-qgai5lo5hq-an.a.run.app",
+			},
 			// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},

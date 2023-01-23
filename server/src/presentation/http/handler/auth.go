@@ -11,7 +11,7 @@ import (
 
 const oneWeek = 60 * 60 * 24 * 7
 
-//TODO:logout apiも作る必要あり
+// TODO:logout apiも作る必要あり
 type Auth struct {
 	authUC usecase.IAuth
 }
@@ -72,11 +72,6 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: redirect url is empty")), http.StatusBadRequest)
 		return
 	}
-	domain,err := env.GetEssentialEnv("CLIENT_URL")
-	if err != nil {
-		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetEssentialEnv: %w", err)), http.StatusBadRequest)
-		return
-	}
 	sameSite := http.SameSiteNoneMode
 	if env.IsLocal() {
 		sameSite = http.SameSiteLaxMode
@@ -89,7 +84,6 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		Secure:   !env.IsLocal(),
 		HttpOnly: true,
 		SameSite: sameSite,
-		Domain: domain,
 	})
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }

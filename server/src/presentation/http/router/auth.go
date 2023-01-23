@@ -7,6 +7,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/google"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
+	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
@@ -23,9 +24,20 @@ func (r *Router) InitAuth(c *ent.Client) error {
 	uc := usecase.NewAuth(authRepo, rg, userRepo)
 	//TODO: frontendURLが空?
 	h := handler.NewAuth(uc)
+
+	// auth middleware
+	authUC := usecase.NewAuth(authRepo, rg, userRepo)
+	m := middleware.NewAuth(authUC)
+
 	r.mux.Route("/auth", func(r chi.Router) {
 		r.Get("/login", h.Login)
 		r.Get("/callback", h.Callback)
+
+		// authentication required
+		r.Route("/",func(r chi.Router) {
+			r.Use(m.Authenticate)
+			r.Get("/validate", h.Validate)
+		})
 	})
 	return nil
 }

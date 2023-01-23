@@ -11,6 +11,7 @@ import (
 
 const oneWeek = 60 * 60 * 24 * 7
 
+//TODO:logout apiも作る必要あり
 type Auth struct {
 	authUC usecase.IAuth
 }
@@ -85,4 +86,8 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		SameSite: sameSite,
 	})
 	http.Redirect(w, r, redirectURL, http.StatusFound)
+}
+
+func (h *Auth) Validate(w http.ResponseWriter, r *http.Request) {
+	res.WriteJson(w, res.New200SuccessJson("validate success"), http.StatusOK)
 }

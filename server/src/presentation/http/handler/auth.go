@@ -86,3 +86,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 	})
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
+
+func (h *Auth) Validate(w http.ResponseWriter, r *http.Request) {
+	res.New200SuccessJson("validate success")
+}

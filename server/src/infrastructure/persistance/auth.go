@@ -103,7 +103,7 @@ func (repo *Auth) GetUserIdFromSession(sessionId string) (uuid.UUID, error) {
 		Query().
 		Where(loginsessions.ID(sessionId)).
 		Only(context.Background())
-	if err != nil && !ent.IsNotFound(err) {
+	if err != nil {
 		return uuid.Nil, fmt.Errorf("loginSessions.Query: %w", err)
 	}
 	return session.UserID, nil
@@ -122,17 +122,14 @@ func (repo *Auth) StoreState(authState *ent.AuthStates) error {
 }
 
 func (repo *Auth) FindStateByState(state string) (*ent.AuthStates, error) {
-	resstate, err := repo.Client.AuthStates.
+	authState, err := repo.Client.AuthStates.
 		Query().
 		Where(authstates.State(state)).
 		Only(context.Background())
 	if err != nil && !ent.IsNotFound(err) {
 		return nil, fmt.Errorf("authStates.Query: %w", err)
 	}
-	res := &ent.AuthStates{}
-	res.RedirectURL = resstate.RedirectURL
-	res.State = resstate.State
-	return res, nil
+	return authState, nil
 }
 
 func (repo *Auth) DeleteState(state string) error {

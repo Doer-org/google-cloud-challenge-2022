@@ -2,42 +2,47 @@ package middleware
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
-	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	mycontext "github.com/Doer-org/google-cloud-challenge-2022/utils/context"
 	"golang.org/x/oauth2"
 )
 
 type Auth struct {
-	uc usecase.IAuth
+	uc          usecase.IAuth
+	frontendURL string
 }
 
-func NewAuth(uc usecase.IAuth) *Auth {
-	return &Auth{uc: uc}
+func NewAuth(uc usecase.IAuth, url string) *Auth {
+	return &Auth{uc: uc, frontendURL: url}
 }
 
 func (m *Auth) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sessCookie, err := r.Cookie("session")
 		if err != nil {
-			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to get session: %w", err)), http.StatusBadRequest)
+			log.Println(fmt.Errorf("error: falid to get session: %w", err))
+			http.Redirect(w, r, m.frontendURL, http.StatusFound)
 			return
 		}
 		userId, err := m.uc.GetUserIdFromSession(sessCookie.Value)
 		if err != nil {
-			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserIdFromSession: %w", err)), http.StatusBadRequest)
+			log.Println(fmt.Errorf("error: GetUserIdFromSession: %w", err))
+			http.Redirect(w, r, m.frontendURL, http.StatusFound)
 			return
 		}
 		token, err := m.uc.GetTokenByUserId(userId)
 		if err != nil {
-			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetTokenByUserId: %w", err)), http.StatusBadRequest)
+			log.Println(fmt.Errorf("error: GetTokenByUserId: %w", err))
+			http.Redirect(w, r, m.frontendURL, http.StatusFound)
 			return
 		}
 		newToken, err := m.uc.RefreshAccessToken(userId, token)
 		if err != nil {
-			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: RefreshAccessToken: %w", err)), http.StatusBadRequest)
+			log.Println(fmt.Errorf("error: RefreshAccessToken: %w", err))
+			http.Redirect(w, r, m.frontendURL, http.StatusFound)
 			return
 		}
 		token = newToken

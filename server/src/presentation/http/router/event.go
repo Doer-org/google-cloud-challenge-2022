@@ -9,6 +9,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
+	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
 func (r *Router) InitEvent(c *ent.Client) error {
@@ -21,7 +22,7 @@ func (r *Router) InitEvent(c *ent.Client) error {
 	userRepo := persistance.NewUser(c)
 	rg := google.NewClient("http://localhost:8080/auth/callback")
 	authUC := usecase.NewAuth(authRepo, rg, userRepo)
-	m := middleware.NewAuth(authUC)
+	m := middleware.NewAuth(authUC, env.GetEnvOrDefault("frontendurl", "http://localhost:3000/"))
 
 	r.mux.Route("/events", func(r chi.Router) {
 		r.Get("/{id}", eventH.GetEventById)

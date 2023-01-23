@@ -14,14 +14,14 @@ func Cors(next http.Handler) http.Handler {
 			// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 			// TODO: なおす
 			AllowedOrigins: []string{
+				"https://gc-shema-app-qgai5lo5hq-an.a.run.app",
 				"http://localhost:3000",
-				"https://gc-shema-app-qgai5lo5hq-an.a.run.app/",
 			},
 			// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
-			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowedMethods:   []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
 			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 			ExposedHeaders:   []string{"Link"},
-			AllowCredentials: false,
+			AllowCredentials: true,
 			MaxAge:           300, // Maximum value not ignored by any of major browsers
 		})
 		next.ServeHTTP(w, r)

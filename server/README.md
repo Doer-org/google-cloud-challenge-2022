@@ -13,10 +13,15 @@ name,adminが必須です。
 
 ```json
 {
-    "name":"hoge",
-    "admin":"3f94bd72-1ec6-43e0-a1bf-cf5601016cf4",
+    "name":"hoge"
 }
 ```
+
+adminIdはクエリパラメータとして渡します
+
+ex:
+
+POST http://localhost:8080/events?admin=hogehogeid
 
 作成したイベントがresponseとして返ってきます。
 

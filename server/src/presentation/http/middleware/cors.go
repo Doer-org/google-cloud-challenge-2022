@@ -12,6 +12,7 @@ func Cors(next http.Handler) http.Handler {
 		// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
 		cors.Handler(cors.Options{
 			// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+			// TODO: なおす
 			AllowedOrigins: []string{"https://*", "http://*"},
 			// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

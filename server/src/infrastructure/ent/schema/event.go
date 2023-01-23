@@ -28,6 +28,9 @@ func (Event) Fields() []ent.Field {
 		field.String("location").
 			Optional().
 			MaxLen(200),
+		field.Int("size").
+			NonNegative().
+			Max(5),
 		field.String("type").
 			NotEmpty().
 			MaxLen(30),

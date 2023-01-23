@@ -6,6 +6,258 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/auth-states": {
+      "get": {
+        "tags": [
+          "AuthStates"
+        ],
+        "summary": "List AuthStates",
+        "description": "List AuthStates.",
+        "operationId": "listAuthStates",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result AuthStates list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuthStatesList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AuthStates"
+        ],
+        "summary": "Create a new AuthStates",
+        "description": "Creates a new AuthStates and persists it to storage.",
+        "operationId": "createAuthStates",
+        "requestBody": {
+          "description": "AuthStates to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "type": "string"
+                  },
+                  "redirect_url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "state"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "AuthStates created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthStatesCreate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth-states/{id}": {
+      "get": {
+        "tags": [
+          "AuthStates"
+        ],
+        "summary": "Find a AuthStates by ID",
+        "description": "Finds the AuthStates with the requested ID and returns it.",
+        "operationId": "readAuthStates",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the AuthStates",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AuthStates with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthStatesRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AuthStates"
+        ],
+        "summary": "Deletes a AuthStates by ID",
+        "description": "Deletes the AuthStates with the requested ID.",
+        "operationId": "deleteAuthStates",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the AuthStates",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "AuthStates with requested ID was deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "AuthStates"
+        ],
+        "summary": "Updates a AuthStates",
+        "description": "Updates a AuthStates and persists changes to storage.",
+        "operationId": "updateAuthStates",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the AuthStates",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "AuthStates properties to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "type": "string"
+                  },
+                  "redirect_url": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "AuthStates updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthStatesUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/events": {
       "post": {
         "tags": [
@@ -29,6 +281,9 @@
                   },
                   "location": {
                     "type": "string"
+                  },
+                  "size": {
+                    "type": "integer"
                   },
                   "type": {
                     "type": "string"
@@ -57,6 +312,7 @@
                 },
                 "required": [
                   "name",
+                  "size",
                   "type",
                   "state"
                 ]
@@ -204,6 +460,9 @@
                   },
                   "location": {
                     "type": "string"
+                  },
+                  "size": {
+                    "type": "integer"
                   },
                   "type": {
                     "type": "string"
@@ -460,6 +719,633 @@
                   "items": {
                     "$ref": "#/components/schemas/Event_UsersList"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/google-auths": {
+      "get": {
+        "tags": [
+          "GoogleAuth"
+        ],
+        "summary": "List GoogleAuths",
+        "description": "List GoogleAuths.",
+        "operationId": "listGoogleAuth",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result GoogleAuth list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GoogleAuthList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "GoogleAuth"
+        ],
+        "summary": "Create a new GoogleAuth",
+        "description": "Creates a new GoogleAuth and persists it to storage.",
+        "operationId": "createGoogleAuth",
+        "requestBody": {
+          "description": "GoogleAuth to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "user": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "user_id",
+                  "access_token",
+                  "refresh_token",
+                  "expiry",
+                  "user"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "GoogleAuth created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleAuthCreate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/google-auths/{id}": {
+      "get": {
+        "tags": [
+          "GoogleAuth"
+        ],
+        "summary": "Find a GoogleAuth by ID",
+        "description": "Finds the GoogleAuth with the requested ID and returns it.",
+        "operationId": "readGoogleAuth",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the GoogleAuth",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GoogleAuth with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleAuthRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "GoogleAuth"
+        ],
+        "summary": "Deletes a GoogleAuth by ID",
+        "description": "Deletes the GoogleAuth with the requested ID.",
+        "operationId": "deleteGoogleAuth",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the GoogleAuth",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "GoogleAuth with requested ID was deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "GoogleAuth"
+        ],
+        "summary": "Updates a GoogleAuth",
+        "description": "Updates a GoogleAuth and persists changes to storage.",
+        "operationId": "updateGoogleAuth",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the GoogleAuth",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "GoogleAuth properties to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "access_token": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  },
+                  "expiry": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "user": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "GoogleAuth updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleAuthUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/google-auths/{id}/user": {
+      "get": {
+        "tags": [
+          "GoogleAuth"
+        ],
+        "summary": "Find the attached User",
+        "description": "Find the attached User of the GoogleAuth with the given ID",
+        "operationId": "readGoogleAuthUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the GoogleAuth",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User attached to GoogleAuth with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleAuth_UserRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/login-sessions": {
+      "get": {
+        "tags": [
+          "LoginSessions"
+        ],
+        "summary": "List LoginSessions",
+        "description": "List LoginSessions.",
+        "operationId": "listLoginSessions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "maximum": 255,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result LoginSessions list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LoginSessionsList"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "LoginSessions"
+        ],
+        "summary": "Create a new LoginSessions",
+        "description": "Creates a new LoginSessions and persists it to storage.",
+        "operationId": "createLoginSessions",
+        "requestBody": {
+          "description": "LoginSessions to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "user": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "user_id",
+                  "user"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "LoginSessions created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSessionsCreate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/login-sessions/{id}": {
+      "get": {
+        "tags": [
+          "LoginSessions"
+        ],
+        "summary": "Find a LoginSessions by ID",
+        "description": "Finds the LoginSessions with the requested ID and returns it.",
+        "operationId": "readLoginSessions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the LoginSessions",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "LoginSessions with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSessionsRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "LoginSessions"
+        ],
+        "summary": "Deletes a LoginSessions by ID",
+        "description": "Deletes the LoginSessions with the requested ID.",
+        "operationId": "deleteLoginSessions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the LoginSessions",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "LoginSessions with requested ID was deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "LoginSessions"
+        ],
+        "summary": "Updates a LoginSessions",
+        "description": "Updates a LoginSessions and persists changes to storage.",
+        "operationId": "updateLoginSessions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the LoginSessions",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "LoginSessions properties to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "user": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "LoginSessions updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSessionsUpdate"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/login-sessions/{id}/user": {
+      "get": {
+        "tags": [
+          "LoginSessions"
+        ],
+        "summary": "Find the attached User",
+        "description": "Find the attached User of the LoginSessions with the given ID",
+        "operationId": "readLoginSessionsUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the LoginSessions",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User attached to LoginSessions with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSessions_UserRead"
                 }
               }
             }
@@ -787,6 +1673,96 @@
   },
   "components": {
     "schemas": {
+      "AuthStates": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "redirect_url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "state"
+        ]
+      },
+      "AuthStatesCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "redirect_url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "state"
+        ]
+      },
+      "AuthStatesList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "redirect_url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "state"
+        ]
+      },
+      "AuthStatesRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "redirect_url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "state"
+        ]
+      },
+      "AuthStatesUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string"
+          },
+          "redirect_url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "state"
+        ]
+      },
       "Comment": {
         "type": "object",
         "properties": {
@@ -827,6 +1803,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -852,6 +1831,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]
@@ -872,6 +1852,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -882,6 +1865,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]
@@ -902,6 +1886,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -912,6 +1899,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]
@@ -932,6 +1920,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -942,6 +1933,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]
@@ -989,6 +1981,291 @@
         ]
       },
       "Event_UsersList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "authenticated": {
+            "type": "boolean"
+          },
+          "mail": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "authenticated"
+        ]
+      },
+      "GoogleAuth": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "expiry": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "access_token",
+          "refresh_token",
+          "expiry",
+          "user"
+        ]
+      },
+      "GoogleAuthCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "expiry": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "access_token",
+          "refresh_token",
+          "expiry"
+        ]
+      },
+      "GoogleAuthList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "expiry": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "access_token",
+          "refresh_token",
+          "expiry"
+        ]
+      },
+      "GoogleAuthRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "expiry": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "access_token",
+          "refresh_token",
+          "expiry"
+        ]
+      },
+      "GoogleAuthUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "expiry": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "access_token",
+          "refresh_token",
+          "expiry"
+        ]
+      },
+      "GoogleAuth_UserRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "authenticated": {
+            "type": "boolean"
+          },
+          "mail": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "authenticated"
+        ]
+      },
+      "LoginSessions": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "user"
+        ]
+      },
+      "LoginSessionsCreate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "user_id"
+        ]
+      },
+      "LoginSessionsList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "user_id"
+        ]
+      },
+      "LoginSessionsRead": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "user_id"
+        ]
+      },
+      "LoginSessionsUpdate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "user_id"
+        ]
+      },
+      "LoginSessions_UserRead": {
         "type": "object",
         "properties": {
           "id": {
@@ -1146,6 +2423,9 @@
           "location": {
             "type": "string"
           },
+          "size": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -1156,6 +2436,7 @@
         "required": [
           "id",
           "name",
+          "size",
           "type",
           "state"
         ]

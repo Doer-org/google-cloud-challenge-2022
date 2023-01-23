@@ -9,6 +9,18 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 )
 
+// The AuthStatesFunc type is an adapter to allow the use of ordinary
+// function as AuthStates mutator.
+type AuthStatesFunc func(context.Context, *ent.AuthStatesMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthStatesFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthStatesMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthStatesMutation", m)
+}
+
 // The CommentFunc type is an adapter to allow the use of ordinary
 // function as Comment mutator.
 type CommentFunc func(context.Context, *ent.CommentMutation) (ent.Value, error)
@@ -31,6 +43,30 @@ func (f EventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EventMutation", m)
+}
+
+// The GoogleAuthFunc type is an adapter to allow the use of ordinary
+// function as GoogleAuth mutator.
+type GoogleAuthFunc func(context.Context, *ent.GoogleAuthMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f GoogleAuthFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.GoogleAuthMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GoogleAuthMutation", m)
+}
+
+// The LoginSessionsFunc type is an adapter to allow the use of ordinary
+// function as LoginSessions mutator.
+type LoginSessionsFunc func(context.Context, *ent.LoginSessionsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f LoginSessionsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.LoginSessionsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.LoginSessionsMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

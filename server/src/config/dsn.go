@@ -23,7 +23,7 @@ func DSN() (string, error) {
 		dbHost == "" ||
 		dbPort == "" ||
 		dbName == "" {
-		return "", fmt.Errorf("ERROR : required environment variable not found")
+		return "", fmt.Errorf("required environment variable not found")
 	}
 	return fmt.Sprintf(
 		"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",

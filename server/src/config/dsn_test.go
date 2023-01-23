@@ -47,7 +47,7 @@ func TestDsn_DsnNotFound(t *testing.T) {
 		{
 			name:    "必要な環境変数が1つでも設定されていない場合、errorを返す",
 			wantDsn: "",
-			wantErr: fmt.Errorf("ERROR : required environment variable not found"),
+			wantErr: fmt.Errorf("required environment variable not found"),
 		},
 	}
 

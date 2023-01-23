@@ -13,149 +13,151 @@ import (
 	"github.com/google/uuid"
 )
 
-type EventRepository struct {
+type Event struct {
 	client *ent.Client
 }
 
-func NewEventRepository(c *ent.Client) repository.IEventRepository {
-	return &EventRepository{
+func NewEvent(c *ent.Client) repository.IEvent {
+	return &Event{
 		client: c,
 	}
 }
 
-func (r *EventRepository) CreateNewEvent(ctx context.Context, adminId uuid.UUID, ee *ent.Event) (*ent.Event, error) {
-	event, err := r.client.Event.
+func (repo *Event) CreateNewEvent(ctx context.Context, adminId uuid.UUID, ee *ent.Event) (*ent.Event, error) {
+	event, err := repo.client.Event.
 		Create().
 		SetName(ee.Name).
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
+		SetSize(ee.Size).
 		SetAdminID(adminId).
-		SetType(string(constant.ONCE_TYPE)).
-		SetState(string(constant.OPEN_STATE)).
+		SetType(string(constant.TYPE_ONCE)).
+		SetState(string(constant.STATE_OPEN)).
 		AddUserIDs(adminId).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: create event query error: %w", err)
+		return nil, fmt.Errorf("event.Create: %w", err)
 	}
-	return r.getEventById(ctx, event.ID)
+	return repo.getEventById(ctx, event.ID)
 }
 
-func (r *EventRepository) GetEventById(ctx context.Context, eventId uuid.UUID) (*ent.Event, error) {
-	return r.getEventById(ctx, eventId)
+func (repo *Event) GetEventById(ctx context.Context, eventId uuid.UUID) (*ent.Event, error) {
+	return repo.getEventById(ctx, eventId)
 }
 
-func (r *EventRepository) DeleteEventById(ctx context.Context, eventId uuid.UUID) error {
-	err := r.client.Event.
+func (repo *Event) DeleteEventById(ctx context.Context, eventId uuid.UUID) error {
+	err := repo.client.Event.
 		DeleteOneID(eventId).
 		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("EventRepository: delete event query error: %w", err)
+		return fmt.Errorf("event.DeleteOneID: %w", err)
 	}
 	return nil
 }
 
-func (r *EventRepository) UpdateEventById(ctx context.Context, eventId uuid.UUID, ee *ent.Event) (*ent.Event, error) {
-	event, err := r.client.Event.
+func (repo *Event) UpdateEventById(ctx context.Context, eventId uuid.UUID, ee *ent.Event) (*ent.Event, error) {
+	event, err := repo.client.Event.
 		UpdateOneID(eventId).
 		SetName(ee.Name).
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
+		SetSize(ee.Size).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: update event query error: %w", err)
+		return nil, fmt.Errorf("event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
 
-func (r *EventRepository) GetEventAdminById(ctx context.Context, eventId uuid.UUID) (*ent.User, error) {
-	event, err := r.client.Event.
+func (repo *Event) GetEventAdminById(ctx context.Context, eventId uuid.UUID) (*ent.User, error) {
+	event, err := repo.client.Event.
 		Query().
 		Where(event.ID(eventId)).
 		WithAdmin().
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get event query error: %w", err)
+		return nil, fmt.Errorf("event.Query: %w", err)
 	}
 	return event.Edges.Admin, nil
 }
 
-func (r *EventRepository) GetEventComments(ctx context.Context, eventId uuid.UUID) ([]*ent.Comment, error) {
-	comments, err := r.client.Comment.
+func (repo *Event) GetEventComments(ctx context.Context, eventId uuid.UUID) ([]*ent.Comment, error) {
+	comments, err := repo.client.Comment.
 		Query().
 		Where(comment.HasEventWith(event.ID(eventId))).
 		WithUser().
 		All(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get comments query error: %w", err)
+		return nil, fmt.Errorf("comment.Query: %w", err)
 	}
 	return comments, nil
 }
 
-func (r *EventRepository) AddNewEventParticipant(ctx context.Context, eventId uuid.UUID, eu *ent.User, comment string) error {
-	user, err := r.client.User.
+func (repo *Event) AddNewEventParticipant(ctx context.Context, eventId uuid.UUID, eu *ent.User, comment string) error {
+	user, err := repo.client.User.
 		Create().
 		SetName(eu.Name).
 		SetIcon(eu.Icon).
 		AddEventIDs(eventId).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("EventRepository: create user query error: %w", err)
+		return fmt.Errorf("userepo.Create: %w", err)
 	}
 	if comment == "" {
 		return nil
 	}
-	_, err = r.client.Comment.
+	_, err = repo.client.Comment.
 		Create().
 		SetBody(comment).
 		SetEventID(eventId).
 		SetUserID(user.ID).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("EventRepository: create comment query error: %w", err)
+		return fmt.Errorf("comment.Create: %w", err)
 	}
 	return nil
 }
 
-func (r *EventRepository) ChangeEventStatusToCloseOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error) {
-	event, err := r.client.Event.
+func (repo *Event) ChangeEventStatusToCloseOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error) {
+	event, err := repo.client.Event.
 		UpdateOneID(eventId).
-		SetState(string(constant.CLOSE_STATE)).
+		SetState(string(constant.STATE_CLOSE)).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: update event query error: %w", err)
+		return nil, fmt.Errorf("event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
 
-func (r *EventRepository) ChangeEventStatusToCancelOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error) {
-	event, err := r.client.Event.
+func (repo *Event) ChangeEventStatusToCancelOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error) {
+	event, err := repo.client.Event.
 		UpdateOneID(eventId).
-		SetState(string(constant.CANCEL_STATE)).
+		SetState(string(constant.STATE_CANCEL)).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: update event query error: %w", err)
+		return nil, fmt.Errorf("event.UpdateOneID: %w", err)
 	}
 	return event, nil
 }
 
-func (r *EventRepository) GetEventUsers(ctx context.Context, eventId uuid.UUID) ([]*ent.User, error) {
-	users, err := r.client.User.
+func (repo *Event) GetEventUsers(ctx context.Context, eventId uuid.UUID) ([]*ent.User, error) {
+	users, err := repo.client.User.
 		Query().
 		Where(user.HasEventsWith(event.ID(eventId))).
 		All(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get participants comments query error: %w", err)
+		return nil, fmt.Errorf("userepo.Query: %w", err)
 	}
 	return users, nil
 }
 
-func (r *EventRepository) getEventById(ctx context.Context, eventUuid uuid.UUID) (*ent.Event, error) {
-	event, err := r.client.Event.
+func (repo *Event) getEventById(ctx context.Context, eventUuid uuid.UUID) (*ent.Event, error) {
+	event, err := repo.client.Event.
 		Query().
 		Where(event.ID(eventUuid)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("EventRepository: get event query error: %w", err)
+		return nil, fmt.Errorf("event.Query: %w", err)
 	}
 	return event, nil
 }

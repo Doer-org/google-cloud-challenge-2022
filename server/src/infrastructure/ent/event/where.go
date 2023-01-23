@@ -69,6 +69,11 @@ func Location(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldLocation, v))
 }
 
+// Size applies equality check predicate on the "size" field. It's identical to SizeEQ.
+func Size(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldSize, v))
+}
+
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
 func Type(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldType, v))
@@ -292,6 +297,46 @@ func LocationEqualFold(v string) predicate.Event {
 // LocationContainsFold applies the ContainsFold predicate on the "location" field.
 func LocationContainsFold(v string) predicate.Event {
 	return predicate.Event(sql.FieldContainsFold(FieldLocation, v))
+}
+
+// SizeEQ applies the EQ predicate on the "size" field.
+func SizeEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldSize, v))
+}
+
+// SizeNEQ applies the NEQ predicate on the "size" field.
+func SizeNEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldSize, v))
+}
+
+// SizeIn applies the In predicate on the "size" field.
+func SizeIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldSize, vs...))
+}
+
+// SizeNotIn applies the NotIn predicate on the "size" field.
+func SizeNotIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldSize, vs...))
+}
+
+// SizeGT applies the GT predicate on the "size" field.
+func SizeGT(v int) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldSize, v))
+}
+
+// SizeGTE applies the GTE predicate on the "size" field.
+func SizeGTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldSize, v))
+}
+
+// SizeLT applies the LT predicate on the "size" field.
+func SizeLT(v int) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldSize, v))
+}
+
+// SizeLTE applies the LTE predicate on the "size" field.
+func SizeLTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldSize, v))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.

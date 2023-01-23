@@ -4,3 +4,4 @@
 #go
 /src/tmp
 
+.env.dev

@@ -15,7 +15,7 @@ func Cors(next http.Handler) http.Handler {
 			// TODO: なおす
 			AllowedOrigins: []string{
 				"http://localhost:3000",
-				"https://gc-shema-app-qgai5lo5hq-an.a.run.app",
+				"https://gc-shema-app-qgai5lo5hq-an.a.run.app/",
 			},
 			// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

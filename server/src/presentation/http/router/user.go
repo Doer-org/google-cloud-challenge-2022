@@ -9,6 +9,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
+	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
 func (r *Router) InitUser(c *ent.Client) error {
@@ -18,7 +19,11 @@ func (r *Router) InitUser(c *ent.Client) error {
 
 	// auth middleware
 	authRepo := persistance.NewAuth(c)
-	rg := google.NewClient("http://localhost:8080/auth/callback")
+	callbackApi, err := env.GetEssentialEnv("GOOGLE_CALLBACK_API")
+	if err != nil {
+		return err
+	}
+	rg := google.NewClient(callbackApi)
 	authUC := usecase.NewAuth(authRepo, rg, userRepo)
 	m := middleware.NewAuth(authUC)
 

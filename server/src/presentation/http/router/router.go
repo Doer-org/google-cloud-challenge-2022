@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	mymiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
@@ -51,7 +52,17 @@ func (r *Router) SetMiddleware() {
 	r.mux.Use(middleware.Recoverer)
 
 	// cors
-	r.mux.Use(mymiddleware.Cors)
+	r.mux.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		// TODO: なおす
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 
 	// content type json
 	r.mux.Use(mymiddleware.ContentTypeJson)

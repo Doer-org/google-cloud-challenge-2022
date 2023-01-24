@@ -76,6 +76,11 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 	if env.IsLocal() {
 		sameSite = http.SameSiteLaxMode
 	}
+	domain,err := env.GetEssentialEnv("CLIENT_DOMAIN")
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetEssentialEnv: %w", err)), http.StatusBadRequest)
+		return
+	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    sessionID,
@@ -84,6 +89,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		Secure:   !env.IsLocal(),
 		HttpOnly: true,
 		SameSite: sameSite,
+		Domain: domain,
 	})
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	mymiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"

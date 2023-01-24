@@ -73,12 +73,6 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sameSite := http.SameSiteNoneMode
-	domain,err := env.GetEssentialEnv("CLIENT_URL")
-	if err != nil {
-		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetEssentialEnv: %w", err)), http.StatusBadRequest)
-		return
-	}
-
 	if env.IsLocal() {
 		sameSite = http.SameSiteLaxMode
 	}
@@ -90,26 +84,10 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		Secure:   !env.IsLocal(),
 		HttpOnly: true,
 		SameSite: sameSite,
-		Domain: domain,
 	})
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
 
 func (h *Auth) Validate(w http.ResponseWriter, r *http.Request) {
 	res.WriteJson(w, res.New200SuccessJson("validate success"), http.StatusOK)
-}
-
-// TODO: 消す
-func (h *Auth) CookieTest(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session",
-		Value:    "hoge",
-		Path:     "/",
-		MaxAge:   oneWeek,
-		Secure:   true,
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
-		Domain: "https://gc-shema-app-qgai5lo5hq-an.a.run.app/",
-	})
-	http.Redirect(w, r, "https://gc-shema-app-qgai5lo5hq-an.a.run.app/", http.StatusFound)
 }

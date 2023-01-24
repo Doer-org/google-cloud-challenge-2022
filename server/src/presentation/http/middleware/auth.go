@@ -35,6 +35,7 @@ func (m *Auth) Authenticate(next http.Handler) http.Handler {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetTokenByUserId: %w", err)), http.StatusBadRequest)
 			return
 		}
+		// TODO 切れてたらrefresh
 		newToken, err := m.uc.RefreshAccessToken(userId, token)
 		if err != nil {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: RefreshAccessToken: %w", err)), http.StatusBadRequest)

@@ -29,17 +29,12 @@ func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	url += "&approval_prompt=force&access_type=offline"
 
-	sameSite := http.SameSiteNoneMode
-	if env.IsLocal() {
-		sameSite = http.SameSiteLaxMode
-	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    state,
 		Path:     "/",
 		Secure:   !env.IsLocal(),
 		HttpOnly: true,
-		SameSite: sameSite,
 	})
 
 	http.Redirect(w, r, url, http.StatusFound)

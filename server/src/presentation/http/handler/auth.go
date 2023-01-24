@@ -98,3 +98,18 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 func (h *Auth) Validate(w http.ResponseWriter, r *http.Request) {
 	res.WriteJson(w, res.New200SuccessJson("validate success"), http.StatusOK)
 }
+
+// TODO: 消す
+func (h *Auth) CookieTest(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session",
+		Value:    "hoge",
+		Path:     "/",
+		MaxAge:   oneWeek,
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Domain: "https://gc-shema-app-qgai5lo5hq-an.a.run.app/",
+	})
+	http.Redirect(w, r, "https://gc-shema-app-qgai5lo5hq-an.a.run.app/", http.StatusFound)
+}

@@ -32,6 +32,7 @@ func (r *Router) InitAuth(c *ent.Client) error {
 	r.mux.Route("/auth", func(r chi.Router) {
 		r.Get("/login", h.Login)
 		r.Get("/callback", h.Callback)
+		r.Get("/cookietest",h.CookieTest)
 
 		// authentication required
 		r.Route("/", func(r chi.Router) {

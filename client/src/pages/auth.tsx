@@ -5,6 +5,7 @@ import style from '../styles/title.module.css';
 import { Button } from '../components/atoms/text/Button';
 import { useUserInfoStore } from '../store/userStore';
 import { createUser } from '../core/api/user/create';
+import Link from 'next/link';
 export default function Home() {
   const { userInfo, setUserInfo } = useUserInfoStore();
   const signIn = createUser(
@@ -23,6 +24,12 @@ export default function Home() {
           <h1 className={style.title}>すきーま</h1>
         </TypoWrapper>
         <div className="my-10 grid grid-cols-1 gap-2">
+          <Link 
+           href = {`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login?redirect_url=http://localhost:3000`} 
+           target = '_blank'
+          >
+           goooooogle
+          </Link>
           <Button
             className="m-1"
             onClick={async () => {

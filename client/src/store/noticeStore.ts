@@ -11,12 +11,10 @@ type Notice = {
 
 export const useNoticeStore = create<Notice>((set) => ({
   notice: { type: 'None', text: '' },
-  changeNotice: () =>
-    set((state) => {
-      return { notice: { type: state.notice.type, text: state.notice.text } };
-    }),
-  resetNotice: () =>
-    set((state) => {
-      return { notice: { type: 'None', text: '' } };
-    }),
+  changeNotice: (state) => {
+    set({ notice: { type: state.type, text: state.text } });
+  },
+  resetNotice: () => {
+    set({ notice: { type: 'None', text: '' } });
+  },
 }));

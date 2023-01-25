@@ -21,7 +21,14 @@ export default function New() {
       >
         処理が成功ボタン
       </Button>
-      <Button onClick={() => {}}>処理が失敗ボタン</Button>
+      <Button
+        onClick={() => {
+          changeNotice({ type: 'Error', text: '失敗やで' });
+        }}
+      >
+        処理が失敗ボタン
+      </Button>
+      <Button onClick={() => resetNotice()}>リセットボタン</Button>
       <MapForm location={location} setLocation={setLocation} />
     </BasicTemplate>
   );

@@ -21,11 +21,11 @@ func (r *Router) InitAuth(c *ent.Client) error {
 		return err
 	}
 	rg := google.NewClient(callbackApi)
-	uc := usecase.NewAuth(authRepo, rg, userRepo)
-	h := handler.NewAuth(uc)
+	userUC := usecase.NewUser(userRepo)
+	authUC := usecase.NewAuth(authRepo, rg, userRepo)
+	h := handler.NewAuth(authUC,userUC)
 
 	// auth middleware
-	authUC := usecase.NewAuth(authRepo, rg, userRepo)
 	m := middleware.NewAuth(authUC)
 
 	r.mux.Route("/auth", func(r chi.Router) {
@@ -36,6 +36,7 @@ func (r *Router) InitAuth(c *ent.Client) error {
 		r.Route("/", func(r chi.Router) {
 			r.Use(m.Authenticate)
 			r.Get("/validate", h.Validate)
+			r.Get("/user", h.User)
 		})
 	})
 	return nil

@@ -2,13 +2,23 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
  
 export const config = {
-  matcher: ['/event/new', '/event/:eventId*'],
+  matcher: [
+    '/event/new', 
+    '/event/:eventId/admin*'
+  ],
 }
 
-export const middleware = (req: NextRequest) => {
-  return NextResponse.next()
-
-
+export const middleware = async (req: NextRequest) => {
+  const resp = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/validate`, {
+    method: 'GET',
+    headers: req.headers
+  })
+  if (resp.ok) {
+    return NextResponse.next()
+  } else {
+    return NextResponse.rewrite(req.nextUrl.basePath)
+  }
+  // return NextResponse.next()
   // const authorizationHeader = req.headers.get('authorization')
 
   // if (authorizationHeader) {

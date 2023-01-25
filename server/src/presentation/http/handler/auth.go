@@ -14,27 +14,42 @@ const oneWeek = 60 * 60 * 24 * 7
 // TODO:logout apiも作る必要あり
 type Auth struct {
 	authUC usecase.IAuth
+	userUC usecase.IUser
 }
 
-func NewAuth(authUC usecase.IAuth) *Auth {
-	return &Auth{authUC: authUC}
+func NewAuth(auc usecase.IAuth,uuc usecase.IUser) *Auth {
+	return &Auth{
+		authUC: auc,
+		userUC: uuc,
+	}
 }
 
 func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	redirectURL := r.FormValue("redirect_url")
-	url, state, err := h.authUC.GetAuthURL(redirectURL)
+	url, state, err := h.authUC.GetAuthURL(r.Context(), redirectURL)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetAuthURL: %w", err)), http.StatusBadRequest)
 		return
 	}
 	url += "&approval_prompt=force&access_type=offline"
 
+	sameSite := http.SameSiteNoneMode
+	if env.IsLocal() {
+		sameSite = http.SameSiteLaxMode
+	}
+	domain, err := env.GetEssentialEnv("CLIENT_DOMAIN")
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetEssentialEnv: %w", err)), http.StatusBadRequest)
+		return
+	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    state,
 		Path:     "/",
 		Secure:   !env.IsLocal(),
 		HttpOnly: true,
+		SameSite: sameSite,
+		Domain:   domain,
 	})
 
 	http.Redirect(w, r, url, http.StatusFound)
@@ -63,7 +78,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: code is empty")), http.StatusBadRequest)
 		return
 	}
-	redirectURL, sessionID, err := h.authUC.Authorization(state, code)
+	redirectURL, sessionID, err := h.authUC.Authorization(r.Context(), state, code)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Authorization: %w", err)), http.StatusBadRequest)
 		return
@@ -76,7 +91,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 	if env.IsLocal() {
 		sameSite = http.SameSiteLaxMode
 	}
-	domain,err := env.GetEssentialEnv("CLIENT_DOMAIN")
+	domain, err := env.GetEssentialEnv("CLIENT_DOMAIN")
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetEssentialEnv: %w", err)), http.StatusBadRequest)
 		return
@@ -89,11 +104,30 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		Secure:   !env.IsLocal(),
 		HttpOnly: true,
 		SameSite: sameSite,
-		Domain: domain,
+		Domain:   domain,
 	})
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
 
 func (h *Auth) Validate(w http.ResponseWriter, r *http.Request) {
 	res.WriteJson(w, res.New200SuccessJson("validate success"), http.StatusOK)
+}
+
+func (h *Auth) User(w http.ResponseWriter, r *http.Request) {
+	sessCookie, err := r.Cookie("session")
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Cookie: %w", err)), http.StatusBadRequest)
+		return
+	}
+	userId,err := h.authUC.GetUserIdFromSession(r.Context(),sessCookie.Value)
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserIdFromSession: %w", err)), http.StatusBadRequest)
+		return
+	}
+	user, err := h.userUC.GetUserById(r.Context(),userId.String())
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserById: %w", err)), http.StatusBadRequest)
+		return
+	}
+	res.WriteJson(w, user, http.StatusOK)
 }

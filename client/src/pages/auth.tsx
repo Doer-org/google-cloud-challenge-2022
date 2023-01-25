@@ -26,7 +26,7 @@ export default function Home() {
           <Button
             className="m-1"
             onClick={async () => {
-              const r = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`)
+              const r = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login?redirect_url=http://localhost:3000 `)
               // if (userInfo.userId === '') {
               //   signIn({
               //     name: 'mahiro',
@@ -40,7 +40,7 @@ export default function Home() {
           <Button
             className="m-1"
             onClick={async () => {
-              const r = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`)
+              const r = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login?redirect_url=http://localhost:3000 `)
               // signIn({
               //   name: 'mahiro',
               //   authenticated: true,

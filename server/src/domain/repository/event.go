@@ -13,7 +13,7 @@ type IEvent interface {
 	DeleteEventById(ctx context.Context, eventId uuid.UUID) error
 	UpdateEventById(ctx context.Context, eventId uuid.UUID, ee *ent.Event) (*ent.Event, error)
 	GetEventAdminById(ctx context.Context, eventId uuid.UUID) (*ent.User, error)
-	GetEventComments(ctx context.Context, eventId uuid.UUID) ([]*ent.Comment, error) //TODO: ByIdかで統一する
+	GetEventComments(ctx context.Context, eventId uuid.UUID) ([]*ent.Comment, error)
 	AddNewEventParticipant(ctx context.Context, eventId uuid.UUID, eu *ent.User, comment string) error
 	ChangeEventStatusToCloseOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error)
 	ChangeEventStatusToCancelOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error)

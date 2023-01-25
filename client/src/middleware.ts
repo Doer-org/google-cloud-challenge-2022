@@ -3,20 +3,23 @@ import type { NextRequest } from 'next/server'
  
 export const config = {
   matcher: [
+    '/',
     '/event/new', 
-    '/event/:eventId/admin*'
+    '/event/:eventId*/admin'
   ],
 }
 
 export const middleware = async (req: NextRequest) => {
+  // return NextResponse.next()
   const resp = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/validate`, {
     method: 'GET',
     headers: req.headers
   })
-  if (resp.ok) {
-    return NextResponse.next()
+  const body = await resp.json()
+  if (body.code === 400) {
+    return NextResponse.redirect(`${req.nextUrl.origin}/auth`)
   } else {
-    return NextResponse.rewrite(req.nextUrl.basePath)
+    return NextResponse.next()
   }
   // return NextResponse.next()
   // const authorizationHeader = req.headers.get('authorization')

@@ -25,24 +25,26 @@ export default function Home() {
         <div className="my-10 grid grid-cols-1 gap-2">
           <Button
             className="m-1"
-            onClick={() => {
-              if (userInfo.userId === '') {
-                signIn({
-                  name: 'mahiro',
-                  authenticated: true,
-                });
-              }
+            onClick={async () => {
+              const r = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`)
+              // if (userInfo.userId === '') {
+              //   signIn({
+              //     name: 'mahiro',
+              //     authenticated: true,
+              //   });
+              // }
             }}
           >
             ログイン
           </Button>
           <Button
             className="m-1"
-            onClick={() => {
-              signIn({
-                name: 'mahiro',
-                authenticated: true,
-              });
+            onClick={async () => {
+              const r = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`)
+              // signIn({
+              //   name: 'mahiro',
+              //   authenticated: true,
+              // });
               console.log('create new account');
             }}
           >

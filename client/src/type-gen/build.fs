@@ -14,7 +14,7 @@ let initTargets () =
         printfn "OpenApi型定義を生成"   
         let args = 
             let proto = relativePathFromExe <| Path.combine __SOURCE_DIRECTORY__ @"./../../../openapi/openapi.json"  
-            let auto  = relativePathFromExe <| Path.combine __SOURCE_DIRECTORY__ @"./../../core/openapi/openapi.ts"  
+            let auto  = relativePathFromExe <| Path.combine __SOURCE_DIRECTORY__ @"./../../src/core/openapi/openapi.ts"  
             $@"openapi-typescript {proto} " + $@"--output {auto} " 
         // https://fake.build/reference/fake-javascript-npm.html#install 
         // https://github.com/fsprojects/FAKE/blob/master/src/app/Fake.JavaScript.Npm/Npm.fs#L28-28 

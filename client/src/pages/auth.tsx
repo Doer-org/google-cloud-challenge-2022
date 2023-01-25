@@ -26,7 +26,7 @@ export default function Home() {
         <div className="my-10 grid grid-cols-1 gap-2">
           <Link 
            href = {`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login?redirect_url=http://localhost:3000`} 
-           target = '_blank'
+           
           >
            goooooogle
           </Link>

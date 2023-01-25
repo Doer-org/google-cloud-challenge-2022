@@ -8,10 +8,11 @@ import { fptsHelper } from '../../core/utils/fptsHelper'
 describe('[swaggerApi] EventApi.createEvent', () => {
   it('正常系：Eventを作成', async () => {  
     const resp = await pipe( 
-        EventApi.createEvent({ 
-            name: "string", 
-            type: "string",
-            state:  "string",
+        EventApi.createEvent({
+          name: "string",
+          type: "string",
+          state: "string",
+          size: 2
         }),
         fptsHelper.TE.ofApiResponse, 
     )()

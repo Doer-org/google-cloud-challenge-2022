@@ -32,7 +32,7 @@ jobs:
         if: always()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
-          
+
   # buildテスト
   build:
     needs: setup

@@ -23,7 +23,8 @@ const createNewEvent = () => {
         name: "aoki camp",
         type: "string",
         state: "string",
-        admin: user.id
+        admin: user.id,
+        size: 2
       }),
       fptsHelper.TE.ofApiResponse,
 

@@ -76,7 +76,11 @@ export const tryGetEventInfo = (event_id: string) => {
                         event_name: info.eventInfo.name,
                         detail: info.eventInfo.detail || "",
                         location: info.eventInfo.location || "",
-                        host: { user_id: hm.host.id },
+                        host: { 
+                            user_id: hm.host.id,
+                            user_name : hm.host.name,
+                            icon : hm.host.icon ??""
+                        },
                         /**
                          * host comment
                          * R.has(hm.host.id,info.commentDic) 
@@ -86,6 +90,7 @@ export const tryGetEventInfo = (event_id: string) => {
                         participants: 
                             hm.members.map((member) => ( {
                                 participant_name: member.name,
+                                icon : member.icon ?? "",
                                 comment: 
                                     R.has(member.id,info.commentDic) 
                                     ? info.commentDic[member.id]

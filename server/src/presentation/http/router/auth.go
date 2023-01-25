@@ -22,7 +22,6 @@ func (r *Router) InitAuth(c *ent.Client) error {
 	}
 	rg := google.NewClient(callbackApi)
 	uc := usecase.NewAuth(authRepo, rg, userRepo)
-	//TODO: frontendURLが空?
 	h := handler.NewAuth(uc)
 
 	// auth middleware

@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entoas"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
@@ -29,6 +31,20 @@ func (LoginSessions) Edges() []ent.Edge {
 		edge.To("user", User.Type).
 			Unique().
 			Field("user_id").
-			Required(),
+			Required().
+			Annotations(
+				entoas.ReadOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
+			),
+	}
+}
+
+// Annotations of the LoginSessions.
+func (LoginSessions) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entoas.ListOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
+		entoas.CreateOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
+		entoas.UpdateOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
+		entoas.ReadOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
+		entoas.DeleteOperation(entoas.OperationPolicy(entoas.PolicyExclude)),
 	}
 }

@@ -22,7 +22,7 @@ func NewAuth(authUC usecase.IAuth) *Auth {
 
 func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	redirectURL := r.FormValue("redirect_url")
-	url, state, err := h.authUC.GetAuthURL(redirectURL)
+	url, state, err := h.authUC.GetAuthURL(r.Context(),redirectURL)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetAuthURL: %w", err)), http.StatusBadRequest)
 		return
@@ -63,7 +63,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: code is empty")), http.StatusBadRequest)
 		return
 	}
-	redirectURL, sessionID, err := h.authUC.Authorization(state, code)
+	redirectURL, sessionID, err := h.authUC.Authorization(r.Context(),state, code)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Authorization: %w", err)), http.StatusBadRequest)
 		return

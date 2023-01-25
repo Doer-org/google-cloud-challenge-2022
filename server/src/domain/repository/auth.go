@@ -1,19 +1,21 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 )
 
 type IAuth interface {
-	GetTokenByUserID(userId uuid.UUID) (*oauth2.Token, error)
-	StoreSession(sessionId string, userId uuid.UUID) error
-	GetUserIdFromSession(sessionId string) (uuid.UUID, error)
-	StoreToken(userId uuid.UUID, token *oauth2.Token) error
-	UpdateToken(userId uuid.UUID, token *oauth2.Token) error
-	StoreState(authState *ent.AuthStates) error
-	FindStateByState(state string) (*ent.AuthStates, error)
-	DeleteState(state string) error
-	StoreORUpdateToken(userId uuid.UUID, token *oauth2.Token) error
+	GetTokenByUserID(ctx context.Context, userId uuid.UUID) (*oauth2.Token, error)
+	StoreSession(ctx context.Context,sessionId string, userId uuid.UUID) error
+	GetUserIdFromSession(ctx context.Context, sessionId string) (uuid.UUID, error)
+	StoreToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) error
+	UpdateToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) error
+	StoreState(ctx context.Context, authState *ent.AuthStates) error
+	FindStateByState(ctx context.Context, state string) (*ent.AuthStates, error)
+	DeleteState(ctx context.Context, state string) error
+	StoreORUpdateToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) error
 }

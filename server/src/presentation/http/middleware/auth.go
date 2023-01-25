@@ -25,18 +25,18 @@ func (m *Auth) Authenticate(next http.Handler) http.Handler {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to get session: %w", err)), http.StatusBadRequest)
 			return
 		}
-		userId, err := m.uc.GetUserIdFromSession(sessCookie.Value)
+		userId, err := m.uc.GetUserIdFromSession(r.Context(),sessCookie.Value)
 		if err != nil {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserIdFromSession: %w", err)), http.StatusBadRequest)
 			return
 		}
-		token, err := m.uc.GetTokenByUserId(userId)
+		token, err := m.uc.GetTokenByUserId(r.Context(),userId)
 		if err != nil {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetTokenByUserId: %w", err)), http.StatusBadRequest)
 			return
 		}
 		// TODO 切れてたらrefresh
-		newToken, err := m.uc.RefreshAccessToken(userId, token)
+		newToken, err := m.uc.RefreshAccessToken(r.Context(),userId, token)
 		if err != nil {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: RefreshAccessToken: %w", err)), http.StatusBadRequest)
 			return

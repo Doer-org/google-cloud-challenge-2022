@@ -103,7 +103,6 @@ func (h *User) GetUserEvents(w http.ResponseWriter, r *http.Request) {
 	res.WriteJson(w, events, http.StatusOK)
 }
 
-// TODO: openapiに追加する
 // GET /users?mail=<user mail>
 func (h *User) GetUserByMail(w http.ResponseWriter, r *http.Request) {
 	mailQuery := r.URL.Query().Get("mail")

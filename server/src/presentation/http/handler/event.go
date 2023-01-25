@@ -32,10 +32,9 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	adminQuery := r.URL.Query().Get("admin")
 	event, err := h.uc.CreateNewEvent(
 		r.Context(),
-		adminQuery,
+		j.Admin,
 		j.Name,
 		j.Detail,
 		j.Location,
@@ -183,6 +182,7 @@ type eventJson struct {
 	Detail   string `json:"detail"`
 	Location string `json:"location"`
 	Size     int    `json:"size"`
+	Admin    string `json:"admin"`
 	State    string `json:"state"`
 	Type     string `json:"type"`
 }

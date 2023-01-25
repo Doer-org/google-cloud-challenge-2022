@@ -12,7 +12,7 @@ var (
 	AuthStatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "state", Type: field.TypeString, Size: 2000},
-		{Name: "redirect_url", Type: field.TypeString, Nullable: true, Size: 50},
+		{Name: "redirect_url", Type: field.TypeString, Nullable: true, Size: 300},
 	}
 	// AuthStatesTable holds the schema information for the "auth_states" table.
 	AuthStatesTable = &schema.Table{

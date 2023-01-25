@@ -13,5 +13,5 @@ func NewHealth() *Health {
 }
 
 func (h *Health) Ping(w http.ResponseWriter, r *http.Request) {
-	res.WriteJson(w, res.New200SuccessJson("pong"), http.StatusOK)
+	res.WriteJson(w, res.New200SuccessJson("pong!"), http.StatusOK)
 }

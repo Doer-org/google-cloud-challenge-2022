@@ -18,7 +18,7 @@ func (AuthStates) Fields() []ent.Field {
 			MaxLen(2000),
 		field.String("redirect_url").
 			Optional().
-			MaxLen(50),
+			MaxLen(300),
 	}
 }
 

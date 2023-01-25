@@ -22,7 +22,7 @@ func NewAuth(authUC usecase.IAuth) *Auth {
 
 func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	redirectURL := r.FormValue("redirect_url")
-	url, state, err := h.authUC.GetAuthURL(r.Context(),redirectURL)
+	url, state, err := h.authUC.GetAuthURL(r.Context(), redirectURL)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetAuthURL: %w", err)), http.StatusBadRequest)
 		return
@@ -63,7 +63,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: code is empty")), http.StatusBadRequest)
 		return
 	}
-	redirectURL, sessionID, err := h.authUC.Authorization(r.Context(),state, code)
+	redirectURL, sessionID, err := h.authUC.Authorization(r.Context(), state, code)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Authorization: %w", err)), http.StatusBadRequest)
 		return
@@ -76,7 +76,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 	if env.IsLocal() {
 		sameSite = http.SameSiteLaxMode
 	}
-	domain,err := env.GetEssentialEnv("CLIENT_DOMAIN")
+	domain, err := env.GetEssentialEnv("CLIENT_DOMAIN")
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetEssentialEnv: %w", err)), http.StatusBadRequest)
 		return
@@ -89,7 +89,7 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		Secure:   !env.IsLocal(),
 		HttpOnly: true,
 		SameSite: sameSite,
-		Domain: domain,
+		Domain:   domain,
 	})
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }

@@ -41,7 +41,7 @@ func (uc *Auth) GetAuthURL(ctx context.Context, redirectURL string) (url string,
 		State:       state,
 		RedirectURL: redirectURL,
 	}
-	if err := uc.repoAuth.StoreState(ctx,st); err != nil {
+	if err := uc.repoAuth.StoreState(ctx, st); err != nil {
 		return "", "", fmt.Errorf("storeState: %w", err)
 	}
 
@@ -50,7 +50,7 @@ func (uc *Auth) GetAuthURL(ctx context.Context, redirectURL string) (url string,
 
 // memo: 複数のブラウザを立ち上げた場合、sessionが複数作られる
 func (uc *Auth) Authorization(ctx context.Context, state, code string) (string, string, error) {
-	storedState, err := uc.repoAuth.FindStateByState(ctx,state)
+	storedState, err := uc.repoAuth.FindStateByState(ctx, state)
 	if err != nil {
 		return "", "", fmt.Errorf("findStateByState: %w", err)
 	}
@@ -106,7 +106,7 @@ func (uc *Auth) checkUserExistsByMail(ctx context.Context, mail string) (uuid.UU
 
 // GetUserIDFromSession はセッションIDから対応するユーザIDを返します。
 func (uc *Auth) GetUserIdFromSession(ctx context.Context, sessionId string) (uuid.UUID, error) {
-	userId, err := uc.repoAuth.GetUserIdFromSession(ctx,sessionId)
+	userId, err := uc.repoAuth.GetUserIdFromSession(ctx, sessionId)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("getUserIDFromSession: %w", err)
 	}
@@ -115,7 +115,7 @@ func (uc *Auth) GetUserIdFromSession(ctx context.Context, sessionId string) (uui
 
 // GetTokenByUserID は対応したユーザのアクセストークンを取得します。
 func (uc *Auth) GetTokenByUserId(ctx context.Context, userId uuid.UUID) (*oauth2.Token, error) {
-	token, err := uc.repoAuth.GetTokenByUserID(ctx,userId)
+	token, err := uc.repoAuth.GetTokenByUserID(ctx, userId)
 	if err != nil {
 		return nil, fmt.Errorf("getTokenByUserID: %w", err)
 	}

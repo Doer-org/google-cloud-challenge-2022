@@ -10,7 +10,7 @@ import (
 
 type IAuth interface {
 	GetTokenByUserID(ctx context.Context, userId uuid.UUID) (*oauth2.Token, error)
-	StoreSession(ctx context.Context,sessionId string, userId uuid.UUID) error
+	StoreSession(ctx context.Context, sessionId string, userId uuid.UUID) error
 	GetUserIdFromSession(ctx context.Context, sessionId string) (uuid.UUID, error)
 	StoreToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) error
 	UpdateToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) error

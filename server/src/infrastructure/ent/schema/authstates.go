@@ -29,8 +29,6 @@ func (AuthStates) Edges() []ent.Edge {
 	return nil
 }
 
-
-
 // Annotations of the AuthStates.
 func (AuthStates) Annotations() []schema.Annotation {
 	return []schema.Annotation{

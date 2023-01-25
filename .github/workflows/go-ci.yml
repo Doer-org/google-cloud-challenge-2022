@@ -25,6 +25,12 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          
   # buildテスト
   build:
     needs: setup
@@ -35,6 +41,12 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: build
         run: cd server/src && go build ./...
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+
 
   # testを通す
   test:
@@ -46,3 +58,8 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: go-test
         run: cd server/src && go test ./... -v
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'

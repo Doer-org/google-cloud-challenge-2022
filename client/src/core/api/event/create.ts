@@ -22,7 +22,7 @@ export const tryCreateNewEvent = (
             detail: param.detail,
             location: param.location,
             type:  "??",
-            state:  "??",
+            state:  "open",
             size: param.max_member
         }, 
         {
@@ -33,6 +33,8 @@ export const tryCreateNewEvent = (
             const e : Event =  {
                 event_id : res.id,
                 event_name : res.name,
+                event_size : res.size,
+                event_state : res.state,
                 detail : res.detail || "",
                 location : res.location || "",
                 host : host,

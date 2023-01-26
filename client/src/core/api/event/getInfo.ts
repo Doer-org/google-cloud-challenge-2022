@@ -74,6 +74,8 @@ export const tryGetEventInfo = (event_id: string) => {
                     const e: Event = {
                         event_id: info.eventInfo.id,
                         event_name: info.eventInfo.name,
+                        event_size: info.eventInfo.size,
+                        event_state: info.eventInfo.state,
                         detail: info.eventInfo.detail || "",
                         location: info.eventInfo.location || "",
                         host: { 

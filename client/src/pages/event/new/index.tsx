@@ -31,7 +31,7 @@ export default function New() {
   );
   const { userInfo, setUserInfo } = useUserInfoStore();
   const [name, setName] = useState('');
-  const [capacity, setCapacity] = useState(1);
+  const [capacity, setCapacity] = useState<number>(1);
   const [detail, setDetail] = useState('');
   const [location, setLocation] = useState<null | TMapPosition>(null);
   console.log(capacity);
@@ -51,7 +51,7 @@ export default function New() {
             },
             {
               event_name: name,
-              max_member: capacity,
+              max_member: Number(capacity),
               detail: detail,
               location: JSON.stringify(location),
               timestamp: Date.now(),

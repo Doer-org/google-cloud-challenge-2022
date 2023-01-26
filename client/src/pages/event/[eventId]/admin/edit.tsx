@@ -10,33 +10,11 @@ import { updateEvent } from '../../../../core/api/event/update';
 import { useRouter } from 'next/router';
 import { TMapPosition } from '../../../../components/atoms/map/MapBasicInfo';
 import { Event } from '../../../../core/types/event';
-import {
-  getEventInfo,
-  tryGetEventInfo,
-} from '../../../../core/api/event/getInfo';
+import { tryGetEventInfo } from '../../../../core/api/event/getInfo';
 import { useNoticeStore } from '../../../../store/noticeStore';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 
-export async function getServerSideProps(context: any) {
-  const eventId = context.query.eventId;
-  return pipe(
-    eventId,
-    tryGetEventInfo,
-    TE.match(
-      (err) => {
-        throw err;
-      },
-      (response) => {
-        return {
-          props: {
-            ...response,
-          },
-        };
-      }
-    )
-  )();
-}
 export default function Edit(event: Event) {
   const { changeNotice } = useNoticeStore();
   const [name, setName] = useState(event.event_name);
@@ -103,4 +81,24 @@ export default function Edit(event: Event) {
       </FormWrapper>
     </BasicTemplate>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const eventId = context.query.eventId;
+  return pipe(
+    eventId,
+    tryGetEventInfo,
+    TE.match(
+      (err) => {
+        throw err;
+      },
+      (response) => {
+        return {
+          props: {
+            ...response,
+          },
+        };
+      }
+    )
+  )();
 }

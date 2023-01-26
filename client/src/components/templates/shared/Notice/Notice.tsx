@@ -18,7 +18,7 @@ export const Notice = ({ type, text }: TProps) => {
 
   return (
     <div
-      className={`absolute top-6 right-1/2 py-1 rounded-md md:w-1/6 w-2/3 transition translate-x-[50%] shadow-2xl border-black border-2 text-black z-50 ${
+      className={`absolute top-6 right-1/2 py-1 rounded-md md:w-1/3 w-2/3 transition translate-x-[50%] shadow-2xl border-black border-2 text-black z-50 ${
         isError ? 'bg-red-400' : 'bg-green-400'
       }`}
     >

@@ -8,8 +8,12 @@ import { components, operations, paths } from "../../openapi/openapi"
   
 export const tryUpdateEvent = (param : components["schemas"]["EventUpdate"])   => { 
     return pipe (
-        param,
-        EventApi.updateEvent,
+        EventApi.updateEvent(
+            param,
+            {
+                credentials: 'include',
+            }
+        ),
         fptsHelper.TE.ofApiResponse, 
     )
 }

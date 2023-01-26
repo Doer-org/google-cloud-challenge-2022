@@ -4,7 +4,7 @@ import { fptsHelper } from '../../utils/fptsHelper'
 import { UserApi }from '../../utils/gcChallengeApi' 
 import { components, operations, paths } from "../../openapi/openapi"
 export const tryGetUserInfo = (user_id : string ) => pipe (
-    UserApi.getUser({id:user_id}),
+    UserApi.getUser({id:user_id},{credentials: 'include'}),
     fptsHelper.TE.ofApiResponse 
 )  
 

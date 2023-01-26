@@ -40,12 +40,13 @@ export async function getServerSideProps(context: any) {
 export default function Participate(event: Event) {
   // TODO: SSRで実装してリンクを貼った時にOGPを表示させるようにする
   const [isConfirm, setIsConfirm] = useState(false);
-  const { notice, changeNotice, resetNotice } = useNoticeStore();
+  const { changeNotice } = useNoticeStore();
   const router = useRouter();
   const [origin, setOrigin] = useState('');
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
+  console.log(event);
   const joinApi = joinEvent(
     (response: unknown) => {
       router.push(`${origin}/event/${event.event_id}/`);
@@ -74,17 +75,19 @@ export default function Participate(event: Event) {
             return { name: participant.participant_name, image: '' };
           })}
         >
-          <div className="tt">
+          <div>
             <EventInfo
               participants={event.participants}
               eventName={event.event_name}
               detail={event.detail}
               location={event.location}
             />
-            <FormWrapper>
+            <FormWrapper onSubmit={() => setIsConfirm(true)}>
               <Input
                 type="text"
                 label="名前"
+                maxLength={20}
+                minLength={1}
                 content={name}
                 changeContent={setName}
                 required={true}
@@ -92,15 +95,11 @@ export default function Participate(event: Event) {
               <Input
                 type="text"
                 label="ひとこと"
+                maxLength={50}
                 content={comment}
                 changeContent={setComment}
               />
-              <Button
-                className="flex m-auto my-5"
-                onClick={() => setIsConfirm(true)}
-              >
-                参加する
-              </Button>
+              <Button className="flex m-auto my-5">参加する</Button>
             </FormWrapper>
           </div>
         </EventConfirmModal>

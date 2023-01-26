@@ -1,37 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import { MyHead } from '../../../components/templates/shared/Head/MyHead';
 import { BasicTemplate } from '../../../components/templates/shared/BasicTemplate';
 import { EventInfo } from '../../../components/molecules/EventInfo';
-import { getEventInfo } from '../../../core/api/event/getInfo';
+import { tryGetEventInfo } from '../../../core/api/event/getInfo';
 import { Event } from '../../../core/types/event';
-
-export default function Show() {
-  // TODO: Comment取れてねーじゃん！
-  const [event, setEvent] = useState<Event>({
-    event_id: '',
-    event_name: '',
-    detail: '',
-    location: '',
-    host: {
-      user_name: '',
-      user_id: '',
-      icon: '',
-    },
-    participants: [],
-  });
-
-  const eventId = useRouter().query.eventId;
-  const getEvent = getEventInfo(
-    (response) => {
-      setEvent(response);
-    },
-    (error) => {}
-  );
-  useEffect(() => {
-    getEvent(eventId as string);
-  }, []);
-  // TODO: commentだけ空文字で返ってくる
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
+export default function Show(event: Event) {
   return (
     <>
       <MyHead title="募集タイトルを入れる" description="" />
@@ -45,4 +19,20 @@ export default function Show() {
       </BasicTemplate>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const eventId = context.query.eventId;
+  return pipe(
+    eventId,
+    tryGetEventInfo,
+    TE.match(
+      (err) => {
+        throw err;
+      },
+      (response) => {
+        return { props: { ...response } };
+      }
+    )
+  )();
 }

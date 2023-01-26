@@ -18,7 +18,11 @@ export default function Close() {
     location: '',
     host: {
       user_id: '',
+      user_name: '',
+      icon: '',
     },
+    event_size: 1,
+    event_state: '',
     participants: [],
   });
   const getEvent = getEventInfo(

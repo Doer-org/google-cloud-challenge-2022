@@ -13,7 +13,6 @@ import { useNoticeStore } from '../../../../store/noticeStore';
 import { LinkTo } from '../../../../components/atoms/text/LinkTo';
 export default function Participate(event: Event) {
   const [_, copy] = useCopyToClipboard();
-
   const [origin, setOrigin] = useState('');
   const eventId = useRouter().query.eventId;
   const { changeNotice } = useNoticeStore();
@@ -24,11 +23,13 @@ export default function Participate(event: Event) {
   return (
     <>
       <MyHead title="イベントURLコピー" description="" />
-      <BasicTemplate className="text-center">
+      <BasicTemplate className="text-center py-5">
         <EventInfo
           eventName={event.event_name}
           detail={event.detail}
           location={event.location}
+          hostImage={event.host.icon}
+          hostName={event.host.user_name}
         />
         <Button
           className="flex m-auto my-5"
@@ -43,7 +44,9 @@ export default function Participate(event: Event) {
         >
           URLをコピー
         </Button>
-        <LinkTo href={`${origin}/event`}>event一覧へ</LinkTo>
+        <div className="my-5">
+          <LinkTo href={`${origin}/event`}>event一覧へ</LinkTo>
+        </div>
       </BasicTemplate>
     </>
   );

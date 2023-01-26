@@ -20,6 +20,7 @@ export default function New() {
   }, []);
   const createEvent = createNewEvent(
     (ok) => {
+      console.log(ok)
       router.push(`${origin}/event/${ok.created_event.event_id}/completion`);
     },
     (e) => {}
@@ -62,7 +63,11 @@ export default function New() {
           className="flex m-auto my-5"
           onClick={() => {
             createEvent(
-              { user_id: userInfo.userId },
+              {
+                 user_id: userInfo.userId,
+                 user_name: "atode", //TODO : 
+                 icon: "mada"
+              },
               {
                 event_name: name,
                 max_member: capacity,

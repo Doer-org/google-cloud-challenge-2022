@@ -17,6 +17,8 @@ export default function Participate() {
     location: '',
     host: {
       user_id: '',
+      icon:"",
+      user_name:""
     },
     participants: [],
   });

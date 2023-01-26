@@ -10,7 +10,7 @@ type TProps = {
   userInfo: {
     name: string;
     comment?: string;
-    image?: string;
+    image: string;
     isParticipate?: boolean;
   };
 };

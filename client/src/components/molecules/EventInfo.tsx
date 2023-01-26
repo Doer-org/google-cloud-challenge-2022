@@ -3,7 +3,6 @@ import { EventWrapper } from './Event/EventWrapper';
 import { Hanging } from './Event/Hanging';
 import { EventBasicInfo } from './Event/EventBasicInfo';
 import { Participant } from '../../core/types/event';
-import { TypoWrapper } from '../atoms/text/TypoWrapper';
 import { UserInfo } from '../organisms/User/UserInfo';
 
 type TProps = {
@@ -11,12 +10,16 @@ type TProps = {
   eventName: string;
   detail: string;
   location: string;
+  hostImage: string;
+  hostName: string;
 };
 export const EventInfo = ({
   eventName,
   participants,
   detail,
   location,
+  hostImage,
+  hostName,
 }: TProps) => {
   const isJson = (location: string) => {
     try {
@@ -32,14 +35,15 @@ export const EventInfo = ({
       <Hanging />
       <EventWrapper>
         <div className="flex items-end gap-5 mx-5 overflow-x-scroll md:w-5/6 md:mx-auto py-5">
-          <UserInfo name={'ホストです'} />
+          <UserInfo name={hostName} image={hostImage} />
           {participants &&
-            participants.map((participate) => {
+            participants.map((participant) => {
               return (
                 <UserInfo
-                  key={participate.participant_name}
-                  name={participate.participant_name}
-                  comment={participate.comment}
+                  key={participant.participant_name}
+                  name={participant.participant_name}
+                  comment={participant.comment}
+                  image={participant.icon}
                   isParticipate
                 />
               );

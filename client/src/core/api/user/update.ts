@@ -4,7 +4,7 @@ import { fptsHelper } from '../../utils/fptsHelper'
 import { UserApi }from '../../utils/gcChallengeApi' 
 import { components, operations, paths } from "../../openapi/openapi"
 export const tryUpdateUser = (user_id : components["schemas"]["UserUpdate"]) => pipe (
-    UserApi.createUser(user_id),
+    UserApi.createUser(user_id,{credentials: 'include'}),
     fptsHelper.TE.ofApiResponse 
 )  
 

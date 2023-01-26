@@ -21,6 +21,7 @@ export module EventApi {
         () =>
           fetch(`${baseUrl}/events/${param.id}`, {
             method: 'DELETE',
+            credentials: 'include',
           }),
         (e: any) => Error(e)
       ),
@@ -58,6 +59,7 @@ export module EventApi {
         () =>
           fetch(`${baseUrl}/events/${id}/participants`, {
             method: 'post',
+            credentials: 'include',
             body: JSON.stringify(body),
           }),
         (e: any) => Error(e)
@@ -80,6 +82,7 @@ export module EventApi {
         () =>
           fetch(`${baseUrl}/events/${param.id}/state`, {
             method: 'patch',
+            credentials: 'include',
             body: JSON.stringify({
                 state : state
             })
@@ -110,6 +113,7 @@ export module UserApi {
         () =>
           fetch(`${baseUrl}/users/${param.id}`, {
             method: 'DELETE',
+            credentials: 'include',
           }),
         (e: any) => Error(e)
       ),

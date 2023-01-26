@@ -11,16 +11,18 @@ export module fptsHelper {
                 ),
                 FPTE.chain((r) => 
                     (r.ok)
-                    ? FPTE.right(r.data) 
+                    ? FPTE.right(r.data)
                     : FPTE.left(Error(`response: ${r.status} : ${r.headers}`))
-                )
-                // { // bind
-                //     if (r.ok) {
-                //         return FPTE.right(r.data)
-                //     } else {
-                //         return FPTE.left(Error(JSON.stringify(r)))
-                //     }
-                // }) 
+                ),
+                // TODO: 200番台のレスポンスが必ずしも正常系とは限らない
+                FPTE.chain((r : T) => { 
+                    const a = r as any
+                    return ( 
+                        (a.code !== 400 && a.status === "StatusBadRequest") 
+                        ? FPTE.right(r)
+                        : FPTE.left(Error(`response: ${r}`)) 
+                    ) 
+                })
             ) 
         }  
     } 

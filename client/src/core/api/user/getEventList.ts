@@ -8,7 +8,7 @@ import { components, operations, paths } from "../../openapi/openapi"
  
 
 export const tryGetEventList = (user_id : string)  : TE.TaskEither<Error, components["schemas"]["User_EventsList"][]>  => pipe (
-    UserApi.getUsersEvents({id:user_id}),
+    UserApi.getUsersEvents({id:user_id},{credentials: 'include'}),
     fptsHelper.TE.ofApiResponse 
 )  
 

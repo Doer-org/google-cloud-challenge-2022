@@ -14,7 +14,9 @@ export default function Show() {
     detail: '',
     location: '',
     host: {
+      user_name: '',
       user_id: '',
+      icon: '',
     },
     participants: [],
   });

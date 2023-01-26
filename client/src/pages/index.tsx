@@ -4,7 +4,25 @@ import { TypoWrapper } from '../components/atoms/text/TypoWrapper';
 import style from '../styles/title.module.css';
 import { LinkTo } from '../components/atoms/text/LinkTo';
 import { Button } from '../components/atoms/text/Button';
+import { useEffect } from 'react';
+import { useUserInfoStore } from '../store/userStore';
 export default function Home() {
+  
+  const { userInfo, setUserInfo } = useUserInfoStore();
+  useEffect(()=>{
+   fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/user`,{
+      method: "GET",
+      credentials: 'include'
+    }).then(async (ok) =>{
+      const body = await ok.json()
+      // console.log(body)
+      setUserInfo({
+        userId: body.id
+      });
+
+    })
+
+  },[])
   return (
     <>
       <MyHead title="すきーま" description="すきーまの説明" />

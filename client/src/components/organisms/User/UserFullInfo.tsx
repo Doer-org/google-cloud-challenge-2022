@@ -5,7 +5,7 @@ import { UserName } from '../../molecules/User/UserName';
 type TProps = {
   name: string;
   comment?: string;
-  image?: string;
+  image: string;
   isParticipate?: boolean;
 };
 
@@ -18,7 +18,7 @@ export const UserFullInfo = ({
   return (
     <div className="w-screen">
       {isParticipate ? <UserComment comment={comment} full /> : <></>}
-      <UserIcon isParticipate={isParticipate} />
+      <UserIcon isParticipate={isParticipate} image={image} />
       <UserName name={name} full />
     </div>
   );

@@ -7,7 +7,7 @@ import { UserModal } from '../../templates/shared/Modal/UserModal';
 type TProps = {
   name: string;
   comment?: string;
-  image?: string;
+  image: string;
   isParticipate?: boolean;
 };
 
@@ -24,7 +24,7 @@ export const UserInfo = ({ name, comment, image, isParticipate }: TProps) => {
         onClick={() => setIsShowModal(true)}
       >
         {isParticipate ? <UserComment comment={comment} /> : <></>}
-        <UserIcon isParticipate={isParticipate} />
+        <UserIcon isParticipate={isParticipate} image={image} />
         <UserName name={name} />
       </div>
     </UserModal>

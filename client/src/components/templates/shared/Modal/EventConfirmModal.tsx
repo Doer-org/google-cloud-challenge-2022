@@ -13,10 +13,11 @@ type TProps = {
   currentUser: {
     name: string;
     comment?: string;
+    icon: string;
   };
   participant: {
     name: string;
-    image?: string;
+    image: string;
   }[];
   isParticipate?: boolean;
 };
@@ -38,6 +39,7 @@ export const EventConfirmModal = ({
               name={currentUser.name}
               comment={currentUser.comment}
               isParticipate
+              image={currentUser.icon}
             />
             <TypoWrapper>
               <h1 className="mt-10">他にも以下の参加者がいます</h1>
@@ -45,7 +47,9 @@ export const EventConfirmModal = ({
             <div className="w-2/3 overflow-x-scroll m-auto my-3">
               <div className="flex gap-5">
                 {participant.map((p) => {
-                  return <UserInfo key={p.name} name={p.name} />;
+                  return (
+                    <UserInfo key={p.name} name={p.name} image={p.image} />
+                  );
                 })}
               </div>
             </div>

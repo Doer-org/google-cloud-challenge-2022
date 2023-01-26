@@ -28,6 +28,7 @@ export default function New() {
   const createEvent = createNewEvent(
     (ok) => {
       router.push(`${origin}/event/${ok.created_event.event_id}/completion`);
+      changeNotice({ type: 'Success', text: '作成に成功しました' });
     },
     (e) => {
       changeNotice({ type: 'Error', text: '作成に失敗しました' });

@@ -70,9 +70,12 @@ export default function Participate(event: Event) {
               comment: comment,
             })
           }
-          currentUser={{ name, comment }}
+          currentUser={{ name, comment, icon: '' }}
           participant={event.participants.map((participant) => {
-            return { name: participant.participant_name, image: '' };
+            return {
+              name: participant.participant_name,
+              image: participant.icon,
+            };
           })}
         >
           <div>
@@ -81,6 +84,8 @@ export default function Participate(event: Event) {
               eventName={event.event_name}
               detail={event.detail}
               location={event.location}
+              hostImage={event.host.icon}
+              hostName={event.host.user_name}
             />
             <FormWrapper onSubmit={() => setIsConfirm(true)}>
               <Input

@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 type TProps = {
   children: ReactNode;
   className?: string;
-  onClick: () => void;
+  onClick?: () => void;
   border?: boolean;
 };
 export const Button = ({ children, className, onClick, border }: TProps) => {

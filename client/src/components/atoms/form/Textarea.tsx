@@ -3,12 +3,16 @@ type TProps = {
   content: string;
   changeContent: (content: string) => void;
   required?: boolean;
+  minLength?: number;
+  maxLength?: number;
 };
 export const Textarea = ({
   label,
   content,
   changeContent,
   required,
+  minLength,
+  maxLength,
 }: TProps) => {
   return (
     <div className="grid grid-cols-1 my-5">
@@ -21,6 +25,8 @@ export const Textarea = ({
       <textarea
         id={label}
         className="py-1 px-2 rounded-sm max-h-32 bg-origin border-2 border-white"
+        minLength={minLength}
+        maxLength={maxLength}
         onChange={(e) => changeContent(e.target.value)}
         value={content}
         required={required}

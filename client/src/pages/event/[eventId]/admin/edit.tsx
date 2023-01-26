@@ -35,7 +35,19 @@ export default function Edit() {
         <h1 className="mt-5">編集する</h1>
       </TypoWrapper>
 
-      <FormWrapper>
+      <FormWrapper
+        onSubmit={() =>
+          update({
+            id: event_id,
+            name: name,
+            detail: detail,
+            location: 'location',
+            size: 1,
+            type: '???',
+            state: '???',
+          })
+        }
+      >
         <Input
           type="text"
           label="イベント名"
@@ -57,21 +69,7 @@ export default function Edit() {
           required={true}
         />
         <MapForm location={location} setLocation={setLocation} />
-        <Button
-          className="flex m-auto my-5"
-          onClick={() =>
-            update({
-              id: event_id,
-              name: name,
-              detail: detail,
-              location: 'location',
-              type: '???',
-              state: '???',
-            })
-          }
-        >
-          編集完了する
-        </Button>
+        <Button className="flex m-auto my-5">編集完了する</Button>
         <>{result}</>
       </FormWrapper>
     </BasicTemplate>

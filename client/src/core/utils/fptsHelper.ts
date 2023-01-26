@@ -18,7 +18,7 @@ export module fptsHelper {
                 FPTE.chain((r : T) => { 
                     const a = r as any
                     return ( 
-                        (a.code !== 400 && a.status === "StatusBadRequest") 
+                        (a.code !== 400) 
                         ? FPTE.right(r)
                         : FPTE.left(Error(`response: ${r}`)) 
                     ) 

@@ -6,44 +6,19 @@ import { Event } from '../../../../core/types/event';
 import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
 import { closeEvent } from '../../../../core/api/event/close';
-import { getEventInfo } from '../../../../core/api/event/getInfo';
-
-export default function Close() {
+import {
+  getEventInfo,
+  tryGetEventInfo,
+} from '../../../../core/api/event/getInfo';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
+export default function Close(event: Event) {
   // ここは締め切るページ
   // TODO:event締切hooksをonClickへ
-  const [event, setEvent] = useState<Event>({
-    event_id: '',
-    event_name: '',
-    detail: '',
-    location: '',
-    host: {
-      user_id: '',
-      user_name: '',
-      icon: '',
-    },
-    event_size: 1,
-    event_state: '',
-    participants: [],
-  });
-  const getEvent = getEventInfo(
-    (response) => {
-      setEvent(response);
-    },
-    (error) => {}
-  );
   const eventId = useRouter().query.eventId;
-
-  useEffect(() => {
-    getEvent(eventId as string);
-  }, [getEvent, eventId]);
-  const [result, setResult] = useState('not closed');
   const close = closeEvent(
-    (ok) => {
-      setResult('ok!');
-    },
-    (err) => {
-      setResult('error!');
-    }
+    (ok) => {},
+    (err) => {}
   );
 
   return (
@@ -61,8 +36,26 @@ export default function Close() {
         >
           締め切る
         </Button>
-        <>{result}</>
       </BasicTemplate>
     </>
   );
+}
+export async function getServerSideProps(context: any) {
+  const eventId = context.query.eventId;
+  return pipe(
+    eventId,
+    tryGetEventInfo,
+    TE.match(
+      (err) => {
+        throw err;
+      },
+      (response) => {
+        return {
+          props: {
+            ...response,
+          },
+        };
+      }
+    )
+  )();
 }

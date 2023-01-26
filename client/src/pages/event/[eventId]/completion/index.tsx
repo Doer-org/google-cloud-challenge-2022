@@ -9,10 +9,15 @@ import { Event } from '../../../../core/types/event';
 import { tryGetEventInfo } from '../../../../core/api/event/getInfo';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
+import { useNoticeStore } from '../../../../store/noticeStore';
+import { LinkTo } from '../../../../components/atoms/text/LinkTo';
 export default function Participate(event: Event) {
   const [_, copy] = useCopyToClipboard();
-  const eventId = useRouter().query.eventId;
+
   const [origin, setOrigin] = useState('');
+  const eventId = useRouter().query.eventId;
+  const { changeNotice } = useNoticeStore();
+
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
@@ -27,12 +32,18 @@ export default function Participate(event: Event) {
         />
         <Button
           className="flex m-auto my-5"
+          border
           onClick={() => {
             copy(`${origin}/event/${eventId}/participate`);
+            changeNotice({
+              type: 'Success',
+              text: 'コピー完了しました',
+            });
           }}
         >
           URLをコピー
         </Button>
+        <LinkTo href={`${origin}/event`}>event一覧へ</LinkTo>
       </BasicTemplate>
     </>
   );

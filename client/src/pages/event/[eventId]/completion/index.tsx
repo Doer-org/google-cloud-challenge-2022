@@ -6,37 +6,16 @@ import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
 import { useCopyToClipboard } from 'usehooks-ts';
 import { Event } from '../../../../core/types/event';
-import { getEventInfo } from '../../../../core/api/event/getInfo';
-export default function Participate() {
-  // ここはイベントを作成したときにリンクをコピーする画面
-  // TODO:URLコピー機能
-  const [event, setEvent] = useState<Event>({
-    event_id: '',
-    event_name: '',
-    detail: '',
-    location: '',
-    host: {
-      user_id: '',
-      icon:"",
-      user_name:""
-    },
-    participants: [],
-  });
-  const [value, copy] = useCopyToClipboard();
+import { tryGetEventInfo } from '../../../../core/api/event/getInfo';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
+export default function Participate(event: Event) {
+  const [_, copy] = useCopyToClipboard();
   const eventId = useRouter().query.eventId;
-
-  const getEvent = getEventInfo(
-    (response) => {
-      setEvent(response);
-    },
-    (error) => {}
-  );
   const [origin, setOrigin] = useState('');
   useEffect(() => {
-    getEvent(eventId as string);
     setOrigin(window.location.origin);
   }, []);
-
   return (
     <>
       <MyHead title="イベントURLコピー" description="" />
@@ -57,4 +36,23 @@ export default function Participate() {
       </BasicTemplate>
     </>
   );
+}
+export async function getServerSideProps(context: any) {
+  const eventId = context.query.eventId;
+  return pipe(
+    eventId,
+    tryGetEventInfo,
+    TE.match(
+      (err) => {
+        throw err;
+      },
+      (response) => {
+        return {
+          props: {
+            ...response,
+          },
+        };
+      }
+    )
+  )();
 }

@@ -80,9 +80,9 @@ export module EventApi {
         () =>
           fetch(`${baseUrl}/events/${param.id}/state`, {
             method: 'patch',
-            // , body: JSON.stringify({
-            //     state : state
-            // })
+            body: JSON.stringify({
+                state : state
+            })
           }),
         (e: any) => Error(e)
       ),

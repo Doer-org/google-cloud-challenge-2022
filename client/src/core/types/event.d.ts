@@ -14,6 +14,8 @@ export type Participant = {
 export type Event = {
   event_id: string;
   event_name: string;
+  event_size: number
+  event_state: string //'open' | 'close' | 'cancel'
   detail: string;
   location: string;
   host: Host;

@@ -10,7 +10,6 @@ export default function New() {
     console.log(window.location.origin);
   }, []);
   const { notice, changeNotice, resetNotice } = useNoticeStore();
-  console.log(notice);
   const [location, setLocation] = useState<null | TMapPosition>(null);
   return (
     <BasicTemplate className="text-center">

@@ -15,6 +15,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { joinEvent } from '../../../../core/api/event/join';
 import { useEffect } from 'react';
 import { EventConfirmModal } from '../../../../components/templates/shared/Modal/EventConfirmModal';
+import { useNoticeStore } from '../../../../store/noticeStore';
 
 export async function getServerSideProps(context: any) {
   const eventId = context.query.eventId;
@@ -39,6 +40,7 @@ export async function getServerSideProps(context: any) {
 export default function Participate(event: Event) {
   // TODO: SSRで実装してリンクを貼った時にOGPを表示させるようにする
   const [isConfirm, setIsConfirm] = useState(false);
+  const { notice, changeNotice, resetNotice } = useNoticeStore();
   const router = useRouter();
   const [origin, setOrigin] = useState('');
   useEffect(() => {
@@ -47,6 +49,7 @@ export default function Participate(event: Event) {
   const joinApi = joinEvent(
     (response: unknown) => {
       router.push(`${origin}/event/${event.event_id}/`);
+      changeNotice({ type: 'Success', text: '参加しました！' });
     },
     (e) => {}
   );

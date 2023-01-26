@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../../../../components/atoms/text/Button';
 import { FormWrapper } from '../../../../components/atoms/form/FormWrapper';
 import { Input } from '../../../../components/atoms/form/Input';
@@ -9,26 +9,50 @@ import { BasicTemplate } from '../../../../components/templates/shared/BasicTemp
 import { updateEvent } from '../../../../core/api/event/update';
 import { useRouter } from 'next/router';
 import { TMapPosition } from '../../../../components/atoms/map/MapBasicInfo';
+import { Event } from '../../../../core/types/event';
+import {
+  getEventInfo,
+  tryGetEventInfo,
+} from '../../../../core/api/event/getInfo';
+import { useNoticeStore } from '../../../../store/noticeStore';
+import * as TE from 'fp-ts/TaskEither';
+import { pipe } from 'fp-ts/lib/function';
 
-export default function Edit() {
-  // TODO:event編集hooksをonClickへ
-  const [result, setResult] = useState('not closed');
+export async function getServerSideProps(context: any) {
+  const eventId = context.query.eventId;
+  return pipe(
+    eventId,
+    tryGetEventInfo,
+    TE.match(
+      (err) => {
+        throw err;
+      },
+      (response) => {
+        return {
+          props: {
+            ...response,
+          },
+        };
+      }
+    )
+  )();
+}
+export default function Edit(event: Event) {
+  const { changeNotice } = useNoticeStore();
+  const [name, setName] = useState(event.event_name);
+  const [capacity, setCapacity] = useState(event.event_size);
+  const [detail, setDetail] = useState(event.detail);
+  const [location, setLocation] = useState<null | TMapPosition>(null);
+  const eventId = useRouter().query.eventId;
   const update = updateEvent(
     (ok) => {
-      setResult('ok!');
+      changeNotice({ type: 'Success', text: 'イベント情報を更新しました' });
     },
     (err) => {
-      setResult('error!');
+      changeNotice({ type: 'Error', text: '更新に失敗しました' });
     }
   );
 
-  const tmp = useRouter().query.id;
-  const event_id = typeof tmp === 'undefined' || Array.isArray(tmp) ? '' : tmp;
-
-  const [name, setName] = useState('');
-  const [capacity, setCapacity] = useState(1);
-  const [detail, setDetail] = useState('');
-  const [location, setLocation] = useState<null | TMapPosition>(null);
   return (
     <BasicTemplate className="text-center">
       <TypoWrapper size="large" line="bold">
@@ -38,11 +62,11 @@ export default function Edit() {
       <FormWrapper
         onSubmit={() =>
           update({
-            id: event_id,
+            id: eventId as string,
             name: name,
             detail: detail,
-            location: 'location',
-            size: 1,
+            location: JSON.stringify(location),
+            size: Number(capacity),
             type: '???',
             state: '???',
           })
@@ -51,12 +75,16 @@ export default function Edit() {
         <Input
           type="text"
           label="イベント名"
+          minLength={1}
+          maxLength={100}
           content={name}
           changeContent={setName}
           required={true}
         />
         <Input
           type="number"
+          min={1}
+          max={5}
           label="募集人数"
           content={capacity}
           changeContent={setCapacity}
@@ -64,13 +92,14 @@ export default function Edit() {
         />
         <Textarea
           label="詳細"
+          minLength={1}
+          maxLength={500}
           content={detail}
           changeContent={setDetail}
           required={true}
         />
         <MapForm location={location} setLocation={setLocation} />
         <Button className="flex m-auto my-5">編集完了する</Button>
-        <>{result}</>
       </FormWrapper>
     </BasicTemplate>
   );

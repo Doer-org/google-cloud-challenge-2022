@@ -3,8 +3,29 @@ import { useRouter } from 'next/router';
 import { MyHead } from '../../../components/templates/shared/Head/MyHead';
 import { BasicTemplate } from '../../../components/templates/shared/BasicTemplate';
 import { EventInfo } from '../../../components/molecules/EventInfo';
-import { getEventInfo } from '../../../core/api/event/getInfo';
+import { getEventInfo, tryGetEventInfo } from '../../../core/api/event/getInfo';
 import { Event } from '../../../core/types/event';
+import { pipe } from 'fp-ts/lib/function';
+import * as TE from 'fp-ts/TaskEither';
+export async function getServerSideProps(context: any) {
+  const eventId = context.query.eventId;
+  return pipe(
+    eventId,
+    tryGetEventInfo,
+    TE.match(
+      (err) => {
+        throw err;
+      },
+      (response) => {
+        return {
+          props: {
+            ...response,
+          },
+        };
+      }
+    )
+  )();
+}
 
 export default function Show() {
   // TODO: Comment取れてねーじゃん！
@@ -18,6 +39,8 @@ export default function Show() {
       user_id: '',
       icon: '',
     },
+    event_size: 1,
+    event_state: '',
     participants: [],
   });
 

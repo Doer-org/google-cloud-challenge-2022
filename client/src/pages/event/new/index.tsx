@@ -16,25 +16,23 @@ import { useNoticeStore } from '../../../store/noticeStore';
 export default function New() {
   const router = useRouter();
   const [origin, setOrigin] = useState('');
+  const { userInfo } = useUserInfoStore();
+  const { changeNotice } = useNoticeStore();
+  const [name, setName] = useState('');
+  const [capacity, setCapacity] = useState<number>(1);
+  const [detail, setDetail] = useState('');
+  const [location, setLocation] = useState<null | TMapPosition>(null);
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
-  const { changeNotice } = useNoticeStore();
   const createEvent = createNewEvent(
     (ok) => {
       router.push(`${origin}/event/${ok.created_event.event_id}/completion`);
     },
     (e) => {
-      console.log(e);
       changeNotice({ type: 'Error', text: '作成に失敗しました' });
     }
   );
-  const { userInfo, setUserInfo } = useUserInfoStore();
-  const [name, setName] = useState('');
-  const [capacity, setCapacity] = useState<number>(1);
-  const [detail, setDetail] = useState('');
-  const [location, setLocation] = useState<null | TMapPosition>(null);
-  console.log(capacity);
   return (
     <BasicTemplate className="text-center">
       <TypoWrapper size="large" line="bold">

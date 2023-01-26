@@ -15,15 +15,19 @@ export const tryCreateNewEvent = (
     } 
 ) : TE.TaskEither<Error, {url:string, created_event : Event}> => { 
     return pipe ( 
-        {
+        
+        EventApi.createEvent({
             name: param.event_name,
             admin: host.user_id, 
             detail: param.detail,
             location: param.location,
             type:  "??",
             state:  "??",
-        },
-        EventApi.createEvent,
+            size: param.max_member
+        }, 
+        {
+          credentials: 'include',
+        },),
         fptsHelper.TE.ofApiResponse,
         TE.map((res) => {
             const e : Event =  {

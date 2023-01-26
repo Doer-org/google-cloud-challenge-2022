@@ -12,7 +12,6 @@ import (
 )
 
 // TODO: eventに制限時間を持たせる
-// TODO: ciがこける
 func main() {
 	dsn, err := config.DSN()
 	if err != nil {

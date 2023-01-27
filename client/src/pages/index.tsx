@@ -32,8 +32,8 @@ export default function Home() {
       <BasicTemplate className="text-center">
         <TopPage />
         <div className="my-10 grid grid-cols-1 gap-5">
-          <LinkTo href="/event/new" className="m-1">
-            イベント募集ページへ
+          <LinkTo href="/event/new" imgPath='/images/top/event.png' className="mx-12">
+            イベント作成ページへ
           </LinkTo>
           <LinkTo href="/event" className="m-1">
             イベント一覧ページへ

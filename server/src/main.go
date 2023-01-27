@@ -11,7 +11,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TODO: eventに制限時間を持たせる
 func main() {
 	dsn, err := config.DSN()
 	if err != nil {

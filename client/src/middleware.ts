@@ -12,14 +12,21 @@ export const config = {
 
 export const middleware = async (req: NextRequest) => {
   console.log('middleware');
+  const cookie = req.headers.get("cookie") ?? ""
+  // const session = cookie?.split("=")[1] 
+  // console.log(session)
+  
   const resp = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/validate`,
     {
       method: 'GET',
-      headers: req.headers,
+      headers: {
+        "Cookie" : cookie 
+      }
     }
   );
   const body = await resp.json();
+  // console.log(body)
   console.log(body);
   if (body.code === 400) {
     return NextResponse.redirect(`${req.nextUrl.origin}/auth`);
@@ -35,7 +42,9 @@ export const middleware = async (req: NextRequest) => {
       `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/user`,
       {
         method: 'GET',
-        headers: req.headers,
+        headers: {
+          "Cookie" : cookie
+        }
       }
     )
       .then(async (ok) => ok.json())

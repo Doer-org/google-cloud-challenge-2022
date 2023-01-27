@@ -33,13 +33,18 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+	limit,err := time.Parse(time.RFC3339,j.LimitTime)
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
+		return
+	}
 	event, err := h.uc.CreateNewEvent(
 		r.Context(),
 		j.Name,
 		j.Detail,
 		j.Location,
 		j.Size,
-		j.LimitTime,
+		limit,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: CreateNewEvent: %w", err)), http.StatusBadRequest)
@@ -82,6 +87,11 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+	limit,err := time.Parse(time.RFC3339,j.LimitTime)
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
+		return
+	}
 	idParam := chi.URLParam(r, "id")
 	event, err := h.uc.UpdateEventById(
 		r.Context(),
@@ -90,7 +100,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		j.Detail,
 		j.Location,
 		j.Size,
-		j.LimitTime,
+		limit,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateEventById: %w", err)), http.StatusBadRequest)
@@ -185,7 +195,7 @@ type eventJson struct {
 	Detail    string    `json:"detail"`
 	Location  string    `json:"location"`
 	Size      int       `json:"size"`
-	LimitTime time.Time `json:"limit_time"`
+	LimitTime string    `json:"limit_time"`
 	State     string    `json:"state"`
 	Type      string    `json:"type"`
 }

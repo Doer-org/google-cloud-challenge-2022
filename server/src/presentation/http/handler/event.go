@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
@@ -38,7 +39,7 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		j.Detail,
 		j.Location,
 		j.Size,
-		j.LimitHour,
+		j.LimitTime,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: CreateNewEvent: %w", err)), http.StatusBadRequest)
@@ -89,7 +90,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		j.Detail,
 		j.Location,
 		j.Size,
-		j.LimitHour,
+		j.LimitTime,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateEventById: %w", err)), http.StatusBadRequest)
@@ -126,6 +127,7 @@ func (h *Event) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
+	// TODO: entに変えてもよさそう
 	var j eventJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decoder: %w", err)), http.StatusBadRequest)
@@ -183,7 +185,7 @@ type eventJson struct {
 	Detail    string `json:"detail"`
 	Location  string `json:"location"`
 	Size      int    `json:"size"`
-	LimitHour int    `json:"limit_hour"`
+	LimitTime time.Time    `json:"limit_time"`
 	State     string `json:"state"`
 	Type      string `json:"type"`
 }

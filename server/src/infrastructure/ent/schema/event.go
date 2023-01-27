@@ -35,9 +35,8 @@ func (Event) Fields() []ent.Field {
 			Max(5),
 		field.Time("created_at").
 			Default(time.Now),
-		field.Int("limit_hour").
-			Min(1).
-			Max(24),
+		field.Time("limit_time").
+			Optional(),
 		field.String("type").
 			NotEmpty().
 			MaxLen(30),

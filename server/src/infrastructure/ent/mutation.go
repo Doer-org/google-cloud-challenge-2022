@@ -911,8 +911,7 @@ type EventMutation struct {
 	size            *int
 	addsize         *int
 	created_at      *time.Time
-	limit_hour      *int
-	addlimit_hour   *int
+	limit_time      *time.Time
 	_type           *string
 	state           *string
 	clearedFields   map[string]struct{}
@@ -1259,60 +1258,53 @@ func (m *EventMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// SetLimitHour sets the "limit_hour" field.
-func (m *EventMutation) SetLimitHour(i int) {
-	m.limit_hour = &i
-	m.addlimit_hour = nil
+// SetLimitTime sets the "limit_time" field.
+func (m *EventMutation) SetLimitTime(t time.Time) {
+	m.limit_time = &t
 }
 
-// LimitHour returns the value of the "limit_hour" field in the mutation.
-func (m *EventMutation) LimitHour() (r int, exists bool) {
-	v := m.limit_hour
+// LimitTime returns the value of the "limit_time" field in the mutation.
+func (m *EventMutation) LimitTime() (r time.Time, exists bool) {
+	v := m.limit_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLimitHour returns the old "limit_hour" field's value of the Event entity.
+// OldLimitTime returns the old "limit_time" field's value of the Event entity.
 // If the Event object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldLimitHour(ctx context.Context) (v int, err error) {
+func (m *EventMutation) OldLimitTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLimitHour is only allowed on UpdateOne operations")
+		return v, errors.New("OldLimitTime is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLimitHour requires an ID field in the mutation")
+		return v, errors.New("OldLimitTime requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLimitHour: %w", err)
+		return v, fmt.Errorf("querying old value for OldLimitTime: %w", err)
 	}
-	return oldValue.LimitHour, nil
+	return oldValue.LimitTime, nil
 }
 
-// AddLimitHour adds i to the "limit_hour" field.
-func (m *EventMutation) AddLimitHour(i int) {
-	if m.addlimit_hour != nil {
-		*m.addlimit_hour += i
-	} else {
-		m.addlimit_hour = &i
-	}
+// ClearLimitTime clears the value of the "limit_time" field.
+func (m *EventMutation) ClearLimitTime() {
+	m.limit_time = nil
+	m.clearedFields[event.FieldLimitTime] = struct{}{}
 }
 
-// AddedLimitHour returns the value that was added to the "limit_hour" field in this mutation.
-func (m *EventMutation) AddedLimitHour() (r int, exists bool) {
-	v := m.addlimit_hour
-	if v == nil {
-		return
-	}
-	return *v, true
+// LimitTimeCleared returns if the "limit_time" field was cleared in this mutation.
+func (m *EventMutation) LimitTimeCleared() bool {
+	_, ok := m.clearedFields[event.FieldLimitTime]
+	return ok
 }
 
-// ResetLimitHour resets all changes to the "limit_hour" field.
-func (m *EventMutation) ResetLimitHour() {
-	m.limit_hour = nil
-	m.addlimit_hour = nil
+// ResetLimitTime resets all changes to the "limit_time" field.
+func (m *EventMutation) ResetLimitTime() {
+	m.limit_time = nil
+	delete(m.clearedFields, event.FieldLimitTime)
 }
 
 // SetType sets the "type" field.
@@ -1584,8 +1576,8 @@ func (m *EventMutation) Fields() []string {
 	if m.created_at != nil {
 		fields = append(fields, event.FieldCreatedAt)
 	}
-	if m.limit_hour != nil {
-		fields = append(fields, event.FieldLimitHour)
+	if m.limit_time != nil {
+		fields = append(fields, event.FieldLimitTime)
 	}
 	if m._type != nil {
 		fields = append(fields, event.FieldType)
@@ -1611,8 +1603,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.Size()
 	case event.FieldCreatedAt:
 		return m.CreatedAt()
-	case event.FieldLimitHour:
-		return m.LimitHour()
+	case event.FieldLimitTime:
+		return m.LimitTime()
 	case event.FieldType:
 		return m.GetType()
 	case event.FieldState:
@@ -1636,8 +1628,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldSize(ctx)
 	case event.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case event.FieldLimitHour:
-		return m.OldLimitHour(ctx)
+	case event.FieldLimitTime:
+		return m.OldLimitTime(ctx)
 	case event.FieldType:
 		return m.OldType(ctx)
 	case event.FieldState:
@@ -1686,12 +1678,12 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case event.FieldLimitHour:
-		v, ok := value.(int)
+	case event.FieldLimitTime:
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLimitHour(v)
+		m.SetLimitTime(v)
 		return nil
 	case event.FieldType:
 		v, ok := value.(string)
@@ -1718,9 +1710,6 @@ func (m *EventMutation) AddedFields() []string {
 	if m.addsize != nil {
 		fields = append(fields, event.FieldSize)
 	}
-	if m.addlimit_hour != nil {
-		fields = append(fields, event.FieldLimitHour)
-	}
 	return fields
 }
 
@@ -1731,8 +1720,6 @@ func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case event.FieldSize:
 		return m.AddedSize()
-	case event.FieldLimitHour:
-		return m.AddedLimitHour()
 	}
 	return nil, false
 }
@@ -1749,13 +1736,6 @@ func (m *EventMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddSize(v)
 		return nil
-	case event.FieldLimitHour:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddLimitHour(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Event numeric field %s", name)
 }
@@ -1769,6 +1749,9 @@ func (m *EventMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(event.FieldLocation) {
 		fields = append(fields, event.FieldLocation)
+	}
+	if m.FieldCleared(event.FieldLimitTime) {
+		fields = append(fields, event.FieldLimitTime)
 	}
 	return fields
 }
@@ -1789,6 +1772,9 @@ func (m *EventMutation) ClearField(name string) error {
 		return nil
 	case event.FieldLocation:
 		m.ClearLocation()
+		return nil
+	case event.FieldLimitTime:
+		m.ClearLimitTime()
 		return nil
 	}
 	return fmt.Errorf("unknown Event nullable field %s", name)
@@ -1813,8 +1799,8 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case event.FieldLimitHour:
-		m.ResetLimitHour()
+	case event.FieldLimitTime:
+		m.ResetLimitTime()
 		return nil
 	case event.FieldType:
 		m.ResetType()

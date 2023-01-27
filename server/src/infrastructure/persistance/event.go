@@ -153,7 +153,7 @@ func (repo *Event) GetEventUsers(ctx context.Context, eventId uuid.UUID) ([]*ent
 	return users, nil
 }
 
-func (repo *Event) GetEventUsersCnt(ctx context.Context,eventId uuid.UUID) (int, error) {
+func (repo *Event) GetEventUsersCnt(ctx context.Context, eventId uuid.UUID) (int, error) {
 	users, err := repo.client.User.
 		Query().
 		Where(user.HasEventsWith(event.ID(eventId))).
@@ -161,7 +161,7 @@ func (repo *Event) GetEventUsersCnt(ctx context.Context,eventId uuid.UUID) (int,
 	if err != nil {
 		return 0, fmt.Errorf("user.Query: %w", err)
 	}
-	return len(users),nil
+	return len(users), nil
 }
 
 func (repo *Event) getEventById(ctx context.Context, eventUuid uuid.UUID) (*ent.Event, error) {

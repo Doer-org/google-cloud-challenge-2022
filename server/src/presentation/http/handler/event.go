@@ -179,13 +179,13 @@ func (h *Event) GetEventUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 type eventJson struct {
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
-	Size     int    `json:"size"`
-	LimitHour int  `json:"limit_hour"`
-	State    string `json:"state"`
-	Type     string `json:"type"`
+	Name      string `json:"name"`
+	Detail    string `json:"detail"`
+	Location  string `json:"location"`
+	Size      int    `json:"size"`
+	LimitHour int    `json:"limit_hour"`
+	State     string `json:"state"`
+	Type      string `json:"type"`
 }
 
 type participantJson struct {

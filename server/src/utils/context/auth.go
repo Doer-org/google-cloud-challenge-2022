@@ -37,22 +37,23 @@ func SetUserId(ctx context.Context, userId string) context.Context {
 	return ctx
 }
 
-func GetUser(ctx context.Context) (uuid.UUID,bool) {
+func GetUser(ctx context.Context) (uuid.UUID, bool) {
 	v := ctx.Value(userIdKey)
-	userIdString,ok := v.(string)
+	userIdString, ok := v.(string)
 	if !ok {
-		return uuid.Nil,ok
+		return uuid.Nil, ok
 	}
-	userId,err := uuid.Parse(userIdString)
+	userId, err := uuid.Parse(userIdString)
 	if err != nil {
 		log.Println("error: getUser from context failed")
-		return uuid.Nil,false
+		return uuid.Nil, false
 	}
-	return userId,ok
+	return userId, ok
 }
+
 // ctxに入っているsessionのuserIdと引数で受け取ったuserIdを比較します
-func CompareUserIdAndUserSessionId(ctx context.Context,userId uuid.UUID) error {
-	userSessId,ok := GetUser(ctx)
+func CompareUserIdAndUserSessionId(ctx context.Context, userId uuid.UUID) error {
+	userSessId, ok := GetUser(ctx)
 	if !ok {
 		return fmt.Errorf("GetUser: failed to get user from context")
 	}

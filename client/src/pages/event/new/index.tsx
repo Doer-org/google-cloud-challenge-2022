@@ -22,10 +22,15 @@ export default function New() {
   const [capacity, setCapacity] = useState<number>(1);
   const [detail, setDetail] = useState('');
   const [location, setLocation] = useState<null | TMapPosition>(null);
+  const [limit, setLimit] = useState('');
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
 
+  let now = new Date();
+  let tomorrow = new Date();
+  tomorrow.setDate(now.getDate() + 1);
+  tomorrow.setHours(23, 59, 59, 999);
   const createEvent = createNewEvent(
     (ok) => {
       router.push(`${origin}/event/${ok.created_event.event_id}/completion`);
@@ -46,7 +51,7 @@ export default function New() {
           createEvent(
             {
               user_id: userInfo.userId,
-              user_name: 'atode', //TODO :
+              user_name: 'atode', //FIXME : user storeに保存・取得
               icon: 'mada',
             },
             {
@@ -54,7 +59,8 @@ export default function New() {
               max_member: Number(capacity),
               detail: detail,
               location: JSON.stringify(location),
-              timestamp: Date.now(),
+              created_at: new Date(Date.now()),
+              limit_time: new Date(limit), // FIXME: 締め切り時間設定
             }
           );
         }}
@@ -75,6 +81,21 @@ export default function New() {
           max={5}
           content={capacity}
           changeContent={setCapacity}
+          required={true}
+        />
+        <Input
+          type="datetime-local"
+          label="締切"
+          min={
+            now.toISOString().slice(0, 11) +
+            now.toLocaleTimeString().slice(0, 5)
+          }
+          max={
+            tomorrow.toISOString().slice(0, 11) +
+            tomorrow.toLocaleTimeString().slice(0, 5)
+          }
+          content={limit}
+          changeContent={setLimit}
           required={true}
         />
         <Textarea

@@ -3,9 +3,14 @@ import { persist } from 'zustand/middleware';
 
 interface UserInfo {
   userId: string;
+  userName: string;
+  icon: string
 } 
 const initUserInfo: UserInfo = {
   userId: '',
+  userName: '',
+  icon: ''
+  
 };
 // 動作しなかったので一旦置き換え
 interface UserInfoStore {

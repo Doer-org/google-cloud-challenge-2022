@@ -6,6 +6,7 @@ import { LinkTo } from '../components/atoms/text/LinkTo';
 import { Button } from '../components/atoms/text/Button';
 import { useEffect } from 'react';
 import { useUserInfoStore } from '../store/userStore';
+import { UserName } from '../components/molecules/User/UserName';
 export default function Home() {
   
   const { userInfo, setUserInfo } = useUserInfoStore();
@@ -14,10 +15,12 @@ export default function Home() {
       method: "GET",
       credentials: 'include'
     }).then(async (ok) =>{
-      const body = await ok.json()
+      const body: {id:string; name:string; authenticated : boolean; mail : string; icon:string} = await ok.json()
       // console.log(body)
       setUserInfo({
-        userId: body.id
+        userId: body.id,
+        userName: body.name,
+        icon: body.icon
       });
 
     })

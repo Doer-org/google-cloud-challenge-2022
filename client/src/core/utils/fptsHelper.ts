@@ -14,7 +14,7 @@ export module fptsHelper {
                     ? FPTE.right(r.data)
                     : FPTE.left(Error(`response: ${r.status} : ${r.headers}`))
                 ),
-                // TODO: 200番台のレスポンスが必ずしも正常系とは限らない
+                // HACK : 200番台のレスポンスが必ずしも正常系とは限らない
                 FPTE.chain((r : T) => { 
                     const a = r as any
                     return ( 

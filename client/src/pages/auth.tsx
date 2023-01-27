@@ -12,6 +12,8 @@ export default function Home() {
     (ok) => {
       setUserInfo({
         userId: ok.id,
+        userName: ok.name,
+        icon: ok.icon??""
       });
     },
     (err) => {}

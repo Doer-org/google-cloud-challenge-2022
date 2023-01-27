@@ -15,7 +15,8 @@ export const EventBasicInfoCard = ({ id, eventName, detail }: TProps) => {
         <TypoWrapper size="small" line="shin">
           <p className="text-left lg:mx-10 mx-2 my-2">{detail}</p>
         </TypoWrapper>
-        <div className="flex justify-end gap-5 mt-10 mb-2 mx-3">
+        <div className="flex justify-end md:gap-5 gap-1 mt-10 mb-2 mx-3">
+          <LinkTo href={`/event/${id}/`}>詳細</LinkTo>
           <LinkTo href={`/event/${id}/admin/edit`}>編集する</LinkTo>
           <LinkTo href={`/event/${id}/admin/close`}>締切にする</LinkTo>
         </div>

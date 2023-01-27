@@ -21,6 +21,7 @@ export default function Edit(event: Event) {
   const [capacity, setCapacity] = useState(event.event_size);
   const [detail, setDetail] = useState(event.detail);
   const [location, setLocation] = useState<null | TMapPosition>(null);
+  const [limit, setLimit] = useState('');
   const eventId = useRouter().query.eventId;
   const update = updateEvent(
     (ok) => {
@@ -30,7 +31,10 @@ export default function Edit(event: Event) {
       changeNotice({ type: 'Error', text: '更新に失敗しました' });
     }
   );
-
+  let now = new Date();
+  let tomorrow = new Date();
+  tomorrow.setDate(now.getDate() + 1);
+  tomorrow.setHours(23, 59, 59, 999);
   return (
     <BasicTemplate className="text-center">
       <TypoWrapper size="large" line="bold">
@@ -47,6 +51,8 @@ export default function Edit(event: Event) {
             size: Number(capacity),
             type: '???',
             state: '???',
+            created_at: new Date(Date.now()),
+            limit_time: new Date(Date.now()), // FIXME: 締め切り時間設定
           })
         }
       >
@@ -66,6 +72,21 @@ export default function Edit(event: Event) {
           label="募集人数"
           content={capacity}
           changeContent={setCapacity}
+          required={true}
+        />
+        <Input
+          type="datetime-local"
+          label="締切"
+          min={
+            now.toISOString().slice(0, 11) +
+            now.toLocaleTimeString().slice(0, 5)
+          }
+          max={
+            tomorrow.toISOString().slice(0, 11) +
+            tomorrow.toLocaleTimeString().slice(0, 5)
+          }
+          content={limit}
+          changeContent={setLimit}
           required={true}
         />
         <Textarea

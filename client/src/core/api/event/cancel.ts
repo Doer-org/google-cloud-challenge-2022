@@ -4,7 +4,6 @@ import * as TE from 'fp-ts/TaskEither'
 import { fptsHelper } from '../../utils/fptsHelper'
 import { EventApi } from '../../utils/gcChallengeApi'
  
-// TODO: axios
 export const tryCancel = (event_id : string) => 
     EventApi.updateEventState({id: event_id},  "cancel")
 

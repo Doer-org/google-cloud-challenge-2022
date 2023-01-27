@@ -27,10 +27,10 @@ export default function New() {
     setOrigin(window.location.origin);
   }, []);
 
-  const now = new Date();
+  let now = new Date();
   let tomorrow = new Date();
   tomorrow.setDate(now.getDate() + 1);
-
+  tomorrow.setHours(23, 59, 59, 999);
   const createEvent = createNewEvent(
     (ok) => {
       router.push(`${origin}/event/${ok.created_event.event_id}/completion`);
@@ -59,9 +59,8 @@ export default function New() {
               max_member: Number(capacity),
               detail: detail,
               location: JSON.stringify(location),
-
               created_at: new Date(Date.now()),
-              limit_time: new Date(Date.now()), // FIXME: 締め切り時間設定
+              limit_time: new Date(limit), // FIXME: 締め切り時間設定
             }
           );
         }}
@@ -87,8 +86,14 @@ export default function New() {
         <Input
           type="datetime-local"
           label="締切"
-          min={now.toISOString().slice(0, 16)}
-          max={tomorrow.toISOString().slice(0, 16)}
+          min={
+            now.toISOString().slice(0, 11) +
+            now.toLocaleTimeString().slice(0, 5)
+          }
+          max={
+            tomorrow.toISOString().slice(0, 11) +
+            tomorrow.toLocaleTimeString().slice(0, 5)
+          }
           content={limit}
           changeContent={setLimit}
           required={true}

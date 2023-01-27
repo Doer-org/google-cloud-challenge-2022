@@ -8,6 +8,7 @@ import { useUserInfoStore } from '../../store/userStore';
 import { components } from '../../core/openapi/openapi';
 import { EventBasicInfoCard } from '../../components/molecules/Event/EventBasicInfoCard';
 import { useRouter } from 'next/router';
+import { LinkTo } from '../../components/atoms/text/LinkTo';
 export default function Index() {
   const [events, setEvents] = useState<
     components['schemas']['User_EventsList'][]
@@ -50,6 +51,7 @@ export default function Index() {
             </div>
           );
         })}
+        <LinkTo href="/">トップに戻る</LinkTo>
       </BasicTemplate>
     </>
   );

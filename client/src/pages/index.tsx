@@ -18,7 +18,6 @@ export default function Home() {
         mail: string;
         icon: string;
       } = await ok.json();
-      // console.log(body)
       setUserInfo({
         userId: body.id,
         userName: body.name,
@@ -31,13 +30,18 @@ export default function Home() {
       <MyHead title="すきーま" description="すきーまの説明" />
       <BasicTemplate className="text-center">
         <TopPage />
-        <div className="my-10 grid grid-cols-1 gap-5">
-          <LinkTo href="/event/new" className="m-1">
-            イベント募集ページへ
-          </LinkTo>
-          <LinkTo href="/event" className="m-1">
-            イベント一覧ページへ
-          </LinkTo>
+        <div className="mx-auto">
+          <div>
+            <LinkTo href="/event/new" className="m-1 inline-block my-5">
+              イベント募集ページへ
+            </LinkTo>
+          </div>
+
+          <div>
+            <LinkTo href="/event" className="m-1 inline-block my-5">
+              イベント一覧ページへ
+            </LinkTo>
+          </div>
         </div>
       </BasicTemplate>
     </>

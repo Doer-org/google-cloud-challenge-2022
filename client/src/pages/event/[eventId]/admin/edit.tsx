@@ -21,10 +21,11 @@ export default function Edit(event: Event) {
   const [capacity, setCapacity] = useState(event.event_size);
   const [detail, setDetail] = useState(event.detail);
   const [location, setLocation] = useState<null | TMapPosition>(null);
-  const [limit, setLimit] = useState('');
-  const eventId = useRouter().query.eventId;
+  const [limit, setLimit] = useState(event.close_limit);
+  const router = useRouter();
   const update = updateEvent(
     (ok) => {
+      router.push('/event');
       changeNotice({ type: 'Success', text: 'イベント情報を更新しました' });
     },
     (err) => {
@@ -44,7 +45,7 @@ export default function Edit(event: Event) {
       <FormWrapper
         onSubmit={() =>
           update({
-            id: eventId as string,
+            id: event.event_id,
             name: name,
             detail: detail,
             location: JSON.stringify(location),

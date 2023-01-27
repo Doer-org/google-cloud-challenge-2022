@@ -43,6 +43,7 @@ export const tryCreateNewEvent = (
         location: res.location || '',
         host: host,
         participants: [],
+        close_limit: res.limit_time ?? "2222/01/01"
       };
       return {
         url: `http://localhost/event/${res.id}/participate`,

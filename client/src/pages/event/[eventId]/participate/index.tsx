@@ -57,6 +57,12 @@ export default function Participate(event: Event) {
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   // TODO:参加者の人数がcapacityを超えてたら表示しない
+
+  const isCapacityOver = event.participants.length > event.event_size;
+  const isTimeOver = new Date(event.close_limit) > new Date();
+  const isClosed = event.event_state === 'close';
+  console.log(event.close_limit);
+  console.log(isCapacityOver, isTimeOver, isClosed);
   return (
     <>
       <BasicTemplate className="text-center">
@@ -87,25 +93,29 @@ export default function Participate(event: Event) {
               hostImage={event.host.icon}
               hostName={event.host.user_name}
             />
-            <FormWrapper onSubmit={() => setIsConfirm(true)}>
-              <Input
-                type="text"
-                label="名前"
-                maxLength={20}
-                minLength={1}
-                content={name}
-                changeContent={setName}
-                required={true}
-              />
-              <Input
-                type="text"
-                label="ひとこと"
-                maxLength={50}
-                content={comment}
-                changeContent={setComment}
-              />
-              <Button className="flex m-auto my-5">参加する</Button>
-            </FormWrapper>
+            {!isCapacityOver && !isTimeOver && !isClosed ? (
+              <FormWrapper onSubmit={() => setIsConfirm(true)}>
+                <Input
+                  type="text"
+                  label="名前"
+                  maxLength={20}
+                  minLength={1}
+                  content={name}
+                  changeContent={setName}
+                  required={true}
+                />
+                <Input
+                  type="text"
+                  label="ひとこと"
+                  maxLength={50}
+                  content={comment}
+                  changeContent={setComment}
+                />
+                <Button className="flex m-auto my-5">参加する</Button>
+              </FormWrapper>
+            ) : (
+              <></>
+            )}
           </div>
         </EventConfirmModal>
       </BasicTemplate>

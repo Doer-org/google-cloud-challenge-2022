@@ -11,12 +11,9 @@ import { Event } from '../../core/types/event';
 import { components } from '../../core/openapi/openapi';
 import { EventBasicInfoCard } from '../../components/molecules/Event/EventBasicInfoCard';
 export default function Index() {
-  // TODO: 自分の作ったevent一覧をとってくるhooks使う
-
   const [events, setEvents] = useState<
     components['schemas']['User_EventsList'][]
   >([]);
-  // const { userId } = UserStore();
   // TODO: SSR化する
   const { userInfo, setUserInfo } = useUserInfoStore();
   useEffect(() => {

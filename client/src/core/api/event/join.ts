@@ -10,31 +10,29 @@ export const tryJoinEvent = (param: {
   comment: string;
 }) => {
   console.log(param)
-  return EventApi.join(param.event_id, {
-    name: param.participant_name,
-    comment: param.comment,
-  });
+  return pipe (
+    EventApi.join(param.event_id, {
+      name: param.participant_name,
+      comment: param.comment,
+    }),
+    TE.chain((r) => {  
+      const body = 
+        TE.tryCatch(
+          () => r.json(),
+          (e : any) => Error(e)
+        ) 
+      return pipe(
+        body,
+        TE.chain((resp200) =>  
+            (resp200.code !== 400) 
+            ? TE.right(r)
+            : TE.left(Error(`response: ${r}`))  
+        )
+      )
+    }),
+  )
 }
 
-// {
-//     return pipe (
-//         // {
-//         //     // id : param.event_id,
-//         //     // name : param.participant_name,
-//         //     // comment : param.cooment
-//         // },
-//         EventApi.join(
-//             param.event_id,{
-//                 name : param.participant_name,
-//                 comment : param.comment
-//             }
-//         ),
-//         fptsHelper.TE.ofApiResponse,
-//     )
-// }
-/**
- * 未実装，patch?
- */
 export const joinEvent = (
   okHandler: (success: unknown) => void,
   errorHandler: (e: Error) => void

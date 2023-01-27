@@ -40,7 +40,7 @@ export default function Participate(event: Event) {
             changeNotice({ type: 'Success', text: 'コピー完了しました' });
           }}
         >
-          URLをコピー
+          募集URLをコピー
         </Button>
         <div className="my-5">
           <LinkTo href={`${origin}/event`}>イベント一覧へ</LinkTo>

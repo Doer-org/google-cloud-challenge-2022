@@ -30,15 +30,14 @@ export default function Home() {
       <MyHead title="すきーま" description="すきーまの説明" />
       <BasicTemplate className="text-center">
         <TopPage />
-        <div className="mx-auto">
+        <div className="my-10">
           <div>
-            <LinkTo href="/event/new" className="m-1 inline-block my-5">
-              イベント募集ページへ
+            <LinkTo href="/event/new" imgPath='/images/top/event.png' className="m-1 inline-block my-1">
+              イベント作成ページへ
             </LinkTo>
           </div>
-
           <div>
-            <LinkTo href="/event" className="m-1 inline-block my-5">
+            <LinkTo href="/event" imgPath='/images/top/list.png' className="m-1 inline-block my-1">
               イベント一覧ページへ
             </LinkTo>
           </div>

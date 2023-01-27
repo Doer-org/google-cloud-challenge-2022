@@ -104,16 +104,23 @@ func (eu *EventUpdate) SetNillableCreatedAt(t *time.Time) *EventUpdate {
 	return eu
 }
 
-// SetLimitHour sets the "limit_hour" field.
-func (eu *EventUpdate) SetLimitHour(i int) *EventUpdate {
-	eu.mutation.ResetLimitHour()
-	eu.mutation.SetLimitHour(i)
+// SetLimitTime sets the "limit_time" field.
+func (eu *EventUpdate) SetLimitTime(t time.Time) *EventUpdate {
+	eu.mutation.SetLimitTime(t)
 	return eu
 }
 
-// AddLimitHour adds i to the "limit_hour" field.
-func (eu *EventUpdate) AddLimitHour(i int) *EventUpdate {
-	eu.mutation.AddLimitHour(i)
+// SetNillableLimitTime sets the "limit_time" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableLimitTime(t *time.Time) *EventUpdate {
+	if t != nil {
+		eu.SetLimitTime(*t)
+	}
+	return eu
+}
+
+// ClearLimitTime clears the value of the "limit_time" field.
+func (eu *EventUpdate) ClearLimitTime() *EventUpdate {
+	eu.mutation.ClearLimitTime()
 	return eu
 }
 
@@ -280,11 +287,6 @@ func (eu *EventUpdate) check() error {
 			return &ValidationError{Name: "size", err: fmt.Errorf(`ent: validator failed for field "Event.size": %w`, err)}
 		}
 	}
-	if v, ok := eu.mutation.LimitHour(); ok {
-		if err := event.LimitHourValidator(v); err != nil {
-			return &ValidationError{Name: "limit_hour", err: fmt.Errorf(`ent: validator failed for field "Event.limit_hour": %w`, err)}
-		}
-	}
 	if v, ok := eu.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
@@ -343,11 +345,11 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := eu.mutation.CreatedAt(); ok {
 		_spec.SetField(event.FieldCreatedAt, field.TypeTime, value)
 	}
-	if value, ok := eu.mutation.LimitHour(); ok {
-		_spec.SetField(event.FieldLimitHour, field.TypeInt, value)
+	if value, ok := eu.mutation.LimitTime(); ok {
+		_spec.SetField(event.FieldLimitTime, field.TypeTime, value)
 	}
-	if value, ok := eu.mutation.AddedLimitHour(); ok {
-		_spec.AddField(event.FieldLimitHour, field.TypeInt, value)
+	if eu.mutation.LimitTimeCleared() {
+		_spec.ClearField(event.FieldLimitTime, field.TypeTime)
 	}
 	if value, ok := eu.mutation.GetType(); ok {
 		_spec.SetField(event.FieldType, field.TypeString, value)
@@ -591,16 +593,23 @@ func (euo *EventUpdateOne) SetNillableCreatedAt(t *time.Time) *EventUpdateOne {
 	return euo
 }
 
-// SetLimitHour sets the "limit_hour" field.
-func (euo *EventUpdateOne) SetLimitHour(i int) *EventUpdateOne {
-	euo.mutation.ResetLimitHour()
-	euo.mutation.SetLimitHour(i)
+// SetLimitTime sets the "limit_time" field.
+func (euo *EventUpdateOne) SetLimitTime(t time.Time) *EventUpdateOne {
+	euo.mutation.SetLimitTime(t)
 	return euo
 }
 
-// AddLimitHour adds i to the "limit_hour" field.
-func (euo *EventUpdateOne) AddLimitHour(i int) *EventUpdateOne {
-	euo.mutation.AddLimitHour(i)
+// SetNillableLimitTime sets the "limit_time" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableLimitTime(t *time.Time) *EventUpdateOne {
+	if t != nil {
+		euo.SetLimitTime(*t)
+	}
+	return euo
+}
+
+// ClearLimitTime clears the value of the "limit_time" field.
+func (euo *EventUpdateOne) ClearLimitTime() *EventUpdateOne {
+	euo.mutation.ClearLimitTime()
 	return euo
 }
 
@@ -774,11 +783,6 @@ func (euo *EventUpdateOne) check() error {
 			return &ValidationError{Name: "size", err: fmt.Errorf(`ent: validator failed for field "Event.size": %w`, err)}
 		}
 	}
-	if v, ok := euo.mutation.LimitHour(); ok {
-		if err := event.LimitHourValidator(v); err != nil {
-			return &ValidationError{Name: "limit_hour", err: fmt.Errorf(`ent: validator failed for field "Event.limit_hour": %w`, err)}
-		}
-	}
 	if v, ok := euo.mutation.GetType(); ok {
 		if err := event.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Event.type": %w`, err)}
@@ -854,11 +858,11 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if value, ok := euo.mutation.CreatedAt(); ok {
 		_spec.SetField(event.FieldCreatedAt, field.TypeTime, value)
 	}
-	if value, ok := euo.mutation.LimitHour(); ok {
-		_spec.SetField(event.FieldLimitHour, field.TypeInt, value)
+	if value, ok := euo.mutation.LimitTime(); ok {
+		_spec.SetField(event.FieldLimitTime, field.TypeTime, value)
 	}
-	if value, ok := euo.mutation.AddedLimitHour(); ok {
-		_spec.AddField(event.FieldLimitHour, field.TypeInt, value)
+	if euo.mutation.LimitTimeCleared() {
+		_spec.ClearField(event.FieldLimitTime, field.TypeTime)
 	}
 	if value, ok := euo.mutation.GetType(); ok {
 		_spec.SetField(event.FieldType, field.TypeString, value)

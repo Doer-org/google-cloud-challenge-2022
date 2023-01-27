@@ -30,7 +30,7 @@ func (repo *Event) CreateNewEvent(ctx context.Context, adminId uuid.UUID, ee *en
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
 		SetSize(ee.Size).
-		SetLimitHour(ee.LimitHour).
+		SetLimitTime(ee.LimitTime).
 		SetAdminID(adminId).
 		SetType(string(constant.TYPE_ONCE)).
 		SetState(string(constant.STATE_OPEN)).
@@ -63,7 +63,7 @@ func (repo *Event) UpdateEventById(ctx context.Context, eventId uuid.UUID, ee *e
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
 		SetSize(ee.Size).
-		SetLimitHour(ee.LimitHour).
+		SetLimitTime(ee.LimitTime).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("event.UpdateOneID: %w", err)

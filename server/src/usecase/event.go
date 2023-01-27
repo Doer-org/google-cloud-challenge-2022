@@ -14,10 +14,10 @@ import (
 )
 
 type IEvent interface {
-	CreateNewEvent(ctx context.Context, name, detail, location string, size, limithour int) (*ent.Event, error)
+	CreateNewEvent(ctx context.Context, name, detail, location string, size int, limit time.Time) (*ent.Event, error)
 	GetEventById(ctx context.Context, eventIdString string) (*ent.Event, error)
 	DeleteEventById(ctx context.Context, eventIdString string) error
-	UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string, size, limithour int) (*ent.Event, error)
+	UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string, size int, limit time.Time) (*ent.Event, error)
 	GetEventAdminById(ctx context.Context, eventIdString string) (*ent.User, error)
 	GetEventComments(ctx context.Context, eventIdString string) ([]*ent.Comment, error)
 	AddNewEventParticipant(ctx context.Context, eventIdString, name, comment string) error
@@ -35,7 +35,7 @@ func NewEvent(r repository.IEvent) IEvent {
 	}
 }
 
-func (uc *Event) CreateNewEvent(ctx context.Context, name, detail, location string, size, limithour int) (*ent.Event, error) {
+func (uc *Event) CreateNewEvent(ctx context.Context, name, detail, location string, size int, limit time.Time) (*ent.Event, error) {
 	userSessId, ok := mycontext.GetUser(ctx)
 	if !ok {
 		return nil, fmt.Errorf("GetUser: failed to get user from context")
@@ -46,15 +46,12 @@ func (uc *Event) CreateNewEvent(ctx context.Context, name, detail, location stri
 	if size == 0 {
 		return nil, fmt.Errorf("size is invalid")
 	}
-	if limithour <= 0 || limithour >= 24 {
-		return nil, fmt.Errorf("limit hour is invalid")
-	}
 	ee := &ent.Event{
 		Name:      name,
 		Detail:    detail,
 		Location:  location,
 		Size:      size,
-		LimitHour: limithour,
+		LimitTime: limit,
 	}
 	return uc.repo.CreateNewEvent(ctx, userSessId, ee)
 }
@@ -83,7 +80,7 @@ func (uc *Event) DeleteEventById(ctx context.Context, eventIdString string) erro
 	return uc.repo.DeleteEventById(ctx, eventId)
 }
 
-func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string, size, limithour int) (*ent.Event, error) {
+func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string, size int, limit time.Time) (*ent.Event, error) {
 	eventId, err := uuid.Parse(eventIdString)
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
@@ -103,14 +100,13 @@ func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name
 	if size == 0 {
 		return nil, fmt.Errorf("size is invalid")
 	}
-	if limithour <= 0 || limithour >= 24 {
-		return nil, fmt.Errorf("limit hour is invalid")
-	}
+	// TODO: 作成日時より前にLimit timeを設定できないようにする
 	ee := &ent.Event{
-		Name:     name,
-		Detail:   detail,
-		Location: location,
-		Size:     size,
+		Name:      name,
+		Detail:    detail,
+		Location:  location,
+		Size:      size,
+		LimitTime: limit,
 	}
 	return uc.repo.UpdateEventById(ctx, eventId, ee)
 }
@@ -150,7 +146,7 @@ func (uc *Event) AddNewEventParticipant(ctx context.Context, eventIdString, name
 	if event.Size <= nowSize {
 		return fmt.Errorf("the room is already full")
 	}
-	if (time.Now().Sub(event.CreatedAt)).Hours() > float64(event.LimitHour) {
+	if time.Now().After(event.LimitTime) {
 		return fmt.Errorf("event recruitment time has passed")
 	}
 	if name == "" {

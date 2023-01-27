@@ -38,6 +38,9 @@ export default function Index() {
           {/* TODO: stateがcloseじゃなかったらreturn */}
         </TypoWrapper>
         {events.map((event: components['schemas']['User_EventsList']) => {
+          if (event.state === 'close') {
+            return null;
+          }
           return (
             <div key={event.name}>
               <EventWrapper>

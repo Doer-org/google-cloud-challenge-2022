@@ -51,7 +51,7 @@ export default function New() {
           createEvent(
             {
               user_id: userInfo.userId,
-              user_name: 'atode', //TODO :
+              user_name: 'atode', //FIXME : user storeに保存・取得
               icon: 'mada',
             },
             {
@@ -59,8 +59,9 @@ export default function New() {
               max_member: Number(capacity),
               detail: detail,
               location: JSON.stringify(location),
-              limit_time: new Date(),
-              created_at: new Date(),
+
+              created_at: new Date(Date.now()),
+              limit_time: new Date(Date.now()), // FIXME: 締め切り時間設定
             }
           );
         }}

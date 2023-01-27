@@ -22,9 +22,29 @@ export default function New() {
   const [capacity, setCapacity] = useState<number>(1);
   const [detail, setDetail] = useState('');
   const [location, setLocation] = useState<null | TMapPosition>(null);
+  const [limit, setLimit] = useState('');
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
+  const today = new Date();
+  const formatDate = (dt: any, lim?: number) => {
+    const date = new Date(dt.setDate(lim ? dt.getDate() + lim : dt.getDate()));
+    console.log('date', date);
+    return (
+      date.getFullYear() +
+      '-' +
+      `${date.getMonth()}` +
+      '-' +
+      `${date.getDate()}` +
+      'T' +
+      `${date.getHours()}` +
+      ':' +
+      `${date.getMinutes()}`
+    );
+  };
+
+  console.log('today', formatDate(today));
+  console.log('more day', formatDate(today, 5));
 
   const createEvent = createNewEvent(
     (ok) => {
@@ -75,6 +95,15 @@ export default function New() {
           max={5}
           content={capacity}
           changeContent={setCapacity}
+          required={true}
+        />
+        <Input
+          type="datetime-local"
+          label="締切"
+          min={formatDate(today)}
+          max={formatDate(today, 5)}
+          content={limit}
+          changeContent={setLimit}
           required={true}
         />
         <Textarea

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/constant"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
@@ -148,6 +149,9 @@ func (uc *Event) AddNewEventParticipant(ctx context.Context, eventIdString, name
 	}
 	if event.Size <= nowSize {
 		return fmt.Errorf("the room is already full")
+	}
+	if (time.Now().Sub(event.CreatedAt)).Hours() > float64(event.LimitHour) {
+		return fmt.Errorf("event recruitment time has passed")
 	}
 	if name == "" {
 		return fmt.Errorf("name is empty")

@@ -50,7 +50,9 @@ export default function Participate(event: Event) {
       router.push(`${origin}/event/${event.event_id}/`);
       changeNotice({ type: 'Success', text: '参加しました！' });
     },
-    (e) => {}
+    (e) => {
+      changeNotice({ type: 'Error', text: '参加に失敗しました' });
+    }
   );
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');

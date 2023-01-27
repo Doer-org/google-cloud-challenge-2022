@@ -26,25 +26,10 @@ export default function New() {
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
-  const today = new Date();
-  const formatDate = (dt: any, lim?: number) => {
-    const date = new Date(dt.setDate(lim ? dt.getDate() + lim : dt.getDate()));
-    console.log('date', date);
-    return (
-      date.getFullYear() +
-      '-' +
-      `${date.getMonth()}` +
-      '-' +
-      `${date.getDate()}` +
-      'T' +
-      `${date.getHours()}` +
-      ':' +
-      `${date.getMinutes()}`
-    );
-  };
 
-  console.log('today', formatDate(today));
-  console.log('more day', formatDate(today, 5));
+  const now = new Date();
+  let tomorrow = new Date();
+  tomorrow.setDate(now.getDate() + 1);
 
   const createEvent = createNewEvent(
     (ok) => {
@@ -74,7 +59,8 @@ export default function New() {
               max_member: Number(capacity),
               detail: detail,
               location: JSON.stringify(location),
-              timestamp: Date.now(),
+              limit_time: new Date(),
+              created_at: new Date(),
             }
           );
         }}
@@ -100,8 +86,8 @@ export default function New() {
         <Input
           type="datetime-local"
           label="締切"
-          min={formatDate(today)}
-          max={formatDate(today, 5)}
+          min={now.toISOString().slice(0, 16)}
+          max={tomorrow.toISOString().slice(0, 16)}
           content={limit}
           changeContent={setLimit}
           required={true}

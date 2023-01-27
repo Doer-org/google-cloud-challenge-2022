@@ -54,6 +54,8 @@ var (
 		{Name: "detail", Type: field.TypeString, Nullable: true, Size: 500},
 		{Name: "location", Type: field.TypeString, Nullable: true, Size: 200},
 		{Name: "size", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "limit_hour", Type: field.TypeInt},
 		{Name: "type", Type: field.TypeString, Size: 30},
 		{Name: "state", Type: field.TypeString, Size: 30},
 		{Name: "event_admin", Type: field.TypeUUID, Nullable: true},
@@ -66,7 +68,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "events_users_admin",
-				Columns:    []*schema.Column{EventsColumns[7]},
+				Columns:    []*schema.Column{EventsColumns[9]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

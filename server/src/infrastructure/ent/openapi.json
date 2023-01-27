@@ -33,6 +33,13 @@
                   "size": {
                     "type": "integer"
                   },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "limit_hour": {
+                    "type": "integer"
+                  },
                   "type": {
                     "type": "string"
                   },
@@ -61,6 +68,8 @@
                 "required": [
                   "name",
                   "size",
+                  "created_at",
+                  "limit_hour",
                   "type",
                   "state"
                 ]
@@ -210,6 +219,13 @@
                     "type": "string"
                   },
                   "size": {
+                    "type": "integer"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "limit_hour": {
                     "type": "integer"
                   },
                   "type": {
@@ -855,6 +871,13 @@
           "size": {
             "type": "integer"
           },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "limit_hour": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -881,6 +904,8 @@
           "id",
           "name",
           "size",
+          "created_at",
+          "limit_hour",
           "type",
           "state"
         ]
@@ -904,6 +929,13 @@
           "size": {
             "type": "integer"
           },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "limit_hour": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -915,6 +947,8 @@
           "id",
           "name",
           "size",
+          "created_at",
+          "limit_hour",
           "type",
           "state"
         ]
@@ -938,6 +972,13 @@
           "size": {
             "type": "integer"
           },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "limit_hour": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -949,6 +990,8 @@
           "id",
           "name",
           "size",
+          "created_at",
+          "limit_hour",
           "type",
           "state"
         ]
@@ -972,6 +1015,13 @@
           "size": {
             "type": "integer"
           },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "limit_hour": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -983,6 +1033,8 @@
           "id",
           "name",
           "size",
+          "created_at",
+          "limit_hour",
           "type",
           "state"
         ]
@@ -1243,6 +1295,13 @@
           "size": {
             "type": "integer"
           },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "limit_hour": {
+            "type": "integer"
+          },
           "type": {
             "type": "string"
           },
@@ -1254,6 +1313,8 @@
           "id",
           "name",
           "size",
+          "created_at",
+          "limit_hour",
           "type",
           "state"
         ]

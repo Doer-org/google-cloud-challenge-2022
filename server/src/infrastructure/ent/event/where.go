@@ -3,6 +3,8 @@
 package event
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
@@ -72,6 +74,16 @@ func Location(v string) predicate.Event {
 // Size applies equality check predicate on the "size" field. It's identical to SizeEQ.
 func Size(v int) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldSize, v))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// LimitHour applies equality check predicate on the "limit_hour" field. It's identical to LimitHourEQ.
+func LimitHour(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLimitHour, v))
 }
 
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
@@ -337,6 +349,86 @@ func SizeLT(v int) predicate.Event {
 // SizeLTE applies the LTE predicate on the "size" field.
 func SizeLTE(v int) predicate.Event {
 	return predicate.Event(sql.FieldLTE(FieldSize, v))
+}
+
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// LimitHourEQ applies the EQ predicate on the "limit_hour" field.
+func LimitHourEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLimitHour, v))
+}
+
+// LimitHourNEQ applies the NEQ predicate on the "limit_hour" field.
+func LimitHourNEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldLimitHour, v))
+}
+
+// LimitHourIn applies the In predicate on the "limit_hour" field.
+func LimitHourIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldLimitHour, vs...))
+}
+
+// LimitHourNotIn applies the NotIn predicate on the "limit_hour" field.
+func LimitHourNotIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldLimitHour, vs...))
+}
+
+// LimitHourGT applies the GT predicate on the "limit_hour" field.
+func LimitHourGT(v int) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldLimitHour, v))
+}
+
+// LimitHourGTE applies the GTE predicate on the "limit_hour" field.
+func LimitHourGTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldLimitHour, v))
+}
+
+// LimitHourLT applies the LT predicate on the "limit_hour" field.
+func LimitHourLT(v int) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldLimitHour, v))
+}
+
+// LimitHourLTE applies the LTE predicate on the "limit_hour" field.
+func LimitHourLTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldLimitHour, v))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.

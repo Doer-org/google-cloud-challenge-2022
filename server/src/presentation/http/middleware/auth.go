@@ -7,7 +7,6 @@ import (
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	mycontext "github.com/Doer-org/google-cloud-challenge-2022/utils/context"
-	"golang.org/x/oauth2"
 )
 
 type Auth struct {
@@ -41,15 +40,12 @@ func (m *Auth) Authenticate(next http.Handler) http.Handler {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: RefreshAccessToken: %w", err)), http.StatusBadRequest)
 			return
 		}
-		token = newToken
-		r = setToContext(r, userId.String(), token)
+
+		ctx := r.Context()
+		ctx = mycontext.SetUserId(ctx, userId.String())
+		ctx = mycontext.SetToken(ctx, newToken)
+		r = r.WithContext(ctx)
+
 		next.ServeHTTP(w, r)
 	})
-}
-
-func setToContext(r *http.Request, userID string, token *oauth2.Token) *http.Request {
-	ctx := r.Context()
-	ctx = mycontext.SetUserId(ctx, userID)
-	ctx = mycontext.SetToken(ctx, token)
-	return r.WithContext(ctx)
 }

@@ -34,11 +34,11 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	event, err := h.uc.CreateNewEvent(
 		r.Context(),
-		j.Admin,
 		j.Name,
 		j.Detail,
 		j.Location,
 		j.Size,
+		j.LimitHour,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: CreateNewEvent: %w", err)), http.StatusBadRequest)
@@ -89,6 +89,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		j.Detail,
 		j.Location,
 		j.Size,
+		j.LimitHour,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateEventById: %w", err)), http.StatusBadRequest)
@@ -178,13 +179,13 @@ func (h *Event) GetEventUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 type eventJson struct {
-	Name     string `json:"name"`
-	Detail   string `json:"detail"`
-	Location string `json:"location"`
-	Size     int    `json:"size"`
-	Admin    string `json:"admin"`
-	State    string `json:"state"`
-	Type     string `json:"type"`
+	Name      string `json:"name"`
+	Detail    string `json:"detail"`
+	Location  string `json:"location"`
+	Size      int    `json:"size"`
+	LimitHour int    `json:"limit_hour"`
+	State     string `json:"state"`
+	Type      string `json:"type"`
 }
 
 type participantJson struct {

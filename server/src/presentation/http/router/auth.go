@@ -23,7 +23,7 @@ func (r *Router) InitAuth(c *ent.Client) error {
 	rg := google.NewClient(callbackApi)
 	userUC := usecase.NewUser(userRepo)
 	authUC := usecase.NewAuth(authRepo, rg, userRepo)
-	h := handler.NewAuth(authUC,userUC)
+	h := handler.NewAuth(authUC, userUC)
 
 	// auth middleware
 	m := middleware.NewAuth(authUC)

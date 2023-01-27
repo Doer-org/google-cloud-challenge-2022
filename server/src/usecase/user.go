@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/service"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/google/uuid"
+	mycontext "github.com/Doer-org/google-cloud-challenge-2022/utils/context"
 )
 
 type IUser interface {
@@ -66,6 +68,10 @@ func (uc *User) DeleteUserById(ctx context.Context, userIdString string) error {
 	if err != nil {
 		return fmt.Errorf("userId Parse: %w", err)
 	}
+	err = mycontext.CompareUserIdAndUserSessionId(ctx, userId)
+	if err != nil {
+		return fmt.Errorf("compareUserIdAndUserSessionId: %w", err)
+	}
 	return uc.repo.DeleteUserById(ctx, userId)
 }
 
@@ -73,6 +79,10 @@ func (uc *User) UpdateUserById(ctx context.Context, userIdString string, name st
 	userId, err := uuid.Parse(userIdString)
 	if err != nil {
 		return nil, fmt.Errorf("userId Parse: %w", err)
+	}
+	err = mycontext.CompareUserIdAndUserSessionId(ctx, userId)
+	if err != nil {
+		return nil, fmt.Errorf("compareUserIdAndUserSessionId: %w", err)
 	}
 	if name == "" {
 		return nil, fmt.Errorf("name is empty")

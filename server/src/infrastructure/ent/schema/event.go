@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/contrib/entoas"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -31,6 +33,11 @@ func (Event) Fields() []ent.Field {
 		field.Int("size").
 			NonNegative().
 			Max(5),
+		field.Time("created_at").
+			Default(time.Now),
+		field.Int("limit_hour").
+			Min(1).
+			Max(24),
 		field.String("type").
 			NotEmpty().
 			MaxLen(30),

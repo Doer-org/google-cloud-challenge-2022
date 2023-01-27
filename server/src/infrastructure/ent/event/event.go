@@ -3,6 +3,8 @@
 package event
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -19,6 +21,10 @@ const (
 	FieldLocation = "location"
 	// FieldSize holds the string denoting the size field in the database.
 	FieldSize = "size"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldLimitHour holds the string denoting the limit_hour field in the database.
+	FieldLimitHour = "limit_hour"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldState holds the string denoting the state field in the database.
@@ -59,6 +65,8 @@ var Columns = []string{
 	FieldDetail,
 	FieldLocation,
 	FieldSize,
+	FieldCreatedAt,
+	FieldLimitHour,
 	FieldType,
 	FieldState,
 }
@@ -99,6 +107,10 @@ var (
 	LocationValidator func(string) error
 	// SizeValidator is a validator for the "size" field. It is called by the builders before save.
 	SizeValidator func(int) error
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() time.Time
+	// LimitHourValidator is a validator for the "limit_hour" field. It is called by the builders before save.
+	LimitHourValidator func(int) error
 	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	TypeValidator func(string) error
 	// StateValidator is a validator for the "state" field. It is called by the builders before save.

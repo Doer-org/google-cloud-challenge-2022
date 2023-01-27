@@ -17,7 +17,7 @@ type Auth struct {
 	userUC usecase.IUser
 }
 
-func NewAuth(auc usecase.IAuth,uuc usecase.IUser) *Auth {
+func NewAuth(auc usecase.IAuth, uuc usecase.IUser) *Auth {
 	return &Auth{
 		authUC: auc,
 		userUC: uuc,
@@ -119,12 +119,12 @@ func (h *Auth) User(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Cookie: %w", err)), http.StatusBadRequest)
 		return
 	}
-	userId,err := h.authUC.GetUserIdFromSession(r.Context(),sessCookie.Value)
+	userId, err := h.authUC.GetUserIdFromSession(r.Context(), sessCookie.Value)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserIdFromSession: %w", err)), http.StatusBadRequest)
 		return
 	}
-	user, err := h.userUC.GetUserById(r.Context(),userId.String())
+	user, err := h.userUC.GetUserById(r.Context(), userId.String())
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserById: %w", err)), http.StatusBadRequest)
 		return

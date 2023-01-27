@@ -18,4 +18,5 @@ type IEvent interface {
 	ChangeEventStatusToCloseOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error)
 	ChangeEventStatusToCancelOfId(ctx context.Context, eventId uuid.UUID) (*ent.Event, error)
 	GetEventUsers(ctx context.Context, eventId uuid.UUID) ([]*ent.User, error)
+	GetEventUsersCnt(ctx context.Context, eventId uuid.UUID) (int, error)
 }

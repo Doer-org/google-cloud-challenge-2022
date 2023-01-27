@@ -20,14 +20,13 @@ export default function Close(event: Event) {
   const router = useRouter();
   const close = closeEvent(
     (ok) => {
-      router.push('/events');
+      router.push('/event');
       changeNotice({ type: 'Success', text: '締切ました' });
     },
     (err) => {
       changeNotice({ type: 'Error', text: '締切に失敗しました' });
     }
   );
-  console.log(event);
   return (
     <>
       <MyHead title="イベント締切ページ" description="" />

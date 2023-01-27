@@ -2,7 +2,7 @@ import { createApiClient } from '../lib/ApiClient';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 
-const baseUrl = // TODO: テスト用の環境変数を読み込む
+const baseUrl =
     process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:8080" 
      //process.env.NEXT_PUBLIC_SERVER_URL ?? "https://gc-api-qgai5lo5hq-an.a.run.app" 
     // // "http://localhost:8080" 

@@ -71,6 +71,7 @@ func (uc *Auth) Authorization(ctx context.Context, state, code string) (string, 
 		return storedState.RedirectURL, "", fmt.Errorf("storeSession: %w", err)
 	}
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
+	// Stateの役割: https://qiita.com/naoya_matsuda/items/67a5a0fb4f50ac1e30c1
 	if err := uc.repoAuth.DeleteState(ctx, state); err != nil {
 		log.Println("DeleteState: %w", err)
 		return storedState.RedirectURL, sessionID, nil

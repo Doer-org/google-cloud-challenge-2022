@@ -81,9 +81,9 @@ func CreatedAt(v time.Time) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// LimitHour applies equality check predicate on the "limit_hour" field. It's identical to LimitHourEQ.
-func LimitHour(v int) predicate.Event {
-	return predicate.Event(sql.FieldEQ(FieldLimitHour, v))
+// LimitTime applies equality check predicate on the "limit_time" field. It's identical to LimitTimeEQ.
+func LimitTime(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLimitTime, v))
 }
 
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
@@ -391,44 +391,54 @@ func CreatedAtLTE(v time.Time) predicate.Event {
 	return predicate.Event(sql.FieldLTE(FieldCreatedAt, v))
 }
 
-// LimitHourEQ applies the EQ predicate on the "limit_hour" field.
-func LimitHourEQ(v int) predicate.Event {
-	return predicate.Event(sql.FieldEQ(FieldLimitHour, v))
+// LimitTimeEQ applies the EQ predicate on the "limit_time" field.
+func LimitTimeEQ(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLimitTime, v))
 }
 
-// LimitHourNEQ applies the NEQ predicate on the "limit_hour" field.
-func LimitHourNEQ(v int) predicate.Event {
-	return predicate.Event(sql.FieldNEQ(FieldLimitHour, v))
+// LimitTimeNEQ applies the NEQ predicate on the "limit_time" field.
+func LimitTimeNEQ(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldLimitTime, v))
 }
 
-// LimitHourIn applies the In predicate on the "limit_hour" field.
-func LimitHourIn(vs ...int) predicate.Event {
-	return predicate.Event(sql.FieldIn(FieldLimitHour, vs...))
+// LimitTimeIn applies the In predicate on the "limit_time" field.
+func LimitTimeIn(vs ...time.Time) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldLimitTime, vs...))
 }
 
-// LimitHourNotIn applies the NotIn predicate on the "limit_hour" field.
-func LimitHourNotIn(vs ...int) predicate.Event {
-	return predicate.Event(sql.FieldNotIn(FieldLimitHour, vs...))
+// LimitTimeNotIn applies the NotIn predicate on the "limit_time" field.
+func LimitTimeNotIn(vs ...time.Time) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldLimitTime, vs...))
 }
 
-// LimitHourGT applies the GT predicate on the "limit_hour" field.
-func LimitHourGT(v int) predicate.Event {
-	return predicate.Event(sql.FieldGT(FieldLimitHour, v))
+// LimitTimeGT applies the GT predicate on the "limit_time" field.
+func LimitTimeGT(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldLimitTime, v))
 }
 
-// LimitHourGTE applies the GTE predicate on the "limit_hour" field.
-func LimitHourGTE(v int) predicate.Event {
-	return predicate.Event(sql.FieldGTE(FieldLimitHour, v))
+// LimitTimeGTE applies the GTE predicate on the "limit_time" field.
+func LimitTimeGTE(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldLimitTime, v))
 }
 
-// LimitHourLT applies the LT predicate on the "limit_hour" field.
-func LimitHourLT(v int) predicate.Event {
-	return predicate.Event(sql.FieldLT(FieldLimitHour, v))
+// LimitTimeLT applies the LT predicate on the "limit_time" field.
+func LimitTimeLT(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldLimitTime, v))
 }
 
-// LimitHourLTE applies the LTE predicate on the "limit_hour" field.
-func LimitHourLTE(v int) predicate.Event {
-	return predicate.Event(sql.FieldLTE(FieldLimitHour, v))
+// LimitTimeLTE applies the LTE predicate on the "limit_time" field.
+func LimitTimeLTE(v time.Time) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldLimitTime, v))
+}
+
+// LimitTimeIsNil applies the IsNil predicate on the "limit_time" field.
+func LimitTimeIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldLimitTime))
+}
+
+// LimitTimeNotNil applies the NotNil predicate on the "limit_time" field.
+func LimitTimeNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldLimitTime))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.

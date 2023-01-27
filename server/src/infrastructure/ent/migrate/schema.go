@@ -55,7 +55,7 @@ var (
 		{Name: "location", Type: field.TypeString, Nullable: true, Size: 200},
 		{Name: "size", Type: field.TypeInt},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "limit_hour", Type: field.TypeInt},
+		{Name: "limit_time", Type: field.TypeTime, Nullable: true},
 		{Name: "type", Type: field.TypeString, Size: 30},
 		{Name: "state", Type: field.TypeString, Size: 30},
 		{Name: "event_admin", Type: field.TypeUUID, Nullable: true},

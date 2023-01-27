@@ -28,8 +28,8 @@ type Event struct {
 	Size int `json:"size,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// LimitHour holds the value of the "limit_hour" field.
-	LimitHour int `json:"limit_hour,omitempty"`
+	// LimitTime holds the value of the "limit_time" field.
+	LimitTime time.Time `json:"limit_time,omitempty"`
 	// Type holds the value of the "type" field.
 	Type string `json:"type,omitempty"`
 	// State holds the value of the "state" field.
@@ -89,11 +89,11 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldSize, event.FieldLimitHour:
+		case event.FieldSize:
 			values[i] = new(sql.NullInt64)
 		case event.FieldName, event.FieldDetail, event.FieldLocation, event.FieldType, event.FieldState:
 			values[i] = new(sql.NullString)
-		case event.FieldCreatedAt:
+		case event.FieldCreatedAt, event.FieldLimitTime:
 			values[i] = new(sql.NullTime)
 		case event.FieldID:
 			values[i] = new(uuid.UUID)
@@ -150,11 +150,11 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.CreatedAt = value.Time
 			}
-		case event.FieldLimitHour:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field limit_hour", values[i])
+		case event.FieldLimitTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field limit_time", values[i])
 			} else if value.Valid {
-				e.LimitHour = int(value.Int64)
+				e.LimitTime = value.Time
 			}
 		case event.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -233,8 +233,8 @@ func (e *Event) String() string {
 	builder.WriteString("created_at=")
 	builder.WriteString(e.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("limit_hour=")
-	builder.WriteString(fmt.Sprintf("%v", e.LimitHour))
+	builder.WriteString("limit_time=")
+	builder.WriteString(e.LimitTime.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(e.Type)

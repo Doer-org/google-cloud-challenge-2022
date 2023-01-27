@@ -36,10 +36,7 @@ export default function Participate(event: Event) {
           border
           onClick={() => {
             copy(`${origin}/event/${eventId}/participate`);
-            changeNotice({
-              type: 'Success',
-              text: 'コピー完了しました',
-            });
+            changeNotice({ type: 'Success', text: 'コピー完了しました' });
           }}
         >
           URLをコピー

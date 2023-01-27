@@ -23,8 +23,8 @@ const (
 	FieldSize = "size"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldLimitHour holds the string denoting the limit_hour field in the database.
-	FieldLimitHour = "limit_hour"
+	// FieldLimitTime holds the string denoting the limit_time field in the database.
+	FieldLimitTime = "limit_time"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldState holds the string denoting the state field in the database.
@@ -66,7 +66,7 @@ var Columns = []string{
 	FieldLocation,
 	FieldSize,
 	FieldCreatedAt,
-	FieldLimitHour,
+	FieldLimitTime,
 	FieldType,
 	FieldState,
 }
@@ -109,8 +109,6 @@ var (
 	SizeValidator func(int) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// LimitHourValidator is a validator for the "limit_hour" field. It is called by the builders before save.
-	LimitHourValidator func(int) error
 	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	TypeValidator func(string) error
 	// StateValidator is a validator for the "state" field. It is called by the builders before save.

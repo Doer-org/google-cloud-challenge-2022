@@ -4,8 +4,8 @@ type TProps<T> = {
   content: string | number;
   changeContent: (content: T) => void;
   required?: boolean;
-  max?: number;
-  min?: number;
+  max?: number | string;
+  min?: number | string;
   maxLength?: number;
   minLength?: number;
 };

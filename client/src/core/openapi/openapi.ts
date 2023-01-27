@@ -124,7 +124,8 @@ export interface components {
       size: number;
       /** Format: date-time */
       created_at: string;
-      limit_hour: number;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
       admin?: components["schemas"]["User"];
@@ -140,7 +141,8 @@ export interface components {
       size: number;
       /** Format: date-time */
       created_at: string;
-      limit_hour: number;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
     };
@@ -153,7 +155,8 @@ export interface components {
       size: number;
       /** Format: date-time */
       created_at: string;
-      limit_hour: number;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
     };
@@ -166,7 +169,8 @@ export interface components {
       size: number;
       /** Format: date-time */
       created_at: string;
-      limit_hour: number;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
     };
@@ -250,7 +254,8 @@ export interface components {
       size: number;
       /** Format: date-time */
       created_at: string;
-      limit_hour: number;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
     };
@@ -332,7 +337,8 @@ export interface operations {
           size: number;
           /** Format: date-time */
           created_at: string;
-          limit_hour: number;
+          /** Format: date-time */
+          limit_time?: string;
           type: string;
           state: string;
           /** Format: uuid */
@@ -419,7 +425,8 @@ export interface operations {
           size?: number;
           /** Format: date-time */
           created_at?: string;
-          limit_hour?: number;
+          /** Format: date-time */
+          limit_time?: string;
           type?: string;
           state?: string;
           /** Format: uuid */

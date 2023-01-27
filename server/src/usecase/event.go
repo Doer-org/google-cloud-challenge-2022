@@ -139,10 +139,12 @@ func (uc *Event) AddNewEventParticipant(ctx context.Context, eventIdString, name
 	if event.State != constant.STATE_OPEN {
 		return fmt.Errorf("state is not open")
 	}
-	nowSize, err := uc.repo.GetEventUsersCnt(ctx, eventId)
+	eventUsersCnt, err := uc.repo.GetEventUsersCnt(ctx, eventId)
 	if err != nil {
 		return fmt.Errorf("repo.GetEventUsersCnt: %w", err)
 	}
+	// イベント作成者を引く
+	nowSize := eventUsersCnt - 1
 	if event.Size <= nowSize {
 		return fmt.Errorf("the room is already full")
 	}

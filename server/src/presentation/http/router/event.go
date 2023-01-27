@@ -39,7 +39,6 @@ func (r *Router) InitEvent(c *ent.Client) error {
 		r.Route("/", func(r chi.Router) {
 			r.Use(m.Authenticate)
 			r.Post("/", eventH.CreateNewEvent)
-			// TODO: sessionを持つユーザーであれば誰でも削除できるようになっているので、
 			// そのeventのadminか確認する処理が必要。user apiも同様の処理がいる
 			r.Delete("/{id}", eventH.DeleteEventById)
 			r.Patch("/{id}", eventH.UpdateEventById)

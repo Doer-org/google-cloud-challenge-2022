@@ -103,24 +103,6 @@ func init() {
 	eventDescCreatedAt := eventFields[5].Descriptor()
 	// event.DefaultCreatedAt holds the default value on creation for the created_at field.
 	event.DefaultCreatedAt = eventDescCreatedAt.Default.(func() time.Time)
-	// eventDescLimitHour is the schema descriptor for limit_hour field.
-	eventDescLimitHour := eventFields[6].Descriptor()
-	// event.LimitHourValidator is a validator for the "limit_hour" field. It is called by the builders before save.
-	event.LimitHourValidator = func() func(int) error {
-		validators := eventDescLimitHour.Validators
-		fns := [...]func(int) error{
-			validators[0].(func(int) error),
-			validators[1].(func(int) error),
-		}
-		return func(limit_hour int) error {
-			for _, fn := range fns {
-				if err := fn(limit_hour); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	// eventDescType is the schema descriptor for type field.
 	eventDescType := eventFields[7].Descriptor()
 	// event.TypeValidator is a validator for the "type" field. It is called by the builders before save.

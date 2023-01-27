@@ -47,6 +47,8 @@ export default function Edit(event: Event) {
             size: Number(capacity),
             type: '???',
             state: '???',
+            created_at: undefined,
+            limit_time: undefined
           })
         }
       >

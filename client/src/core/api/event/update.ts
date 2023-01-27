@@ -6,10 +6,31 @@ import { EventApi } from '../../utils/gcChallengeApi'
 import { components, operations, paths } from "../../openapi/openapi"
  
   
-export const tryUpdateEvent = (param : components["schemas"]["EventUpdate"])   => { 
+export const tryUpdateEvent = (
+    param : {
+        id : string // eventID
+        name: string,
+        size : number,
+        detail : string,
+        location : string,
+        created_at : Date,
+        limit_time : Date,
+        type ?: string,
+        state ?: string
+    } 
+
+)   => { 
     return pipe (
         EventApi.updateEvent(
-            param,
+            {
+                name: param.name,
+                detail: param.detail,
+                location: param.location,
+                size: param.size,
+                created_at: param.created_at.toISOString(),
+                limit_time: param.limit_time.toISOString(),
+                id: param.id
+            }, 
             {
                 credentials: 'include',
             }

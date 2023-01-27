@@ -11,7 +11,8 @@ export const tryCreateNewEvent = (
         max_member : number,
         detail : string,
         location : string,
-        timestamp : number
+        created_at : Date,
+        limit_time : Date
     } 
 ) : TE.TaskEither<Error, {url:string, created_event : Event}> => { 
     return pipe ( 
@@ -23,7 +24,9 @@ export const tryCreateNewEvent = (
             location: param.location,
             type:  "??",
             state:  "open",
-            size: param.max_member
+            size: param.max_member,
+            created_at: param.created_at.toISOString(),
+            limit_time: param.limit_time.toISOString()
         }, 
         {
           credentials: 'include',

@@ -77,9 +77,17 @@ func (ec *EventCreate) SetNillableCreatedAt(t *time.Time) *EventCreate {
 	return ec
 }
 
-// SetLimitHour sets the "limit_hour" field.
-func (ec *EventCreate) SetLimitHour(i int) *EventCreate {
-	ec.mutation.SetLimitHour(i)
+// SetLimitTime sets the "limit_time" field.
+func (ec *EventCreate) SetLimitTime(t time.Time) *EventCreate {
+	ec.mutation.SetLimitTime(t)
+	return ec
+}
+
+// SetNillableLimitTime sets the "limit_time" field if the given value is not nil.
+func (ec *EventCreate) SetNillableLimitTime(t *time.Time) *EventCreate {
+	if t != nil {
+		ec.SetLimitTime(*t)
+	}
 	return ec
 }
 
@@ -234,14 +242,6 @@ func (ec *EventCreate) check() error {
 	if _, ok := ec.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Event.created_at"`)}
 	}
-	if _, ok := ec.mutation.LimitHour(); !ok {
-		return &ValidationError{Name: "limit_hour", err: errors.New(`ent: missing required field "Event.limit_hour"`)}
-	}
-	if v, ok := ec.mutation.LimitHour(); ok {
-		if err := event.LimitHourValidator(v); err != nil {
-			return &ValidationError{Name: "limit_hour", err: fmt.Errorf(`ent: validator failed for field "Event.limit_hour": %w`, err)}
-		}
-	}
 	if _, ok := ec.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Event.type"`)}
 	}
@@ -319,9 +319,9 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec.SetField(event.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := ec.mutation.LimitHour(); ok {
-		_spec.SetField(event.FieldLimitHour, field.TypeInt, value)
-		_node.LimitHour = value
+	if value, ok := ec.mutation.LimitTime(); ok {
+		_spec.SetField(event.FieldLimitTime, field.TypeTime, value)
+		_node.LimitTime = value
 	}
 	if value, ok := ec.mutation.GetType(); ok {
 		_spec.SetField(event.FieldType, field.TypeString, value)

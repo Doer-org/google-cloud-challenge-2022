@@ -5,35 +5,6 @@
 
 
 export interface paths {
-  "/auth-states": {
-    /**
-     * List AuthStates 
-     * @description List AuthStates.
-     */
-    get: operations["listAuthStates"];
-    /**
-     * Create a new AuthStates 
-     * @description Creates a new AuthStates and persists it to storage.
-     */
-    post: operations["createAuthStates"];
-  };
-  "/auth-states/{id}": {
-    /**
-     * Find a AuthStates by ID 
-     * @description Finds the AuthStates with the requested ID and returns it.
-     */
-    get: operations["readAuthStates"];
-    /**
-     * Deletes a AuthStates by ID 
-     * @description Deletes the AuthStates with the requested ID.
-     */
-    delete: operations["deleteAuthStates"];
-    /**
-     * Updates a AuthStates 
-     * @description Updates a AuthStates and persists changes to storage.
-     */
-    patch: operations["updateAuthStates"];
-  };
   "/events": {
     /**
      * Create a new Event 
@@ -95,78 +66,6 @@ export interface paths {
      */
     get: operations["listEventUsers"];
   };
-  "/google-auths": {
-    /**
-     * List GoogleAuths 
-     * @description List GoogleAuths.
-     */
-    get: operations["listGoogleAuth"];
-    /**
-     * Create a new GoogleAuth 
-     * @description Creates a new GoogleAuth and persists it to storage.
-     */
-    post: operations["createGoogleAuth"];
-  };
-  "/google-auths/{id}": {
-    /**
-     * Find a GoogleAuth by ID 
-     * @description Finds the GoogleAuth with the requested ID and returns it.
-     */
-    get: operations["readGoogleAuth"];
-    /**
-     * Deletes a GoogleAuth by ID 
-     * @description Deletes the GoogleAuth with the requested ID.
-     */
-    delete: operations["deleteGoogleAuth"];
-    /**
-     * Updates a GoogleAuth 
-     * @description Updates a GoogleAuth and persists changes to storage.
-     */
-    patch: operations["updateGoogleAuth"];
-  };
-  "/google-auths/{id}/user": {
-    /**
-     * Find the attached User 
-     * @description Find the attached User of the GoogleAuth with the given ID
-     */
-    get: operations["readGoogleAuthUser"];
-  };
-  "/login-sessions": {
-    /**
-     * List LoginSessions 
-     * @description List LoginSessions.
-     */
-    get: operations["listLoginSessions"];
-    /**
-     * Create a new LoginSessions 
-     * @description Creates a new LoginSessions and persists it to storage.
-     */
-    post: operations["createLoginSessions"];
-  };
-  "/login-sessions/{id}": {
-    /**
-     * Find a LoginSessions by ID 
-     * @description Finds the LoginSessions with the requested ID and returns it.
-     */
-    get: operations["readLoginSessions"];
-    /**
-     * Deletes a LoginSessions by ID 
-     * @description Deletes the LoginSessions with the requested ID.
-     */
-    delete: operations["deleteLoginSessions"];
-    /**
-     * Updates a LoginSessions 
-     * @description Updates a LoginSessions and persists changes to storage.
-     */
-    patch: operations["updateLoginSessions"];
-  };
-  "/login-sessions/{id}/user": {
-    /**
-     * Find the attached User 
-     * @description Find the attached User of the LoginSessions with the given ID
-     */
-    get: operations["readLoginSessionsUser"];
-  };
   "/users": {
     /**
      * Create a new User 
@@ -209,26 +108,6 @@ export interface components {
       state: string;
       redirect_url?: string;
     };
-    AuthStatesCreate: {
-      id: number;
-      state: string;
-      redirect_url?: string;
-    };
-    AuthStatesList: {
-      id: number;
-      state: string;
-      redirect_url?: string;
-    };
-    AuthStatesRead: {
-      id: number;
-      state: string;
-      redirect_url?: string;
-    };
-    AuthStatesUpdate: {
-      id: number;
-      state: string;
-      redirect_url?: string;
-    };
     Comment: {
       /** Format: uuid */
       id: string;
@@ -243,6 +122,10 @@ export interface components {
       detail?: string;
       location?: string;
       size: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
       admin?: components["schemas"]["User"];
@@ -256,6 +139,10 @@ export interface components {
       detail?: string;
       location?: string;
       size: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
     };
@@ -266,6 +153,10 @@ export interface components {
       detail?: string;
       location?: string;
       size: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
     };
@@ -276,6 +167,10 @@ export interface components {
       detail?: string;
       location?: string;
       size: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
     };
@@ -310,83 +205,11 @@ export interface components {
       expiry: string;
       user: components["schemas"]["User"];
     };
-    GoogleAuthCreate: {
-      id: number;
-      /** Format: uuid */
-      user_id: string;
-      access_token: string;
-      refresh_token: string;
-      /** Format: date-time */
-      expiry: string;
-    };
-    GoogleAuthList: {
-      id: number;
-      /** Format: uuid */
-      user_id: string;
-      access_token: string;
-      refresh_token: string;
-      /** Format: date-time */
-      expiry: string;
-    };
-    GoogleAuthRead: {
-      id: number;
-      /** Format: uuid */
-      user_id: string;
-      access_token: string;
-      refresh_token: string;
-      /** Format: date-time */
-      expiry: string;
-    };
-    GoogleAuthUpdate: {
-      id: number;
-      /** Format: uuid */
-      user_id: string;
-      access_token: string;
-      refresh_token: string;
-      /** Format: date-time */
-      expiry: string;
-    };
-    GoogleAuth_UserRead: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      authenticated: boolean;
-      mail?: string;
-      icon?: string;
-    };
     LoginSessions: {
       id: string;
       /** Format: uuid */
       user_id: string;
       user: components["schemas"]["User"];
-    };
-    LoginSessionsCreate: {
-      id: string;
-      /** Format: uuid */
-      user_id: string;
-    };
-    LoginSessionsList: {
-      id: string;
-      /** Format: uuid */
-      user_id: string;
-    };
-    LoginSessionsRead: {
-      id: string;
-      /** Format: uuid */
-      user_id: string;
-    };
-    LoginSessionsUpdate: {
-      id: string;
-      /** Format: uuid */
-      user_id: string;
-    };
-    LoginSessions_UserRead: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      authenticated: boolean;
-      mail?: string;
-      icon?: string;
     };
     User: {
       /** Format: uuid */
@@ -429,6 +252,10 @@ export interface components {
       detail?: string;
       location?: string;
       size: number;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      limit_time?: string;
       type: string;
       state: string;
     };
@@ -495,135 +322,6 @@ export type external = Record<string, never>;
 
 export interface operations {
 
-  listAuthStates: {
-    /**
-     * List AuthStates 
-     * @description List AuthStates.
-     */
-    parameters?: {
-        /** @description what page to render */
-        /** @description item count to render per page */
-      query?: {
-        page?: number;
-        itemsPerPage?: number;
-      };
-    };
-    responses: {
-      /** @description result AuthStates list */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["AuthStatesList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  createAuthStates: {
-    /**
-     * Create a new AuthStates 
-     * @description Creates a new AuthStates and persists it to storage.
-     */
-    /** @description AuthStates to create */
-    requestBody: {
-      content: {
-        "application/json": {
-          state: string;
-          redirect_url?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description AuthStates created */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AuthStatesCreate"];
-        };
-      };
-      400: components["responses"]["400"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readAuthStates: {
-    /**
-     * Find a AuthStates by ID 
-     * @description Finds the AuthStates with the requested ID and returns it.
-     */
-    parameters: {
-        /** @description ID of the AuthStates */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description AuthStates with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AuthStatesRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  deleteAuthStates: {
-    /**
-     * Deletes a AuthStates by ID 
-     * @description Deletes the AuthStates with the requested ID.
-     */
-    parameters: {
-        /** @description ID of the AuthStates */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description AuthStates with requested ID was deleted */
-      204: never;
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  updateAuthStates: {
-    /**
-     * Updates a AuthStates 
-     * @description Updates a AuthStates and persists changes to storage.
-     */
-    parameters: {
-        /** @description ID of the AuthStates */
-      path: {
-        id: number;
-      };
-    };
-    /** @description AuthStates properties to update */
-    requestBody: {
-      content: {
-        "application/json": {
-          state?: string;
-          redirect_url?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description AuthStates updated */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AuthStatesUpdate"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
   createEvent: {
     /**
      * Create a new Event 
@@ -637,6 +335,10 @@ export interface operations {
           detail?: string;
           location?: string;
           size: number;
+          /** Format: date-time */
+          created_at: string;
+          /** Format: date-time */
+          limit_time?: string;
           type: string;
           state: string;
           /** Format: uuid */
@@ -721,6 +423,10 @@ export interface operations {
           detail?: string;
           location?: string;
           size?: number;
+          /** Format: date-time */
+          created_at?: string;
+          /** Format: date-time */
+          limit_time?: string;
           type?: string;
           state?: string;
           /** Format: uuid */
@@ -829,328 +535,6 @@ export interface operations {
       200: {
         content: {
           "application/json": (components["schemas"]["Event_UsersList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  listGoogleAuth: {
-    /**
-     * List GoogleAuths 
-     * @description List GoogleAuths.
-     */
-    parameters?: {
-        /** @description what page to render */
-        /** @description item count to render per page */
-      query?: {
-        page?: number;
-        itemsPerPage?: number;
-      };
-    };
-    responses: {
-      /** @description result GoogleAuth list */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["GoogleAuthList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  createGoogleAuth: {
-    /**
-     * Create a new GoogleAuth 
-     * @description Creates a new GoogleAuth and persists it to storage.
-     */
-    /** @description GoogleAuth to create */
-    requestBody: {
-      content: {
-        "application/json": {
-          /** Format: uuid */
-          user_id: string;
-          access_token: string;
-          refresh_token: string;
-          /** Format: date-time */
-          expiry: string;
-          /** Format: uuid */
-          user: string;
-        };
-      };
-    };
-    responses: {
-      /** @description GoogleAuth created */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GoogleAuthCreate"];
-        };
-      };
-      400: components["responses"]["400"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readGoogleAuth: {
-    /**
-     * Find a GoogleAuth by ID 
-     * @description Finds the GoogleAuth with the requested ID and returns it.
-     */
-    parameters: {
-        /** @description ID of the GoogleAuth */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description GoogleAuth with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GoogleAuthRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  deleteGoogleAuth: {
-    /**
-     * Deletes a GoogleAuth by ID 
-     * @description Deletes the GoogleAuth with the requested ID.
-     */
-    parameters: {
-        /** @description ID of the GoogleAuth */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description GoogleAuth with requested ID was deleted */
-      204: never;
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  updateGoogleAuth: {
-    /**
-     * Updates a GoogleAuth 
-     * @description Updates a GoogleAuth and persists changes to storage.
-     */
-    parameters: {
-        /** @description ID of the GoogleAuth */
-      path: {
-        id: number;
-      };
-    };
-    /** @description GoogleAuth properties to update */
-    requestBody: {
-      content: {
-        "application/json": {
-          /** Format: uuid */
-          user_id?: string;
-          access_token?: string;
-          refresh_token?: string;
-          /** Format: date-time */
-          expiry?: string;
-          /** Format: uuid */
-          user?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description GoogleAuth updated */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GoogleAuthUpdate"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readGoogleAuthUser: {
-    /**
-     * Find the attached User 
-     * @description Find the attached User of the GoogleAuth with the given ID
-     */
-    parameters: {
-        /** @description ID of the GoogleAuth */
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description User attached to GoogleAuth with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GoogleAuth_UserRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  listLoginSessions: {
-    /**
-     * List LoginSessions 
-     * @description List LoginSessions.
-     */
-    parameters?: {
-        /** @description what page to render */
-        /** @description item count to render per page */
-      query?: {
-        page?: number;
-        itemsPerPage?: number;
-      };
-    };
-    responses: {
-      /** @description result LoginSessions list */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["LoginSessionsList"])[];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  createLoginSessions: {
-    /**
-     * Create a new LoginSessions 
-     * @description Creates a new LoginSessions and persists it to storage.
-     */
-    /** @description LoginSessions to create */
-    requestBody: {
-      content: {
-        "application/json": {
-          /** Format: uuid */
-          user_id: string;
-          /** Format: uuid */
-          user: string;
-        };
-      };
-    };
-    responses: {
-      /** @description LoginSessions created */
-      200: {
-        content: {
-          "application/json": components["schemas"]["LoginSessionsCreate"];
-        };
-      };
-      400: components["responses"]["400"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readLoginSessions: {
-    /**
-     * Find a LoginSessions by ID 
-     * @description Finds the LoginSessions with the requested ID and returns it.
-     */
-    parameters: {
-        /** @description ID of the LoginSessions */
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description LoginSessions with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["LoginSessionsRead"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  deleteLoginSessions: {
-    /**
-     * Deletes a LoginSessions by ID 
-     * @description Deletes the LoginSessions with the requested ID.
-     */
-    parameters: {
-        /** @description ID of the LoginSessions */
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description LoginSessions with requested ID was deleted */
-      204: never;
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  updateLoginSessions: {
-    /**
-     * Updates a LoginSessions 
-     * @description Updates a LoginSessions and persists changes to storage.
-     */
-    parameters: {
-        /** @description ID of the LoginSessions */
-      path: {
-        id: string;
-      };
-    };
-    /** @description LoginSessions properties to update */
-    requestBody: {
-      content: {
-        "application/json": {
-          /** Format: uuid */
-          user_id?: string;
-          /** Format: uuid */
-          user?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description LoginSessions updated */
-      200: {
-        content: {
-          "application/json": components["schemas"]["LoginSessionsUpdate"];
-        };
-      };
-      400: components["responses"]["400"];
-      404: components["responses"]["404"];
-      409: components["responses"]["409"];
-      500: components["responses"]["500"];
-    };
-  };
-  readLoginSessionsUser: {
-    /**
-     * Find the attached User 
-     * @description Find the attached User of the LoginSessions with the given ID
-     */
-    parameters: {
-        /** @description ID of the LoginSessions */
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description User attached to LoginSessions with requested ID was found */
-      200: {
-        content: {
-          "application/json": components["schemas"]["LoginSessions_UserRead"];
         };
       };
       400: components["responses"]["400"];

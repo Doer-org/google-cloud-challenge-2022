@@ -35,7 +35,7 @@ func NewEvent(r repository.IEvent) IEvent {
 	}
 }
 
-func (uc *Event) CreateNewEvent(ctx context.Context, name, detail, location string,  size int, limit time.Time) (*ent.Event, error) {
+func (uc *Event) CreateNewEvent(ctx context.Context, name, detail, location string, size int, limit time.Time) (*ent.Event, error) {
 	userSessId, ok := mycontext.GetUser(ctx)
 	if !ok {
 		return nil, fmt.Errorf("GetUser: failed to get user from context")
@@ -102,10 +102,10 @@ func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name
 	}
 	// TODO: 作成日時より前にLimit timeを設定できないようにする
 	ee := &ent.Event{
-		Name:     name,
-		Detail:   detail,
-		Location: location,
-		Size:     size,
+		Name:      name,
+		Detail:    detail,
+		Location:  location,
+		Size:      size,
 		LimitTime: limit,
 	}
 	return uc.repo.UpdateEventById(ctx, eventId, ee)

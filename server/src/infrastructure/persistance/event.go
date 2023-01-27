@@ -30,6 +30,7 @@ func (repo *Event) CreateNewEvent(ctx context.Context, adminId uuid.UUID, ee *en
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
 		SetSize(ee.Size).
+		SetLimitHour(ee.LimitHour).
 		SetAdminID(adminId).
 		SetType(string(constant.TYPE_ONCE)).
 		SetState(string(constant.STATE_OPEN)).
@@ -62,6 +63,7 @@ func (repo *Event) UpdateEventById(ctx context.Context, eventId uuid.UUID, ee *e
 		SetDetail(ee.Detail).
 		SetLocation(ee.Location).
 		SetSize(ee.Size).
+		SetLimitHour(ee.LimitHour).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("event.UpdateOneID: %w", err)
@@ -151,17 +153,6 @@ func (repo *Event) GetEventUsers(ctx context.Context, eventId uuid.UUID) ([]*ent
 	return users, nil
 }
 
-func (repo *Event) getEventById(ctx context.Context, eventUuid uuid.UUID) (*ent.Event, error) {
-	event, err := repo.client.Event.
-		Query().
-		Where(event.ID(eventUuid)).
-		Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("event.Query: %w", err)
-	}
-	return event, nil
-}
-
 func (repo *Event) GetEventUsersCnt(ctx context.Context,eventId uuid.UUID) (int, error) {
 	users, err := repo.client.User.
 		Query().
@@ -171,4 +162,15 @@ func (repo *Event) GetEventUsersCnt(ctx context.Context,eventId uuid.UUID) (int,
 		return 0, fmt.Errorf("user.Query: %w", err)
 	}
 	return len(users),nil
+}
+
+func (repo *Event) getEventById(ctx context.Context, eventUuid uuid.UUID) (*ent.Event, error) {
+	event, err := repo.client.Event.
+		Query().
+		Where(event.ID(eventUuid)).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("event.Query: %w", err)
+	}
+	return event, nil
 }

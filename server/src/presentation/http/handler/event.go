@@ -38,6 +38,7 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		j.Detail,
 		j.Location,
 		j.Size,
+		j.LimitHour,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: CreateNewEvent: %w", err)), http.StatusBadRequest)
@@ -88,6 +89,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		j.Detail,
 		j.Location,
 		j.Size,
+		j.LimitHour,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateEventById: %w", err)), http.StatusBadRequest)
@@ -181,6 +183,7 @@ type eventJson struct {
 	Detail   string `json:"detail"`
 	Location string `json:"location"`
 	Size     int    `json:"size"`
+	LimitHour int  `json:"limit_hour"`
 	State    string `json:"state"`
 	Type     string `json:"type"`
 }

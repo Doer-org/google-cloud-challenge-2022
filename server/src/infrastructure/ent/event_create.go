@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -59,6 +60,26 @@ func (ec *EventCreate) SetNillableLocation(s *string) *EventCreate {
 // SetSize sets the "size" field.
 func (ec *EventCreate) SetSize(i int) *EventCreate {
 	ec.mutation.SetSize(i)
+	return ec
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (ec *EventCreate) SetCreatedAt(t time.Time) *EventCreate {
+	ec.mutation.SetCreatedAt(t)
+	return ec
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (ec *EventCreate) SetNillableCreatedAt(t *time.Time) *EventCreate {
+	if t != nil {
+		ec.SetCreatedAt(*t)
+	}
+	return ec
+}
+
+// SetLimitHour sets the "limit_hour" field.
+func (ec *EventCreate) SetLimitHour(i int) *EventCreate {
+	ec.mutation.SetLimitHour(i)
 	return ec
 }
 
@@ -172,6 +193,10 @@ func (ec *EventCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ec *EventCreate) defaults() {
+	if _, ok := ec.mutation.CreatedAt(); !ok {
+		v := event.DefaultCreatedAt()
+		ec.mutation.SetCreatedAt(v)
+	}
 	if _, ok := ec.mutation.ID(); !ok {
 		v := event.DefaultID()
 		ec.mutation.SetID(v)
@@ -204,6 +229,17 @@ func (ec *EventCreate) check() error {
 	if v, ok := ec.mutation.Size(); ok {
 		if err := event.SizeValidator(v); err != nil {
 			return &ValidationError{Name: "size", err: fmt.Errorf(`ent: validator failed for field "Event.size": %w`, err)}
+		}
+	}
+	if _, ok := ec.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Event.created_at"`)}
+	}
+	if _, ok := ec.mutation.LimitHour(); !ok {
+		return &ValidationError{Name: "limit_hour", err: errors.New(`ent: missing required field "Event.limit_hour"`)}
+	}
+	if v, ok := ec.mutation.LimitHour(); ok {
+		if err := event.LimitHourValidator(v); err != nil {
+			return &ValidationError{Name: "limit_hour", err: fmt.Errorf(`ent: validator failed for field "Event.limit_hour": %w`, err)}
 		}
 	}
 	if _, ok := ec.mutation.GetType(); !ok {
@@ -278,6 +314,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.Size(); ok {
 		_spec.SetField(event.FieldSize, field.TypeInt, value)
 		_node.Size = value
+	}
+	if value, ok := ec.mutation.CreatedAt(); ok {
+		_spec.SetField(event.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := ec.mutation.LimitHour(); ok {
+		_spec.SetField(event.FieldLimitHour, field.TypeInt, value)
+		_node.LimitHour = value
 	}
 	if value, ok := ec.mutation.GetType(); ok {
 		_spec.SetField(event.FieldType, field.TypeString, value)

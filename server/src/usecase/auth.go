@@ -71,7 +71,6 @@ func (uc *Auth) Authorization(ctx context.Context, state, code string) (string, 
 		return storedState.RedirectURL, "", fmt.Errorf("storeSession: %w", err)
 	}
 	// Stateを削除するのが失敗してもログインは成功しているので、エラーを返さない
-	//TODO: stateはなんのために使われてるのか?
 	if err := uc.repoAuth.DeleteState(ctx, state); err != nil {
 		log.Println("DeleteState: %w", err)
 		return storedState.RedirectURL, sessionID, nil

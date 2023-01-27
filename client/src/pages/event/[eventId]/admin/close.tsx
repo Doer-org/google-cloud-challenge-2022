@@ -12,15 +12,22 @@ import {
 } from '../../../../core/api/event/getInfo';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
+import { useNoticeStore } from '../../../../store/noticeStore';
 export default function Close(event: Event) {
   // ここは締め切るページ
   // TODO:event締切hooksをonClickへ
-  const eventId = useRouter().query.eventId;
+  const { changeNotice } = useNoticeStore();
+  const router = useRouter();
   const close = closeEvent(
-    (ok) => {},
-    (err) => {}
+    (ok) => {
+      router.push('/events');
+      changeNotice({ type: 'Success', text: '締切ました' });
+    },
+    (err) => {
+      changeNotice({ type: 'Error', text: '締切に失敗しました' });
+    }
   );
-
+  console.log(event);
   return (
     <>
       <MyHead title="イベント締切ページ" description="" />
@@ -34,7 +41,7 @@ export default function Close(event: Event) {
         />
         <Button
           className="flex m-auto my-5"
-          onClick={() => close(eventId as string)}
+          onClick={() => close(event.event_id)}
         >
           締め切る
         </Button>

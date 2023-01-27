@@ -20,7 +20,7 @@ export type Event = {
   location: string;
   host: Host;
   participants: Participant[];
-  close_limit: Date
+  close_limit: string
 };
 
 export type EventState = 'open' | 'close' | 'cancel';

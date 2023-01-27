@@ -101,7 +101,7 @@ func (repo *Event) AddNewEventParticipant(ctx context.Context, eventId uuid.UUID
 		AddEventIDs(eventId).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("userepo.Create: %w", err)
+		return fmt.Errorf("user.Create: %w", err)
 	}
 	if comment == "" {
 		return nil
@@ -146,7 +146,7 @@ func (repo *Event) GetEventUsers(ctx context.Context, eventId uuid.UUID) ([]*ent
 		Where(user.HasEventsWith(event.ID(eventId))).
 		All(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("userepo.Query: %w", err)
+		return nil, fmt.Errorf("user.Query: %w", err)
 	}
 	return users, nil
 }
@@ -160,4 +160,15 @@ func (repo *Event) getEventById(ctx context.Context, eventUuid uuid.UUID) (*ent.
 		return nil, fmt.Errorf("event.Query: %w", err)
 	}
 	return event, nil
+}
+
+func (repo *Event) GetEventUsersCnt(ctx context.Context,eventId uuid.UUID) (int, error) {
+	users, err := repo.client.User.
+		Query().
+		Where(user.HasEventsWith(event.ID(eventId))).
+		All(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("user.Query: %w", err)
+	}
+	return len(users),nil
 }

@@ -8,11 +8,12 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/service"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	mycontext "github.com/Doer-org/google-cloud-challenge-2022/utils/context"
 	"github.com/google/uuid"
 )
 
 type IEvent interface {
-	CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string, size int) (*ent.Event, error)
+	CreateNewEvent(ctx context.Context, name, detail, location string, size int) (*ent.Event, error)
 	GetEventById(ctx context.Context, eventIdString string) (*ent.Event, error)
 	DeleteEventById(ctx context.Context, eventIdString string) error
 	UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string, size int) (*ent.Event, error)
@@ -33,16 +34,16 @@ func NewEvent(r repository.IEvent) IEvent {
 	}
 }
 
-func (uc *Event) CreateNewEvent(ctx context.Context, adminIdString, name, detail, location string, size int) (*ent.Event, error) {
+func (uc *Event) CreateNewEvent(ctx context.Context, name, detail, location string, size int) (*ent.Event, error) {
+	userSessId, ok := mycontext.GetUser(ctx)
+	if !ok {
+		return nil, fmt.Errorf("GetUser: failed to get user from context")
+	}
 	if name == "" {
 		return nil, fmt.Errorf("name is empty")
 	}
 	if size == 0 {
 		return nil, fmt.Errorf("size is invalid")
-	}
-	adminId, err := uuid.Parse(adminIdString)
-	if err != nil {
-		return nil, fmt.Errorf("adminId Parse: %w", err)
 	}
 	ee := &ent.Event{
 		Name:     name,
@@ -50,7 +51,7 @@ func (uc *Event) CreateNewEvent(ctx context.Context, adminIdString, name, detail
 		Location: location,
 		Size:     size,
 	}
-	return uc.repo.CreateNewEvent(ctx, adminId, ee)
+	return uc.repo.CreateNewEvent(ctx, userSessId, ee)
 }
 
 func (uc *Event) GetEventById(ctx context.Context, eventIdString string) (*ent.Event, error) {
@@ -66,19 +67,36 @@ func (uc *Event) DeleteEventById(ctx context.Context, eventIdString string) erro
 	if err != nil {
 		return fmt.Errorf("eventId Parse: %w", err)
 	}
+	admin, err := uc.repo.GetEventAdminById(ctx, eventId)
+	if err != nil {
+		return fmt.Errorf("repo.GetEventAdminById: %w", err)
+	}
+	err = mycontext.CompareUserIdAndUserSessionId(ctx, admin.ID)
+	if err != nil {
+		return fmt.Errorf("compareUserIdAndUserSessionId: %w", err)
+	}
 	return uc.repo.DeleteEventById(ctx, eventId)
 }
 
 func (uc *Event) UpdateEventById(ctx context.Context, eventIdString string, name, detail, location string, size int) (*ent.Event, error) {
+	eventId, err := uuid.Parse(eventIdString)
+	if err != nil {
+		return nil, fmt.Errorf("eventId Parse: %w", err)
+	}
+	admin, err := uc.repo.GetEventAdminById(ctx, eventId)
+	if err != nil {
+		return nil, fmt.Errorf("repo.GetEventAdminById: %w", err)
+	}
+	err = mycontext.CompareUserIdAndUserSessionId(ctx, admin.ID)
+	if err != nil {
+		return nil, fmt.Errorf("compareUserIdAndUserSessionId: %w", err)
+	}
+	// TODO: nameが空の場合は既存のnameを使う処理とかにしたほうがいいかも
 	if name == "" {
 		return nil, fmt.Errorf("name is empty")
 	}
 	if size == 0 {
 		return nil, fmt.Errorf("size is invalid")
-	}
-	eventId, err := uuid.Parse(eventIdString)
-	if err != nil {
-		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
 	ee := &ent.Event{
 		Name:     name,
@@ -110,7 +128,20 @@ func (uc *Event) AddNewEventParticipant(ctx context.Context, eventIdString, name
 	if err != nil {
 		return fmt.Errorf("eventId Parse: %w", err)
 	}
-	//TODO:参加者の制限を超えないか確認
+	event, err := uc.repo.GetEventById(ctx, eventId)
+	if err != nil {
+		return fmt.Errorf("repo.GetEventById: %w", err)
+	}
+	if event.State != constant.STATE_OPEN {
+		return fmt.Errorf("state is not open")
+	}
+	nowSize,err := uc.repo.GetEventUsersCnt(ctx,eventId)
+	if err != nil {
+		return fmt.Errorf("repo.GetEventUsersCnt: %w", err)
+	}
+	if event.Size <= nowSize {
+		return fmt.Errorf("the room is already full")
+	}
 	if name == "" {
 		return fmt.Errorf("name is empty")
 	}
@@ -130,11 +161,24 @@ func (uc *Event) ChangeEventStatusOfId(ctx context.Context, eventIdString string
 	if err != nil {
 		return nil, fmt.Errorf("eventId Parse: %w", err)
 	}
+	admin, err := uc.repo.GetEventAdminById(ctx, eventId)
+	if err != nil {
+		return nil, fmt.Errorf("repo.GetEventAdminById: %w", err)
+	}
+	err = mycontext.CompareUserIdAndUserSessionId(ctx, admin.ID)
+	if err != nil {
+		return nil, fmt.Errorf("compareUserIdAndUserSessionId: %w", err)
+	}
+	event, err := uc.repo.GetEventById(ctx, eventId)
+	if err != nil {
+		return nil, fmt.Errorf("repo.GetEventById: %w", err)
+	}
+	if event.State != constant.STATE_OPEN {
+		return nil, fmt.Errorf("state is not open")
+	}
 	if state == "" {
 		return nil, fmt.Errorf("state is Empty")
 	}
-	// TODO:すでにclose,cancelだった場合
-	// TODO:また,open以外の時はparticipantできないようにする処理もいる
 	switch state {
 	case constant.STATE_CLOSE:
 		return uc.repo.ChangeEventStatusToCloseOfId(ctx, eventId)

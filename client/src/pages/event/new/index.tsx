@@ -25,6 +25,7 @@ export default function New() {
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
+
   const createEvent = createNewEvent(
     (ok) => {
       router.push(`${origin}/event/${ok.created_event.event_id}/completion`);

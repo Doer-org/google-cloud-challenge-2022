@@ -56,7 +56,7 @@ export default function Participate(event: Event) {
   );
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
-
+  // TODO:参加者の人数がcapacityを超えてたら表示しない
   return (
     <>
       <BasicTemplate className="text-center">

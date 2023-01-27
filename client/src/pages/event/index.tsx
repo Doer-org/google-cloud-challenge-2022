@@ -17,8 +17,8 @@ export default function Index() {
     components['schemas']['User_EventsList'][]
   >([]);
   // const { userId } = UserStore();
-  
-  const {userInfo, setUserInfo} = useUserInfoStore()
+  // TODO: SSR化する
+  const { userInfo, setUserInfo } = useUserInfoStore();
   useEffect(() => {
     const getEvents = getEventList(
       (response) => {
@@ -35,6 +35,7 @@ export default function Index() {
       <BasicTemplate className="text-center">
         <TypoWrapper size="large" line="bold">
           <h1 className="my-10">自分のイベント一覧</h1>
+          {/* TODO: stateがcloseじゃなかったらreturn */}
         </TypoWrapper>
         {events.map((event: components['schemas']['User_EventsList']) => {
           return (

@@ -1,7 +1,6 @@
 import { MyHead } from '../components/templates/shared/Head/MyHead';
 import { BasicTemplate } from '../components/templates/shared/BasicTemplate';
 import { TypoWrapper } from '../components/atoms/text/TypoWrapper';
-import style from '../styles/title.module.css';
 import { Button } from '../components/atoms/text/Button';
 import { useUserInfoStore } from '../store/userStore';
 import { createUser } from '../core/api/user/create';

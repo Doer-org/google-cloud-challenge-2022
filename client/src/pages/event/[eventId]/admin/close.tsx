@@ -29,6 +29,8 @@ export default function Close(event: Event) {
           eventName={event.event_name}
           detail={event.detail}
           location={event.location}
+          hostImage={event.host.icon}
+          hostName={event.host.user_name}
         />
         <Button
           className="flex m-auto my-5"

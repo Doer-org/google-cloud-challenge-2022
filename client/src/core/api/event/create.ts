@@ -23,7 +23,9 @@ export const tryCreateNewEvent = (
             location: param.location,
             type:  "??",
             state:  "open",
-            size: param.max_member
+            size: param.max_member,
+            created_at: param.timestamp.toString(),
+            limit_hour: 2
         }, 
         {
           credentials: 'include',

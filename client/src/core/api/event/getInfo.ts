@@ -110,7 +110,7 @@ export const tryGetEventInfo = (event_id: string) => {
                     ? info.commentDic[member.id]
                     : '',
                 })),
-                close_limit: new Date(info.eventInfo.limit_time ?? "never")
+                close_limit: info.eventInfo.limit_time ?? "never"
               };
               return e;
             })

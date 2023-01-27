@@ -13,19 +13,16 @@ export const EventBasicInfoCard = ({ id, eventName, detail }: TProps) => {
           <h1 className="my-5">{eventName}</h1>
         </TypoWrapper>
         <TypoWrapper line="shin">
-          <p className="text-left lg:mx-44 mx-5 py-5">
-            {detail}
-            fkahlsjikdhfjkahsdj;fh;askhd;fjlkahskl;dhfkjas;hd;fjasklhdflkjas
-          </p>
+          <p className="text-left lg:mx-44 mx-5 py-5">{detail}</p>
         </TypoWrapper>
         <div className="flex justify-end md:gap-5 gap-1 mt-10 mb-2 mx-3">
-          <LinkTo href={`/event/${id}/`} borderNone>
+          <LinkTo href={`/event/${id}/`} imgPath={'/images/event/detail.png'} borderNone>
             詳細
           </LinkTo>
-          <LinkTo href={`/event/${id}/admin/edit`} borderNone>
+          <LinkTo href={`/event/${id}/admin/edit`} imgPath={'/images/event/edit.png'} borderNone>
             編集
           </LinkTo>
-          <LinkTo href={`/event/${id}/admin/close`} borderNone>
+          <LinkTo href={`/event/${id}/admin/close`} imgPath={'/images/event/trash.png'} borderNone>
             締切
           </LinkTo>
         </div>

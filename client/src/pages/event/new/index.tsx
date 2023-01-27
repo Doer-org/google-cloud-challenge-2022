@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { TMapPosition } from '../../../components/atoms/map/MapBasicInfo';
 import { useEffect } from 'react';
 import { useNoticeStore } from '../../../store/noticeStore';
+import { LinkTo } from '../../../components/atoms/text/LinkTo';
 
 export default function New() {
   const router = useRouter();
@@ -109,6 +110,9 @@ export default function New() {
         <MapForm location={location} setLocation={setLocation} />
         <Button className="flex m-auto my-5">募集する</Button>
       </FormWrapper>
+      <LinkTo href="/" className="m-1 block my-5" borderNone>
+        戻る
+      </LinkTo>
     </BasicTemplate>
   );
 }

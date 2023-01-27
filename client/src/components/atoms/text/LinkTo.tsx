@@ -13,7 +13,7 @@ export const LinkTo = ({ className, children, href, borderNone, imgPath }: TProp
     <Link href={`${href}`} className={className}>
       <div className='px-3 py-1'>
         <div className={`${borderNone ? '' : 'border-b-2 border-white'}`}>
-          <div className='flex justify-center'>
+          <div className='py-1 flex justify-center items-center px-3'>
           {
             imgPath ? <>
               <Image
@@ -21,7 +21,7 @@ export const LinkTo = ({ className, children, href, borderNone, imgPath }: TProp
                 alt={'top'}
                 width={'25'}
                 height={'25'}
-                className="m-1"
+                className="p-1 pt-2"
             />
             </> : <></>
           }

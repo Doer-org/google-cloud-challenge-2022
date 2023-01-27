@@ -30,6 +30,7 @@ export default function Participate(event: Event) {
           location={event.location}
           hostImage={event.host.icon}
           hostName={event.host.user_name}
+          limitTime={event.close_limit}
         />
         <Button
           className="flex m-auto my-5"
@@ -42,7 +43,7 @@ export default function Participate(event: Event) {
           募集URLをコピー
         </Button>
         <div className="my-5">
-          <LinkTo href={`${origin}/event`}>event一覧へ</LinkTo>
+          <LinkTo href={`${origin}/event`}>イベント一覧へ</LinkTo>
         </div>
       </BasicTemplate>
     </>

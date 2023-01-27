@@ -47,8 +47,8 @@ export default function Edit(event: Event) {
             size: Number(capacity),
             type: '???',
             state: '???',
-            created_at: undefined,
-            limit_time: undefined
+            created_at: new Date(Date.now()),
+            limit_time: new Date(Date.now()) // FIXME: 締め切り時間設定
           })
         }
       >

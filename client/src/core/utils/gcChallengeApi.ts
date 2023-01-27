@@ -58,7 +58,7 @@ export module EventApi {
       TE.tryCatch(
         () =>
           fetch(`${baseUrl}/events/${id}/participants`, {
-            method: 'post',
+            method: 'POST',
             credentials: 'include',
             body: JSON.stringify(body),
           }),
@@ -81,7 +81,7 @@ export module EventApi {
       TE.tryCatch(
         () =>
           fetch(`${baseUrl}/events/${param.id}/state`, {
-            method: 'patch',
+            method: 'PATCH',
             credentials: 'include',
             body: JSON.stringify({
                 state : state

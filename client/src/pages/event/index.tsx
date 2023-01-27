@@ -1,22 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import { TypoWrapper } from '../../components/atoms/text/TypoWrapper';
-import { EventBasicInfo } from '../../components/molecules/Event/EventBasicInfo';
 import { EventWrapper } from '../../components/molecules/Event/EventWrapper';
 import { BasicTemplate } from '../../components/templates/shared/BasicTemplate';
 import { MyHead } from '../../components/templates/shared/Head/MyHead';
 import { getEventList } from '../../core/api/user/getEventList';
 import { useUserInfoStore } from '../../store/userStore';
-import { Event } from '../../core/types/event';
 import { components } from '../../core/openapi/openapi';
 import { EventBasicInfoCard } from '../../components/molecules/Event/EventBasicInfoCard';
 export default function Index() {
-  // TODO: 自分の作ったevent一覧をとってくるhooks使う
-
   const [events, setEvents] = useState<
     components['schemas']['User_EventsList'][]
   >([]);
-  // const { userId } = UserStore();
   // TODO: SSR化する
   const { userInfo, setUserInfo } = useUserInfoStore();
   useEffect(() => {

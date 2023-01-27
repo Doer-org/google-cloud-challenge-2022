@@ -45,7 +45,7 @@ export const EventConfirmModal = ({
               <h1 className="mt-10">他にも以下の参加者がいます</h1>
             </TypoWrapper>
             <div className="w-2/3 overflow-x-scroll m-auto my-3">
-              <div className="flex gap-5">
+              <div className="flex gap-5 justify-center">
                 {participant.map((p) => {
                   return (
                     <UserInfo key={p.name} name={p.name} image={p.image} />

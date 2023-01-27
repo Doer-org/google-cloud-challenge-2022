@@ -7,14 +7,16 @@ export const Map = (mapPosition: TMapPosition | null) => {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API as string,
   });
   return isLoaded ? (
-    <GoogleMap
-      mapContainerStyle={ContainerStyle}
-      center={mapPosition !== null ? mapPosition : undefined}
-      zoom={15}
-      options={Options}
-    >
-      {mapPosition ? <MarkerF position={mapPosition} /> : <></>}
-    </GoogleMap>
+    <div className="rounded-md">
+      <GoogleMap
+        mapContainerStyle={ContainerStyle}
+        center={mapPosition !== null ? mapPosition : undefined}
+        zoom={15}
+        options={Options}
+      >
+        {mapPosition ? <MarkerF position={mapPosition} /> : <></>}
+      </GoogleMap>
+    </div>
   ) : (
     <TypoWrapper>
       <p>ローディング中</p>

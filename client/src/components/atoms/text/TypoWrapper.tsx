@@ -23,7 +23,9 @@ export const TypoWrapper = ({ line, size, children }: TProps) => {
       .exhaustive();
   };
   return (
-    <div className={`${decide_line({ line })} ${decide_size({ size })}`}>
+    <div
+      className={`${decide_line({ line })} ${decide_size({ size })} break-all`}
+    >
       {children}
     </div>
   );

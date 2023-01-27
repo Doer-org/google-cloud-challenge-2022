@@ -4,11 +4,16 @@ type TProps = {
   className?: string;
   children: ReactNode;
   href: string;
+  borderNone?: boolean;
 };
-export const LinkTo = ({ className, children, href }: TProps) => {
+export const LinkTo = ({ className, children, href, borderNone }: TProps) => {
   return (
     <Link href={`${href}`} className={className}>
-      <span className="border-b-2 border-white px-3 py-1">{children}</span>
+      <span
+        className={`${borderNone ? '' : 'border-b-2 border-white'} px-3 py-1`}
+      >
+        {children}
+      </span>
     </Link>
   );
 };

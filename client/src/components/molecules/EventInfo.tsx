@@ -12,6 +12,7 @@ type TProps = {
   location: string;
   hostImage: string;
   hostName: string;
+  limitTime?: string;
 };
 export const EventInfo = ({
   eventName,
@@ -20,6 +21,7 @@ export const EventInfo = ({
   location,
   hostImage,
   hostName,
+  limitTime,
 }: TProps) => {
   const isJson = (location: string) => {
     try {
@@ -34,7 +36,7 @@ export const EventInfo = ({
     <>
       <Hanging />
       <EventWrapper>
-        <div className="flex items-end gap-5 mx-5 overflow-x-scroll md:w-5/6 md:mx-auto py-5">
+        <div className="flex items-end justify-center gap-5 mx-5 overflow-x-scroll md:w-5/6 md:mx-auto pt-5">
           <UserInfo name={hostName} image={hostImage} />
           {participants &&
             participants.map((participant) => {
@@ -50,7 +52,11 @@ export const EventInfo = ({
             })}
         </div>
 
-        <EventBasicInfo eventName={eventName} detail={detail} />
+        <EventBasicInfo
+          eventName={eventName}
+          detail={detail}
+          limitTime={limitTime ? limitTime : ''}
+        />
         {isJson(location) ? (
           <div className="lg:m-10 m-3">
             <Map

@@ -5,12 +5,9 @@ import { FormWrapper } from '../../../../components/atoms/form/FormWrapper';
 import { Input } from '../../../../components/atoms/form/Input';
 import { Button } from '../../../../components/atoms/text/Button';
 import { EventInfo } from '../../../../components/molecules/EventInfo';
-import {
-  getEventInfo,
-  tryGetEventInfo,
-} from '../../../../core/api/event/getInfo';
+import { tryGetEventInfo } from '../../../../core/api/event/getInfo';
 import { Event } from '../../../../core/types/event';
-import { flow, pipe } from 'fp-ts/lib/function';
+import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import { joinEvent } from '../../../../core/api/event/join';
 import { useEffect } from 'react';
@@ -56,13 +53,9 @@ export default function Participate(event: Event) {
   );
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
-  // TODO:参加者の人数がcapacityを超えてたら表示しない
-
-  const isCapacityOver = event.participants.length > event.event_size;
-  const isTimeOver = new Date(event.close_limit) > new Date();
+  const isCapacityOver = event.participants.length + 1 > event.event_size;
+  const isTimeOver = new Date(event.close_limit) < new Date();
   const isClosed = event.event_state === 'close';
-  console.log(event.close_limit);
-  console.log(isCapacityOver, isTimeOver, isClosed);
   return (
     <>
       <BasicTemplate className="text-center">
@@ -92,6 +85,7 @@ export default function Participate(event: Event) {
               location={event.location}
               hostImage={event.host.icon}
               hostName={event.host.user_name}
+              limitTime={event.close_limit}
             />
             {!isCapacityOver && !isTimeOver && !isClosed ? (
               <FormWrapper onSubmit={() => setIsConfirm(true)}>
@@ -114,7 +108,9 @@ export default function Participate(event: Event) {
                 <Button className="flex m-auto my-5">参加する</Button>
               </FormWrapper>
             ) : (
-              <></>
+              <>
+                <p className="mb-5">このイベントは締切られました</p>
+              </>
             )}
           </div>
         </EventConfirmModal>

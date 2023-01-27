@@ -7,21 +7,25 @@ import { getEventList } from '../../core/api/user/getEventList';
 import { useUserInfoStore } from '../../store/userStore';
 import { components } from '../../core/openapi/openapi';
 import { EventBasicInfoCard } from '../../components/molecules/Event/EventBasicInfoCard';
+import { useRouter } from 'next/router';
 export default function Index() {
   const [events, setEvents] = useState<
     components['schemas']['User_EventsList'][]
   >([]);
   // TODO: SSR化する
-  const { userInfo, setUserInfo } = useUserInfoStore();
+  const router = useRouter();
+  const { userInfo } = useUserInfoStore();
   useEffect(() => {
     const getEvents = getEventList(
       (response) => {
         setEvents(response);
       },
-      (error) => {}
+      (error) => {
+        router.push('/');
+      }
     );
     getEvents(userInfo.userId);
-  }, [userInfo]);
+  }, []);
 
   return (
     <>
@@ -29,7 +33,6 @@ export default function Index() {
       <BasicTemplate className="text-center">
         <TypoWrapper size="large" line="bold">
           <h1 className="my-10">自分のイベント一覧</h1>
-          {/* TODO: stateがcloseじゃなかったらreturn */}
         </TypoWrapper>
         {events.map((event: components['schemas']['User_EventsList']) => {
           if (event.state === 'close') {

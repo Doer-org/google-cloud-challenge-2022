@@ -13,7 +13,7 @@ export default function Home() {
       setUserInfo({
         userId: ok.id,
         userName: ok.name,
-        icon: ok.icon??""
+        icon: ok.icon ?? '',
       });
     },
     (err) => {}
@@ -26,39 +26,11 @@ export default function Home() {
           <h1 className={style.title}>すきーま</h1>
         </TypoWrapper>
         <div className="my-10 grid grid-cols-1 gap-2">
-          <Link 
-           href = {`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login?redirect_url=http://localhost:3000`} 
-           
-          >
-           goooooogle
-          </Link>
-          <Button
-            className="m-1"
-            onClick={async () => {
-              const r = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login?redirect_url=http://localhost:3000 `)
-              // if (userInfo.userId === '') {
-              //   signIn({
-              //     name: 'mahiro',
-              //     authenticated: true,
-              //   });
-              // }
-            }}
+          <Link
+            href={`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login?redirect_url=http://localhost:3000`}
           >
             ログイン
-          </Button>
-          <Button
-            className="m-1"
-            onClick={async () => {
-              const r = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login?redirect_url=http://localhost:3000 `)
-              // signIn({
-              //   name: 'mahiro',
-              //   authenticated: true,
-              // });
-              console.log('create new account');
-            }}
-          >
-            サインイン
-          </Button>
+          </Link>
         </div>
       </BasicTemplate>
     </>

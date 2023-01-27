@@ -17,6 +17,7 @@ export default function Show(event: Event) {
           location={event.location}
           hostImage={event.host.icon}
           hostName={event.host.user_name}
+          limitTime={event.close_limit}
         />
       </BasicTemplate>
     </>

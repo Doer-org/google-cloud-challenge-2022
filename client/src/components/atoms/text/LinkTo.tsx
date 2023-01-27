@@ -8,24 +8,32 @@ type TProps = {
   borderNone?: boolean;
   imgPath?: string;
 };
-export const LinkTo = ({ className, children, href, borderNone, imgPath }: TProps) => {
+export const LinkTo = ({
+  className,
+  children,
+  href,
+  borderNone,
+  imgPath,
+}: TProps) => {
   return (
-    <Link href={`${href}`} className={className}>
-      <div className='px-3 py-1'>
+    <Link href={`${href}`} className={`${className} inline-block`}>
+      <div className="py-1">
         <div className={`${borderNone ? '' : 'border-b-2 border-white'}`}>
-          <div className='py-1 flex justify-center items-center px-3'>
-          {
-            imgPath ? <>
-              <Image
-                src={imgPath}
-                alt={'top'}
-                width={'25'}
-                height={'25'}
-                className="p-1 pt-2"
-            />
-            </> : <></>
-          }
-          {children}
+          <div className="py-1 flex justify-center items-center px-2">
+            {imgPath ? (
+              <>
+                <Image
+                  src={imgPath}
+                  alt={'top'}
+                  width={'25'}
+                  height={'25'}
+                  className="p-1 pt-2"
+                />
+              </>
+            ) : (
+              <></>
+            )}
+            {children}
           </div>
         </div>
       </div>

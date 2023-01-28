@@ -58,8 +58,8 @@ export default function Participate(event: Event) {
   );
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
-  console.log("参加者", event.participants.length, ", event_size", event.event_size)
-  const isCapacityOver = event.participants.length > event.event_size; 
+  const isCapacityOver = event.participants.length >= event.event_size; 
+  console.log("参加者", event.participants.length, ", event_size", event.event_size, ", isOver", isCapacityOver)
   const isTimeOver = new Date(event.close_limit) < new Date();
   const isClosed = event.event_state === 'close';
   return (

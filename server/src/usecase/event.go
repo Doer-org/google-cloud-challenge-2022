@@ -143,6 +143,8 @@ func (uc *Event) AddNewEventParticipant(ctx context.Context, eventIdString, name
 	if err != nil {
 		return fmt.Errorf("repo.GetEventUsersCnt: %w", err)
 	}
+	// adminをひく
+	nowSize -= 1
 	if event.Size <= nowSize {
 		return fmt.Errorf("the room is already full")
 	}

@@ -21,7 +21,8 @@ export const EventBasicInfo = ({ eventName, detail, limitTime }: TProps) => {
           <TypoWrapper line="shin" size="small">
             <p className="mb-2">
               {`${'（'}`}
-              {formatDateString(limitTime) + 'まで'}
+              {/* {formatDateString(limitTime) + 'まで'} */}
+              {new Date(limitTime).toLocaleString()+ 'まで'}
               {`${'）'}`}
             </p>
           </TypoWrapper>

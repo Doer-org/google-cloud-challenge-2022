@@ -51,13 +51,15 @@ export default function Participate(event: Event) {
       changeNotice({ type: 'Success', text: '参加しました！' });
     },
     (e) => {
+      router.reload()
+      setIsConfirm(false) // TODO:
       changeNotice({ type: 'Error', text: '参加に失敗しました' });
     }
   );
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
   console.log("参加者", event.participants.length, ", event_size", event.event_size)
-  const isCapacityOver = event.participants.length > event.event_size;
+  const isCapacityOver = event.participants.length > event.event_size; 
   const isTimeOver = new Date(event.close_limit) < new Date();
   const isClosed = event.event_state === 'close';
   return (

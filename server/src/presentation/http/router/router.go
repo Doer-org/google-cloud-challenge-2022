@@ -19,11 +19,11 @@ import (
 
 type IRouter interface {
 	Serve() error
-	SetMiddlewares()
-	InitHealth(healthH handler.IHealth)
-	InitUser(userH handler.IUser, m authmiddleware.IAuth)
-	InitEvent(eventH handler.IEvent, m authmiddleware.IAuth)
-	InitAuth(eventH handler.IAuth, m authmiddleware.IAuth)
+	setMiddlewares()
+	initHealth(healthH handler.IHealth)
+	initUser(userH handler.IUser, m authmiddleware.IAuth)
+	initEvent(eventH handler.IEvent, m authmiddleware.IAuth)
+	initAuth(eventH handler.IAuth, m authmiddleware.IAuth)
 }
 
 type ChiRouter struct {
@@ -41,7 +41,7 @@ func NewChiRouterImpl(port string) IRouter {
 func NewDefaultChiRouter(port string, c *ent.Client) (IRouter, error) {
 	r := NewChiRouterImpl(port)
 
-	r.SetMiddlewares()
+	r.setMiddlewares()
 
 	rg := google.NewClient(config.GOOGLE_CALLBACK_API)
 
@@ -60,16 +60,16 @@ func NewDefaultChiRouter(port string, c *ent.Client) (IRouter, error) {
 
 	m := authmiddleware.NewAuth(authUC)
 
-	r.InitHealth(healthH)
-	r.InitUser(userH, m)
-	r.InitEvent(eventH, m)
-	r.InitAuth(authH, m)
+	r.initHealth(healthH)
+	r.initUser(userH, m)
+	r.initEvent(eventH, m)
+	r.initAuth(authH, m)
 
 	return r, nil
 }
 
-func (r *ChiRouter) SetMiddlewares() {
-	r.setMiddlewares(
+func (r *ChiRouter) setMiddlewares() {
+	r._setMiddlewares(
 		middleware.Logger,
 		middleware.Recoverer,
 		mymiddleware.Cors,
@@ -77,7 +77,7 @@ func (r *ChiRouter) SetMiddlewares() {
 	)
 }
 
-func (r *ChiRouter) setMiddlewares(middlewares ...func(next http.Handler) http.Handler) {
+func (r *ChiRouter) _setMiddlewares(middlewares ...func(next http.Handler) http.Handler) {
 	for _, middleware := range middlewares {
 		r.mux.Use(middleware)
 	}

@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/Doer-org/google-cloud-challenge-2022/config"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	mycontext "github.com/Doer-org/google-cloud-challenge-2022/utils/context"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
 func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
@@ -17,11 +17,7 @@ func (c *Client) GetMe(ctx context.Context) (*ent.User, error) {
 	}
 	// tokenを使用して、clientを返す
 	client := c.auth.Config.Client(ctx, token)
-	googleApi, err := env.GetEssentialEnv("GOOGLE_API_CLIENT")
-	if err != nil {
-		return nil, err
-	}
-	resp, err := client.Get(googleApi)
+	resp, err := client.Get(config.GOOGLE_API_CLIENT)
 	if err != nil {
 		return nil, fmt.Errorf("googleapis Get: %w", err)
 	}

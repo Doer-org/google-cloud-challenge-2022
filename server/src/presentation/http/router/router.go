@@ -7,15 +7,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/Doer-org/google-cloud-challenge-2022/config"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/google"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistence"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
-	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
+	authmiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
 	mymiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
-	authmiddleware"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
-	
+	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 )
 
 type Router struct {
@@ -35,12 +34,11 @@ func NewDefaultRouter(port string, c *ent.Client) (*Router, error) {
 
 	r.SetMiddlewares()
 
-	callbackApi, _ := env.GetEssentialEnv("GOOGLE_CALLBACK_API")
-	rg := google.NewClient(callbackApi)
+	rg := google.NewClient(config.GOOGLE_CALLBACK_API)
 
-	userRepo := persistance.NewUser(c)
-	authRepo := persistance.NewAuth(c)
-	evenRepo := persistance.NewEvent(c)
+	userRepo := persistence.NewUser(c)
+	authRepo := persistence.NewAuth(c)
+	evenRepo := persistence.NewEvent(c)
 
 	userUC := usecase.NewUser(userRepo)
 	authUC := usecase.NewAuth(authRepo, rg, userRepo)
@@ -54,9 +52,9 @@ func NewDefaultRouter(port string, c *ent.Client) (*Router, error) {
 	m := authmiddleware.NewAuth(authUC)
 
 	r.InitHealth(healthH)
-	r.InitUser(userH,m)
-	r.InitEvent(eventH,m)
-	r.InitAuth(authH,m)
+	r.InitUser(userH, m)
+	r.InitEvent(eventH, m)
+	r.InitAuth(authH, m)
 
 	return r, nil
 }
@@ -72,7 +70,7 @@ func (r *Router) SetMiddlewares() {
 }
 
 func (r *Router) setMiddlewares(middlewares ...func(next http.Handler) http.Handler) {
-	for _,middleware := range middlewares {
+	for _, middleware := range middlewares {
 		r.mux.Use(middleware)
 	}
 }

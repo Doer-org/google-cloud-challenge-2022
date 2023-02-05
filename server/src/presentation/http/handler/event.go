@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
+	// "time"
 
-	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
-	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	"github.com/go-chi/chi/v5"
+
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
+	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 )
 
 type IEvent interface {
@@ -39,24 +41,24 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	var j eventJson
+	var j ent.Event
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decoder: %w", err)), http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
-	limit, err := time.Parse(time.RFC3339, j.LimitTime)
-	if err != nil {
-		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
-		return
-	}
+	// limit, err := time.Parse(time.RFC3339, j.LimitTime)
+	// if err != nil {
+	// 	res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
+	// 	return
+	// }
 	event, err := h.uc.CreateNewEvent(
 		r.Context(),
 		j.Name,
 		j.Detail,
 		j.Location,
 		j.Size,
-		limit,
+		j.LimitTime,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: CreateNewEvent: %w", err)), http.StatusBadRequest)
@@ -93,17 +95,18 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	var j eventJson
+	var j ent.Event
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decoder: %w", err)), http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
-	limit, err := time.Parse(time.RFC3339, j.LimitTime)
-	if err != nil {
-		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
-		return
-	}
+	// TODO: うまく保存できてたら消す
+	// limit, err := time.Parse(time.RFC3339, j.LimitTime)
+	// if err != nil {
+	// 	res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
+	// 	return
+	// }
 	idParam := chi.URLParam(r, "id")
 	event, err := h.uc.UpdateEventById(
 		r.Context(),
@@ -112,7 +115,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		j.Detail,
 		j.Location,
 		j.Size,
-		limit,
+		j.LimitTime,
 	)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: UpdateEventById: %w", err)), http.StatusBadRequest)
@@ -149,8 +152,7 @@ func (h *Event) ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
-	// TODO: entに変えてもよさそう
-	var j eventJson
+	var j ent.Event
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decoder: %w", err)), http.StatusBadRequest)
 		return
@@ -200,16 +202,6 @@ func (h *Event) GetEventUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res.WriteJson(w, users, http.StatusOK)
-}
-
-type eventJson struct {
-	Name      string `json:"name"`
-	Detail    string `json:"detail"`
-	Location  string `json:"location"`
-	Size      int    `json:"size"`
-	LimitTime string `json:"limit_time"`
-	State     string `json:"state"`
-	Type      string `json:"type"`
 }
 
 type participantJson struct {

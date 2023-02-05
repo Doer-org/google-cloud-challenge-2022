@@ -24,3 +24,4 @@ EXPOSE 8080
 USER nonroot:nonroot
 
 ENTRYPOINT ["/server"]
+# TODO: cloud buildのpathを変える

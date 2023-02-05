@@ -15,17 +15,17 @@ import (
 )
 
 type Auth struct {
-	Client *ent.Client
+	client *ent.Client
 }
 
 func NewAuth(c *ent.Client) repository.IAuth {
 	return &Auth{
-		Client: c,
+		client: c,
 	}
 }
 
 func (repo *Auth) StoreToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) error {
-	_, err := repo.Client.GoogleAuth.
+	_, err := repo.client.GoogleAuth.
 		Create().
 		SetAccessToken(token.AccessToken).
 		SetRefreshToken(token.RefreshToken).
@@ -39,7 +39,7 @@ func (repo *Auth) StoreToken(ctx context.Context, userId uuid.UUID, token *oauth
 }
 
 func (repo *Auth) UpdateToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) error {
-	_, err := repo.Client.GoogleAuth.Update().
+	_, err := repo.client.GoogleAuth.Update().
 		SetAccessToken(token.AccessToken).
 		SetRefreshToken(token.RefreshToken).
 		SetExpiry(token.Expiry).
@@ -73,7 +73,7 @@ func (repo *Auth) StoreORUpdateToken(ctx context.Context, userId uuid.UUID, toke
 }
 
 func (repo *Auth) GetTokenByUserID(ctx context.Context, userId uuid.UUID) (*oauth2.Token, error) {
-	token, err := repo.Client.GoogleAuth.
+	token, err := repo.client.GoogleAuth.
 		Query().
 		Where(googleauth.UserID(userId)).
 		Only(ctx)
@@ -88,7 +88,7 @@ func (repo *Auth) GetTokenByUserID(ctx context.Context, userId uuid.UUID) (*oaut
 }
 
 func (repo *Auth) StoreSession(ctx context.Context, sessionID string, userId uuid.UUID) error {
-	_, err := repo.Client.LoginSessions.
+	_, err := repo.client.LoginSessions.
 		Create().
 		SetUserID(userId).
 		SetID(sessionID).
@@ -100,7 +100,7 @@ func (repo *Auth) StoreSession(ctx context.Context, sessionID string, userId uui
 }
 
 func (repo *Auth) GetUserIdFromSession(ctx context.Context, sessionId string) (uuid.UUID, error) {
-	session, err := repo.Client.LoginSessions.
+	session, err := repo.client.LoginSessions.
 		Query().
 		Where(loginsessions.ID(sessionId)).
 		Only(ctx)
@@ -111,7 +111,7 @@ func (repo *Auth) GetUserIdFromSession(ctx context.Context, sessionId string) (u
 }
 
 func (repo *Auth) StoreState(ctx context.Context, authState *ent.AuthStates) error {
-	_, err := repo.Client.AuthStates.
+	_, err := repo.client.AuthStates.
 		Create().
 		SetState(authState.State).
 		SetRedirectURL(authState.RedirectURL).
@@ -123,7 +123,7 @@ func (repo *Auth) StoreState(ctx context.Context, authState *ent.AuthStates) err
 }
 
 func (repo *Auth) FindStateByState(ctx context.Context, state string) (*ent.AuthStates, error) {
-	authState, err := repo.Client.AuthStates.
+	authState, err := repo.client.AuthStates.
 		Query().
 		Where(authstates.State(state)).
 		Only(ctx)
@@ -134,7 +134,7 @@ func (repo *Auth) FindStateByState(ctx context.Context, state string) (*ent.Auth
 }
 
 func (repo *Auth) DeleteState(ctx context.Context, state string) error {
-	_, err := repo.Client.AuthStates.
+	_, err := repo.client.AuthStates.
 		Delete().
 		Where(authstates.State(state)).
 		Exec(ctx)

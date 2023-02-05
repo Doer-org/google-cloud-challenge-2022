@@ -19,7 +19,6 @@ func (r *ChiRouter) initEvent(eventH handler.IEvent, m middleware.IAuth) {
 		r.Route("/", func(r chi.Router) {
 			r.Use(m.Authenticate)
 			r.Post("/", eventH.CreateNewEvent)
-			// そのeventのadminか確認する処理が必要。user apiも同様の処理がいる
 			r.Delete("/{id}", eventH.DeleteEventById)
 			r.Patch("/{id}", eventH.UpdateEventById)
 			r.Patch("/{id}/state", eventH.ChangeEventStatusOfId)

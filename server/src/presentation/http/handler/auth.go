@@ -11,13 +11,20 @@ import (
 
 const oneWeek = 60 * 60 * 24 * 7
 
+type IAuth interface {
+	Login(w http.ResponseWriter, r *http.Request)
+	Callback(w http.ResponseWriter, r *http.Request)
+	Validate(w http.ResponseWriter, r *http.Request)
+	User(w http.ResponseWriter, r *http.Request)
+}
+
 // TODO:logout apiも作る必要あり
 type Auth struct {
 	authUC usecase.IAuth
 	userUC usecase.IUser
 }
 
-func NewAuth(auc usecase.IAuth, uuc usecase.IUser) *Auth {
+func NewAuth(auc usecase.IAuth, uuc usecase.IUser) IAuth {
 	return &Auth{
 		authUC: auc,
 		userUC: uuc,

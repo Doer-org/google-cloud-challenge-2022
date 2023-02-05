@@ -10,11 +10,20 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+type IUser interface {
+	CreateNewUser(w http.ResponseWriter, r *http.Request)
+	GetUserById(w http.ResponseWriter, r *http.Request)
+	DeleteUserById(w http.ResponseWriter, r *http.Request)
+	UpdateUserById(w http.ResponseWriter, r *http.Request)
+	GetUserEvents(w http.ResponseWriter, r *http.Request)
+	GetUserByMail(w http.ResponseWriter, r *http.Request)
+}
+
 type User struct {
 	uc usecase.IUser
 }
 
-func NewUser(uc usecase.IUser) *User {
+func NewUser(uc usecase.IUser) IUser {
 	return &User{
 		uc: uc,
 	}
@@ -73,6 +82,7 @@ func (h *User) UpdateUserById(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: request body is empty")), http.StatusBadRequest)
 		return
 	}
+	//TODO:entに依存させる
 	var j userJson
 	if err := json.NewDecoder(r.Body).Decode(&j); err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: Decode: %w", err)), http.StatusBadRequest)

@@ -9,11 +9,15 @@ import (
 	mycontext "github.com/Doer-org/google-cloud-challenge-2022/utils/context"
 )
 
+type IAuth interface {
+	Authenticate(next http.Handler) http.Handler
+}
+
 type Auth struct {
 	uc usecase.IAuth
 }
 
-func NewAuth(uc usecase.IAuth) *Auth {
+func NewAuth(uc usecase.IAuth) IAuth {
 	return &Auth{uc: uc}
 }
 

@@ -6,9 +6,13 @@ import (
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 )
 
+type IHealth interface {
+	Ping(w http.ResponseWriter, r *http.Request)
+}
+
 type Health struct{}
 
-func NewHealth() *Health {
+func NewHealth() IHealth {
 	return &Health{}
 }
 

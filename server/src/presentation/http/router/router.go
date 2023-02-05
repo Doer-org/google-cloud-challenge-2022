@@ -12,25 +12,34 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/google"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistence"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
+	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	authmiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
 	mymiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
-	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 )
 
-type Router struct {
+type IRouter interface {
+	Serve() error
+	SetMiddlewares()
+	InitHealth(healthH handler.IHealth)
+	InitUser(userH handler.IUser, m authmiddleware.IAuth)
+	InitEvent(eventH handler.IEvent, m authmiddleware.IAuth)
+	InitAuth(eventH handler.IAuth, m authmiddleware.IAuth)
+}
+
+type ChiRouter struct {
 	mux  *chi.Mux
 	port string
 }
 
-func NewRouter(port string) *Router {
-	return &Router{
+func NewChiRouterImpl(port string) IRouter {
+	return &ChiRouter{
 		mux:  chi.NewRouter(),
 		port: port,
 	}
 }
 
-func NewDefaultRouter(port string, c *ent.Client) (*Router, error) {
-	r := NewRouter(port)
+func NewDefaultChiRouter(port string, c *ent.Client) (IRouter, error) {
+	r := NewChiRouterImpl(port)
 
 	r.SetMiddlewares()
 
@@ -59,23 +68,22 @@ func NewDefaultRouter(port string, c *ent.Client) (*Router, error) {
 	return r, nil
 }
 
-func (r *Router) SetMiddlewares() {
+func (r *ChiRouter) SetMiddlewares() {
 	r.setMiddlewares(
 		middleware.Logger,
 		middleware.Recoverer,
 		mymiddleware.Cors,
 		mymiddleware.ContentTypeJson,
 	)
-
 }
 
-func (r *Router) setMiddlewares(middlewares ...func(next http.Handler) http.Handler) {
+func (r *ChiRouter) setMiddlewares(middlewares ...func(next http.Handler) http.Handler) {
 	for _, middleware := range middlewares {
 		r.mux.Use(middleware)
 	}
 }
 
-func (r *Router) Serve() error {
+func (r *ChiRouter) Serve() error {
 	return http.ListenAndServe(
 		fmt.Sprintf(":%s", r.port),
 		r.mux,

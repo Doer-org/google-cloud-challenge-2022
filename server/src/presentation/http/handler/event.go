@@ -11,11 +11,23 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+type IEvent interface {
+	CreateNewEvent(w http.ResponseWriter, r *http.Request)
+	GetEventById(w http.ResponseWriter, r *http.Request)
+	DeleteEventById(w http.ResponseWriter, r *http.Request)
+	UpdateEventById(w http.ResponseWriter, r *http.Request)
+	GetEventAdminById(w http.ResponseWriter, r *http.Request)
+	GetEventComments(w http.ResponseWriter, r *http.Request)
+	ChangeEventStatusOfId(w http.ResponseWriter, r *http.Request)
+	AddNewEventParticipant(w http.ResponseWriter, r *http.Request)
+	GetEventUsers(w http.ResponseWriter, r *http.Request)
+}
+
 type Event struct {
 	uc usecase.IEvent
 }
 
-func NewEvent(uc usecase.IEvent) *Event {
+func NewEvent(uc usecase.IEvent) IEvent {
 	return &Event{
 		uc: uc,
 	}

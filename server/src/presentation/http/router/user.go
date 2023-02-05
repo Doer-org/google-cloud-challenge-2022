@@ -3,30 +3,11 @@ package router
 import (
 	"github.com/go-chi/chi/v5"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/google"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
-	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
-func (r *Router) InitUser(c *ent.Client) error {
-	userRepo := persistance.NewUser(c)
-	userUC := usecase.NewUser(userRepo)
-	userH := handler.NewUser(userUC)
-
-	// auth middleware
-	authRepo := persistance.NewAuth(c)
-	callbackApi, err := env.GetEssentialEnv("GOOGLE_CALLBACK_API")
-	if err != nil {
-		return err
-	}
-	rg := google.NewClient(callbackApi)
-	authUC := usecase.NewAuth(authRepo, rg, userRepo)
-	m := middleware.NewAuth(authUC)
-
+func (r *Router) InitUser(userH *handler.User,m *middleware.Auth) {
 	r.mux.Route("/users", func(r chi.Router) {
 		// r.Post("/", userH.CreateNewUser) // /auth/loginからたたくのでコメントに
 		r.Get("/{id}", userH.GetUserById)
@@ -40,5 +21,4 @@ func (r *Router) InitUser(c *ent.Client) error {
 			r.Patch("/{id}", userH.UpdateUserById)
 		})
 	})
-	return nil
 }

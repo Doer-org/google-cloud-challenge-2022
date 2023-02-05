@@ -3,31 +3,11 @@ package router
 import (
 	"github.com/go-chi/chi/v5"
 
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/google"
-	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
-	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
-func (r *Router) InitEvent(c *ent.Client) error {
-	evenRepo := persistance.NewEvent(c)
-	eventUC := usecase.NewEvent(evenRepo)
-	eventH := handler.NewEvent(eventUC)
-
-	// auth middleware
-	authRepo := persistance.NewAuth(c)
-	userRepo := persistance.NewUser(c)
-	callbackApi, err := env.GetEssentialEnv("GOOGLE_CALLBACK_API")
-	if err != nil {
-		return err
-	}
-	rg := google.NewClient(callbackApi)
-	authUC := usecase.NewAuth(authRepo, rg, userRepo)
-	m := middleware.NewAuth(authUC)
-
+func (r *Router) InitEvent(eventH *handler.Event,m *middleware.Auth) {
 	r.mux.Route("/events", func(r chi.Router) {
 		r.Get("/{id}", eventH.GetEventById)
 		r.Get("/{id}/admin", eventH.GetEventAdminById)
@@ -45,5 +25,4 @@ func (r *Router) InitEvent(c *ent.Client) error {
 			r.Patch("/{id}/state", eventH.ChangeEventStatusOfId)
 		})
 	})
-	return nil
 }

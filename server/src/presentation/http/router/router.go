@@ -8,7 +8,14 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/google"
+	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistance"
+	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
+	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
+	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 	mymiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
+	authmiddleware"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
+	
 )
 
 type Router struct {
@@ -25,36 +32,49 @@ func NewRouter(port string) *Router {
 
 func NewDefaultRouter(port string, c *ent.Client) (*Router, error) {
 	r := NewRouter(port)
-	// middleware
-	r.SetMiddleware()
-	// init all router
-	if err := r.InitHealth(); err != nil {
-		return nil, err
-	}
-	if err := r.InitAuth(c); err != nil {
-		return nil, err
-	}
-	if err := r.InitEvent(c); err != nil {
-		return nil, err
-	}
-	if err := r.InitUser(c); err != nil {
-		return nil, err
-	}
+
+	r.SetMiddlewares()
+
+	callbackApi, _ := env.GetEssentialEnv("GOOGLE_CALLBACK_API")
+	rg := google.NewClient(callbackApi)
+
+	userRepo := persistance.NewUser(c)
+	authRepo := persistance.NewAuth(c)
+	evenRepo := persistance.NewEvent(c)
+
+	userUC := usecase.NewUser(userRepo)
+	authUC := usecase.NewAuth(authRepo, rg, userRepo)
+	eventUC := usecase.NewEvent(evenRepo)
+
+	userH := handler.NewUser(userUC)
+	authH := handler.NewAuth(authUC, userUC)
+	eventH := handler.NewEvent(eventUC)
+	healthH := handler.NewHealth()
+
+	m := authmiddleware.NewAuth(authUC)
+
+	r.InitHealth(healthH)
+	r.InitUser(userH,m)
+	r.InitEvent(eventH,m)
+	r.InitAuth(authH,m)
+
 	return r, nil
 }
 
-func (r *Router) SetMiddleware() {
-	// logger
-	r.mux.Use(middleware.Logger)
+func (r *Router) SetMiddlewares() {
+	r.setMiddlewares(
+		middleware.Logger,
+		middleware.Recoverer,
+		mymiddleware.Cors,
+		mymiddleware.ContentTypeJson,
+	)
 
-	// recover
-	r.mux.Use(middleware.Recoverer)
+}
 
-	// cors
-	r.mux.Use(mymiddleware.Cors)
-
-	// content type json
-	r.mux.Use(mymiddleware.ContentTypeJson)
+func (r *Router) setMiddlewares(middlewares ...func(next http.Handler) http.Handler) {
+	for _,middleware := range middlewares {
+		r.mux.Use(middleware)
+	}
 }
 
 func (r *Router) Serve() error {

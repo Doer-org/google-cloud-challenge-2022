@@ -33,6 +33,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprint("error: NewDefaultRouter: %w", err))
 	}
+
+
+
+
 	if err := r.Serve(); err != nil {
 		panic(fmt.Sprint("error: Serve: %w", err))
 	}

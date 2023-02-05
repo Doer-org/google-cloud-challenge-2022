@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	// "time"
 
 	"github.com/go-chi/chi/v5"
 
@@ -47,11 +46,6 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	// limit, err := time.Parse(time.RFC3339, j.LimitTime)
-	// if err != nil {
-	// 	res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
-	// 	return
-	// }
 	event, err := h.uc.CreateNewEvent(
 		r.Context(),
 		j.Name,
@@ -101,12 +95,6 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	// TODO: うまく保存できてたら消す
-	// limit, err := time.Parse(time.RFC3339, j.LimitTime)
-	// if err != nil {
-	// 	res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
-	// 	return
-	// }
 	idParam := chi.URLParam(r, "id")
 	event, err := h.uc.UpdateEventById(
 		r.Context(),

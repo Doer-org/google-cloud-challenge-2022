@@ -76,9 +76,9 @@ func GetEssentialEnv(envPath string) (string, error) {
 }
 
 func IsDev() bool {
-	return os.Getenv("ENV") == "DEV"
+	return ENVIRONMENT == "DEV"
 }
 
 func IsPrd() bool {
-	return os.Getenv("PRD") == "PRD"
+	return ENVIRONMENT == "PRD"
 }

@@ -26,12 +26,12 @@ func main() {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		panic(fmt.Sprintf("error: Schema.Create: %v", err))
 	}
-	r, err := router.NewDefaultRouter(
+	r, err := router.NewDefaultChiRouter(
 		config.PORT,
 		client,
 	)
 	if err != nil {
-		panic(fmt.Sprint("error: NewDefaultRouter: %w", err))
+		panic(fmt.Sprint("error: NewDefaultChiRouter: %w", err))
 	}
 	if err := r.Serve(); err != nil {
 		panic(fmt.Sprint("error: Serve: %w", err))

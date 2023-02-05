@@ -22,7 +22,7 @@ func main() {
 	}
 	defer client.Close()
 
-	// Run the auto migration tool.
+	// TODO: migrationsがうまくいかない
 	if err := client.Schema.Create(context.Background()); err != nil {
 		panic(fmt.Sprintf("error: Schema.Create: %v", err))
 	}
@@ -33,7 +33,6 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprint("error: NewDefaultRouter: %w", err))
 	}
-
 	if err := r.Serve(); err != nil {
 		panic(fmt.Sprint("error: Serve: %w", err))
 	}

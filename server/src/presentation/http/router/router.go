@@ -12,9 +12,9 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/google"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/persistence"
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/handler"
-	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 	authmiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
 	mymiddleware "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
+	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
 )
 
 type IRouter interface {

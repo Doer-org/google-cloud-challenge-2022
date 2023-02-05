@@ -1,13 +1,14 @@
-package persistance
+package persistence
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/user"
-	"github.com/google/uuid"
 )
 
 type User struct {
@@ -66,6 +67,7 @@ func (repo *User) UpdateUserById(ctx context.Context, userId uuid.UUID, eu *ent.
 	return user, nil
 }
 
+// TODO: もう少し直したい
 func (repo *User) GetUserByMail(ctx context.Context, mail string) (*ent.User, error) {
 	// mailが空白の参加者は大勢いるため、mailが空文字の時は検索しない
 	if mail == "" {

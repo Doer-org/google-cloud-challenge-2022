@@ -12,26 +12,26 @@ import (
 )
 
 func main() {
-	dsn, err := config.DSN()
+	err := config.GetEnvAll()
 	if err != nil {
-		panic(fmt.Sprintf("error: DSN: %v", err))
+		panic(fmt.Sprintf("error: GetEnvAll: %v", err))
 	}
-	client, err := ent.Open("postgres", dsn)
+	client, err := ent.Open("postgres", config.POSTGRES_URL)
 	if err != nil {
 		panic(fmt.Sprintf("error: ent.Open: %v", err))
 	}
 	defer client.Close()
 
-	// Run the auto migration tool.
+	// TODO: migrationsがうまくいかない
 	if err := client.Schema.Create(context.Background()); err != nil {
 		panic(fmt.Sprintf("error: Schema.Create: %v", err))
 	}
-	r, err := router.NewDefaultRouter(
-		"8080",
+	r, err := router.NewDefaultChiRouter(
+		config.PORT,
 		client,
 	)
 	if err != nil {
-		panic(fmt.Sprint("error: NewDefaultRouter: %w", err))
+		panic(fmt.Sprint("error: NewDefaultChiRouter: %w", err))
 	}
 	if err := r.Serve(); err != nil {
 		panic(fmt.Sprint("error: Serve: %w", err))

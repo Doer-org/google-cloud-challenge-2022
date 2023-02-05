@@ -4,12 +4,19 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Doer-org/google-cloud-challenge-2022/config"
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
 	"github.com/Doer-org/google-cloud-challenge-2022/usecase"
-	"github.com/Doer-org/google-cloud-challenge-2022/utils/env"
 )
 
 const oneWeek = 60 * 60 * 24 * 7
+
+type IAuth interface {
+	Login(w http.ResponseWriter, r *http.Request)
+	Callback(w http.ResponseWriter, r *http.Request)
+	Validate(w http.ResponseWriter, r *http.Request)
+	User(w http.ResponseWriter, r *http.Request)
+}
 
 // TODO:logout apiも作る必要あり
 type Auth struct {
@@ -17,7 +24,7 @@ type Auth struct {
 	userUC usecase.IUser
 }
 
-func NewAuth(auc usecase.IAuth, uuc usecase.IUser) *Auth {
+func NewAuth(auc usecase.IAuth, uuc usecase.IUser) IAuth {
 	return &Auth{
 		authUC: auc,
 		userUC: uuc,
@@ -34,24 +41,18 @@ func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	url += "&approval_prompt=force&access_type=offline"
 
 	sameSite := http.SameSiteNoneMode
-	if env.IsLocal() {
+	if config.IsDev() {
 		sameSite = http.SameSiteLaxMode
-	}
-	domain, err := env.GetEssentialEnv("CLIENT_DOMAIN")
-	if err != nil {
-		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetEssentialEnv: %w", err)), http.StatusBadRequest)
-		return
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    state,
 		Path:     "/",
-		Secure:   !env.IsLocal(),
+		Secure:   !config.IsDev(),
 		HttpOnly: true,
 		SameSite: sameSite,
-		Domain:   domain,
+		Domain:   config.CLIENT_DOMAIN,
 	})
-
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
@@ -88,23 +89,18 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sameSite := http.SameSiteNoneMode
-	if env.IsLocal() {
+	if config.IsDev() {
 		sameSite = http.SameSiteLaxMode
-	}
-	domain, err := env.GetEssentialEnv("CLIENT_DOMAIN")
-	if err != nil {
-		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetEssentialEnv: %w", err)), http.StatusBadRequest)
-		return
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    sessionID,
 		Path:     "/",
 		MaxAge:   oneWeek,
-		Secure:   !env.IsLocal(),
+		Secure:   !config.IsDev(),
 		HttpOnly: true,
 		SameSite: sameSite,
-		Domain:   domain,
+		Domain:   config.CLIENT_DOMAIN,
 	})
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }

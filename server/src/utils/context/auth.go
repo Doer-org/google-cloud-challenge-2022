@@ -52,6 +52,7 @@ func GetUser(ctx context.Context) (uuid.UUID, bool) {
 }
 
 // ctxに入っているsessionのuserIdと引数で受け取ったuserIdを比較します
+// 比較して違った場合、errorを返します
 func CompareUserIdAndUserSessionId(ctx context.Context, userId uuid.UUID) error {
 	userSessId, ok := GetUser(ctx)
 	if !ok {

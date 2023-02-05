@@ -5,7 +5,7 @@ services:
     container_name: ent-gen
     build:
       context: ../../src
-      dockerfile: Dockerfile.ent
+      dockerfile: ../docker/ent/Dockerfile
     volumes:
       - ../../src/infrastructure/ent:/go/src/github.com/Doer-org/google-cloud-challenge-2022/server/src/infrastructure/ent
     tty: true

@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+	"golang.org/x/oauth2"
+
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/authstates"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/googleauth"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/loginsessions"
-	"github.com/google/uuid"
-	"golang.org/x/oauth2"
 )
 
 type Auth struct {

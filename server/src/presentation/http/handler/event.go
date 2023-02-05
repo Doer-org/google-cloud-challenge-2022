@@ -33,7 +33,7 @@ func (h *Event) CreateNewEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	limit,err := time.Parse(time.RFC3339,j.LimitTime)
+	limit, err := time.Parse(time.RFC3339, j.LimitTime)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
 		return
@@ -87,7 +87,7 @@ func (h *Event) UpdateEventById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	limit,err := time.Parse(time.RFC3339,j.LimitTime)
+	limit, err := time.Parse(time.RFC3339, j.LimitTime)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: time.Parse: %w", err)), http.StatusBadRequest)
 		return
@@ -191,13 +191,13 @@ func (h *Event) GetEventUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 type eventJson struct {
-	Name      string    `json:"name"`
-	Detail    string    `json:"detail"`
-	Location  string    `json:"location"`
-	Size      int       `json:"size"`
-	LimitTime string    `json:"limit_time"`
-	State     string    `json:"state"`
-	Type      string    `json:"type"`
+	Name      string `json:"name"`
+	Detail    string `json:"detail"`
+	Location  string `json:"location"`
+	Size      int    `json:"size"`
+	LimitTime string `json:"limit_time"`
+	State     string `json:"state"`
+	Type      string `json:"type"`
 }
 
 type participantJson struct {

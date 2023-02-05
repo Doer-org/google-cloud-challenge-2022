@@ -7,7 +7,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
 )
 
-func (r *Router) InitUser(userH *handler.User,m *middleware.Auth) {
+func (r *Router) InitUser(userH *handler.User, m *middleware.Auth) {
 	r.mux.Route("/users", func(r chi.Router) {
 		// r.Post("/", userH.CreateNewUser) // /auth/loginからたたくのでコメントに
 		r.Get("/{id}", userH.GetUserById)

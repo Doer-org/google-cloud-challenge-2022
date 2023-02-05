@@ -7,7 +7,7 @@ import (
 	"github.com/Doer-org/google-cloud-challenge-2022/presentation/http/middleware"
 )
 
-func (r *Router) InitEvent(eventH *handler.Event,m *middleware.Auth) {
+func (r *Router) InitEvent(eventH *handler.Event, m *middleware.Auth) {
 	r.mux.Route("/events", func(r chi.Router) {
 		r.Get("/{id}", eventH.GetEventById)
 		r.Get("/{id}/admin", eventH.GetEventAdminById)

@@ -12,45 +12,45 @@ var (
 
 	POSTGRES_URL string
 
-	Google_ID string
-	Google_SECRET string
-	GOOGLE_API_CLIENT string
+	Google_ID           string
+	Google_SECRET       string
+	GOOGLE_API_CLIENT   string
 	GOOGLE_CALLBACK_API string
 
 	CLIENT_DOMAIN string
 )
 
-func GetEnvAll() error  {
+func GetEnvAll() error {
 	var err error
-	PORT = GetEnvOrDefault("PORT","8080")
-	ENVIRONMENT = GetEnvOrDefault("ENVIRONMENT","DEV")
+	PORT = GetEnvOrDefault("PORT", "8080")
+	ENVIRONMENT = GetEnvOrDefault("ENVIRONMENT", "DEV")
 	if IsPrd() {
-		POSTGRES_URL,err = GetEssentialEnv("POSTGRES_URL")
+		POSTGRES_URL, err = GetEssentialEnv("POSTGRES_URL")
 	} else if IsDev() {
-		POSTGRES_URL,err = DSN()
+		POSTGRES_URL, err = DSN()
 	} else {
 		return fmt.Errorf("POSTGRES_URL is empty")
 	}
 	if err != nil {
 		return err
 	}
-	Google_ID,err = GetEssentialEnv("Google_ID")
+	Google_ID, err = GetEssentialEnv("Google_ID")
 	if err != nil {
 		return err
 	}
-	Google_SECRET,err = GetEssentialEnv("Google_SECRET")
+	Google_SECRET, err = GetEssentialEnv("Google_SECRET")
 	if err != nil {
 		return err
 	}
-	GOOGLE_API_CLIENT,err = GetEssentialEnv("GOOGLE_API_CLIENT")
+	GOOGLE_API_CLIENT, err = GetEssentialEnv("GOOGLE_API_CLIENT")
 	if err != nil {
 		return err
 	}
-	GOOGLE_CALLBACK_API,err = GetEssentialEnv("GOOGLE_CALLBACK_API")
+	GOOGLE_CALLBACK_API, err = GetEssentialEnv("GOOGLE_CALLBACK_API")
 	if err != nil {
 		return err
 	}
-	CLIENT_DOMAIN,err = GetEssentialEnv("CLIENT_DOMAIN")
+	CLIENT_DOMAIN, err = GetEssentialEnv("CLIENT_DOMAIN")
 	if err != nil {
 		return err
 	}

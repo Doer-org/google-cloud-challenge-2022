@@ -25,6 +25,7 @@ type IAuth interface {
 	GetUserIdFromSession(ctx context.Context, sessionId string) (uuid.UUID, error)
 	GetTokenByUserId(ctx context.Context, userId uuid.UUID) (*oauth2.Token, error)
 	RefreshAccessToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) (*oauth2.Token, error)
+	DeleteSession(ctx context.Context, sessionID string) error
 }
 
 func NewAuth(ra repository.IAuth, rg repository.IGoogle, ur repository.IUser) IAuth {
@@ -135,4 +136,13 @@ func (uc *Auth) RefreshAccessToken(ctx context.Context, userId uuid.UUID, token 
 		return nil, fmt.Errorf("storeORUpdateToken: %w", err)
 	}
 	return newToken, nil
+}
+
+func (uc *Auth) DeleteSession(ctx context.Context, sessionID string) error {
+	if sessionID == "" {
+		return fmt.Errorf("sessionid is empty")
+	}
+
+	err := uc.DeleteSession(ctx, sessionID)
+	return err
 }

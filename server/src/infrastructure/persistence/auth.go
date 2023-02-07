@@ -99,6 +99,17 @@ func (repo *Auth) StoreSession(ctx context.Context, sessionID string, userId uui
 	return nil
 }
 
+func (repo *Auth) DeleteSession(ctx context.Context, sessionID string) error {
+	_, err := repo.client.LoginSessions.
+		Delete().
+		Where(loginsessions.ID(sessionID)).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("loginsession.Delete: %w", err)
+	}
+	return nil
+}
+
 func (repo *Auth) GetUserIdFromSession(ctx context.Context, sessionId string) (uuid.UUID, error) {
 	session, err := repo.client.LoginSessions.
 		Query().

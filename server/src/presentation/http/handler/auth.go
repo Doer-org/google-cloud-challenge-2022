@@ -56,6 +56,25 @@ func (h *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
+// logout には session の削除か、cokkieの削除とかで出来て、今回はどっちもやってます。
+// maxage をマイナスにすることで、cokkieを消せます。　https://tech-up.hatenablog.com/entry/2019/01/03/121435
+func (h *Auth) Logout(w http.ResponseWriter, r *http.Request) {
+	sessCookie, err := r.Cookie("session")
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to get session: %w", err)), http.StatusBadRequest)
+		return
+	}
+	err = h.authUC.DeleteSession(r.Context(), sessCookie.Value)
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to delete session: %w", err)), http.StatusBadRequest)
+		return
+	}
+
+	sessCookie.MaxAge = -1
+	http.SetCookie(w, sessCookie)
+	res.WriteJson(w, res.New200SuccessJson("logout success"), http.StatusOK)
+}
+
 func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 	if errFormValue := r.FormValue("error"); errFormValue != "" {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: error is empty")), http.StatusBadRequest)

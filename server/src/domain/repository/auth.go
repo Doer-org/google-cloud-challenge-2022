@@ -18,4 +18,5 @@ type IAuth interface {
 	FindStateByState(ctx context.Context, state string) (*ent.AuthStates, error)
 	DeleteState(ctx context.Context, state string) error
 	StoreORUpdateToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) error
+	DeleteSession(ctx context.Context, sessionID string) error
 }

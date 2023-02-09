@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { TypoWrapper } from '../../atoms/text/TypoWrapper';
 type TProps = {
   eventName: string;
@@ -5,12 +6,10 @@ type TProps = {
   limitTime: string;
 };
 export const EventBasicInfo = ({ eventName, detail, limitTime }: TProps) => {
-  const formatDateString = (dateString: string) => {
-    return dateString.replace(
-      /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}\+\d{2}:\d{2}/,
-      '$1年$2月$3日$4時$5分'
-    );
-  };
+  const [time, setTime] = useState('');
+  useEffect(() => {
+    setTime(`(${new Date(limitTime).toLocaleString()} まで)`);
+  }, [limitTime]);
   return (
     <>
       <div className="lg:mx-auto lg:w-2/3">
@@ -19,12 +18,7 @@ export const EventBasicInfo = ({ eventName, detail, limitTime }: TProps) => {
         </TypoWrapper>
         {limitTime ? (
           <TypoWrapper line="shin" size="small">
-            <p className="mb-2">
-              {`${'（'}`}
-              {/* {formatDateString(limitTime) + 'まで'} */}
-              {new Date(limitTime).toLocaleString()+ 'まで'}
-              {`${'）'}`}
-            </p>
+            <p className="mb-2">{time}</p>
           </TypoWrapper>
         ) : (
           <></>

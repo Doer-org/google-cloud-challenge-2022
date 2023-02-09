@@ -43,23 +43,30 @@ export default function Participate(event: Event) {
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
-  console.log(event);
   const joinApi = joinEvent(
     (response) => {
-      console.log(response)
+      console.log(response);
       router.push(`${origin}/event/${event.event_id}/`);
+      // router.push(`${process.env.NEXT_PUBLIC_FRONT_URL + router.asPath}`)
       changeNotice({ type: 'Success', text: '参加しました！' });
     },
     (e) => {
-      router.reload()
-      setIsConfirm(false) // TODO:
+      router.reload();
+      setIsConfirm(false); // TODO:
       changeNotice({ type: 'Error', text: '参加に失敗しました' });
     }
   );
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
-  const isCapacityOver = event.participants.length >= event.event_size; 
-  console.log("参加者", event.participants.length, ", event_size", event.event_size, ", isOver", isCapacityOver)
+  const isCapacityOver = event.participants.length >= event.event_size;
+  console.log(
+    '参加者',
+    event.participants.length,
+    ', event_size',
+    event.event_size,
+    ', isOver',
+    isCapacityOver
+  );
   const isTimeOver = new Date(event.close_limit) < new Date();
   const isClosed = event.event_state === 'close';
   return (

@@ -24,14 +24,7 @@ export default function Participate(event: Event) {
     <>
       <MyHead title="イベントURLコピー" description="" />
       <BasicTemplate className="text-center py-5">
-        <EventInfo
-          eventName={event.event_name}
-          detail={event.detail}
-          location={event.location}
-          hostImage={event.host.icon}
-          hostName={event.host.user_name}
-          limitTime={event.close_limit}
-        />
+        <EventInfo event={event} />
         <Button
           className="flex m-auto my-5"
           border

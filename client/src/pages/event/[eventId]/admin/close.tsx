@@ -31,13 +31,7 @@ export default function Close(event: Event) {
     <>
       <MyHead title="イベント締切ページ" description="" />
       <BasicTemplate className="text-center">
-        <EventInfo
-          eventName={event.event_name}
-          detail={event.detail}
-          location={event.location}
-          hostImage={event.host.icon}
-          hostName={event.host.user_name}
-        />
+        <EventInfo event={event} />
         <Button
           className="flex m-auto my-5"
           onClick={() => close(event.event_id)}

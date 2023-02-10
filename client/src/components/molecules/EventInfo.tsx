@@ -2,27 +2,13 @@ import { Map } from '../atoms/map/Map';
 import { EventWrapper } from './Event/EventWrapper';
 import { Hanging } from './Event/Hanging';
 import { EventBasicInfo } from './Event/EventBasicInfo';
-import { Participant } from '../../core/types/event';
 import { UserInfo } from '../organisms/User/UserInfo';
-
+import { Event } from '../../core/types/event';
+import { FC } from 'react';
 type TProps = {
-  participants?: Participant[];
-  eventName: string;
-  detail: string;
-  location: string;
-  hostImage: string;
-  hostName: string;
-  limitTime?: string;
+  event: Event;
 };
-export const EventInfo = ({
-  eventName,
-  participants,
-  detail,
-  location,
-  hostImage,
-  hostName,
-  limitTime,
-}: TProps) => {
+export const EventInfo = ({ event }: TProps) => {
   const isJson = (location: string) => {
     try {
       JSON.parse(location).lat;
@@ -37,9 +23,9 @@ export const EventInfo = ({
       <Hanging />
       <EventWrapper>
         <div className="flex items-end justify-center gap-5 mx-5 overflow-x-scroll md:w-5/6 md:mx-auto pt-5">
-          <UserInfo name={hostName} image={hostImage} />
-          {participants &&
-            participants.map((participant) => {
+          <UserInfo name={event.host.user_name} image={event.host.icon} />
+          {event.participants &&
+            event.participants.map((participant) => {
               return (
                 <UserInfo
                   key={participant.participant_name}
@@ -53,15 +39,15 @@ export const EventInfo = ({
         </div>
 
         <EventBasicInfo
-          eventName={eventName}
-          detail={detail}
-          limitTime={limitTime ? limitTime : ''}
+          eventName={event.event_name}
+          detail={event.detail}
+          limitTime={event.close_limit ? event.close_limit : ''}
         />
-        {isJson(location) ? (
+        {isJson(event.location) ? (
           <div className="lg:m-10 m-3">
             <Map
-              lat={JSON.parse(location).lat}
-              lng={JSON.parse(location).lng}
+              lat={JSON.parse(event.location).lat}
+              lng={JSON.parse(event.location).lng}
             />
           </div>
         ) : (

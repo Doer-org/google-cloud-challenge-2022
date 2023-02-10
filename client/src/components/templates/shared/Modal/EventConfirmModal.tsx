@@ -1,34 +1,39 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import { getEventInfo } from '../../../../core/api/event/getInfo';
+import { Participant } from '../../../../core/types/event';
 import { Button } from '../../../atoms/text/Button';
 import { TypoWrapper } from '../../../atoms/text/TypoWrapper';
 import { UserFullInfo } from '../../../organisms/User/UserFullInfo';
-import { UserInfo } from '../../../organisms/User/UserInfo';
 import { BasicModal } from './BasicModal';
-
+import { UserInfo } from '../../../organisms/User/UserInfo';
 type TProps = {
   children: ReactNode;
   isShow: boolean;
+  currentUser: Participant;
+  eventId: string;
   onClose: (isShow: boolean) => void;
   onParticipate: () => void;
-  currentUser: {
-    name: string;
-    comment?: string;
-    icon: string;
-  };
-  participant: {
-    name: string;
-    image: string;
-  }[];
-  isParticipate?: boolean;
 };
 export const EventConfirmModal = ({
   children,
   isShow,
   onClose,
   currentUser,
-  participant,
   onParticipate,
+  eventId,
 }: TProps) => {
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  useEffect(() => {
+    const getParticipants = getEventInfo(
+      (response) => {
+        if (response) {
+          setParticipants(response.participants);
+        }
+      },
+      () => {}
+    );
+    getParticipants(eventId);
+  }, [eventId]);
   return (
     <>
       {isShow ? (
@@ -36,7 +41,7 @@ export const EventConfirmModal = ({
           {children}
           <BasicModal>
             <UserFullInfo
-              name={currentUser.name}
+              name={currentUser.participant_name}
               comment={currentUser.comment}
               isParticipate
               image={currentUser.icon}
@@ -46,9 +51,13 @@ export const EventConfirmModal = ({
             </TypoWrapper>
             <div className="w-2/3 overflow-x-scroll m-auto my-3">
               <div className="flex gap-5 justify-center">
-                {participant.map((p) => {
+                {participants.map((participant) => {
                   return (
-                    <UserInfo key={p.name} name={p.name} image={p.image} />
+                    <UserInfo
+                      key={participant.participant_name}
+                      name={participant.participant_name}
+                      image={participant.icon}
+                    />
                   );
                 })}
               </div>

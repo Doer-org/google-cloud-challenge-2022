@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -40,6 +41,12 @@ func (lsu *LoginSessionsUpdate) SetNillableUserID(u *uuid.UUID) *LoginSessionsUp
 	if u != nil {
 		lsu.SetUserID(*u)
 	}
+	return lsu
+}
+
+// SetExpiry sets the "expiry" field.
+func (lsu *LoginSessionsUpdate) SetExpiry(t time.Time) *LoginSessionsUpdate {
+	lsu.mutation.SetExpiry(t)
 	return lsu
 }
 
@@ -115,6 +122,9 @@ func (lsu *LoginSessionsUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			}
 		}
 	}
+	if value, ok := lsu.mutation.Expiry(); ok {
+		_spec.SetField(loginsessions.FieldExpiry, field.TypeTime, value)
+	}
 	if lsu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -181,6 +191,12 @@ func (lsuo *LoginSessionsUpdateOne) SetNillableUserID(u *uuid.UUID) *LoginSessio
 	if u != nil {
 		lsuo.SetUserID(*u)
 	}
+	return lsuo
+}
+
+// SetExpiry sets the "expiry" field.
+func (lsuo *LoginSessionsUpdateOne) SetExpiry(t time.Time) *LoginSessionsUpdateOne {
+	lsuo.mutation.SetExpiry(t)
 	return lsuo
 }
 
@@ -279,6 +295,9 @@ func (lsuo *LoginSessionsUpdateOne) sqlSave(ctx context.Context) (_node *LoginSe
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := lsuo.mutation.Expiry(); ok {
+		_spec.SetField(loginsessions.FieldExpiry, field.TypeTime, value)
 	}
 	if lsuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

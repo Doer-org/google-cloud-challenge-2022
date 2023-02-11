@@ -99,6 +99,7 @@ var (
 	// LoginSessionsColumns holds the columns for the "login_sessions" table.
 	LoginSessionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Size: 200},
+		{Name: "expiry", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeUUID},
 	}
 	// LoginSessionsTable holds the schema information for the "login_sessions" table.
@@ -109,7 +110,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "login_sessions_users_user",
-				Columns:    []*schema.Column{LoginSessionsColumns[1]},
+				Columns:    []*schema.Column{LoginSessionsColumns[2]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

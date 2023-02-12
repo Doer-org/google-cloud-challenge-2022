@@ -53,7 +53,7 @@ export default function Edit(event: Event) {
             type: '???',
             state: '???',
             created_at: new Date(Date.now()),
-            limit_time: new Date(Date.now()), // FIXME: 締め切り時間設定
+            limit_time: new Date(limit), // FIXME: 締め切り時間設定
           })
         }
       >

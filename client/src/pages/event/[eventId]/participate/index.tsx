@@ -12,6 +12,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { joinEvent } from '../../../../core/api/event/join';
 import { EventConfirmModal } from '../../../../components/templates/shared/Modal/EventConfirmModal';
 import { useNoticeStore } from '../../../../store/noticeStore';
+import { MyHead } from '../../../../components/templates/shared/Head/MyHead';
 
 export async function getServerSideProps(context: any) {
   const eventId = context.query.eventId;
@@ -57,47 +58,50 @@ export default function Participate(event: Event) {
   const isTimeOver = new Date(event.close_limit) < new Date();
   const isClosed = event.event_state === 'close';
   return (
-    <BasicTemplate className="text-center">
-      <EventConfirmModal
-        isShow={isConfirm}
-        onClose={setIsConfirm}
-        onParticipate={() =>
-          joinApi({
-            event_id: event.event_id,
-            participant_name: name,
-            comment: comment,
-          })
-        }
-        eventId={event.event_id}
-        currentUser={{ participant_name: name, comment, icon: '' }}
-      >
-        <EventInfo event={event} />
-        {!isCapacityOver && !isTimeOver && !isClosed ? (
-          <FormWrapper onSubmit={() => setIsConfirm(true)}>
-            <Input
-              type="text"
-              label="名前"
-              maxLength={20}
-              minLength={1}
-              content={name}
-              changeContent={setName}
-              required={true}
-            />
-            <Input
-              type="text"
-              label="ひとこと"
-              maxLength={50}
-              content={comment}
-              changeContent={setComment}
-            />
-            <Button className="flex m-auto my-5">参加する</Button>
-          </FormWrapper>
-        ) : (
-          <>
-            <p className="mb-5">このイベントは締切られました</p>
-          </>
-        )}
-      </EventConfirmModal>
-    </BasicTemplate>
+    <>
+      <MyHead title={event.event_name} description={event.detail} />
+      <BasicTemplate className="text-center">
+        <EventConfirmModal
+          isShow={isConfirm}
+          onClose={setIsConfirm}
+          onParticipate={() =>
+            joinApi({
+              event_id: event.event_id,
+              participant_name: name,
+              comment: comment,
+            })
+          }
+          eventId={event.event_id}
+          currentUser={{ participant_name: name, comment, icon: '' }}
+        >
+          <EventInfo event={event} />
+          {!isCapacityOver && !isTimeOver && !isClosed ? (
+            <FormWrapper onSubmit={() => setIsConfirm(true)}>
+              <Input
+                type="text"
+                label="名前"
+                maxLength={20}
+                minLength={1}
+                content={name}
+                changeContent={setName}
+                required={true}
+              />
+              <Input
+                type="text"
+                label="ひとこと"
+                maxLength={50}
+                content={comment}
+                changeContent={setComment}
+              />
+              <Button className="flex m-auto my-5">参加する</Button>
+            </FormWrapper>
+          ) : (
+            <>
+              <p className="mb-5">このイベントは締切られました</p>
+            </>
+          )}
+        </EventConfirmModal>
+      </BasicTemplate>
+    </>
   );
 }

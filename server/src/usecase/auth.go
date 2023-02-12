@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/domain/repository"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent"
@@ -145,4 +146,21 @@ func (uc *Auth) DeleteSession(ctx context.Context, sessionID string) error {
 
 	err := uc.DeleteSession(ctx, sessionID)
 	return err
+}
+
+func (uc *Auth) CheckSessionExpiry(ctx context.Context, sessionID string) (bool, error) {
+	if sessionID == "" {
+		return false, fmt.Errorf("sessionid is empty")
+	}
+
+	expiry, err := uc.repoAuth.GetExpiryFromSession(ctx, sessionID)
+	if err != nil {
+		return false, fmt.Errorf("GetExpiryFromSession: %w", err)
+	}
+
+	if expiry.Before(time.Now()) {
+		return false, nil
+	}
+
+	return true, nil
 }

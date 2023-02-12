@@ -27,6 +27,7 @@ type IAuth interface {
 	GetTokenByUserId(ctx context.Context, userId uuid.UUID) (*oauth2.Token, error)
 	RefreshAccessToken(ctx context.Context, userId uuid.UUID, token *oauth2.Token) (*oauth2.Token, error)
 	DeleteSession(ctx context.Context, sessionID string) error
+	CheckSessionExpiry(ctx context.Context, sessionID string) (bool, error)
 }
 
 func NewAuth(ra repository.IAuth, rg repository.IGoogle, ur repository.IUser) IAuth {

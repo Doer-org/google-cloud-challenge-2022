@@ -28,6 +28,15 @@ func (m *Auth) Authenticate(next http.Handler) http.Handler {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to get session: %w", err)), http.StatusBadRequest)
 			return
 		}
+		ok, err := m.uc.CheckSessionExpiry(r.Context(), sessCookie.Value)
+		if err != nil {
+			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: check session expiry error: %w", err)), http.StatusBadRequest)
+			return
+		}
+		if !ok {
+			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: session expiry time over: %w", err)), http.StatusBadRequest)
+			return
+		}
 		userId, err := m.uc.GetUserIdFromSession(r.Context(), sessCookie.Value)
 		if err != nil {
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: GetUserIdFromSession: %w", err)), http.StatusBadRequest)

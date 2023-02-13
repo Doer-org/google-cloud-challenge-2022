@@ -93,6 +93,7 @@ func (repo *Auth) StoreSession(ctx context.Context, sessionID string, userId uui
 		Create().
 		SetUserID(userId).
 		SetID(sessionID).
+		SetExpiry(time.Now().Add(time.Hour * 24 * 1)).
 		Save(ctx)
 	if err != nil {
 		return fmt.Errorf("loginSessions.Create: %w", err)

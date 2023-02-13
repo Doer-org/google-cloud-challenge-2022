@@ -14,6 +14,7 @@ type TProps = {
   eventId: string;
   onClose: (isShow: boolean) => void;
   onParticipate: () => void;
+  disabled: boolean;
 };
 export const EventConfirmModal = ({
   children,
@@ -22,6 +23,7 @@ export const EventConfirmModal = ({
   currentUser,
   onParticipate,
   eventId,
+  disabled,
 }: TProps) => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [capacityOver, setCapacityOver] = useState<boolean>(false);
@@ -77,7 +79,11 @@ export const EventConfirmModal = ({
                       })}
                     </div>
                   </div>
-                  <Button onClick={onParticipate} className="mx-3">
+                  <Button
+                    onClick={onParticipate}
+                    className="mx-3"
+                    disable={disabled}
+                  >
                     参加する
                   </Button>
                   <Button onClick={() => onClose(false)} className="mx-3">

@@ -7,7 +7,7 @@ import { createUser } from '../core/api/user/create';
 import Link from 'next/link';
 import { TopPage } from '../components/molecules/Top/TopPage';
 export default function Home() {
-  const { userInfo, setUserInfo } = useUserInfoStore();
+  const { userInfo, setUserInfo, clear } = useUserInfoStore();
   const signIn = createUser(
     (ok) => {
       setUserInfo({
@@ -29,6 +29,22 @@ export default function Home() {
           >
             ログイン
           </Link>
+          <Link
+            href={`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout`}
+            onClick={() => {
+              clear();
+            }}
+          >
+            ログアウト
+          </Link>
+          {/* <Link
+            href={`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout?redirect_url=${process.env.NEXT_PUBLIC_FRONT_URL}`}
+            onClick={() => {
+              clear();
+            }}
+          >
+            ログアウト
+          </Link> */}
         </div>
       </BasicTemplate>
     </>

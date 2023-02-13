@@ -17,6 +17,7 @@ func (r *ChiRouter) initAuth(authH handler.IAuth, m middleware.IAuth) {
 			r.Use(m.Authenticate)
 			r.Get("/validate", authH.Validate)
 			r.Get("/user", authH.User)
+			r.Get("/logout", authH.Logout)
 		})
 	})
 }

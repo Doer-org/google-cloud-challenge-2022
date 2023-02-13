@@ -16,6 +16,7 @@ type IAuth interface {
 	Callback(w http.ResponseWriter, r *http.Request)
 	Validate(w http.ResponseWriter, r *http.Request)
 	User(w http.ResponseWriter, r *http.Request)
+	Logout(w http.ResponseWriter, r *http.Request)
 }
 
 // TODO:logout apiも作る必要あり

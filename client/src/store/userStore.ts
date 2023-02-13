@@ -16,12 +16,14 @@ const initUserInfo: UserInfo = {
 interface UserInfoStore {
   userInfo: UserInfo;
   setUserInfo: (info: UserInfo) => void;
+  clear: () => void;
 }
 
 export const useUserInfoStore = create<UserInfoStore>()(
   persist((set) => ({
     userInfo: initUserInfo,
     setUserInfo: (info: UserInfo) => set({ userInfo: info }),
+    clear: () => set({userInfo:initUserInfo})
   }))
 );
 

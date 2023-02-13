@@ -22,6 +22,7 @@ func (LoginSessions) Fields() []ent.Field {
 			MaxLen(200),
 		field.UUID("user_id", uuid.UUID{}).
 			Default(uuid.New),
+		field.Time("expiry"),
 	}
 }
 

@@ -2487,6 +2487,7 @@ type LoginSessionsMutation struct {
 	op            Op
 	typ           string
 	id            *string
+	expiry        *time.Time
 	clearedFields map[string]struct{}
 	user          *uuid.UUID
 	cleareduser   bool
@@ -2635,6 +2636,42 @@ func (m *LoginSessionsMutation) ResetUserID() {
 	m.user = nil
 }
 
+// SetExpiry sets the "expiry" field.
+func (m *LoginSessionsMutation) SetExpiry(t time.Time) {
+	m.expiry = &t
+}
+
+// Expiry returns the value of the "expiry" field in the mutation.
+func (m *LoginSessionsMutation) Expiry() (r time.Time, exists bool) {
+	v := m.expiry
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpiry returns the old "expiry" field's value of the LoginSessions entity.
+// If the LoginSessions object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LoginSessionsMutation) OldExpiry(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExpiry is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExpiry requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpiry: %w", err)
+	}
+	return oldValue.Expiry, nil
+}
+
+// ResetExpiry resets all changes to the "expiry" field.
+func (m *LoginSessionsMutation) ResetExpiry() {
+	m.expiry = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *LoginSessionsMutation) ClearUser() {
 	m.cleareduser = true
@@ -2695,9 +2732,12 @@ func (m *LoginSessionsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LoginSessionsMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 2)
 	if m.user != nil {
 		fields = append(fields, loginsessions.FieldUserID)
+	}
+	if m.expiry != nil {
+		fields = append(fields, loginsessions.FieldExpiry)
 	}
 	return fields
 }
@@ -2709,6 +2749,8 @@ func (m *LoginSessionsMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case loginsessions.FieldUserID:
 		return m.UserID()
+	case loginsessions.FieldExpiry:
+		return m.Expiry()
 	}
 	return nil, false
 }
@@ -2720,6 +2762,8 @@ func (m *LoginSessionsMutation) OldField(ctx context.Context, name string) (ent.
 	switch name {
 	case loginsessions.FieldUserID:
 		return m.OldUserID(ctx)
+	case loginsessions.FieldExpiry:
+		return m.OldExpiry(ctx)
 	}
 	return nil, fmt.Errorf("unknown LoginSessions field %s", name)
 }
@@ -2735,6 +2779,13 @@ func (m *LoginSessionsMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
+		return nil
+	case loginsessions.FieldExpiry:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpiry(v)
 		return nil
 	}
 	return fmt.Errorf("unknown LoginSessions field %s", name)
@@ -2787,6 +2838,9 @@ func (m *LoginSessionsMutation) ResetField(name string) error {
 	switch name {
 	case loginsessions.FieldUserID:
 		m.ResetUserID()
+		return nil
+	case loginsessions.FieldExpiry:
+		m.ResetExpiry()
 		return nil
 	}
 	return fmt.Errorf("unknown LoginSessions field %s", name)

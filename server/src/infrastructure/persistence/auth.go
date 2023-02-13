@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
@@ -92,9 +93,21 @@ func (repo *Auth) StoreSession(ctx context.Context, sessionID string, userId uui
 		Create().
 		SetUserID(userId).
 		SetID(sessionID).
+		SetExpiry(time.Now().Add(time.Hour * 24 * 1)).
 		Save(ctx)
 	if err != nil {
 		return fmt.Errorf("loginSessions.Create: %w", err)
+	}
+	return nil
+}
+
+func (repo *Auth) DeleteSession(ctx context.Context, sessionID string) error {
+	_, err := repo.client.LoginSessions.
+		Delete().
+		Where(loginsessions.ID(sessionID)).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("loginsession.Delete: %w", err)
 	}
 	return nil
 }
@@ -142,4 +155,15 @@ func (repo *Auth) DeleteState(ctx context.Context, state string) error {
 		return fmt.Errorf("authStates.Delete: %w", err)
 	}
 	return nil
+}
+
+func (repo *Auth) GetExpiryFromSession(ctx context.Context, sessionId string) (time.Time, error) {
+	session, err := repo.client.LoginSessions.
+		Query().
+		Where(loginsessions.ID(sessionId)).
+		Only(ctx)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("loginSessions.Query: %w", err)
+	}
+	return session.Expiry, nil
 }

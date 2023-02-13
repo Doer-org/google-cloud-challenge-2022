@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/loginsessions"
@@ -19,6 +20,8 @@ type LoginSessions struct {
 	ID string `json:"id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"user_id,omitempty"`
+	// Expiry holds the value of the "expiry" field.
+	Expiry time.Time `json:"expiry,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the LoginSessionsQuery when eager-loading is set.
 	Edges LoginSessionsEdges `json:"edges"`
@@ -53,6 +56,8 @@ func (*LoginSessions) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case loginsessions.FieldID:
 			values[i] = new(sql.NullString)
+		case loginsessions.FieldExpiry:
+			values[i] = new(sql.NullTime)
 		case loginsessions.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
@@ -81,6 +86,12 @@ func (ls *LoginSessions) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value != nil {
 				ls.UserID = *value
+			}
+		case loginsessions.FieldExpiry:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field expiry", values[i])
+			} else if value.Valid {
+				ls.Expiry = value.Time
 			}
 		}
 	}
@@ -117,6 +128,9 @@ func (ls *LoginSessions) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", ls.ID))
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", ls.UserID))
+	builder.WriteString(", ")
+	builder.WriteString("expiry=")
+	builder.WriteString(ls.Expiry.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

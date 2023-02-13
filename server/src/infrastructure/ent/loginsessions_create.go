@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -32,6 +33,12 @@ func (lsc *LoginSessionsCreate) SetNillableUserID(u *uuid.UUID) *LoginSessionsCr
 	if u != nil {
 		lsc.SetUserID(*u)
 	}
+	return lsc
+}
+
+// SetExpiry sets the "expiry" field.
+func (lsc *LoginSessionsCreate) SetExpiry(t time.Time) *LoginSessionsCreate {
+	lsc.mutation.SetExpiry(t)
 	return lsc
 }
 
@@ -92,6 +99,9 @@ func (lsc *LoginSessionsCreate) check() error {
 	if _, ok := lsc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "LoginSessions.user_id"`)}
 	}
+	if _, ok := lsc.mutation.Expiry(); !ok {
+		return &ValidationError{Name: "expiry", err: errors.New(`ent: missing required field "LoginSessions.expiry"`)}
+	}
 	if v, ok := lsc.mutation.ID(); ok {
 		if err := loginsessions.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "LoginSessions.id": %w`, err)}
@@ -140,6 +150,10 @@ func (lsc *LoginSessionsCreate) createSpec() (*LoginSessions, *sqlgraph.CreateSp
 	if id, ok := lsc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := lsc.mutation.Expiry(); ok {
+		_spec.SetField(loginsessions.FieldExpiry, field.TypeTime, value)
+		_node.Expiry = value
 	}
 	if nodes := lsc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

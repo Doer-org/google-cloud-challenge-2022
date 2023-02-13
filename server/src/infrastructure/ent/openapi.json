@@ -1151,6 +1151,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "expiry": {
+            "type": "string",
+            "format": "date-time"
+          },
           "user": {
             "$ref": "#/components/schemas/User"
           }
@@ -1158,6 +1162,7 @@
         "required": [
           "id",
           "user_id",
+          "expiry",
           "user"
         ]
       },

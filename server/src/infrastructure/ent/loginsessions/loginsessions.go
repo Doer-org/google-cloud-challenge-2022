@@ -13,6 +13,8 @@ const (
 	FieldID = "id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldExpiry holds the string denoting the expiry field in the database.
+	FieldExpiry = "expiry"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the loginsessions in the database.
@@ -30,6 +32,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldUserID,
+	FieldExpiry,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

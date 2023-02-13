@@ -3,6 +3,8 @@
 package loginsessions
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Doer-org/google-cloud-challenge-2022/infrastructure/ent/predicate"
@@ -59,6 +61,11 @@ func UserID(v uuid.UUID) predicate.LoginSessions {
 	return predicate.LoginSessions(sql.FieldEQ(FieldUserID, v))
 }
 
+// Expiry applies equality check predicate on the "expiry" field. It's identical to ExpiryEQ.
+func Expiry(v time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldEQ(FieldExpiry, v))
+}
+
 // UserIDEQ applies the EQ predicate on the "user_id" field.
 func UserIDEQ(v uuid.UUID) predicate.LoginSessions {
 	return predicate.LoginSessions(sql.FieldEQ(FieldUserID, v))
@@ -77,6 +84,46 @@ func UserIDIn(vs ...uuid.UUID) predicate.LoginSessions {
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
 func UserIDNotIn(vs ...uuid.UUID) predicate.LoginSessions {
 	return predicate.LoginSessions(sql.FieldNotIn(FieldUserID, vs...))
+}
+
+// ExpiryEQ applies the EQ predicate on the "expiry" field.
+func ExpiryEQ(v time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldEQ(FieldExpiry, v))
+}
+
+// ExpiryNEQ applies the NEQ predicate on the "expiry" field.
+func ExpiryNEQ(v time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldNEQ(FieldExpiry, v))
+}
+
+// ExpiryIn applies the In predicate on the "expiry" field.
+func ExpiryIn(vs ...time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldIn(FieldExpiry, vs...))
+}
+
+// ExpiryNotIn applies the NotIn predicate on the "expiry" field.
+func ExpiryNotIn(vs ...time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldNotIn(FieldExpiry, vs...))
+}
+
+// ExpiryGT applies the GT predicate on the "expiry" field.
+func ExpiryGT(v time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldGT(FieldExpiry, v))
+}
+
+// ExpiryGTE applies the GTE predicate on the "expiry" field.
+func ExpiryGTE(v time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldGTE(FieldExpiry, v))
+}
+
+// ExpiryLT applies the LT predicate on the "expiry" field.
+func ExpiryLT(v time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldLT(FieldExpiry, v))
+}
+
+// ExpiryLTE applies the LTE predicate on the "expiry" field.
+func ExpiryLTE(v time.Time) predicate.LoginSessions {
+	return predicate.LoginSessions(sql.FieldLTE(FieldExpiry, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

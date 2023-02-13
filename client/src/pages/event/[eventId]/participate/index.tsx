@@ -35,7 +35,7 @@ export async function getServerSideProps(context: any) {
 }
 
 export default function Participate(event: Event) {
-  // TODO: SSRで実装してリンクを貼った時にOGPを表示させるようにする
+  const [isLoading, setIsLoading] = useState(false);
   const [isConfirm, setIsConfirm] = useState(false);
   const { changeNotice } = useNoticeStore();
   const router = useRouter();
@@ -62,15 +62,18 @@ export default function Participate(event: Event) {
       <MyHead title={event.event_name} description={event.detail} />
       <BasicTemplate className="text-center">
         <EventConfirmModal
+          disabled={isLoading}
           isShow={isConfirm}
           onClose={setIsConfirm}
-          onParticipate={() =>
-            joinApi({
-              event_id: event.event_id,
-              participant_name: name,
-              comment: comment,
-            })
-          }
+          onParticipate={() => {
+            if (!isLoading) {
+              joinApi({
+                event_id: event.event_id,
+                participant_name: name,
+                comment: comment,
+              });
+            }
+          }}
           eventId={event.event_id}
           currentUser={{ participant_name: name, comment, icon: '' }}
         >

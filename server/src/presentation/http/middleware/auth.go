@@ -34,6 +34,10 @@ func (m *Auth) Authenticate(next http.Handler) http.Handler {
 			return
 		}
 		if !ok {
+			err := m.uc.DeleteSession(r.Context(), sessCookie.Value)
+			if err != nil {
+				res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: session expiry time over but cannot delest session: %w", err)), http.StatusBadRequest)
+			}
 			res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: session expiry time over: %w", err)), http.StatusBadRequest)
 			return
 		}

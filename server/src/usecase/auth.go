@@ -144,8 +144,7 @@ func (uc *Auth) DeleteSession(ctx context.Context, sessionID string) error {
 	if sessionID == "" {
 		return fmt.Errorf("sessionid is empty")
 	}
-
-	err := uc.DeleteSession(ctx, sessionID)
+	err := uc.repoAuth.DeleteSession(ctx, sessionID)
 	return err
 }
 

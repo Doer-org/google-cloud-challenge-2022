@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Doer-org/google-cloud-challenge-2022/config"
 	res "github.com/Doer-org/google-cloud-challenge-2022/presentation/http/response"
@@ -65,15 +67,18 @@ func (h *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to get session: %w", err)), http.StatusBadRequest)
 		return
 	}
-	err = h.authUC.DeleteSession(r.Context(), sessCookie.Value)
+	redirectURL := r.FormValue("redirect_url")
+
+	err = h.authUC.DeleteSession(context.Background(), sessCookie.Value)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to delete session: %w", err)), http.StatusBadRequest)
 		return
 	}
 
-	sessCookie.MaxAge = -1
+	sessCookie.MaxAge = -10
+	sessCookie.Expires = time.Now().Add(-100 * time.Hour)
 	http.SetCookie(w, sessCookie)
-	res.WriteJson(w, res.New200SuccessJson("logout success"), http.StatusOK)
+	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
 
 func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {

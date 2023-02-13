@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -69,7 +68,7 @@ func (h *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	redirectURL := r.FormValue("redirect_url")
 
-	err = h.authUC.DeleteSession(context.Background(), sessCookie.Value)
+	err = h.authUC.DeleteSession(r.Context(), sessCookie.Value)
 	if err != nil {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to delete session: %w", err)), http.StatusBadRequest)
 		return
@@ -93,6 +92,10 @@ func (h *Auth) Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessCookie, err := r.Cookie("session")
+	if err != nil {
+		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: falid to get session: %w", err)), http.StatusBadRequest)
+		return
+	}
 
 	if sessCookie.Value != state {
 		res.WriteJson(w, res.New404ErrJson(fmt.Errorf("error: state is not correct")), http.StatusBadRequest)

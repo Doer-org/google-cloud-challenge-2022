@@ -16,7 +16,6 @@ import { LinkTo } from '../../../components/atoms/text/LinkTo';
 
 export default function New() {
   const router = useRouter();
-  const [origin, setOrigin] = useState('');
   const { userInfo } = useUserInfoStore();
   const { changeNotice } = useNoticeStore();
   const [name, setName] = useState('');
@@ -24,23 +23,36 @@ export default function New() {
   const [detail, setDetail] = useState('');
   const [location, setLocation] = useState<null | TMapPosition>(null);
   const [limit, setLimit] = useState('');
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [limitMaxTime, setLimitMaxTime] = useState('');
+  const [limitMinTime, setLimitMinTime] = useState('');
+  const LIMIT_DAY_FROM_TODAY = 1;
 
-  let now = new Date();
-  let tomorrow = new Date();
-  tomorrow.setDate(now.getDate() + 1);
-  tomorrow.setHours(23, 59, 59, 999);
   const createEvent = createNewEvent(
     (ok) => {
-      router.push(`${origin}/event/${ok.created_event.event_id}/completion`);
+      router.push(
+        `${process.env.NEXT_PUBLIC_FRONT_URL}/event/${ok.created_event.event_id}/completion`
+      );
       changeNotice({ type: 'Success', text: '作成に成功しました' });
     },
     (e) => {
       changeNotice({ type: 'Error', text: '作成に失敗しました' });
     }
   );
+
+  useEffect(() => {
+    const now = new Date();
+    let tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + LIMIT_DAY_FROM_TODAY);
+    tomorrow.setHours(23, 59, 59, 999);
+    now.setHours(now.getHours() + 9);
+    const minTime = now.toISOString().replace(/\..+/, '').slice(0, 16);
+    const maxTime = tomorrow.toISOString().replace(/\..+/, '').slice(0, 16);
+    setLimitMinTime(minTime);
+    setLimitMaxTime(maxTime);
+    console.log(minTime, maxTime);
+  }, []);
+
   return (
     <BasicTemplate className="text-center">
       <TypoWrapper size="large" line="bold">
@@ -49,21 +61,24 @@ export default function New() {
 
       <FormWrapper
         onSubmit={() => {
-          createEvent(
-            {
-              user_id: userInfo.userId,
-              user_name: 'atode', //FIXME : user storeに保存・取得
-              icon: 'mada',
-            },
-            {
-              event_name: name,
-              max_member: Number(capacity),
-              detail: detail,
-              location: JSON.stringify(location),
-              created_at: new Date(Date.now()),
-              limit_time: new Date(limit), // FIXME: 締め切り時間設定
-            }
-          );
+          if (!isLoading) {
+            createEvent(
+              {
+                user_id: userInfo.userId,
+                user_name: 'atode', //FIXME : user storeに保存・取得
+                icon: 'mada',
+              },
+              {
+                event_name: name,
+                max_member: Number(capacity),
+                detail: detail,
+                location: JSON.stringify(location),
+                created_at: new Date(Date.now()),
+                limit_time: new Date(limit), // FIXME: 締め切り時間設定
+              }
+            );
+            setIsLoading(true);
+          }
         }}
       >
         <Input
@@ -87,14 +102,8 @@ export default function New() {
         <Input
           type="datetime-local"
           label="締切"
-          min={
-            now.toISOString().slice(0, 11) +
-            now.toLocaleTimeString().slice(0, 5)
-          }
-          max={
-            tomorrow.toISOString().slice(0, 11) +
-            tomorrow.toLocaleTimeString().slice(0, 5)
-          }
+          min={limitMinTime}
+          max={limitMaxTime}
           content={limit}
           changeContent={setLimit}
           required={true}
@@ -108,7 +117,9 @@ export default function New() {
           required={true}
         />
         <MapForm location={location} setLocation={setLocation} />
-        <Button className="flex m-auto my-5">募集する</Button>
+        <Button className="flex m-auto my-5" disable={isLoading}>
+          募集する
+        </Button>
       </FormWrapper>
       <LinkTo href="/" className="m-1 block my-5" borderNone>
         戻る

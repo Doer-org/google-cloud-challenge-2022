@@ -17,25 +17,36 @@ import { pipe } from 'fp-ts/lib/function';
 
 export default function Edit(event: Event) {
   const { changeNotice } = useNoticeStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [limitMaxTime, setLimitMaxTime] = useState('');
+  const [limitMinTime, setLimitMinTime] = useState('');
   const [name, setName] = useState(event.event_name);
   const [capacity, setCapacity] = useState(event.event_size);
   const [detail, setDetail] = useState(event.detail);
   const [location, setLocation] = useState<null | TMapPosition>(null);
   const [limit, setLimit] = useState(event.close_limit);
+  const LIMIT_DAY_FROM_TODAY = 1;
   const router = useRouter();
   const update = updateEvent(
     (ok) => {
       router.push('/event');
       changeNotice({ type: 'Success', text: 'イベント情報を更新しました' });
     },
-    (err) => {
-      changeNotice({ type: 'Error', text: '更新に失敗しました' });
-    }
+    (err) => changeNotice({ type: 'Error', text: '更新に失敗しました' })
   );
-  let now = new Date();
-  let tomorrow = new Date();
-  tomorrow.setDate(now.getDate() + 1);
-  tomorrow.setHours(23, 59, 59, 999);
+  useEffect(() => {
+    const now = new Date();
+    let tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + LIMIT_DAY_FROM_TODAY);
+    tomorrow.setHours(23, 59, 59, 999);
+    now.setHours(now.getHours() + 9);
+    const minTime = now.toISOString().replace(/\..+/, '').slice(0, 16);
+    const maxTime = tomorrow.toISOString().replace(/\..+/, '').slice(0, 16);
+    setLimitMinTime(minTime);
+    setLimitMaxTime(maxTime);
+    console.log(minTime, maxTime);
+  }, []);
+
   return (
     <BasicTemplate className="text-center">
       <TypoWrapper size="large" line="bold">
@@ -43,19 +54,22 @@ export default function Edit(event: Event) {
       </TypoWrapper>
 
       <FormWrapper
-        onSubmit={() =>
-          update({
-            id: event.event_id,
-            name: name,
-            detail: detail,
-            location: JSON.stringify(location),
-            size: Number(capacity),
-            type: '???',
-            state: '???',
-            created_at: new Date(Date.now()),
-            limit_time: new Date(limit), // FIXME: 締め切り時間設定
-          })
-        }
+        onSubmit={() => {
+          if (!isLoading) {
+            update({
+              id: event.event_id,
+              name: name,
+              detail: detail,
+              location: JSON.stringify(location),
+              size: Number(capacity),
+              type: '???',
+              state: '???',
+              created_at: new Date(Date.now()),
+              limit_time: new Date(limit), // FIXME: 締め切り時間設定
+            });
+            setIsLoading(true);
+          }
+        }}
       >
         <Input
           type="text"
@@ -78,14 +92,8 @@ export default function Edit(event: Event) {
         <Input
           type="datetime-local"
           label="締切"
-          min={
-            now.toISOString().slice(0, 11) +
-            now.toLocaleTimeString().slice(0, 5)
-          }
-          max={
-            tomorrow.toISOString().slice(0, 11) +
-            tomorrow.toLocaleTimeString().slice(0, 5)
-          }
+          min={limitMinTime}
+          max={limitMaxTime}
           content={limit}
           changeContent={setLimit}
           required={true}

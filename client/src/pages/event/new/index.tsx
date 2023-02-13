@@ -39,7 +39,7 @@ export default function New() {
       changeNotice({ type: 'Error', text: '作成に失敗しました' });
     }
   );
-
+  //TODO:editでも使ってるのでhooks化して共通化
   useEffect(() => {
     const now = new Date();
     let tomorrow = new Date();

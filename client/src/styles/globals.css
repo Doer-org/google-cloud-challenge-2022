@@ -2,9 +2,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+html {
+  background-color: #267365;
+  height: 100%;
+}
+#__next {
+  height: 100%;
+}
 body {
   font-family: 'Zen Maru Gothic', sans-serif;
   color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  height: 100%;
 }
 .comment ::-webkit-scrollbar-thumb {
   background: black;
@@ -12,6 +22,7 @@ body {
   border-width: 1;
   box-shadow: 1%;
 }
+
 .comment ::-webkit-scrollbar {
   width: 1px;
   height: 3px;

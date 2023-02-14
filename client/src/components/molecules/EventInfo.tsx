@@ -22,20 +22,22 @@ export const EventInfo = ({ event }: TProps) => {
     <>
       <Hanging />
       <EventWrapper>
-        <div className="flex items-end justify-center gap-5 mx-5 overflow-x-scroll md:w-5/6 md:mx-auto pt-5">
-          <UserInfo name={event.host.user_name} image={event.host.icon} />
-          {event.participants &&
-            event.participants.map((participant) => {
-              return (
-                <UserInfo
-                  key={participant.participant_name}
-                  name={participant.participant_name}
-                  comment={participant.comment}
-                  image={participant.icon}
-                  isParticipate
-                />
-              );
-            })}
+        <div className="mx-auto md:w-2/3 flex justify-center">
+          <div className="flex items-end gap-5 overflow-x-scroll pt-5 mx-5">
+            <UserInfo name={event.host.user_name} image={event.host.icon} />
+            {event.participants &&
+              event.participants.map((participant) => {
+                return (
+                  <UserInfo
+                    key={participant.participant_name}
+                    name={participant.participant_name}
+                    comment={participant.comment}
+                    image={participant.icon}
+                    isParticipate
+                  />
+                );
+              })}
+          </div>
         </div>
 
         <EventBasicInfo

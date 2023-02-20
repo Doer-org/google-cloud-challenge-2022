@@ -1,5 +1,5 @@
 # スキーマ(Google Cloud Challenge 2022)
-
+![スクリーンショット 2023-02-20 211632](https://user-images.githubusercontent.com/88176012/220106408-019525ff-8408-4a2f-b257-3d50f6b77558.png)
 
 
 ### Date
@@ -8,7 +8,6 @@
 ## About
 ***
 スキーマ is a service to find people to spend your free time with.
-
 This service was exhibited at google-cloud-challenge2022.
 
 https://gc-schema.net/auth

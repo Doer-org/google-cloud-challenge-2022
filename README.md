@@ -6,7 +6,6 @@
 2022/12/16 ~ 2023/01/28
 
 ## About
-***
 スキーマ is a service to find people to spend your free time with.
 This service was exhibited at google-cloud-challenge2022.
 

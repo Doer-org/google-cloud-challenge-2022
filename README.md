@@ -9,7 +9,7 @@
 スキーマ is a service to find people to spend your free time with.
 This service was exhibited at google-cloud-challenge2022.
 
-https://gc-schema.net/auth
+https://gc-schema.net/
 
 https://docs.google.com/presentation/d/1TFBUjhlpENwyaUyeMvbStrJhahZ9no6FNFW7gKdjcQ4/edit#slide=id.p
 
